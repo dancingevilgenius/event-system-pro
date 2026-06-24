@@ -22,7 +22,9 @@ npm run dev
 |------|------|
 | `/` | Login / Register entry |
 | `/register` | New user registration (name, address, phone) |
-| `/home` | Placeholder page after login |
+| `/home` | Staff / Competitor role selection |
+| `/staff` | Staff contest list (Contest 1–3) |
+| `/competitor` | Competitor contest list (Contest 1–3) |
 
 ### Theming / skins
 

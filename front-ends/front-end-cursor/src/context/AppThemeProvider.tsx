@@ -12,6 +12,9 @@ import { AppThemeContext } from './AppThemeContext';
 
 function readStoredSkinId(): SkinId {
   const stored = localStorage.getItem(SKIN_STORAGE_KEY);
+  if (stored === 'default') {
+    return DEFAULT_SKIN_ID;
+  }
   if (stored && stored in skins) {
     return stored as SkinId;
   }

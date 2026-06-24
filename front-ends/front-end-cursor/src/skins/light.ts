@@ -1,8 +1,8 @@
 import type { SkinDefinition } from './types';
 
-export const defaultSkin: SkinDefinition = {
-  id: 'default',
-  label: 'Default',
+export const lightSkin: SkinDefinition = {
+  id: 'light',
+  label: 'Light',
   theme: {
     palette: {
       mode: 'light',

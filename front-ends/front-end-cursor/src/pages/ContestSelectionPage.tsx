@@ -4,9 +4,13 @@ import { centeredContentStackSx } from '../constants/layout';
 
 type ContestSelectionPageProps = {
   title: string;
+  contestRoute?: string;
 };
 
-export default function ContestSelectionPage({ title }: ContestSelectionPageProps) {
+export default function ContestSelectionPage({
+  title,
+  contestRoute,
+}: ContestSelectionPageProps) {
   const navigate = useNavigate();
   const contests = ['Contest 1', 'Contest 2', 'Contest 3'];
 
@@ -19,7 +23,13 @@ export default function ContestSelectionPage({ title }: ContestSelectionPageProp
 
         <Stack spacing={2} sx={{ my: 3, ...centeredContentStackSx }}>
           {contests.map((contest) => (
-            <Button key={contest} variant="contained" size="large" fullWidth>
+            <Button
+              key={contest}
+              variant="contained"
+              size="large"
+              fullWidth
+              onClick={() => contestRoute && navigate(contestRoute)}
+            >
               {contest}
             </Button>
           ))}

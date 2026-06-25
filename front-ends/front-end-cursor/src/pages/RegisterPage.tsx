@@ -4,11 +4,11 @@ import {
   Container,
   Paper,
   Stack,
-  TextField,
   Typography,
 } from '@mui/material';
 import { type ChangeEvent, type FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AppTextField from '../components/AppTextField';
 import { centeredContentStackSx } from '../constants/layout';
 import { useMessages } from '../hooks/useMessages';
 
@@ -81,42 +81,42 @@ export default function RegisterPage() {
 
         <Box component="form" onSubmit={handleSubmit} noValidate>
           <Stack spacing={2} sx={centeredContentStackSx}>
-            <TextField
+            <AppTextField
               label="First Name"
               value={form.firstName}
               onChange={updateField('firstName')}
               fullWidth
               autoComplete="given-name"
             />
-            <TextField
+            <AppTextField
               label="Last Name"
               value={form.lastName}
               onChange={updateField('lastName')}
               fullWidth
               autoComplete="family-name"
             />
-            <TextField
+            <AppTextField
               label="Street"
               value={form.street}
               onChange={updateField('street')}
               fullWidth
               autoComplete="street-address"
             />
-            <TextField
+            <AppTextField
               label="City"
               value={form.city}
               onChange={updateField('city')}
               fullWidth
               autoComplete="address-level2"
             />
-            <TextField
+            <AppTextField
               label="State"
               value={form.state}
               onChange={updateField('state')}
               fullWidth
               autoComplete="address-level1"
             />
-            <TextField
+            <AppTextField
               label="Country"
               value={form.country}
               onChange={updateField('country')}
@@ -128,7 +128,7 @@ export default function RegisterPage() {
               Phone (US)
             </Typography>
             <Stack direction="row" spacing={1} sx={{ width: '100%' }}>
-              <TextField
+              <AppTextField
                 label="Area"
                 value={form.phoneArea}
                 onChange={updatePhoneField('phoneArea', 3)}
@@ -136,14 +136,14 @@ export default function RegisterPage() {
                 fullWidth
                 autoComplete="tel-area-code"
               />
-              <TextField
+              <AppTextField
                 label="Prefix"
                 value={form.phonePrefix}
                 onChange={updatePhoneField('phonePrefix', 3)}
                 slotProps={{ htmlInput: { inputMode: 'numeric', maxLength: 3 } }}
                 fullWidth
               />
-              <TextField
+              <AppTextField
                 label="Line"
                 value={form.phoneLine}
                 onChange={updatePhoneField('phoneLine', 4)}

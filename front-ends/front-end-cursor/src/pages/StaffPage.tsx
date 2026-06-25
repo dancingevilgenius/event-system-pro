@@ -1,5 +1,5 @@
 import ContestSelectionPage from './ContestSelectionPage';
 
 export default function StaffPage() {
-  return <ContestSelectionPage title="Staff" />;
+  return <ContestSelectionPage title="Staff" contestRoute="/judging" />;
 }

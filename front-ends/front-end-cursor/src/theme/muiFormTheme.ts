@@ -16,3 +16,11 @@ export const muiTextFieldTheme = {
     root: fieldMaxWidth,
   },
 };
+
+export const muiOutlinedInputTheme = {
+  styleOverrides: {
+    input: {
+      fontSize: '16px',
+    },
+  },
+};

@@ -3,6 +3,7 @@ import CompetitorPage from './pages/CompetitorPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import JudgingPage from './pages/JudgingPage';
 import StaffPage from './pages/StaffPage';
 
 export default function App() {
@@ -12,6 +13,7 @@ export default function App() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/home" element={<HomePage />} />
       <Route path="/staff" element={<StaffPage />} />
+      <Route path="/judging" element={<JudgingPage />} />
       <Route path="/competitor" element={<CompetitorPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

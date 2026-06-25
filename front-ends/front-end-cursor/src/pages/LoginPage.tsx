@@ -5,11 +5,11 @@ import {
   Divider,
   Paper,
   Stack,
-  TextField,
   Typography,
 } from '@mui/material';
 import { type FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AppTextField from '../components/AppTextField';
 import { centeredContentStackSx } from '../constants/layout';
 import { useMessages } from '../hooks/useMessages';
 
@@ -40,14 +40,14 @@ export default function LoginPage() {
 
         <Box component="form" onSubmit={handleLogin} noValidate>
           <Stack spacing={2} sx={centeredContentStackSx}>
-            <TextField
+            <AppTextField
               label="Username"
               value={username}
               onChange={(event) => setUsername(event.target.value)}
               fullWidth
               autoComplete="username"
             />
-            <TextField
+            <AppTextField
               label="Password"
               type="password"
               value={password}

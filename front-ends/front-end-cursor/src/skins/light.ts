@@ -1,6 +1,6 @@
 import type { SkinDefinition } from './types';
 import { muiButtonTheme } from '../theme/muiButtonTheme';
-import { muiFormControlTheme, muiTextFieldTheme } from '../theme/muiFormTheme';
+import { muiFormControlTheme, muiOutlinedInputTheme, muiTextFieldTheme } from '../theme/muiFormTheme';
 
 export const lightSkin: SkinDefinition = {
   id: 'light',
@@ -29,6 +29,7 @@ export const lightSkin: SkinDefinition = {
       MuiButton: muiButtonTheme,
       MuiFormControl: muiFormControlTheme,
       MuiTextField: muiTextFieldTheme,
+      MuiOutlinedInput: muiOutlinedInputTheme,
       MuiPaper: {
         defaultProps: {
           elevation: 2,

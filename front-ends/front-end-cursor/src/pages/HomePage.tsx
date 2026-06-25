@@ -34,12 +34,12 @@ export default function HomePage() {
 
         <Stack spacing={2} sx={{ mb: 3, alignItems: 'center', width: '100%' }}>
           <ThemeSwitcher fullWidth />
-          <Button variant="text" fullWidth onClick={handleTestMessages}>
-            Test Messages
-          </Button>
         </Stack>
 
-        <Stack sx={centeredContentStackSx}>
+        <Stack spacing={2} sx={centeredContentStackSx}>
+          <Button variant="outlined" fullWidth onClick={handleTestMessages}>
+            Test Messages
+          </Button>
           <Button variant="outlined" fullWidth onClick={() => navigate('/')}>
             Back to Login
           </Button>

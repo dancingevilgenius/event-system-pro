@@ -8,13 +8,20 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { centeredContentStackSx } from '../constants/layout';
+import { useMessages } from '../hooks/useMessages';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { clearMessages } = useMessages();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  useEffect(() => {
+    clearMessages();
+  }, [clearMessages]);
 
   const handleLogin = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -32,7 +39,7 @@ export default function LoginPage() {
         </Typography>
 
         <Box component="form" onSubmit={handleLogin} noValidate>
-          <Stack spacing={2}>
+          <Stack spacing={2} sx={centeredContentStackSx}>
             <TextField
               label="Username"
               value={username}
@@ -48,22 +55,26 @@ export default function LoginPage() {
               fullWidth
               autoComplete="current-password"
             />
-            <Button type="submit" variant="contained" size="large" fullWidth>
-              Login
-            </Button>
+            <Stack spacing={2} sx={centeredContentStackSx}>
+              <Button type="submit" variant="contained" size="large" fullWidth>
+                Login
+              </Button>
+            </Stack>
           </Stack>
         </Box>
 
         <Divider sx={{ my: 3 }}>or</Divider>
 
-        <Button
-          variant="outlined"
-          size="large"
-          fullWidth
-          onClick={() => navigate('/register')}
-        >
-          Register
-        </Button>
+        <Stack sx={centeredContentStackSx}>
+          <Button
+            variant="outlined"
+            size="large"
+            fullWidth
+            onClick={() => navigate('/register')}
+          >
+            Register
+          </Button>
+        </Stack>
       </Paper>
     </Container>
   );

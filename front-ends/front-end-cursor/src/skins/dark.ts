@@ -1,4 +1,6 @@
 import type { SkinDefinition } from './types';
+import { muiButtonTheme } from '../theme/muiButtonTheme';
+import { muiFormControlTheme, muiTextFieldTheme } from '../theme/muiFormTheme';
 
 export const darkSkin: SkinDefinition = {
   id: 'dark',
@@ -24,11 +26,9 @@ export const darkSkin: SkinDefinition = {
       borderRadius: 8,
     },
     components: {
-      MuiButton: {
-        defaultProps: {
-          disableElevation: true,
-        },
-      },
+      MuiButton: muiButtonTheme,
+      MuiFormControl: muiFormControlTheme,
+      MuiTextField: muiTextFieldTheme,
     },
   },
 };

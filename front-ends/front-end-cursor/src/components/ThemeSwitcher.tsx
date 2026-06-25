@@ -20,7 +20,7 @@ export default function ThemeSwitcher({ fullWidth = false }: ThemeSwitcherProps)
   };
 
   return (
-    <FormControl fullWidth={fullWidth} size="small" sx={{ minWidth: 160 }}>
+    <FormControl fullWidth={fullWidth} size="small">
       <InputLabel id="theme-switcher-label">Skin</InputLabel>
       <Select
         labelId="theme-switcher-label"

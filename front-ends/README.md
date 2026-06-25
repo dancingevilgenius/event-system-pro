@@ -37,3 +37,14 @@ const { skinId, setSkin, skins } = useThemeSwitcher();
 ```
 
 Add a new skin by creating `src/skins/my-skin.ts`, registering it in `src/skins/index.ts`, and extending the `SkinId` union in `src/skins/types.ts`.
+
+### Messages (snackbars)
+
+Stacked message boxes persist until clicked. Use anywhere via `useMessages()`:
+
+```tsx
+const { showSuccess, showWarning, showProblem } = useMessages();
+showSuccess('Saved successfully.');
+```
+
+Use the **Test Messages** button on the Home page to show sample success, warning, and problem messages.

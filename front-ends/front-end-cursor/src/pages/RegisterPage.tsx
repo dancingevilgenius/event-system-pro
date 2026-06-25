@@ -7,8 +7,10 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { type ChangeEvent, type FormEvent, useState } from 'react';
+import { type ChangeEvent, type FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { centeredContentStackSx } from '../constants/layout';
+import { useMessages } from '../hooks/useMessages';
 
 type RegisterForm = {
   firstName: string;
@@ -40,7 +42,12 @@ function digitsOnly(value: string, maxLength: number): string {
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const { clearMessages } = useMessages();
   const [form, setForm] = useState<RegisterForm>(initialForm);
+
+  useEffect(() => {
+    clearMessages();
+  }, [clearMessages]);
 
   const updateField =
     (field: keyof RegisterForm) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -73,7 +80,7 @@ export default function RegisterPage() {
         </Typography>
 
         <Box component="form" onSubmit={handleSubmit} noValidate>
-          <Stack spacing={2}>
+          <Stack spacing={2} sx={centeredContentStackSx}>
             <TextField
               label="First Name"
               value={form.firstName}
@@ -120,7 +127,7 @@ export default function RegisterPage() {
             <Typography variant="subtitle2" color="text.secondary">
               Phone (US)
             </Typography>
-            <Stack direction="row" spacing={1}>
+            <Stack direction="row" spacing={1} sx={{ width: '100%' }}>
               <TextField
                 label="Area"
                 value={form.phoneArea}
@@ -145,12 +152,14 @@ export default function RegisterPage() {
               />
             </Stack>
 
-            <Button type="submit" variant="contained" size="large" fullWidth>
-              Create Account
-            </Button>
-            <Button variant="text" fullWidth onClick={() => navigate('/')}>
-              Back to Login
-            </Button>
+            <Stack spacing={2} sx={centeredContentStackSx}>
+              <Button type="submit" variant="contained" size="large" fullWidth>
+                Create Account
+              </Button>
+              <Button variant="text" fullWidth onClick={() => navigate('/')}>
+                Back to Login
+              </Button>
+            </Stack>
           </Stack>
         </Box>
       </Paper>

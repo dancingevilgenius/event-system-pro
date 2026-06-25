@@ -1,5 +1,6 @@
 import { Button, Container, Paper, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { centeredContentStackSx } from '../constants/layout';
 
 type ContestSelectionPageProps = {
   title: string;
@@ -16,7 +17,7 @@ export default function ContestSelectionPage({ title }: ContestSelectionPageProp
           {title}
         </Typography>
 
-        <Stack spacing={2} sx={{ my: 3 }}>
+        <Stack spacing={2} sx={{ my: 3, ...centeredContentStackSx }}>
           {contests.map((contest) => (
             <Button key={contest} variant="contained" size="large" fullWidth>
               {contest}
@@ -24,9 +25,11 @@ export default function ContestSelectionPage({ title }: ContestSelectionPageProp
           ))}
         </Stack>
 
-        <Button variant="outlined" onClick={() => navigate('/home')}>
-          Back to Home
-        </Button>
+        <Stack sx={centeredContentStackSx}>
+          <Button variant="outlined" fullWidth onClick={() => navigate('/home')}>
+            Back to Home
+          </Button>
+        </Stack>
       </Paper>
     </Container>
   );

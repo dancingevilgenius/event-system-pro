@@ -10,17 +10,18 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState, type MouseEvent, type SyntheticEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CompetitorColorDialog from '../components/CompetitorColorDialog';
 import CompetitorColorSwatch from '../components/CompetitorColorSwatch';
 import CompetitorColorSwatchBox, {
   COLOR_SWATCH_SIZE,
 } from '../components/CompetitorColorSwatchBox';
+import JudgingScoreInput from '../components/JudgingScoreInput';
 import PaletteOutlinedIcon from '../components/PaletteOutlinedIcon';
 import { centeredContentStackSx, CONTENT_MAX_WIDTH } from '../constants/layout';
 import {
-  formatCompetitorPair,
+  formatCompetitorPairNames,
   formatFullFirstLast,
   LEGION_MEMBER_NAMES,
   type LegionMember,
@@ -32,10 +33,26 @@ import {
   type CompetitorColorRecord,
   type CompetitorRole,
 } from '../types/competitorColors';
+import {
+  emptyEntryScoreState,
+  formatScoreDisplay,
+  type EntryScoreState,
+  type JudgingScoreDigits,
+} from '../types/judgingScore';
 
 const ENTRY_COUNT = 20;
-const NUMBER_COLUMN_WIDTH = '3.5rem';
-const SUMMARY_SWATCH_GAP = 4;
+const NUMBER_COLUMN_WIDTH = '2.75rem';
+const SCORE_DISPLAY_WIDTH = '5ch';
+const SUMMARY_SWATCH_GAP = 2;
+
+const SUMMARY_NAME_MODES = [
+  { leaderFullFirst: true, followerFullFirst: true },
+  { leaderFullFirst: false, followerFullFirst: true },
+  { leaderFullFirst: true, followerFullFirst: false },
+  { leaderFullFirst: false, followerFullFirst: false },
+] as const;
+
+type SummaryNameMode = (typeof SUMMARY_NAME_MODES)[number];
 
 function summarySwatchReserve(hasLeaderColors: boolean, hasFollowerColors: boolean): number {
   let reserve = 0;
@@ -100,7 +117,7 @@ function CompetitorNamesText({
 }: CompetitorNamesTextProps) {
   const containerRef = useRef<HTMLSpanElement>(null);
   const measureRef = useRef<HTMLSpanElement>(null);
-  const [useFullFirst, setUseFullFirst] = useState(true);
+  const [nameMode, setNameMode] = useState<SummaryNameMode>(SUMMARY_NAME_MODES[0]);
 
   const showLeaderSwatch = hasSelectedColors(leaderColors);
   const showFollowerSwatch = hasSelectedColors(followerColors);
@@ -114,12 +131,18 @@ function CompetitorNamesText({
     }
 
     const checkFit = () => {
-      measure.textContent = formatCompetitorPair(leader, follower, true);
-      const fitsFull =
-        measure.scrollWidth + swatchReserve <= container.clientWidth;
+      const availableWidth = container.clientWidth;
 
-      measure.textContent = formatCompetitorPair(leader, follower, false);
-      setUseFullFirst(fitsFull);
+      for (const mode of SUMMARY_NAME_MODES) {
+        measure.textContent = formatCompetitorPairNames(leader, follower, mode);
+
+        if (measure.scrollWidth + swatchReserve <= availableWidth) {
+          setNameMode(mode);
+          return;
+        }
+      }
+
+      setNameMode(SUMMARY_NAME_MODES[SUMMARY_NAME_MODES.length - 1]);
     };
 
     checkFit();
@@ -136,7 +159,7 @@ function CompetitorNamesText({
       ref={containerRef}
       sx={{
         position: 'relative',
-        flex: 1,
+        width: '100%',
         minWidth: 0,
         display: 'flex',
         alignItems: 'center',
@@ -163,7 +186,7 @@ function CompetitorNamesText({
           mr: showFollowerSwatch ? `${SUMMARY_SWATCH_GAP}px` : 0,
         }}
       >
-        {formatCompetitorPair(leader, follower, useFullFirst)}
+        {formatCompetitorPairNames(leader, follower, nameMode)}
       </Typography>
 
       {showFollowerSwatch ? (
@@ -221,7 +244,11 @@ function CompetitorNameDetail({
   };
 
   return (
-    <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+    <Stack
+      direction="row"
+      spacing={0.5}
+      sx={{ alignItems: 'center', minWidth: 0, width: '100%' }}
+    >
       {hasSelectedColors(colorRecord) ? (
         <CompetitorColorSwatch
           colors={colorRecord}
@@ -233,12 +260,23 @@ function CompetitorNameDetail({
           size="small"
           aria-label={`Open color palette for ${fullName}`}
           onClick={handleOpenPalette}
-          sx={{ p: 0.5, width: 34, height: 34, flexShrink: 0 }}
+          sx={{ p: 0.5, width: 30, height: 30, flexShrink: 0 }}
         >
-          <PaletteOutlinedIcon fontSize="small" color="action" />
+          <PaletteOutlinedIcon sx={{ fontSize: 18 }} color="action" />
         </IconButton>
       )}
-      <Typography variant="body2">{fullName}</Typography>
+      <Typography
+        variant="body2"
+        sx={{
+          flex: 1,
+          minWidth: 0,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        {fullName}
+      </Typography>
     </Stack>
   );
 }
@@ -250,6 +288,11 @@ export default function JudgingPage() {
   const [competitorColors, setCompetitorColors] = useState<
     Record<string, CompetitorColorRecord>
   >({});
+  const [scoreByBib, setScoreByBib] = useState<Record<number, EntryScoreState>>({});
+  const [expandedByBib, setExpandedByBib] = useState<Record<number, boolean>>({});
+
+  const getEntryScore = (bibNumber: number): EntryScoreState =>
+    scoreByBib[bibNumber] ?? emptyEntryScoreState();
 
   const handleSaveColors = (
     bibNumber: number,
@@ -262,6 +305,28 @@ export default function JudgingPage() {
     }));
   };
 
+  const handleScoreDigitChange = (
+    bibNumber: number,
+    index: number,
+    value: number,
+  ) => {
+    setScoreByBib((current) => {
+      const entry = current[bibNumber] ?? emptyEntryScoreState();
+      const digits = [...entry.digits] as JudgingScoreDigits;
+      digits[index] = value;
+
+      return {
+        ...current,
+        [bibNumber]: { digits, touched: true },
+      };
+    });
+  };
+
+  const handleAccordionChange =
+    (bibNumber: number) => (_event: SyntheticEvent, expanded: boolean) => {
+      setExpandedByBib((current) => ({ ...current, [bibNumber]: expanded }));
+    };
+
   return (
     <Container maxWidth="md" sx={{ py: 6 }}>
       <Paper elevation={3} sx={{ p: 4 }}>
@@ -273,19 +338,30 @@ export default function JudgingPage() {
           {entries.map((entry) => (
             <Accordion
               key={entry.number}
+              expanded={expandedByBib[entry.number] ?? false}
+              onChange={handleAccordionChange(entry.number)}
               disableGutters
               elevation={0}
               variant="outlined"
-              sx={{ width: '100%' }}
+              sx={{ width: '100%', overflow: 'hidden' }}
             >
-              <AccordionSummary>
+              <AccordionSummary
+                sx={{
+                  px: 1,
+                  minHeight: 40,
+                  '& .MuiAccordionSummary-content': {
+                    my: 0.5,
+                    minWidth: 0,
+                  },
+                }}
+              >
                 <Box
                   sx={{
                     display: 'flex',
                     alignItems: 'center',
                     width: '100%',
                     minWidth: 0,
-                    gap: 2,
+                    gap: 0.5,
                   }}
                 >
                   <Typography
@@ -302,23 +378,50 @@ export default function JudgingPage() {
                     {entry.number}
                   </Typography>
 
-                  <CompetitorNamesText
-                    leader={entry.leader}
-                    follower={entry.follower}
-                    leaderColors={
-                      competitorColors[competitorRecordKey(entry.number, 'leader')] ??
-                      emptyColorRecord()
-                    }
-                    followerColors={
-                      competitorColors[competitorRecordKey(entry.number, 'follower')] ??
-                      emptyColorRecord()
-                    }
-                  />
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <CompetitorNamesText
+                      leader={entry.leader}
+                      follower={entry.follower}
+                      leaderColors={
+                        competitorColors[competitorRecordKey(entry.number, 'leader')] ??
+                        emptyColorRecord()
+                      }
+                      followerColors={
+                        competitorColors[competitorRecordKey(entry.number, 'follower')] ??
+                        emptyColorRecord()
+                      }
+                    />
+                  </Box>
+
+                  <Typography
+                    component="span"
+                    variant="body1"
+                    sx={{
+                      flex: `0 0 ${SCORE_DISPLAY_WIDTH}`,
+                      width: SCORE_DISPLAY_WIDTH,
+                      flexShrink: 0,
+                      fontVariantNumeric: 'tabular-nums',
+                      textAlign: 'right',
+                    }}
+                  >
+                    {getEntryScore(entry.number).touched
+                      ? formatScoreDisplay(getEntryScore(entry.number).digits)
+                      : ''}
+                  </Typography>
                 </Box>
               </AccordionSummary>
 
-              <AccordionDetails onClick={(event) => event.stopPropagation()}>
-                <Stack spacing={1}>
+              <AccordionDetails
+                sx={{ px: 1, py: 1, overflow: 'hidden' }}
+                onClick={(event) => event.stopPropagation()}
+              >
+                <Stack spacing={1} sx={{ width: '100%', minWidth: 0 }}>
+                  <JudgingScoreInput
+                    digits={getEntryScore(entry.number).digits}
+                    onDigitChange={(index, value) =>
+                      handleScoreDigitChange(entry.number, index, value)
+                    }
+                  />
                   <CompetitorNameDetail
                     member={entry.leader}
                     bibNumber={entry.number}

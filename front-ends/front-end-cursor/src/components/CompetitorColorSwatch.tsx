@@ -20,7 +20,7 @@ export default function CompetitorColorSwatch({
       aria-label={ariaLabel}
       onClick={onClick}
       onMouseDown={(event) => event.stopPropagation()}
-      sx={{ p: 0.5, width: 34, height: 34, flexShrink: 0 }}
+      sx={{ p: 0.5, width: 30, height: 30, flexShrink: 0 }}
     >
       <CompetitorColorSwatchBox colors={colors} size={COLOR_SWATCH_SIZE} />
     </IconButton>

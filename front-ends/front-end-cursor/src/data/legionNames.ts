@@ -71,9 +71,21 @@ export function formatCompetitorPair(
   follower: LegionMember,
   useFullFirst: boolean,
 ): string {
-  const format = useFullFirst ? formatFullFirstLast : formatInitialLast;
+  return formatCompetitorPairNames(leader, follower, {
+    leaderFullFirst: useFullFirst,
+    followerFullFirst: useFullFirst,
+  });
+}
 
-  return `${format(leader.first, leader.last)} · ${format(follower.first, follower.last)}`;
+export function formatCompetitorPairNames(
+  leader: LegionMember,
+  follower: LegionMember,
+  options: { leaderFullFirst: boolean; followerFullFirst: boolean },
+): string {
+  const formatName = (first: string, last: string, useFullFirst: boolean) =>
+    useFullFirst ? formatFullFirstLast(first, last) : formatInitialLast(first, last);
+
+  return `${formatName(leader.first, leader.last, options.leaderFullFirst)} · ${formatName(follower.first, follower.last, options.followerFullFirst)}`;
 }
 
 export function memberKey(member: LegionMember): string {

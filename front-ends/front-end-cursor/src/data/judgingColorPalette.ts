@@ -1,5 +1,5 @@
 export const PALETTE_GRID_COLS = 8;
-export const PALETTE_GRID_ROWS = 12;
+export const PALETTE_GRID_ROWS = 14;
 
 function hsl(h: number, s: number, l: number): string {
   return `hsl(${h} ${s}% ${l}%)`;
@@ -53,6 +53,34 @@ function buildBlueColors(): string[] {
   return colors;
 }
 
+function buildTanBrownColors(): string[] {
+  const colors: string[] = [];
+
+  for (let col = 0; col < PALETTE_GRID_COLS; col += 1) {
+    const hue = 24 + col * 4;
+    const saturation = 28 + col * 7;
+    const lightness = 24 + col * 7;
+
+    colors.push(hsl(hue, Math.min(saturation, 72), Math.min(lightness, 58)));
+  }
+
+  return colors;
+}
+
+function buildYellowColors(): string[] {
+  const colors: string[] = [];
+
+  for (let col = 0; col < PALETTE_GRID_COLS; col += 1) {
+    const hue = 44 + col * 3;
+    const saturation = 52 + col * 5;
+    const lightness = 42 + col * 6;
+
+    colors.push(hsl(hue, Math.min(saturation, 96), Math.min(lightness, 88)));
+  }
+
+  return colors;
+}
+
 function buildNeutralColors(): string[] {
   return [
     '#000000',
@@ -70,6 +98,8 @@ export const JUDGING_COLOR_PALETTE: string[] = [
   ...buildRedColors(),
   ...buildGreenColors(),
   ...buildBlueColors(),
+  ...buildTanBrownColors(),
+  ...buildYellowColors(),
   ...buildNeutralColors(),
 ];
 

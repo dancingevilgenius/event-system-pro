@@ -66,14 +66,14 @@ export function formatFullFirstLast(first: string, last: string): string {
   return `${first} ${last}`;
 }
 
-export function formatJudgePair(
-  judge1: LegionMember,
-  judge2: LegionMember,
+export function formatCompetitorPair(
+  leader: LegionMember,
+  follower: LegionMember,
   useFullFirst: boolean,
 ): string {
   const format = useFullFirst ? formatFullFirstLast : formatInitialLast;
 
-  return `${format(judge1.first, judge1.last)} · ${format(judge2.first, judge2.last)}`;
+  return `${format(leader.first, leader.last)} · ${format(follower.first, follower.last)}`;
 }
 
 export function memberKey(member: LegionMember): string {

@@ -5,35 +5,64 @@ import {
   Box,
   Button,
   Container,
+  IconButton,
   Paper,
   Stack,
   Typography,
 } from '@mui/material';
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import CompetitorColorDialog from '../components/CompetitorColorDialog';
+import CompetitorColorSwatch from '../components/CompetitorColorSwatch';
+import CompetitorColorSwatchBox, {
+  COLOR_SWATCH_SIZE,
+} from '../components/CompetitorColorSwatchBox';
 import PaletteOutlinedIcon from '../components/PaletteOutlinedIcon';
 import { centeredContentStackSx, CONTENT_MAX_WIDTH } from '../constants/layout';
 import {
+  formatCompetitorPair,
   formatFullFirstLast,
-  formatJudgePair,
   LEGION_MEMBER_NAMES,
-  memberKey,
   type LegionMember,
 } from '../data/legionNames';
+import {
+  competitorRecordKey,
+  emptyColorRecord,
+  hasSelectedColors,
+  type CompetitorColorRecord,
+  type CompetitorRole,
+} from '../types/competitorColors';
 
 const ENTRY_COUNT = 20;
 const NUMBER_COLUMN_WIDTH = '3.5rem';
+const SUMMARY_SWATCH_GAP = 4;
+
+function summarySwatchReserve(hasLeaderColors: boolean, hasFollowerColors: boolean): number {
+  let reserve = 0;
+
+  if (hasLeaderColors) {
+    reserve += COLOR_SWATCH_SIZE + SUMMARY_SWATCH_GAP;
+  }
+
+  if (hasFollowerColors) {
+    reserve += COLOR_SWATCH_SIZE + SUMMARY_SWATCH_GAP;
+  }
+
+  return reserve;
+}
 
 type JudgingEntry = {
   number: number;
-  judge1: LegionMember;
-  judge2: LegionMember;
+  leader: LegionMember;
+  follower: LegionMember;
 };
 
 function pickRandomMember(exclude?: LegionMember): LegionMember {
-  const excludeKey = exclude ? memberKey(exclude) : undefined;
+  const excludeKey = exclude ? `${exclude.first}|${exclude.last}` : undefined;
   const pool = excludeKey
-    ? LEGION_MEMBER_NAMES.filter((member) => memberKey(member) !== excludeKey)
+    ? LEGION_MEMBER_NAMES.filter(
+        (member) => `${member.first}|${member.last}` !== excludeKey,
+      )
     : LEGION_MEMBER_NAMES;
 
   return pool[Math.floor(Math.random() * pool.length)];
@@ -49,22 +78,33 @@ function createJudgingEntries(): JudgingEntry[] {
   return [...numbers]
     .sort((a, b) => a - b)
     .map((number) => {
-      const judge1 = pickRandomMember();
-      const judge2 = pickRandomMember(judge1);
+      const leader = pickRandomMember();
+      const follower = pickRandomMember(leader);
 
-      return { number, judge1, judge2 };
+      return { number, leader, follower };
     });
 }
 
-type JudgeNamesTextProps = {
-  judge1: LegionMember;
-  judge2: LegionMember;
+type CompetitorNamesTextProps = {
+  leader: LegionMember;
+  follower: LegionMember;
+  leaderColors: CompetitorColorRecord;
+  followerColors: CompetitorColorRecord;
 };
 
-function JudgeNamesText({ judge1, judge2 }: JudgeNamesTextProps) {
+function CompetitorNamesText({
+  leader,
+  follower,
+  leaderColors,
+  followerColors,
+}: CompetitorNamesTextProps) {
   const containerRef = useRef<HTMLSpanElement>(null);
   const measureRef = useRef<HTMLSpanElement>(null);
   const [useFullFirst, setUseFullFirst] = useState(true);
+
+  const showLeaderSwatch = hasSelectedColors(leaderColors);
+  const showFollowerSwatch = hasSelectedColors(followerColors);
+  const swatchReserve = summarySwatchReserve(showLeaderSwatch, showFollowerSwatch);
 
   useLayoutEffect(() => {
     const container = containerRef.current;
@@ -74,8 +114,12 @@ function JudgeNamesText({ judge1, judge2 }: JudgeNamesTextProps) {
     }
 
     const checkFit = () => {
-      measure.textContent = formatJudgePair(judge1, judge2, true);
-      setUseFullFirst(measure.scrollWidth <= container.clientWidth);
+      measure.textContent = formatCompetitorPair(leader, follower, true);
+      const fitsFull =
+        measure.scrollWidth + swatchReserve <= container.clientWidth;
+
+      measure.textContent = formatCompetitorPair(leader, follower, false);
+      setUseFullFirst(fitsFull);
     };
 
     checkFit();
@@ -84,7 +128,7 @@ function JudgeNamesText({ judge1, judge2 }: JudgeNamesTextProps) {
     observer.observe(container);
 
     return () => observer.disconnect();
-  }, [judge1, judge2]);
+  }, [leader, follower, swatchReserve]);
 
   return (
     <Box
@@ -94,21 +138,40 @@ function JudgeNamesText({ judge1, judge2 }: JudgeNamesTextProps) {
         position: 'relative',
         flex: 1,
         minWidth: 0,
-        display: 'block',
+        display: 'flex',
+        alignItems: 'center',
+        overflow: 'hidden',
       }}
     >
+      {showLeaderSwatch ? (
+        <CompetitorColorSwatchBox
+          colors={leaderColors}
+          size={COLOR_SWATCH_SIZE}
+        />
+      ) : null}
+
       <Typography
         component="span"
         variant="body1"
         sx={{
-          display: 'block',
+          flex: 1,
+          minWidth: 0,
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap',
+          ml: showLeaderSwatch ? `${SUMMARY_SWATCH_GAP}px` : 0,
+          mr: showFollowerSwatch ? `${SUMMARY_SWATCH_GAP}px` : 0,
         }}
       >
-        {formatJudgePair(judge1, judge2, useFullFirst)}
+        {formatCompetitorPair(leader, follower, useFullFirst)}
       </Typography>
+
+      {showFollowerSwatch ? (
+        <CompetitorColorSwatchBox
+          colors={followerColors}
+          size={COLOR_SWATCH_SIZE}
+        />
+      ) : null}
 
       <Box
         component="span"
@@ -128,15 +191,54 @@ function JudgeNamesText({ judge1, judge2 }: JudgeNamesTextProps) {
   );
 }
 
-type JudgeNameDetailProps = {
+type PaletteTarget = {
+  bibNumber: number;
+  role: CompetitorRole;
   member: LegionMember;
 };
 
-function JudgeNameDetail({ member }: JudgeNameDetailProps) {
+type CompetitorNameDetailProps = {
+  member: LegionMember;
+  bibNumber: number;
+  role: CompetitorRole;
+  colorRecord: CompetitorColorRecord;
+  onPaletteClick: (target: PaletteTarget) => void;
+};
+
+function CompetitorNameDetail({
+  member,
+  bibNumber,
+  role,
+  colorRecord,
+  onPaletteClick,
+}: CompetitorNameDetailProps) {
+  const fullName = formatFullFirstLast(member.first, member.last);
+
+  const handleOpenPalette = (event: MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    event.preventDefault();
+    onPaletteClick({ bibNumber, role, member });
+  };
+
   return (
     <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
-      <PaletteOutlinedIcon fontSize="small" color="action" aria-hidden />
-      <Typography variant="body2">{formatFullFirstLast(member.first, member.last)}</Typography>
+      {hasSelectedColors(colorRecord) ? (
+        <CompetitorColorSwatch
+          colors={colorRecord}
+          ariaLabel={`Edit top and bottom colors for ${fullName}`}
+          onClick={handleOpenPalette}
+        />
+      ) : (
+        <IconButton
+          size="small"
+          aria-label={`Open color palette for ${fullName}`}
+          onClick={handleOpenPalette}
+          sx={{ p: 0.5, width: 34, height: 34, flexShrink: 0 }}
+        >
+          <PaletteOutlinedIcon fontSize="small" color="action" />
+        </IconButton>
+      )}
+      <Typography variant="body2">{fullName}</Typography>
     </Stack>
   );
 }
@@ -144,6 +246,21 @@ function JudgeNameDetail({ member }: JudgeNameDetailProps) {
 export default function JudgingPage() {
   const navigate = useNavigate();
   const entries = useMemo(() => createJudgingEntries(), []);
+  const [paletteTarget, setPaletteTarget] = useState<PaletteTarget | null>(null);
+  const [competitorColors, setCompetitorColors] = useState<
+    Record<string, CompetitorColorRecord>
+  >({});
+
+  const handleSaveColors = (
+    bibNumber: number,
+    role: CompetitorRole,
+    colors: CompetitorColorRecord,
+  ) => {
+    setCompetitorColors((current) => ({
+      ...current,
+      [competitorRecordKey(bibNumber, role)]: colors,
+    }));
+  };
 
   return (
     <Container maxWidth="md" sx={{ py: 6 }}>
@@ -185,14 +302,43 @@ export default function JudgingPage() {
                     {entry.number}
                   </Typography>
 
-                  <JudgeNamesText judge1={entry.judge1} judge2={entry.judge2} />
+                  <CompetitorNamesText
+                    leader={entry.leader}
+                    follower={entry.follower}
+                    leaderColors={
+                      competitorColors[competitorRecordKey(entry.number, 'leader')] ??
+                      emptyColorRecord()
+                    }
+                    followerColors={
+                      competitorColors[competitorRecordKey(entry.number, 'follower')] ??
+                      emptyColorRecord()
+                    }
+                  />
                 </Box>
               </AccordionSummary>
 
-              <AccordionDetails>
+              <AccordionDetails onClick={(event) => event.stopPropagation()}>
                 <Stack spacing={1}>
-                  <JudgeNameDetail member={entry.judge1} />
-                  <JudgeNameDetail member={entry.judge2} />
+                  <CompetitorNameDetail
+                    member={entry.leader}
+                    bibNumber={entry.number}
+                    role="leader"
+                    colorRecord={
+                      competitorColors[competitorRecordKey(entry.number, 'leader')] ??
+                      emptyColorRecord()
+                    }
+                    onPaletteClick={setPaletteTarget}
+                  />
+                  <CompetitorNameDetail
+                    member={entry.follower}
+                    bibNumber={entry.number}
+                    role="follower"
+                    colorRecord={
+                      competitorColors[competitorRecordKey(entry.number, 'follower')] ??
+                      emptyColorRecord()
+                    }
+                    onPaletteClick={setPaletteTarget}
+                  />
                 </Stack>
               </AccordionDetails>
             </Accordion>
@@ -209,6 +355,24 @@ export default function JudgingPage() {
           </Button>
         </Stack>
       </Paper>
+
+      <CompetitorColorDialog
+        competitor={paletteTarget?.member ?? null}
+        open={paletteTarget !== null}
+        initialColors={
+          paletteTarget
+            ? (competitorColors[
+                competitorRecordKey(paletteTarget.bibNumber, paletteTarget.role)
+              ] ?? emptyColorRecord())
+            : emptyColorRecord()
+        }
+        onClose={() => setPaletteTarget(null)}
+        onSave={(colors) => {
+          if (paletteTarget) {
+            handleSaveColors(paletteTarget.bibNumber, paletteTarget.role, colors);
+          }
+        }}
+      />
     </Container>
   );
 }

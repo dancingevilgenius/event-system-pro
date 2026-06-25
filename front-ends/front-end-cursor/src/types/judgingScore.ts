@@ -24,3 +24,24 @@ export function formatScoreDisplay(digits: JudgingScoreDigits): string {
 
   return `${tens}${ones}.${tenth}${hundredth}`;
 }
+
+export function scoreToDigits(value: number): JudgingScoreDigits {
+  const rounded = Math.round(Math.min(99.99, Math.max(0, value)) * 100) / 100;
+  const tens = Math.floor(rounded / 10);
+  const ones = Math.floor(rounded) % 10;
+  const tenth = Math.floor(rounded * 10) % 10;
+  const hundredth = Math.round(rounded * 100) % 10;
+
+  return [tens, ones, tenth, hundredth];
+}
+
+export function randomScoreDigitsBetween(
+  min: number,
+  max: number,
+): JudgingScoreDigits {
+  const minCents = Math.round(min * 100);
+  const maxCents = Math.round(max * 100);
+  const cents = minCents + Math.floor(Math.random() * (maxCents - minCents + 1));
+
+  return scoreToDigits(cents / 100);
+}

@@ -6,11 +6,14 @@ import {
   Button,
   Container,
   IconButton,
+  MenuItem,
   Paper,
+  Select,
   Stack,
   Typography,
+  type SelectChangeEvent,
 } from '@mui/material';
-import { useLayoutEffect, useMemo, useRef, useState, type MouseEvent, type SyntheticEvent } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CompetitorColorDialog from '../components/CompetitorColorDialog';
 import CompetitorColorSwatch from '../components/CompetitorColorSwatch';
@@ -19,6 +22,7 @@ import CompetitorColorSwatchBox, {
 } from '../components/CompetitorColorSwatchBox';
 import JudgingScoreInput from '../components/JudgingScoreInput';
 import PaletteOutlinedIcon from '../components/PaletteOutlinedIcon';
+import PercentCompleteBar from '../components/PercentCompleteBar';
 import { centeredContentStackSx, CONTENT_MAX_WIDTH } from '../constants/layout';
 import {
   formatCompetitorPairNames,
@@ -34,8 +38,10 @@ import {
   type CompetitorRole,
 } from '../types/competitorColors';
 import {
+  digitsToScore,
   emptyEntryScoreState,
   formatScoreDisplay,
+  randomScoreDigitsBetween,
   type EntryScoreState,
   type JudgingScoreDigits,
 } from '../types/judgingScore';
@@ -44,6 +50,24 @@ const ENTRY_COUNT = 20;
 const NUMBER_COLUMN_WIDTH = '2.75rem';
 const SCORE_DISPLAY_WIDTH = '5ch';
 const SUMMARY_SWATCH_GAP = 2;
+
+type JudgingSortOption =
+  | 'bib'
+  | 'rawScore'
+  | 'leaderLastName'
+  | 'followerLastName'
+  | 'unscoredOnly';
+
+type JudgingDropdownValue = JudgingSortOption | 'assignRandomScores';
+
+const JUDGING_DROPDOWN_OPTIONS: { value: JudgingDropdownValue; label: string }[] = [
+  { value: 'bib', label: 'Sort by Bib #' },
+  { value: 'rawScore', label: 'Sort by Raw Score' },
+  { value: 'leaderLastName', label: "Sort by Leader's Last Name" },
+  { value: 'followerLastName', label: "Sort by Follower's Last Name" },
+  { value: 'unscoredOnly', label: 'Unscored Only' },
+  { value: 'assignRandomScores', label: 'Assign Random Scores' },
+];
 
 const SUMMARY_NAME_MODES = [
   { leaderFullFirst: true, followerFullFirst: true },
@@ -100,6 +124,99 @@ function createJudgingEntries(): JudgingEntry[] {
 
       return { number, leader, follower };
     });
+}
+
+function entryHasNonZeroScore(
+  bibNumber: number,
+  scoreByBib: Record<number, EntryScoreState>,
+): boolean {
+  const score = scoreByBib[bibNumber];
+
+  if (!score?.touched) {
+    return false;
+  }
+
+  return digitsToScore(score.digits) > 0;
+}
+
+function calculatePercentComplete(
+  entries: JudgingEntry[],
+  scoreByBib: Record<number, EntryScoreState>,
+): number {
+  if (entries.length === 0) {
+    return 0;
+  }
+
+  const scoredCount = entries.filter((entry) =>
+    entryHasNonZeroScore(entry.number, scoreByBib),
+  ).length;
+
+  return (scoredCount / entries.length) * 100;
+}
+
+function entryShowsAsUnscored(
+  bibNumber: number,
+  scoreByBib: Record<number, EntryScoreState>,
+): boolean {
+  const score = scoreByBib[bibNumber];
+
+  if (!score?.touched) {
+    return true;
+  }
+
+  return digitsToScore(score.digits) <= 0;
+}
+
+function sortJudgingEntries(
+  entries: JudgingEntry[],
+  sortOption: JudgingSortOption,
+  scoreByBib: Record<number, EntryScoreState>,
+): JudgingEntry[] {
+  const sorted = [...entries];
+
+  const compareBib = (a: JudgingEntry, b: JudgingEntry) => a.number - b.number;
+
+  const rawScoreValue = (bibNumber: number): number => {
+    const score = scoreByBib[bibNumber];
+
+    if (!score?.touched) {
+      return -Infinity;
+    }
+
+    return digitsToScore(score.digits);
+  };
+
+  switch (sortOption) {
+    case 'bib':
+      sorted.sort(compareBib);
+      break;
+    case 'rawScore':
+      sorted.sort((a, b) => {
+        const diff = rawScoreValue(b.number) - rawScoreValue(a.number);
+
+        return diff !== 0 ? diff : compareBib(a, b);
+      });
+      break;
+    case 'leaderLastName':
+      sorted.sort((a, b) => {
+        const diff = a.leader.last.localeCompare(b.leader.last);
+
+        return diff !== 0 ? diff : compareBib(a, b);
+      });
+      break;
+    case 'followerLastName':
+      sorted.sort((a, b) => {
+        const diff = a.follower.last.localeCompare(b.follower.last);
+
+        return diff !== 0 ? diff : compareBib(a, b);
+      });
+      break;
+    case 'unscoredOnly':
+      sorted.sort(compareBib);
+      return sorted.filter((entry) => entryShowsAsUnscored(entry.number, scoreByBib));
+  }
+
+  return sorted;
 }
 
 type CompetitorNamesTextProps = {
@@ -289,7 +406,80 @@ export default function JudgingPage() {
     Record<string, CompetitorColorRecord>
   >({});
   const [scoreByBib, setScoreByBib] = useState<Record<number, EntryScoreState>>({});
-  const [expandedByBib, setExpandedByBib] = useState<Record<number, boolean>>({});
+  const [expandedBib, setExpandedBib] = useState<number | null>(null);
+  const [sortOption, setSortOption] = useState<JudgingSortOption>('bib');
+  const [frozenDisplayEntries, setFrozenDisplayEntries] = useState<JudgingEntry[] | null>(
+    null,
+  );
+
+  const liveSortedEntries = useMemo(
+    () => sortJudgingEntries(entries, sortOption, scoreByBib),
+    [entries, sortOption, scoreByBib],
+  );
+
+  const displayEntries =
+    expandedBib !== null && frozenDisplayEntries !== null
+      ? frozenDisplayEntries
+      : liveSortedEntries;
+
+  const applySortAndFilter = (
+    nextSortOption: JudgingSortOption = sortOption,
+    nextScoreByBib: Record<number, EntryScoreState> = scoreByBib,
+  ) => sortJudgingEntries(entries, nextSortOption, nextScoreByBib);
+
+  const percentComplete = useMemo(
+    () => calculatePercentComplete(entries, scoreByBib),
+    [entries, scoreByBib],
+  );
+
+  const previousPercentCompleteRef = useRef(percentComplete);
+
+  useEffect(() => {
+    const previousPercent = previousPercentCompleteRef.current;
+    previousPercentCompleteRef.current = percentComplete;
+
+    if (percentComplete >= 100 && previousPercent < 100) {
+      setSortOption('rawScore');
+    }
+  }, [percentComplete]);
+
+  const handleSortChange = (event: SelectChangeEvent) => {
+    const value = event.target.value as JudgingDropdownValue;
+
+    if (value === 'assignRandomScores') {
+      const nextScoreByBib = { ...scoreByBib };
+
+      for (const entry of entries) {
+        nextScoreByBib[entry.number] = {
+          digits: randomScoreDigitsBetween(30.0, 99.9),
+          touched: true,
+        };
+      }
+
+      setScoreByBib(nextScoreByBib);
+      setSortOption('rawScore');
+      setExpandedBib(null);
+      setFrozenDisplayEntries(null);
+      return;
+    }
+
+    setSortOption(value);
+    setExpandedBib(null);
+    setFrozenDisplayEntries(null);
+  };
+
+  const handleAccordionChange = (bibNumber: number, expanded: boolean) => {
+    const nextSorted = applySortAndFilter();
+
+    if (expanded) {
+      setFrozenDisplayEntries(nextSorted);
+      setExpandedBib(bibNumber);
+      return;
+    }
+
+    setExpandedBib(null);
+    setFrozenDisplayEntries(null);
+  };
 
   const getEntryScore = (bibNumber: number): EntryScoreState =>
     scoreByBib[bibNumber] ?? emptyEntryScoreState();
@@ -322,24 +512,44 @@ export default function JudgingPage() {
     });
   };
 
-  const handleAccordionChange =
-    (bibNumber: number) => (_event: SyntheticEvent, expanded: boolean) => {
-      setExpandedByBib((current) => ({ ...current, [bibNumber]: expanded }));
-    };
+  const handleSubmit = () => {
+    navigate('/staff');
+  };
 
   return (
     <Container maxWidth="md" sx={{ py: 6 }}>
       <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
-          Judging
-        </Typography>
+        <Stack spacing={1} sx={{ ...centeredContentStackSx, mb: 3 }}>
+          <PercentCompleteBar percent={percentComplete} onSubmit={handleSubmit} />
 
-        <Stack spacing={1} sx={{ my: 3, ...centeredContentStackSx }}>
-          {entries.map((entry) => (
+          <Select
+            size="small"
+            value={sortOption}
+            onChange={handleSortChange}
+            aria-label="Sort judging entries"
+            fullWidth
+            sx={{
+              '& .MuiSelect-select': {
+                py: 0.75,
+              },
+            }}
+          >
+            {JUDGING_DROPDOWN_OPTIONS.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </Select>
+        </Stack>
+
+        <Stack spacing={1} sx={{ ...centeredContentStackSx }}>
+          {displayEntries.map((entry) => (
             <Accordion
               key={entry.number}
-              expanded={expandedByBib[entry.number] ?? false}
-              onChange={handleAccordionChange(entry.number)}
+              expanded={expandedBib === entry.number}
+              onChange={(_event, expanded) => {
+                handleAccordionChange(entry.number, expanded);
+              }}
               disableGutters
               elevation={0}
               variant="outlined"

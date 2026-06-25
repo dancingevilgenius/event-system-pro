@@ -93,6 +93,10 @@ export default function CompetitorColorDialog({
   }
 
   const { topIndex, bottomIndex, sessionClickCount } = selection;
+  const isTopTurn = sessionClickCount % 2 === 0;
+  const dialogTitle = isTopTurn
+    ? `Pick Top Color for ${competitor.first}`
+    : `Pick Bottom Color ${competitor.first}`;
 
   const handleCancel = () => {
     onClose();
@@ -146,7 +150,7 @@ export default function CompetitorColorDialog({
           position: 'relative',
         }}
       >
-        {`Pick 2 for ${competitor.first}`}
+        {dialogTitle}
         <IconButton
           aria-label="Close color picker"
           onClick={handleCancel}

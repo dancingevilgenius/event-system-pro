@@ -45,3 +45,99 @@ export function randomScoreDigitsBetween(
 
   return scoreToDigits(cents / 100);
 }
+
+export function adjustScoreValue(value: number, delta: number): number {
+  return Math.round(Math.min(99.99, Math.max(0, value + delta)) * 100) / 100;
+}
+
+export function scoresAreEqual(a: number, b: number): boolean {
+  return Math.round(a * 100) === Math.round(b * 100);
+}
+
+export function findBibWithScore(
+  scoreByBib: Record<number, EntryScoreState>,
+  score: number,
+  excludeBib: number,
+): number | null {
+  for (const [bibStr, state] of Object.entries(scoreByBib)) {
+    const bib = Number(bibStr);
+
+    if (bib === excludeBib || !state?.touched) {
+      continue;
+    }
+
+    if (scoresAreEqual(digitsToScore(state.digits), score)) {
+      return bib;
+    }
+  }
+
+  return null;
+}
+
+export function findFirstDuplicateBib(
+  bibNumber: number,
+  scoreByBib: Record<number, EntryScoreState>,
+): number | null {
+  const score = scoreByBib[bibNumber];
+
+  if (!score?.touched) {
+    return null;
+  }
+
+  const value = digitsToScore(score.digits);
+
+  if (value <= 0) {
+    return null;
+  }
+
+  return findBibWithScore(scoreByBib, value, bibNumber);
+}
+
+export function setBibScore(
+  scoreByBib: Record<number, EntryScoreState>,
+  bib: number,
+  value: number,
+): Record<number, EntryScoreState> {
+  return {
+    ...scoreByBib,
+    [bib]: { digits: scoreToDigits(value), touched: true },
+  };
+}
+
+export function resolveDuplicatePreferCurrentHigher(
+  scoreByBib: Record<number, EntryScoreState>,
+  currentBib: number,
+  otherBib: number,
+): Record<number, EntryScoreState> {
+  const currentValue = digitsToScore(
+    scoreByBib[currentBib]?.digits ?? DEFAULT_SCORE_DIGITS,
+  );
+  const proposedCurrent = adjustScoreValue(currentValue, 0.1);
+
+  if (findBibWithScore(scoreByBib, proposedCurrent, currentBib) !== null) {
+    const otherValue = digitsToScore(scoreByBib[otherBib]?.digits ?? DEFAULT_SCORE_DIGITS);
+
+    return setBibScore(scoreByBib, otherBib, adjustScoreValue(otherValue, -0.1));
+  }
+
+  return setBibScore(scoreByBib, currentBib, proposedCurrent);
+}
+
+export function resolveDuplicatePreferOtherHigher(
+  scoreByBib: Record<number, EntryScoreState>,
+  currentBib: number,
+  otherBib: number,
+): Record<number, EntryScoreState> {
+  const otherValue = digitsToScore(scoreByBib[otherBib]?.digits ?? DEFAULT_SCORE_DIGITS);
+  const proposedOther = adjustScoreValue(otherValue, 0.1);
+
+  if (findBibWithScore(scoreByBib, proposedOther, otherBib) !== null) {
+    const currentValue = digitsToScore(
+      scoreByBib[currentBib]?.digits ?? DEFAULT_SCORE_DIGITS,
+    );
+
+    return setBibScore(scoreByBib, currentBib, adjustScoreValue(currentValue, -0.1));
+  }
+
+  return setBibScore(scoreByBib, otherBib, proposedOther);
+}

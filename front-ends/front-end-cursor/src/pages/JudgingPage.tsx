@@ -16,6 +16,7 @@ import {
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CompetitorColorDialog from '../components/CompetitorColorDialog';
+import DuplicateScoreDialog from '../components/DuplicateScoreDialog';
 import CompetitorColorSwatch from '../components/CompetitorColorSwatch';
 import CompetitorColorSwatchBox, {
   COLOR_SWATCH_SIZE,
@@ -27,7 +28,8 @@ import { centeredContentStackSx, CONTENT_MAX_WIDTH } from '../constants/layout';
 import {
   formatCompetitorPairNames,
   formatFullFirstLast,
-  LEGION_MEMBER_NAMES,
+  memberKey,
+  pickRandomLegionMember,
   type LegionMember,
 } from '../data/legionNames';
 import {
@@ -40,8 +42,11 @@ import {
 import {
   digitsToScore,
   emptyEntryScoreState,
+  findFirstDuplicateBib,
   formatScoreDisplay,
   randomScoreDigitsBetween,
+  resolveDuplicatePreferCurrentHigher,
+  resolveDuplicatePreferOtherHigher,
   type EntryScoreState,
   type JudgingScoreDigits,
 } from '../types/judgingScore';
@@ -98,17 +103,6 @@ type JudgingEntry = {
   follower: LegionMember;
 };
 
-function pickRandomMember(exclude?: LegionMember): LegionMember {
-  const excludeKey = exclude ? `${exclude.first}|${exclude.last}` : undefined;
-  const pool = excludeKey
-    ? LEGION_MEMBER_NAMES.filter(
-        (member) => `${member.first}|${member.last}` !== excludeKey,
-      )
-    : LEGION_MEMBER_NAMES;
-
-  return pool[Math.floor(Math.random() * pool.length)];
-}
-
 function createJudgingEntries(): JudgingEntry[] {
   const numbers = new Set<number>();
 
@@ -116,11 +110,19 @@ function createJudgingEntries(): JudgingEntry[] {
     numbers.add(Math.floor(Math.random() * 999) + 1);
   }
 
+  const usedMemberKeys = new Set<string>();
+
   return [...numbers]
     .sort((a, b) => a - b)
     .map((number) => {
-      const leader = pickRandomMember();
-      const follower = pickRandomMember(leader);
+      const leader = pickRandomLegionMember({ preferSex: 'male', usedKeys: usedMemberKeys });
+      usedMemberKeys.add(memberKey(leader));
+
+      const follower = pickRandomLegionMember({
+        preferSex: 'female',
+        usedKeys: usedMemberKeys,
+      });
+      usedMemberKeys.add(memberKey(follower));
 
       return { number, leader, follower };
     });
@@ -398,6 +400,11 @@ function CompetitorNameDetail({
   );
 }
 
+type DuplicateScoreDialogState = {
+  currentBib: number;
+  otherBib: number;
+};
+
 export default function JudgingPage() {
   const navigate = useNavigate();
   const entries = useMemo(() => createJudgingEntries(), []);
@@ -410,6 +417,13 @@ export default function JudgingPage() {
   const [sortOption, setSortOption] = useState<JudgingSortOption>('bib');
   const [frozenDisplayEntries, setFrozenDisplayEntries] = useState<JudgingEntry[] | null>(
     null,
+  );
+  const [duplicateScoreDialog, setDuplicateScoreDialog] =
+    useState<DuplicateScoreDialogState | null>(null);
+
+  const entryByBib = useMemo(
+    () => new Map(entries.map((entry) => [entry.number, entry])),
+    [entries],
   );
 
   const liveSortedEntries = useMemo(
@@ -463,22 +477,81 @@ export default function JudgingPage() {
       return;
     }
 
+    if (expandedBib !== null) {
+      maybeShowDuplicateScoreDialog(expandedBib, scoreByBib);
+    }
+
     setSortOption(value);
     setExpandedBib(null);
     setFrozenDisplayEntries(null);
+  };
+
+  const maybeShowDuplicateScoreDialog = (
+    bibNumber: number,
+    scores: Record<number, EntryScoreState>,
+  ) => {
+    const otherBib = findFirstDuplicateBib(bibNumber, scores);
+
+    if (otherBib === null) {
+      return;
+    }
+
+    setDuplicateScoreDialog({ currentBib: bibNumber, otherBib });
   };
 
   const handleAccordionChange = (bibNumber: number, expanded: boolean) => {
     const nextSorted = applySortAndFilter();
 
     if (expanded) {
+      if (expandedBib !== null && expandedBib !== bibNumber) {
+        maybeShowDuplicateScoreDialog(expandedBib, scoreByBib);
+      }
+
       setFrozenDisplayEntries(nextSorted);
       setExpandedBib(bibNumber);
       return;
     }
 
+    maybeShowDuplicateScoreDialog(bibNumber, scoreByBib);
     setExpandedBib(null);
     setFrozenDisplayEntries(null);
+  };
+
+  const applyDuplicateResolution = (
+    resolver: (
+      scores: Record<number, EntryScoreState>,
+      currentBib: number,
+      otherBib: number,
+    ) => Record<number, EntryScoreState>,
+  ) => {
+    if (!duplicateScoreDialog) {
+      return;
+    }
+
+    const { currentBib, otherBib } = duplicateScoreDialog;
+    const nextScoreByBib = resolver(scoreByBib, currentBib, otherBib);
+
+    setScoreByBib(nextScoreByBib);
+
+    if (sortOption === 'rawScore') {
+      const resorted = sortJudgingEntries(entries, sortOption, nextScoreByBib);
+
+      if (expandedBib !== null) {
+        setFrozenDisplayEntries(resorted);
+      } else {
+        setFrozenDisplayEntries(null);
+      }
+    }
+
+    setDuplicateScoreDialog(null);
+  };
+
+  const handleDuplicateChooseCurrentHigher = () => {
+    applyDuplicateResolution(resolveDuplicatePreferCurrentHigher);
+  };
+
+  const handleDuplicateChooseOtherHigher = () => {
+    applyDuplicateResolution(resolveDuplicatePreferOtherHigher);
   };
 
   const getEntryScore = (bibNumber: number): EntryScoreState =>
@@ -515,6 +588,13 @@ export default function JudgingPage() {
   const handleSubmit = () => {
     navigate('/staff');
   };
+
+  const duplicateDialogCurrentEntry = duplicateScoreDialog
+    ? entryByBib.get(duplicateScoreDialog.currentBib)
+    : undefined;
+  const duplicateDialogOtherEntry = duplicateScoreDialog
+    ? entryByBib.get(duplicateScoreDialog.otherBib)
+    : undefined;
 
   return (
     <Container maxWidth="md" sx={{ py: 6 }}>
@@ -685,6 +765,17 @@ export default function JudgingPage() {
             handleSaveColors(paletteTarget.bibNumber, paletteTarget.role, colors);
           }
         }}
+      />
+
+      <DuplicateScoreDialog
+        open={duplicateScoreDialog !== null}
+        currentLeaderFirst={duplicateDialogCurrentEntry?.leader.first ?? ''}
+        currentFollowerFirst={duplicateDialogCurrentEntry?.follower.first ?? ''}
+        otherLeaderFirst={duplicateDialogOtherEntry?.leader.first ?? ''}
+        otherFollowerFirst={duplicateDialogOtherEntry?.follower.first ?? ''}
+        onClose={() => setDuplicateScoreDialog(null)}
+        onChooseCurrentHigher={handleDuplicateChooseCurrentHigher}
+        onChooseOtherHigher={handleDuplicateChooseOtherHigher}
       />
     </Container>
   );

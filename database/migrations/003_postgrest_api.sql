@@ -108,15 +108,30 @@ SELECT
   contest_id,
   event_id,
   event_type_code,
-  name,
-  description_json,
-  active,
+  competitors_json,
+  results_json,
+  age_division_id,
+  current_heat_id,
+  current_heat_index,
+  media_links_json,
+  is_active,
+  is_cancelled,
+  staff_json,
+  location_json,
+  male_or_female,
+  number_of_heats,
+  original_start_time,
+  original_end_time,
+  pushed_back_start_time,
+  pushed_back_end_time,
+  primary_contact_id,
   created_date,
   created_by,
-  updated_date,
-  updated_by
+  modified_date,
+  modified_by
 FROM public.contest
-WHERE active IS NOT FALSE;
+WHERE is_active <> 0
+  AND COALESCE(is_cancelled, 0) = 0;
 
 -- ---------------------------------------------------------------------------
 -- Grants

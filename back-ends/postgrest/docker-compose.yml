@@ -9,3 +9,15 @@ services:
       - .env
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+  swagger:
+    image: swaggerapi/swagger-ui:v5.18.2
+    container_name: event-system-pro-swagger
+    restart: unless-stopped
+    ports:
+      - "${SWAGGER_UI_PORT:-8080}:8080"
+    environment:
+      # Browser loads the spec from the host-mapped PostgREST port (not the internal service name).
+      SWAGGER_JSON_URL: http://localhost:3000/
+    depends_on:
+      - postgrest

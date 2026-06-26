@@ -48,6 +48,21 @@ export type ForgotPasswordSimpleResult = {
   message: string;
 };
 
+export type LoginResult = {
+  ok: boolean;
+  message: string;
+  user_id?: number;
+  username?: string;
+  email?: string;
+};
+
+export function login(identifier: string, password: string) {
+  return callRpc<LoginResult>('login', {
+    p_identifier: identifier,
+    p_password: password,
+  });
+}
+
 export function forgotPasswordRequest(identifier: string) {
   return callRpc<ForgotPasswordRequestResult>('forgot_password_request', {
     identifier,

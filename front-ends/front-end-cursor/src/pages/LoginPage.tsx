@@ -9,23 +9,44 @@ import {
 } from '@mui/material';
 import { type FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { login } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
 import { centeredContentStackSx } from '../constants/layout';
 import { useMessages } from '../hooks/useMessages';
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { clearMessages } = useMessages();
-  const [username, setUsername] = useState('');
+  const { clearMessages, showProblem, showSuccess } = useMessages();
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
     clearMessages();
   }, [clearMessages]);
 
-  const handleLogin = (event: FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    navigate('/home');
+
+    if (!identifier.trim() || !password) {
+      showProblem('Enter your username or email and password.');
+      return;
+    }
+
+    setBusy(true);
+    try {
+      const result = await login(identifier.trim(), password);
+      if (!result.ok) {
+        showProblem(result.message);
+        return;
+      }
+      showSuccess(result.message);
+      navigate('/home');
+    } catch (error) {
+      showProblem(error instanceof Error ? error.message : 'Login failed.');
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -41,11 +62,12 @@ export default function LoginPage() {
         <Box component="form" onSubmit={handleLogin} noValidate>
           <Stack spacing={2} sx={centeredContentStackSx}>
             <AppTextField
-              label="Username"
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
+              label="Username or email"
+              value={identifier}
+              onChange={(event) => setIdentifier(event.target.value)}
               fullWidth
               autoComplete="username"
+              required
             />
             <AppTextField
               label="Password"
@@ -54,9 +76,16 @@ export default function LoginPage() {
               onChange={(event) => setPassword(event.target.value)}
               fullWidth
               autoComplete="current-password"
+              required
             />
             <Stack spacing={2} sx={centeredContentStackSx}>
-              <Button type="submit" variant="contained" size="large" fullWidth>
+              <Button
+                type="submit"
+                variant="contained"
+                size="large"
+                fullWidth
+                disabled={busy}
+              >
                 Login
               </Button>
               <Button

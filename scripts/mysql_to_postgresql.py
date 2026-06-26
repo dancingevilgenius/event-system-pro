@@ -2,8 +2,8 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-MYSQL_DUMP = ROOT / "database" / "tsl" / "tsl_db_dump_navicat_2021_04_04.sql"
-PG_OUTPUT = ROOT / "database" / "tsl" / "tsl_schema_postgresql.sql"
+MYSQL_DUMP = ROOT / "database" / "event-system-pro" / "tsl_db_dump_navicat_2021_04_04.sql"
+PG_OUTPUT = ROOT / "database" / "event-system-pro" / "evp_schema_postgresql.sql"
 
 TABLE_ORDER = [
     "competitor_type_lu", "country_lu", "us_state_lu", "secret_question_lu",
@@ -162,14 +162,15 @@ content = MYSQL_DUMP.read_text(encoding="utf-8")
 tables, table_columns = parse_create_tables(content)
 inserts = parse_inserts(content, table_columns)
 
-header = """-- PostgreSQL schema converted from tsl_db_dump_navicat_2021_04_04.sql (MySQL 8)
--- Source database: tsl2
+header = """-- Event System Pro PostgreSQL schema and seed data
+-- Baseline for database: event_system_pro
+-- Regenerated from database/event-system-pro/tsl_db_dump_navicat_2021_04_04.sql (legacy MySQL dump)
 
 -- Step 1: create database (as superuser)
 --   psql -U postgres -c \"CREATE DATABASE event_system_pro WITH ENCODING 'UTF8' TEMPLATE template0;\"
 --
 -- Step 2: apply schema and seed data
---   psql -U postgres -d event_system_pro -f database/tsl/tsl_schema_postgresql.sql
+--   psql -U postgres -d event_system_pro -f database/event-system-pro/evp_schema_postgresql.sql
 
 \\connect event_system_pro
 

@@ -1,11 +1,11 @@
-﻿-- PostgreSQL schema converted from tsl_db_dump_navicat_2021_04_04.sql (MySQL 8)
--- Source database: tsl2
+﻿-- Event System Pro PostgreSQL schema and seed data
+-- Baseline for database: event_system_pro
 
 -- Step 1: create database (as superuser)
 --   psql -U postgres -c "CREATE DATABASE event_system_pro WITH ENCODING 'UTF8' TEMPLATE template0;"
 --
 -- Step 2: apply schema and seed data
---   psql -U postgres -d event_system_pro -f database/tsl/tsl_schema_postgresql.sql
+--   psql -U postgres -d event_system_pro -f database/event-system-pro/evp_schema_postgresql.sql
 
 \connect event_system_pro
 

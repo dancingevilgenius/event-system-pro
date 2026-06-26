@@ -1,5 +1,4 @@
 import {
-  Alert,
   Box,
   Button,
   Container,
@@ -12,9 +11,9 @@ import {
 } from '@mui/material';
 import { type FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { requestPasswordResetEmail } from '../api/mailer';
 import {
   forgotPasswordComplete,
-  forgotPasswordRequest,
   forgotPasswordVerify,
 } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
@@ -35,7 +34,6 @@ export default function ForgotPasswordPage() {
   const [identifier, setIdentifier] = useState('');
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
-  const [devCode, setDevCode] = useState<string | null>(null);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [busy, setBusy] = useState(false);
@@ -48,11 +46,10 @@ export default function ForgotPasswordPage() {
     event.preventDefault();
     setBusy(true);
     try {
-      const result = await forgotPasswordRequest(identifier.trim());
+      const result = await requestPasswordResetEmail(identifier.trim());
       if (result.email) {
         setEmail(result.email);
       }
-      setDevCode(result.dev_verification_code ?? null);
       showSuccess(result.message);
       setActiveStep(1);
     } catch (error) {
@@ -156,13 +153,8 @@ export default function ForgotPasswordPage() {
             <Stack spacing={2} sx={centeredContentStackSx}>
               {email && (
                 <Typography variant="body2" color="text.secondary" align="center">
-                  Code sent for <strong>{email}</strong>
+                  A verification code was sent to <strong>{email}</strong>
                 </Typography>
-              )}
-              {devCode && (
-                <Alert severity="info">
-                  Dev mode: your verification code is <strong>{devCode}</strong>
-                </Alert>
               )}
               <AppTextField
                 label="Verification code"

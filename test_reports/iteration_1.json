@@ -1,0 +1,50 @@
+{
+  "summary": "Full frontend E2E testing of Event System Pro (React + MUI). Login, Home, Staff, Competitor, Judging flows verified. Theme persistence, Test Messages, accordion behavior, sort modes, random scoring, submit, duplicate-score dialog, color dialog (top->bottom->auto-close, X-close cancel), and collapsed swatches all behave per spec. No backend (frontend-only app). 33/33 functional assertions passing on the focused clean run.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "JudgingPage.tsx is ~780 lines and includes several internal components (CollapsedNamesRow, DigitSelect, CompetitorRow) plus utility functions. Consider splitting helpers (computeOrder, findDuplicateBib, adjustForDuplicate, generateCouples) into /utils and sub-components into /components for readability and reuse.",
+    "Unused import: `CompetitorColorSwatch` is imported in JudgingPage.tsx but never used. Same with `CONTENT_MAX_WIDTH` (imported but not referenced in JudgingPage). Minor cleanup.",
+    "CompetitorColorDialog: clicking the backdrop while in 'top' phase auto-saves whatever was previously picked if touchedThisSession is true. This is a subtle UX where backdrop != cancel. Spec only specifies X-close cancels; backdrop behavior is undefined. Consider unifying to 'cancel' for backdrop as well to avoid confusion.",
+    "scoreFromDigits uses float division (d[2]/10 + d[3]/100) which can introduce floating-point error (e.g. 0.1 + 0.2). Duplicate detection uses strict equality and adjustForDuplicate uses Math.abs < 0.005 — inconsistent. Recommend always comparing on integer cents (cents = digits packed) to avoid edge-case mismatches.",
+    "Excluded-words filter in legionNames.ts includes 'ladd' but 'ladd' is a substring scenario already covered by token split; harmless but redundant.",
+    "AppThemeProvider initializes from localStorage but the SSR guard `typeof window === 'undefined'` is irrelevant in CRA — minor noise.",
+    "PercentCompleteBar swaps the progress bar for a Submit button at 100% — that means the visual progress at exactly 100% is hidden. If the spec wants the bar to remain visible above the button, this differs.",
+    "When 'Assign Random Scores' is selected, the Select control resets its visible value via `value={sortMode === 'random' ? 'bib' : sortMode}` — but after the bulk action sortMode is set to 'raw', so the dropdown shows 'Sort by Raw Score'. Behavior is correct but the value-coalescing logic is unnecessary."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (frontend-only)", "frontend": "100% on clean run (16/16); 14/17 in first pass with 3 flaky timing failures (localStorage cleared between browser sessions, and initial query of contest-1 before DOM settled)"},
+  "test_credentials": "None — login accepts any credentials",
+  "seed_data_creation": "N/A",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Frontend runs at REACT_APP_BACKEND_URL (https://material-md-app.preview.emergentagent.com). All flows verified via Playwright. When testing MUI Select-in-Accordion, always Escape between dropdown opens to avoid menu-overlay timing issues. The browser session is fresh between automation invocations, so don't rely on localStorage persistence across separate sessions — verify within a single session.",
+  "verified_features": [
+    "Login (any credentials) -> /home",
+    "Home page renders all 5 required testids",
+    "Theme switcher: changing to Dark persists to localStorage key 'event-system-pro.skin-id'",
+    "Test Messages: 3 messages (success/warning/problem) shown simultaneously, click-to-dismiss with collapse",
+    "Login mounts clear messages (clearMessages called in useEffect)",
+    "Staff contest 1/2/3 navigate to /judging; staff-back-home returns to /home",
+    "Competitor contests 1/2/3 are disabled (no navigation)",
+    "Judging: exactly 20 couples, unique bibs 1-999, sorted ascending by default",
+    "No excluded words ('boy','girl','lad','lass','ladd','man','woman') present in generated names",
+    "Digit select inside expanded accordion does NOT collapse accordion",
+    "score-summary-{bib} reflects latest score immediately in collapsed header",
+    "Only one accordion expanded at a time (opening second closes first)",
+    "List does NOT re-sort while panel open (frozenOrder preserved)",
+    "Assign Random Scores: sets all to 30.0-99.9, sortMode becomes raw, Submit shows at 100%, sorted descending",
+    "Submit button navigates to /staff",
+    "Color dialog: 'Pick Top Color for {first}' -> after first click 'Pick Bottom Color {first}' -> after second click auto-saves and closes",
+    "color-dialog-close (X) cancels without saving",
+    "Collapsed leader swatch appears in summary when colors set",
+    "Duplicate Score dialog opens when an accordion closes with score matching another couple",
+    "duplicate-choose-current raises the closed couple's score by +0.1 (50.00 -> 50.10)"
+  ]
+}

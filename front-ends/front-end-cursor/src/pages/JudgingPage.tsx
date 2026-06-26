@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   Container,
+  Divider,
   IconButton,
   MenuItem,
   Paper,
@@ -52,9 +53,12 @@ import {
 } from '../types/judgingScore';
 
 const ENTRY_COUNT = 20;
+const JUDGING_PAGE_SIZE = 10;
 const NUMBER_COLUMN_WIDTH = '2.75rem';
 const SCORE_DISPLAY_WIDTH = '5ch';
 const SUMMARY_SWATCH_GAP = 2;
+
+type JudgingListLayout = 'scrollable' | 'pagination';
 
 type JudgingSortOption =
   | 'bib'
@@ -63,7 +67,7 @@ type JudgingSortOption =
   | 'followerLastName'
   | 'unscoredOnly';
 
-type JudgingDropdownValue = JudgingSortOption | 'assignRandomScores';
+type JudgingDropdownValue = JudgingSortOption | 'assignRandomScores' | JudgingListLayout;
 
 const JUDGING_DROPDOWN_OPTIONS: { value: JudgingDropdownValue; label: string }[] = [
   { value: 'bib', label: 'Sort by Bib #' },
@@ -405,6 +409,130 @@ type DuplicateScoreDialogState = {
   otherBib: number;
 };
 
+type JudgingEntryAccordionProps = {
+  entry: JudgingEntry;
+  expanded: boolean;
+  onAccordionChange: (bibNumber: number, expanded: boolean) => void;
+  competitorColors: Record<string, CompetitorColorRecord>;
+  getEntryScore: (bibNumber: number) => EntryScoreState;
+  onScoreDigitChange: (bibNumber: number, index: number, value: number) => void;
+  onPaletteClick: (target: PaletteTarget) => void;
+};
+
+function JudgingEntryAccordion({
+  entry,
+  expanded,
+  onAccordionChange,
+  competitorColors,
+  getEntryScore,
+  onScoreDigitChange,
+  onPaletteClick,
+}: JudgingEntryAccordionProps) {
+  const entryScore = getEntryScore(entry.number);
+  const leaderColors =
+    competitorColors[competitorRecordKey(entry.number, 'leader')] ?? emptyColorRecord();
+  const followerColors =
+    competitorColors[competitorRecordKey(entry.number, 'follower')] ?? emptyColorRecord();
+
+  return (
+    <Accordion
+      id={`judging-entry-${entry.number}`}
+      expanded={expanded}
+      onChange={(_event, nextExpanded) => {
+        onAccordionChange(entry.number, nextExpanded);
+      }}
+      disableGutters
+      elevation={0}
+      variant="outlined"
+      sx={{ width: '100%', overflow: 'hidden' }}
+    >
+      <AccordionSummary
+        sx={{
+          px: 1,
+          minHeight: 40,
+          '& .MuiAccordionSummary-content': {
+            my: 0.5,
+            minWidth: 0,
+          },
+        }}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            width: '100%',
+            minWidth: 0,
+            gap: 0.5,
+          }}
+        >
+          <Typography
+            component="span"
+            variant="body1"
+            sx={{
+              flex: `0 0 ${NUMBER_COLUMN_WIDTH}`,
+              width: NUMBER_COLUMN_WIDTH,
+              fontVariantNumeric: 'tabular-nums',
+              fontWeight: 600,
+              textAlign: 'left',
+            }}
+          >
+            {entry.number}
+          </Typography>
+
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <CompetitorNamesText
+              leader={entry.leader}
+              follower={entry.follower}
+              leaderColors={leaderColors}
+              followerColors={followerColors}
+            />
+          </Box>
+
+          <Typography
+            component="span"
+            variant="body1"
+            sx={{
+              flex: `0 0 ${SCORE_DISPLAY_WIDTH}`,
+              width: SCORE_DISPLAY_WIDTH,
+              flexShrink: 0,
+              fontVariantNumeric: 'tabular-nums',
+              textAlign: 'right',
+            }}
+          >
+            {entryScore.touched ? formatScoreDisplay(entryScore.digits) : ''}
+          </Typography>
+        </Box>
+      </AccordionSummary>
+
+      <AccordionDetails
+        sx={{ px: 1, py: 1, overflow: 'hidden' }}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <Stack spacing={1} sx={{ width: '100%', minWidth: 0 }}>
+          <JudgingScoreInput
+            digits={entryScore.digits}
+            onDigitChange={(index, value) => onScoreDigitChange(entry.number, index, value)}
+          />
+          <CompetitorNameDetail
+            member={entry.leader}
+            bibNumber={entry.number}
+            role="leader"
+            colorRecord={leaderColors}
+            onPaletteClick={onPaletteClick}
+          />
+          <CompetitorNameDetail
+            member={entry.follower}
+            bibNumber={entry.number}
+            role="follower"
+            colorRecord={followerColors}
+            onPaletteClick={onPaletteClick}
+          />
+        </Stack>
+      </AccordionDetails>
+    </Accordion>
+  );
+}
+
 export default function JudgingPage() {
   const navigate = useNavigate();
   const entries = useMemo(() => createJudgingEntries(), []);
@@ -415,6 +543,8 @@ export default function JudgingPage() {
   const [scoreByBib, setScoreByBib] = useState<Record<number, EntryScoreState>>({});
   const [expandedBib, setExpandedBib] = useState<number | null>(null);
   const [sortOption, setSortOption] = useState<JudgingSortOption>('bib');
+  const [listLayout, setListLayout] = useState<JudgingListLayout>('scrollable');
+  const [currentPage, setCurrentPage] = useState(0);
   const [frozenDisplayEntries, setFrozenDisplayEntries] = useState<JudgingEntry[] | null>(
     null,
   );
@@ -435,6 +565,31 @@ export default function JudgingPage() {
     expandedBib !== null && frozenDisplayEntries !== null
       ? frozenDisplayEntries
       : liveSortedEntries;
+
+  const totalPages = Math.max(1, Math.ceil(displayEntries.length / JUDGING_PAGE_SIZE));
+  const safeCurrentPage = Math.min(currentPage, totalPages - 1);
+
+  const visibleEntries =
+    listLayout === 'pagination'
+      ? displayEntries.slice(
+          safeCurrentPage * JUDGING_PAGE_SIZE,
+          safeCurrentPage * JUDGING_PAGE_SIZE + JUDGING_PAGE_SIZE,
+        )
+      : displayEntries;
+
+  useEffect(() => {
+    setCurrentPage((page) => Math.min(page, totalPages - 1));
+  }, [totalPages]);
+
+  useEffect(() => {
+    if (listLayout !== 'scrollable' || expandedBib === null) {
+      return;
+    }
+
+    document
+      .getElementById(`judging-entry-${expandedBib}`)
+      ?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [expandedBib, listLayout, safeCurrentPage]);
 
   const applySortAndFilter = (
     nextSortOption: JudgingSortOption = sortOption,
@@ -460,6 +615,18 @@ export default function JudgingPage() {
   const handleSortChange = (event: SelectChangeEvent) => {
     const value = event.target.value as JudgingDropdownValue;
 
+    if (value === 'scrollable' || value === 'pagination') {
+      if (expandedBib !== null) {
+        maybeShowDuplicateScoreDialog(expandedBib, scoreByBib);
+      }
+
+      setListLayout(value);
+      setExpandedBib(null);
+      setFrozenDisplayEntries(null);
+      setCurrentPage(0);
+      return;
+    }
+
     if (value === 'assignRandomScores') {
       const nextScoreByBib = { ...scoreByBib };
 
@@ -474,6 +641,7 @@ export default function JudgingPage() {
       setSortOption('rawScore');
       setExpandedBib(null);
       setFrozenDisplayEntries(null);
+      setCurrentPage(0);
       return;
     }
 
@@ -484,6 +652,27 @@ export default function JudgingPage() {
     setSortOption(value);
     setExpandedBib(null);
     setFrozenDisplayEntries(null);
+    setCurrentPage(0);
+  };
+
+  const handlePreviousPage = () => {
+    if (expandedBib !== null) {
+      maybeShowDuplicateScoreDialog(expandedBib, scoreByBib);
+      setExpandedBib(null);
+      setFrozenDisplayEntries(null);
+    }
+
+    setCurrentPage((page) => Math.max(0, page - 1));
+  };
+
+  const handleNextPage = () => {
+    if (expandedBib !== null) {
+      maybeShowDuplicateScoreDialog(expandedBib, scoreByBib);
+      setExpandedBib(null);
+      setFrozenDisplayEntries(null);
+    }
+
+    setCurrentPage((page) => Math.min(totalPages - 1, page + 1));
   };
 
   const maybeShowDuplicateScoreDialog = (
@@ -505,6 +694,14 @@ export default function JudgingPage() {
     if (expanded) {
       if (expandedBib !== null && expandedBib !== bibNumber) {
         maybeShowDuplicateScoreDialog(expandedBib, scoreByBib);
+      }
+
+      if (listLayout === 'pagination') {
+        const entryIndex = nextSorted.findIndex((entry) => entry.number === bibNumber);
+
+        if (entryIndex >= 0) {
+          setCurrentPage(Math.floor(entryIndex / JUDGING_PAGE_SIZE));
+        }
       }
 
       setFrozenDisplayEntries(nextSorted);
@@ -597,16 +794,35 @@ export default function JudgingPage() {
     : undefined;
 
   return (
-    <Container maxWidth="md" sx={{ py: 6 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Stack spacing={1} sx={{ ...centeredContentStackSx, mb: 3 }}>
+    <Container
+      maxWidth="md"
+      sx={{
+        py: 2,
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        boxSizing: 'border-box',
+      }}
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          p: 4,
+          flex: 1,
+          minHeight: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 2,
+        }}
+      >
+        <Stack spacing={1} sx={{ ...centeredContentStackSx, flexShrink: 0 }}>
           <PercentCompleteBar percent={percentComplete} onSubmit={handleSubmit} />
 
           <Select
             size="small"
             value={sortOption}
             onChange={handleSortChange}
-            aria-label="Sort judging entries"
+            aria-label="Judging options"
             fullWidth
             sx={{
               '& .MuiSelect-select': {
@@ -619,126 +835,80 @@ export default function JudgingPage() {
                 {option.label}
               </MenuItem>
             ))}
+            <Divider />
+            <MenuItem value="scrollable" selected={listLayout === 'scrollable'}>
+              Scrollable List
+            </MenuItem>
+            <MenuItem value="pagination" selected={listLayout === 'pagination'}>
+              Pagination
+            </MenuItem>
           </Select>
-        </Stack>
 
-        <Stack spacing={1} sx={{ ...centeredContentStackSx }}>
-          {displayEntries.map((entry) => (
-            <Accordion
-              key={entry.number}
-              expanded={expandedBib === entry.number}
-              onChange={(_event, expanded) => {
-                handleAccordionChange(entry.number, expanded);
+          {listLayout === 'pagination' && displayEntries.length > 0 && (
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{
+                ...centeredContentStackSx,
+                alignItems: 'center',
+                justifyContent: 'space-between',
               }}
-              disableGutters
-              elevation={0}
-              variant="outlined"
-              sx={{ width: '100%', overflow: 'hidden' }}
             >
-              <AccordionSummary
-                sx={{
-                  px: 1,
-                  minHeight: 40,
-                  '& .MuiAccordionSummary-content': {
-                    my: 0.5,
-                    minWidth: 0,
-                  },
-                }}
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={handlePreviousPage}
+                disabled={safeCurrentPage === 0}
+                sx={{ minWidth: 96 }}
               >
-                <Box
-                  sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    width: '100%',
-                    minWidth: 0,
-                    gap: 0.5,
-                  }}
-                >
-                  <Typography
-                    component="span"
-                    variant="body1"
-                    sx={{
-                      flex: `0 0 ${NUMBER_COLUMN_WIDTH}`,
-                      width: NUMBER_COLUMN_WIDTH,
-                      fontVariantNumeric: 'tabular-nums',
-                      fontWeight: 600,
-                      textAlign: 'left',
-                    }}
-                  >
-                    {entry.number}
-                  </Typography>
-
-                  <Box sx={{ flex: 1, minWidth: 0 }}>
-                    <CompetitorNamesText
-                      leader={entry.leader}
-                      follower={entry.follower}
-                      leaderColors={
-                        competitorColors[competitorRecordKey(entry.number, 'leader')] ??
-                        emptyColorRecord()
-                      }
-                      followerColors={
-                        competitorColors[competitorRecordKey(entry.number, 'follower')] ??
-                        emptyColorRecord()
-                      }
-                    />
-                  </Box>
-
-                  <Typography
-                    component="span"
-                    variant="body1"
-                    sx={{
-                      flex: `0 0 ${SCORE_DISPLAY_WIDTH}`,
-                      width: SCORE_DISPLAY_WIDTH,
-                      flexShrink: 0,
-                      fontVariantNumeric: 'tabular-nums',
-                      textAlign: 'right',
-                    }}
-                  >
-                    {getEntryScore(entry.number).touched
-                      ? formatScoreDisplay(getEntryScore(entry.number).digits)
-                      : ''}
-                  </Typography>
+                Previous
+              </Button>
+              <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
+                Page {safeCurrentPage + 1} of {totalPages}
+                <Box component="span" sx={{ display: 'block', fontSize: '0.75rem' }}>
+                  {displayEntries.length} couples
                 </Box>
-              </AccordionSummary>
-
-              <AccordionDetails
-                sx={{ px: 1, py: 1, overflow: 'hidden' }}
-                onClick={(event) => event.stopPropagation()}
+              </Typography>
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={handleNextPage}
+                disabled={safeCurrentPage >= totalPages - 1}
+                sx={{ minWidth: 96 }}
               >
-                <Stack spacing={1} sx={{ width: '100%', minWidth: 0 }}>
-                  <JudgingScoreInput
-                    digits={getEntryScore(entry.number).digits}
-                    onDigitChange={(index, value) =>
-                      handleScoreDigitChange(entry.number, index, value)
-                    }
-                  />
-                  <CompetitorNameDetail
-                    member={entry.leader}
-                    bibNumber={entry.number}
-                    role="leader"
-                    colorRecord={
-                      competitorColors[competitorRecordKey(entry.number, 'leader')] ??
-                      emptyColorRecord()
-                    }
-                    onPaletteClick={setPaletteTarget}
-                  />
-                  <CompetitorNameDetail
-                    member={entry.follower}
-                    bibNumber={entry.number}
-                    role="follower"
-                    colorRecord={
-                      competitorColors[competitorRecordKey(entry.number, 'follower')] ??
-                      emptyColorRecord()
-                    }
-                    onPaletteClick={setPaletteTarget}
-                  />
-                </Stack>
-              </AccordionDetails>
-            </Accordion>
-          ))}
+                Next
+              </Button>
+            </Stack>
+          )}
         </Stack>
 
-        <Stack sx={{ alignItems: 'center' }}>
+        <Box
+          sx={{
+            flex: 1,
+            minHeight: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 1,
+            overflowY: listLayout === 'scrollable' ? 'auto' : 'visible',
+          }}
+        >
+          <Stack spacing={1} sx={{ ...centeredContentStackSx }}>
+            {visibleEntries.map((entry) => (
+              <JudgingEntryAccordion
+                key={entry.number}
+                entry={entry}
+                expanded={expandedBib === entry.number}
+                onAccordionChange={handleAccordionChange}
+                competitorColors={competitorColors}
+                getEntryScore={getEntryScore}
+                onScoreDigitChange={handleScoreDigitChange}
+                onPaletteClick={setPaletteTarget}
+              />
+            ))}
+          </Stack>
+        </Box>
+
+        <Stack sx={{ alignItems: 'center', flexShrink: 0 }}>
           <Button
             variant="outlined"
             onClick={() => navigate('/staff')}

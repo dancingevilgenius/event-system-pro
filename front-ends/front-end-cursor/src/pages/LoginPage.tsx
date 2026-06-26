@@ -59,6 +59,13 @@ export default function LoginPage() {
               <Button type="submit" variant="contained" size="large" fullWidth>
                 Login
               </Button>
+              <Button
+                variant="text"
+                fullWidth
+                onClick={() => navigate('/forgot-password')}
+              >
+                Forgot password?
+              </Button>
             </Stack>
           </Stack>
         </Box>

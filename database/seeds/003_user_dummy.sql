@@ -143,7 +143,72 @@ WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'demo_bob'
 );
 
+INSERT INTO public."user" (
+  username,
+  password_encrypted,
+  name_json,
+  email,
+  phone_numbers_json,
+  social_media_json,
+  volunteer_json,
+  password_recovery_json,
+  additional_info_json,
+  addresses_json,
+  active,
+  created_by,
+  updated_by
+)
+SELECT
+  'demo_carol',
+  'dummy_hash_carol_03',
+  '{
+    "prefix": "Dr.",
+    "first": "Carol",
+    "middle": "J",
+    "last": "Test",
+    "suffix": null,
+    "display": "Carol Test"
+  }'::json,
+  'carol.test@example.com',
+  '[
+    {"type": "mobile", "country_code": "1", "number": "5125550177", "primary": true}
+  ]'::json,
+  '{
+    "instagram": "@carol_test",
+    "linkedin": "carol-test-evt"
+  }'::json,
+  '{
+    "interested": true,
+    "roles": ["judging"],
+    "availability": "friday_evenings"
+  }'::json,
+  '{
+    "question_id": 2,
+    "answer_hint": "first school"
+  }'::json,
+  '{
+    "notes": "Third seed user for agent automation test.",
+    "preferred_contact": "email"
+  }'::json,
+  '[
+    {
+      "label": "home",
+      "line1": "900 Congress Ave",
+      "line2": "Suite 200",
+      "city": "Austin",
+      "state_or_province": "TX",
+      "postal_code": "78701",
+      "country_code": "USA"
+    }
+  ]'::json,
+  TRUE,
+  'seed',
+  'seed'
+WHERE NOT EXISTS (
+  SELECT 1 FROM public."user" WHERE username = 'demo_carol'
+);
+
 SELECT user_id, username, email, name_json, phone_numbers_json, addresses_json
 FROM public."user"
-WHERE username IN ('demo_alice', 'demo_bob')
+WHERE username IN ('demo_alice', 'demo_bob', 'demo_carol')
 ORDER BY user_id;

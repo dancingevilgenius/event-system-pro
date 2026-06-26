@@ -245,7 +245,8 @@ When an accordion **closes** (collapse, switch panels, or change sort/filter whi
 ## Color picking
 
 - Each **leader** and **follower** can have two colors: **top** and **bottom**.
-- Colors are chosen from a fixed palette (**8 columns × 14 rows**).
+- Colors are chosen from a fixed palette (**8 columns × 8 rows**).
+- Palette source: `front-ends/front-end-cursor/src/data/judgingColorPalette.ts`.
 - Palette icon opens the dialog if no colors yet; color swatch opens it if colors exist.
 - Dialog flow:
   1. First click → **top** color
@@ -258,6 +259,116 @@ When an accordion **closes** (collapse, switch panels, or change sort/filter whi
 - After one pick in a session, clicking the **backdrop** saves that one color and closes.
 - Color swatches appear in the collapsed summary when at least one color is set.
 - Colors are stored per **bib + role** (`leader` or `follower`).
+
+### Color palette (8 × 8)
+
+Rows are listed top to bottom; columns left to right. Row 1 uses fixed hex values. Rows 2–7 are hue gradients (stored as HSL in code); the HEX and RGB values below are the rendered equivalents. Row 8 is a fixed neon assortment (HSL in code). In the color picker dialog, hover a swatch to see its HEX and RGB.
+
+#### Row 1 - Neutral (black to white)
+
+| Col | HEX | RGB |
+|-----|-----|-----|
+| 1 | `#000000` | `rgb(0, 0, 0)` |
+| 2 | `#1f1f1f` | `rgb(31, 31, 31)` |
+| 3 | `#3d3d3d` | `rgb(61, 61, 61)` |
+| 4 | `#5c5c5c` | `rgb(92, 92, 92)` |
+| 5 | `#7a7a7a` | `rgb(122, 122, 122)` |
+| 6 | `#999999` | `rgb(153, 153, 153)` |
+| 7 | `#d9d9d9` | `rgb(217, 217, 217)` |
+| 8 | `#ffffff` | `rgb(255, 255, 255)` |
+
+#### Row 2 - Blue gradient
+
+| Col | HEX | RGB |
+|-----|-----|-----|
+| 1 | `#193a56` | `rgb(25, 58, 86)` |
+| 2 | `#1d4a76` | `rgb(29, 74, 118)` |
+| 3 | `#205898` | `rgb(32, 88, 152)` |
+| 4 | `#2264bb` | `rgb(34, 100, 187)` |
+| 5 | `#236ede` | `rgb(35, 110, 222)` |
+| 6 | `#3e7ce7` | `rgb(62, 124, 231)` |
+| 7 | `#5a8cf0` | `rgb(90, 140, 240)` |
+| 8 | `#789ef6` | `rgb(120, 158, 246)` |
+
+#### Row 3 - Purple gradient
+
+| Col | HEX | RGB |
+|-----|-----|-----|
+| 1 | `#3c1f5a` | `rgb(60, 31, 90)` |
+| 2 | `#502477` | `rgb(80, 36, 119)` |
+| 3 | `#662895` | `rgb(102, 40, 149)` |
+| 4 | `#7f29b5` | `rgb(127, 41, 181)` |
+| 5 | `#9a2ad5` | `rgb(154, 42, 213)` |
+| 6 | `#b041e0` | `rgb(176, 65, 224)` |
+| 7 | `#c359e9` | `rgb(195, 89, 233)` |
+| 8 | `#d573f1` | `rgb(213, 115, 241)` |
+
+#### Row 4 - Red gradient
+
+| Col | HEX | RGB |
+|-----|-----|-----|
+| 1 | `#4d181e` | `rgb(77, 24, 30)` |
+| 2 | `#6b1d24` | `rgb(107, 29, 36)` |
+| 3 | `#8c1f27` | `rgb(140, 31, 39)` |
+| 4 | `#ae2027` | `rgb(174, 32, 39)` |
+| 5 | `#d21f23` | `rgb(210, 31, 35)` |
+| 6 | `#e62e2e` | `rgb(230, 46, 46)` |
+| 7 | `#ef4d48` | `rgb(239, 77, 72)` |
+| 8 | `#f66b63` | `rgb(246, 107, 99)` |
+
+#### Row 5 - Brown gradient
+
+| Col | HEX | RGB |
+|-----|-----|-----|
+| 1 | `#3a2a21` | `rgb(58, 42, 33)` |
+| 2 | `#4d3627` | `rgb(77, 54, 39)` |
+| 3 | `#60432c` | `rgb(96, 67, 44)` |
+| 4 | `#744f31` | `rgb(116, 79, 49)` |
+| 5 | `#8a5d34` | `rgb(138, 93, 52)` |
+| 6 | `#a16c36` | `rgb(161, 108, 54)` |
+| 7 | `#b87b37` | `rgb(184, 123, 55)` |
+| 8 | `#cb8c3d` | `rgb(203, 140, 61)` |
+
+#### Row 6 - Green gradient
+
+| Col | HEX | RGB |
+|-----|-----|-----|
+| 1 | `#1e471f` | `rgb(30, 71, 31)` |
+| 2 | `#246229` | `rgb(36, 98, 41)` |
+| 3 | `#297f34` | `rgb(41, 127, 52)` |
+| 4 | `#2c9e40` | `rgb(44, 158, 64)` |
+| 5 | `#2dbe4d` | `rgb(45, 190, 77)` |
+| 6 | `#36d762` | `rgb(54, 215, 98)` |
+| 7 | `#4ce27d` | `rgb(76, 226, 125)` |
+| 8 | `#64eb97` | `rgb(100, 235, 151)` |
+
+#### Row 7 - Yellow gradient
+
+| Col | HEX | RGB |
+|-----|-----|-----|
+| 1 | `#997528` | `rgb(153, 117, 40)` |
+| 2 | `#b78f29` | `rgb(183, 143, 41)` |
+| 3 | `#d6ab2b` | `rgb(214, 171, 43)` |
+| 4 | `#e0be41` | `rgb(224, 190, 65)` |
+| 5 | `#e9cf58` | `rgb(233, 207, 88)` |
+| 6 | `#f1dd70` | `rgb(241, 221, 112)` |
+| 7 | `#f7ea8b` | `rgb(247, 234, 139)` |
+| 8 | `#fbf4a6` | `rgb(251, 244, 166)` |
+
+#### Row 8 - Neon assortment
+
+| Col | HEX | RGB |
+|-----|-----|-----|
+| 1 | `#fa2d9a` | `rgb(250, 45, 154)` |
+| 2 | `#fce620` | `rgb(252, 230, 32)` |
+| 3 | `#1bf513` | `rgb(27, 245, 19)` |
+| 4 | `#07f7c7` | `rgb(7, 247, 199)` |
+| 5 | `#19cdfa` | `rgb(25, 205, 250)` |
+| 6 | `#b729f3` | `rgb(183, 41, 243)` |
+| 7 | `#91fc16` | `rgb(145, 252, 22)` |
+| 8 | `#fa6a2d` | `rgb(250, 106, 45)` |
+
+When changing the palette in code, update these tables so the HEX and RGB reference stays in sync.
 
 ### Color swatch shape
 

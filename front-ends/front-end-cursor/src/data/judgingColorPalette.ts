@@ -1,87 +1,35 @@
 export const PALETTE_GRID_COLS = 8;
-export const PALETTE_GRID_ROWS = 14;
 
 function hsl(h: number, s: number, l: number): string {
-  return `hsl(${h} ${s}% ${l}%)`;
+  return `hsl(${((h % 360) + 360) % 360} ${Math.min(Math.max(s, 0), 100)}% ${Math.min(Math.max(l, 0), 100)}%)`;
 }
 
-function buildRedColors(): string[] {
+function gradientRow(
+  baseHue: number,
+  options: {
+    hueStep?: number;
+    saturation: [number, number];
+    lightness: [number, number];
+  },
+): string[] {
   const colors: string[] = [];
-
-  for (let row = 0; row < 4; row += 1) {
-    for (let col = 0; col < PALETTE_GRID_COLS; col += 1) {
-      const hue = (355 - col * 6 + 360) % 360;
-      const saturation = 48 + col * 6;
-      const lightness = 18 + row * 17;
-
-      colors.push(hsl(hue, Math.min(saturation, 100), Math.min(lightness, 78)));
-    }
-  }
-
-  return colors;
-}
-
-function buildGreenColors(): string[] {
-  const colors: string[] = [];
-
-  for (let row = 0; row < 4; row += 1) {
-    for (let col = 0; col < PALETTE_GRID_COLS; col += 1) {
-      const hue = 82 + col * 9;
-      const saturation = 38 + row * 14;
-      const lightness = 20 + row * 16;
-
-      colors.push(hsl(hue, Math.min(saturation, 96), Math.min(lightness, 72)));
-    }
-  }
-
-  return colors;
-}
-
-function buildBlueColors(): string[] {
-  const colors: string[] = [];
-
-  for (let row = 0; row < 3; row += 1) {
-    for (let col = 0; col < PALETTE_GRID_COLS; col += 1) {
-      const hue = 192 + col * 8;
-      const saturation = 42 + row * 18;
-      const lightness = 18 + row * 22;
-
-      colors.push(hsl(hue, Math.min(saturation, 100), Math.min(lightness, 78)));
-    }
-  }
-
-  return colors;
-}
-
-function buildTanBrownColors(): string[] {
-  const colors: string[] = [];
+  const hueStep = options.hueStep ?? 0;
 
   for (let col = 0; col < PALETTE_GRID_COLS; col += 1) {
-    const hue = 24 + col * 4;
-    const saturation = 28 + col * 7;
-    const lightness = 24 + col * 7;
+    const t = col / (PALETTE_GRID_COLS - 1);
+    const hue = baseHue + (col - (PALETTE_GRID_COLS - 1) / 2) * hueStep;
+    const saturation =
+      options.saturation[0] + (options.saturation[1] - options.saturation[0]) * t;
+    const lightness =
+      options.lightness[0] + (options.lightness[1] - options.lightness[0]) * t;
 
-    colors.push(hsl(hue, Math.min(saturation, 72), Math.min(lightness, 58)));
+    colors.push(hsl(hue, saturation, lightness));
   }
 
   return colors;
 }
 
-function buildYellowColors(): string[] {
-  const colors: string[] = [];
-
-  for (let col = 0; col < PALETTE_GRID_COLS; col += 1) {
-    const hue = 44 + col * 3;
-    const saturation = 52 + col * 5;
-    const lightness = 42 + col * 6;
-
-    colors.push(hsl(hue, Math.min(saturation, 96), Math.min(lightness, 88)));
-  }
-
-  return colors;
-}
-
-function buildNeutralColors(): string[] {
+function buildNeutralRow(): string[] {
   return [
     '#000000',
     '#1f1f1f',
@@ -94,14 +42,89 @@ function buildNeutralColors(): string[] {
   ];
 }
 
-export const JUDGING_COLOR_PALETTE: string[] = [
-  ...buildRedColors(),
-  ...buildGreenColors(),
-  ...buildBlueColors(),
-  ...buildTanBrownColors(),
-  ...buildYellowColors(),
-  ...buildNeutralColors(),
-];
+function buildBlueGradientRow(): string[] {
+  return gradientRow(215, {
+    hueStep: 2,
+    saturation: [55, 88],
+    lightness: [22, 72],
+  });
+}
+
+function buildPurpleGradientRow(): string[] {
+  return gradientRow(278, {
+    hueStep: 2.5,
+    saturation: [48, 82],
+    lightness: [24, 70],
+  });
+}
+
+function buildRedGradientRow(): string[] {
+  return gradientRow(358, {
+    hueStep: 1.5,
+    saturation: [52, 90],
+    lightness: [20, 68],
+  });
+}
+
+function buildBrownGradientRow(): string[] {
+  return gradientRow(28, {
+    hueStep: 1.5,
+    saturation: [28, 58],
+    lightness: [18, 52],
+  });
+}
+
+function buildGreenGradientRow(): string[] {
+  return gradientRow(132, {
+    hueStep: 3,
+    saturation: [40, 78],
+    lightness: [20, 66],
+  });
+}
+
+function buildYellowGradientRow(): string[] {
+  return gradientRow(48, {
+    hueStep: 2,
+    saturation: [58, 92],
+    lightness: [38, 82],
+  });
+}
+
+function buildNeonAssortmentRow(): string[] {
+  const neonSwatches = [
+    { hue: 328, saturation: 96, lightness: 58 },
+    { hue: 54, saturation: 98, lightness: 56 },
+    { hue: 118, saturation: 92, lightness: 52 },
+    { hue: 168, saturation: 94, lightness: 50 },
+    { hue: 192, saturation: 96, lightness: 54 },
+    { hue: 282, saturation: 90, lightness: 56 },
+    { hue: 88, saturation: 98, lightness: 54 },
+    { hue: 18, saturation: 96, lightness: 58 },
+  ];
+
+  return neonSwatches.map((swatch) =>
+    hsl(swatch.hue, swatch.saturation, swatch.lightness),
+  );
+}
+
+function buildPaletteRows(): string[][] {
+  return [
+    buildNeutralRow(),
+    buildBlueGradientRow(),
+    buildPurpleGradientRow(),
+    buildRedGradientRow(),
+    buildBrownGradientRow(),
+    buildGreenGradientRow(),
+    buildYellowGradientRow(),
+    buildNeonAssortmentRow(),
+  ];
+}
+
+const PALETTE_ROWS = buildPaletteRows();
+
+export const PALETTE_GRID_ROWS = PALETTE_ROWS.length;
+
+export const JUDGING_COLOR_PALETTE: string[] = PALETTE_ROWS.flat();
 
 export function paletteIndexToPosition(index: number): { row: number; col: number } {
   return {

@@ -6,11 +6,13 @@ import {
   IconButton,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import CloseIcon from './CloseIcon';
+import { colorDesignationLabel } from '../utils/colorDesignation';
 import {
   JUDGING_COLOR_PALETTE,
   PALETTE_GRID_COLS,
 } from '../data/judgingColorPalette';
+import { CONTENT_MAX_WIDTH } from '../constants/layout';
+import CloseIcon from './CloseIcon';
 import { type LegionMember } from '../data/legionNames';
 import type { CompetitorColorRecord } from '../types/competitorColors';
 
@@ -140,7 +142,20 @@ export default function CompetitorColorDialog({
   };
 
   return (
-    <Dialog open={open} onClose={handleDialogClose} fullWidth maxWidth="xs">
+    <Dialog
+      open={open}
+      onClose={handleDialogClose}
+      fullWidth
+      maxWidth={false}
+      slotProps={{
+        paper: {
+          sx: {
+            width: '100%',
+            maxWidth: CONTENT_MAX_WIDTH,
+          },
+        },
+      }}
+    >
       <DialogTitle
         sx={{
           textAlign: 'center',
@@ -171,27 +186,33 @@ export default function CompetitorColorDialog({
           aria-label="Color palette"
           sx={{
             display: 'grid',
-            gridTemplateColumns: `repeat(${PALETTE_GRID_COLS}, 1fr)`,
+            gridTemplateColumns: `repeat(${PALETTE_GRID_COLS}, minmax(0, 1fr))`,
             gap: 0.25,
+            width: '100%',
           }}
         >
           {JUDGING_COLOR_PALETTE.map((color, index) => {
             const isSelected = index === topIndex || index === bottomIndex;
             const light = isLightColor(color);
+            const designation = colorDesignationLabel(color);
 
             return (
               <IconButton
                 key={`${color}-${index}`}
                 role="gridcell"
-                aria-label={`Color ${index + 1}`}
+                aria-label={`Color ${index + 1}: ${designation}`}
+                title={designation}
                 aria-pressed={isSelected}
                 onClick={() => handleCellClick(index)}
                 sx={{
                   width: '100%',
-                  aspectRatio: '1',
+                  height: 'auto',
+                  aspectRatio: '1 / 1',
                   minWidth: 0,
+                  minHeight: 0,
                   p: 0,
                   borderRadius: 0.5,
+                  boxSizing: 'border-box',
                   bgcolor: color,
                   border: 2,
                   borderStyle: 'solid',

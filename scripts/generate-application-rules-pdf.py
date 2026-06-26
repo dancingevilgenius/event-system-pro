@@ -6,6 +6,113 @@ from fpdf import FPDF
 
 OUTPUT_PATH = Path(__file__).resolve().parent.parent / "docs" / "cursor" / "application-rules.pdf"
 
+PALETTE_ROWS: list[tuple[str, list[tuple[str, str]]]] = [
+    (
+        "Row 1 - Neutral (black to white)",
+        [
+            ("#000000", "rgb(0, 0, 0)"),
+            ("#1f1f1f", "rgb(31, 31, 31)"),
+            ("#3d3d3d", "rgb(61, 61, 61)"),
+            ("#5c5c5c", "rgb(92, 92, 92)"),
+            ("#7a7a7a", "rgb(122, 122, 122)"),
+            ("#999999", "rgb(153, 153, 153)"),
+            ("#d9d9d9", "rgb(217, 217, 217)"),
+            ("#ffffff", "rgb(255, 255, 255)"),
+        ],
+    ),
+    (
+        "Row 2 - Blue gradient",
+        [
+            ("#193a56", "rgb(25, 58, 86)"),
+            ("#1d4a76", "rgb(29, 74, 118)"),
+            ("#205898", "rgb(32, 88, 152)"),
+            ("#2264bb", "rgb(34, 100, 187)"),
+            ("#236ede", "rgb(35, 110, 222)"),
+            ("#3e7ce7", "rgb(62, 124, 231)"),
+            ("#5a8cf0", "rgb(90, 140, 240)"),
+            ("#789ef6", "rgb(120, 158, 246)"),
+        ],
+    ),
+    (
+        "Row 3 - Purple gradient",
+        [
+            ("#3c1f5a", "rgb(60, 31, 90)"),
+            ("#502477", "rgb(80, 36, 119)"),
+            ("#662895", "rgb(102, 40, 149)"),
+            ("#7f29b5", "rgb(127, 41, 181)"),
+            ("#9a2ad5", "rgb(154, 42, 213)"),
+            ("#b041e0", "rgb(176, 65, 224)"),
+            ("#c359e9", "rgb(195, 89, 233)"),
+            ("#d573f1", "rgb(213, 115, 241)"),
+        ],
+    ),
+    (
+        "Row 4 - Red gradient",
+        [
+            ("#4d181e", "rgb(77, 24, 30)"),
+            ("#6b1d24", "rgb(107, 29, 36)"),
+            ("#8c1f27", "rgb(140, 31, 39)"),
+            ("#ae2027", "rgb(174, 32, 39)"),
+            ("#d21f23", "rgb(210, 31, 35)"),
+            ("#e62e2e", "rgb(230, 46, 46)"),
+            ("#ef4d48", "rgb(239, 77, 72)"),
+            ("#f66b63", "rgb(246, 107, 99)"),
+        ],
+    ),
+    (
+        "Row 5 - Brown gradient",
+        [
+            ("#3a2a21", "rgb(58, 42, 33)"),
+            ("#4d3627", "rgb(77, 54, 39)"),
+            ("#60432c", "rgb(96, 67, 44)"),
+            ("#744f31", "rgb(116, 79, 49)"),
+            ("#8a5d34", "rgb(138, 93, 52)"),
+            ("#a16c36", "rgb(161, 108, 54)"),
+            ("#b87b37", "rgb(184, 123, 55)"),
+            ("#cb8c3d", "rgb(203, 140, 61)"),
+        ],
+    ),
+    (
+        "Row 6 - Green gradient",
+        [
+            ("#1e471f", "rgb(30, 71, 31)"),
+            ("#246229", "rgb(36, 98, 41)"),
+            ("#297f34", "rgb(41, 127, 52)"),
+            ("#2c9e40", "rgb(44, 158, 64)"),
+            ("#2dbe4d", "rgb(45, 190, 77)"),
+            ("#36d762", "rgb(54, 215, 98)"),
+            ("#4ce27d", "rgb(76, 226, 125)"),
+            ("#64eb97", "rgb(100, 235, 151)"),
+        ],
+    ),
+    (
+        "Row 7 - Yellow gradient",
+        [
+            ("#997528", "rgb(153, 117, 40)"),
+            ("#b78f29", "rgb(183, 143, 41)"),
+            ("#d6ab2b", "rgb(214, 171, 43)"),
+            ("#e0be41", "rgb(224, 190, 65)"),
+            ("#e9cf58", "rgb(233, 207, 88)"),
+            ("#f1dd70", "rgb(241, 221, 112)"),
+            ("#f7ea8b", "rgb(247, 234, 139)"),
+            ("#fbf4a6", "rgb(251, 244, 166)"),
+        ],
+    ),
+    (
+        "Row 8 - Neon assortment",
+        [
+            ("#fa2d9a", "rgb(250, 45, 154)"),
+            ("#fce620", "rgb(252, 230, 32)"),
+            ("#1bf513", "rgb(27, 245, 19)"),
+            ("#07f7c7", "rgb(7, 247, 199)"),
+            ("#19cdfa", "rgb(25, 205, 250)"),
+            ("#b729f3", "rgb(183, 41, 243)"),
+            ("#91fc16", "rgb(145, 252, 22)"),
+            ("#fa6a2d", "rgb(250, 106, 45)"),
+        ],
+    ),
+]
+
 
 class RulesPDF(FPDF):
     def header(self):
@@ -43,6 +150,14 @@ class RulesPDF(FPDF):
         self.set_x(self.l_margin)
         self.set_font("Helvetica", "", 10)
         self.multi_cell(self.epw, 5, f"  -  {text}")
+
+    def palette_row_table(self, title: str, cells: list[tuple[str, str]]) -> None:
+        self.subsection_title(title)
+        self.set_font("Helvetica", "", 7)
+        for col, (hex_value, rgb_value) in enumerate(cells, start=1):
+            self.set_x(self.l_margin)
+            self.multi_cell(self.epw, 3.5, f"  Col {col}: {hex_value}  {rgb_value}")
+        self.ln(1)
 
 
 def build_pdf() -> None:
@@ -273,7 +388,9 @@ def build_pdf() -> None:
     pdf.section_title("Color picking")
     for item in [
         "Each leader and follower can have two colors: top and bottom.",
-        "Colors are chosen from a fixed palette (8 columns x 14 rows).",
+        "Colors are chosen from a fixed palette (8 columns x 8 rows).",
+        "Palette source: front-ends/front-end-cursor/src/data/judgingColorPalette.ts.",
+        "Color picker dialog width matches accordion content (360px max).",
         "Palette icon opens the dialog if no colors yet; swatch opens it if colors exist.",
         "First click sets top color; second click sets bottom color, then auto-save and close.",
         "Titles: Pick Top Color for {firstname}, then Pick Bottom Color {firstname}.",
@@ -282,8 +399,18 @@ def build_pdf() -> None:
         "After one pick in a session, clicking the backdrop saves that one color and closes.",
         "Color swatches appear in the collapsed summary when at least one color is set.",
         "Colors are stored per bib + role (leader or follower).",
+        "Hover a swatch in the dialog to see its HEX and RGB designation.",
     ]:
         pdf.bullet(item)
+
+    pdf.subsection_title("Color palette (8 x 8)")
+    pdf.body_text(
+        "Rows are listed top to bottom; columns left to right. Row 1 uses fixed hex values. "
+        "Rows 2-7 are hue gradients (stored as HSL in code); HEX and RGB below are rendered equivalents. "
+        "Row 8 is a fixed neon assortment (HSL in code)."
+    )
+    for row_title, cells in PALETTE_ROWS:
+        pdf.palette_row_table(row_title, cells)
 
     pdf.subsection_title("Color swatch shape")
     for item in [

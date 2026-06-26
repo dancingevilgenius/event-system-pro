@@ -1,0 +1,19 @@
+// 8 columns x 14 rows = 112 colors
+export const JUDGING_COLOR_PALETTE: string[][] = [
+  ["#000000", "#1F1F1F", "#3D3D3D", "#5C5C5C", "#7A7A7A", "#A3A3A3", "#CCCCCC", "#FFFFFF"],
+  ["#7F1D1D", "#B91C1C", "#DC2626", "#EF4444", "#F87171", "#FCA5A5", "#FECACA", "#FEE2E2"],
+  ["#7C2D12", "#C2410C", "#EA580C", "#F97316", "#FB923C", "#FDBA74", "#FED7AA", "#FFEDD5"],
+  ["#78350F", "#B45309", "#D97706", "#F59E0B", "#FBBF24", "#FCD34D", "#FDE68A", "#FEF3C7"],
+  ["#365314", "#4D7C0F", "#65A30D", "#84CC16", "#A3E635", "#BEF264", "#D9F99D", "#ECFCCB"],
+  ["#14532D", "#166534", "#16A34A", "#22C55E", "#4ADE80", "#86EFAC", "#BBF7D0", "#DCFCE7"],
+  ["#134E4A", "#115E59", "#0F766E", "#14B8A6", "#2DD4BF", "#5EEAD4", "#99F6E4", "#CCFBF1"],
+  ["#164E63", "#155E75", "#0E7490", "#0891B2", "#22D3EE", "#67E8F9", "#A5F3FC", "#CFFAFE"],
+  ["#1E3A8A", "#1D4ED8", "#2563EB", "#3B82F6", "#60A5FA", "#93C5FD", "#BFDBFE", "#DBEAFE"],
+  ["#312E81", "#3730A3", "#4338CA", "#4F46E5", "#6366F1", "#818CF8", "#A5B4FC", "#C7D2FE"],
+  ["#4C1D95", "#5B21B6", "#6D28D9", "#7C3AED", "#8B5CF6", "#A78BFA", "#C4B5FD", "#DDD6FE"],
+  ["#581C87", "#6B21A8", "#7E22CE", "#9333EA", "#A855F7", "#C084FC", "#D8B4FE", "#E9D5FF"],
+  ["#831843", "#9D174D", "#BE185D", "#DB2777", "#EC4899", "#F472B6", "#F9A8D4", "#FBCFE8"],
+  ["#7C2D2E", "#8B5E3C", "#A47148", "#C58940", "#D4A373", "#E3B98D", "#EFC9A4", "#F5E3C1"],
+];
+
+export const FLAT_PALETTE: string[] = JUDGING_COLOR_PALETTE.flat();

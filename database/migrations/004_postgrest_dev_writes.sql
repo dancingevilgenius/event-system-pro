@@ -22,5 +22,9 @@ GRANT INSERT, UPDATE, DELETE ON
   public.secret_question_lu,
   public.fight_event_group,
   public.fight_event,
-  public.contest
+  public.contest,
+  public.competitor
 TO anon, authenticated;
+
+-- User API is read-only (password_encrypted is not exposed on api."user").
+REVOKE INSERT, UPDATE, DELETE ON api."user" FROM anon, authenticated;

@@ -133,11 +133,44 @@ FROM public.contest
 WHERE is_active <> 0
   AND COALESCE(is_cancelled, 0) = 0;
 
+CREATE OR REPLACE VIEW api."user" AS
+SELECT
+  user_id,
+  username,
+  name_json,
+  email,
+  phone_numbers_json,
+  social_media_json,
+  volunteer_json,
+  additional_info_json,
+  addresses_json,
+  active,
+  created_date,
+  created_by,
+  updated_date,
+  updated_by
+FROM public."user"
+WHERE active IS NOT FALSE;
+
+CREATE OR REPLACE VIEW api.competitor AS
+SELECT
+  competitor_id,
+  contest_id,
+  event_id,
+  user_id,
+  first_name,
+  last_name,
+  gear_json,
+  competitor_type_id
+FROM public.competitor;
+
 -- ---------------------------------------------------------------------------
 -- Grants
 -- ---------------------------------------------------------------------------
 
 GRANT SELECT ON ALL TABLES IN SCHEMA api TO anon, authenticated;
+
+GRANT SELECT ON public."user", public.competitor TO anon, authenticated;
 
 ALTER DEFAULT PRIVILEGES IN SCHEMA api
   GRANT SELECT ON TABLES TO anon, authenticated;

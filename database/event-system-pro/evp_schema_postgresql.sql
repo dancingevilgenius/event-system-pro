@@ -252,11 +252,13 @@ CREATE TABLE IF NOT EXISTS competitor (
   competitor_type_id INTEGER DEFAULT NULL,
 PRIMARY KEY (competitor_id),
 CONSTRAINT competitor_fk_contest FOREIGN KEY (contest_id) REFERENCES contest (contest_id) ON DELETE RESTRICT,
-CONSTRAINT competitor_fk_event FOREIGN KEY (event_id) REFERENCES fight_event (event_id) ON DELETE RESTRICT
+CONSTRAINT competitor_fk_event FOREIGN KEY (event_id) REFERENCES fight_event (event_id) ON DELETE RESTRICT,
+CONSTRAINT competitor_fk_user FOREIGN KEY (user_id) REFERENCES "user" (user_id) ON DELETE RESTRICT ON UPDATE RESTRICT
 );
 CREATE INDEX IF NOT EXISTS fk_competitor_type ON competitor (competitor_type_id);
 CREATE INDEX IF NOT EXISTS competitor_fk_contest ON competitor (contest_id);
 CREATE INDEX IF NOT EXISTS competitor_fk_event ON competitor (event_id);
+CREATE INDEX IF NOT EXISTS fk_competitor_user_id ON competitor (user_id);
 
 -- Table: contest_heat
 CREATE TABLE IF NOT EXISTS contest_heat (

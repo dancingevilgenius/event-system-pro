@@ -62,6 +62,16 @@ export type SecretQuestion = {
   created_date: string;
 };
 
+export type Country = {
+  iso3: string;
+  long_name: string;
+};
+
+export type UsState = {
+  code: string;
+  name: string;
+};
+
 export type PasswordRecoveryJson = {
   method: 'secret_questions';
   questions: Array<{
@@ -267,14 +277,30 @@ export async function fetchUsersPage(
 }
 
 export async function fetchUsStateCodes(): Promise<string[]> {
-  const response = await fetch(`${POSTGREST_URL}/us_state_lu?select=code&order=code`);
+  const states = await fetchUsStates();
+  return states.map((state) => state.code);
+}
+
+export async function fetchUsStates(): Promise<UsState[]> {
+  const response = await fetch(`${POSTGREST_URL}/us_state_lu?select=code,name&order=name`);
 
   if (!response.ok) {
-    throw new Error(`Unable to load state codes (${response.status})`);
+    throw new Error(`Unable to load states (${response.status})`);
   }
 
-  const records = (await response.json()) as Array<{ code: string }>;
-  return records.map((record) => record.code);
+  return (await response.json()) as UsState[];
+}
+
+export async function fetchCountries(): Promise<Country[]> {
+  const response = await fetch(
+    `${POSTGREST_URL}/country_lu?select=iso3,long_name&iso3=not.is.null&order=long_name`,
+  );
+
+  if (!response.ok) {
+    throw new Error(`Unable to load countries (${response.status})`);
+  }
+
+  return (await response.json()) as Country[];
 }
 
 export async function fetchSecretQuestions(): Promise<SecretQuestion[]> {

@@ -647,7 +647,6 @@ INSERT INTO secret_question_lu VALUES ('9', 'What is your father''s middle name?
 INSERT INTO secret_question_lu VALUES ('10', 'What is your mother''s maiden name?', '2018-12-01 16:57:24');
 INSERT INTO secret_question_lu VALUES ('11', 'What is the first name of the first person you kissed?', '2018-12-01 16:57:24');
 INSERT INTO secret_question_lu VALUES ('12', 'What is your secret pleasure?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('13', 'What did you name your first drone?', '2018-12-01 16:57:24');
 INSERT INTO secret_question_lu VALUES ('14', 'You have 99 problems but what is not one of them?', '2018-12-01 16:57:24');
 INSERT INTO fight_event_group VALUES ('TSL_ARMAGEDDON', 'Armageddon', 'Armageddon', '2021-04-04 06:16:45', 'ceg', '2021-04-04 06:16:45', 'ceg');
 INSERT INTO fight_event_group VALUES ('TSL_AWAKENING', 'Awakening', 'Awakening', '2021-04-04 06:16:45', 'ceg', '2021-04-04 06:16:45', 'ceg');

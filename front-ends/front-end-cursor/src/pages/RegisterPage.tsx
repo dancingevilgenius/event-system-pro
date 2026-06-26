@@ -2,16 +2,22 @@ import {
   Box,
   Button,
   Container,
+  MenuItem,
   Paper,
   Stack,
   Typography,
 } from '@mui/material';
-import { type ChangeEvent, type FormEvent, useEffect, useState } from 'react';
+import { type ChangeEvent, type ClipboardEvent, type FormEvent, type KeyboardEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   hashPasswordRecoveryAnswers,
   registerUser,
+  fetchCountries,
+  fetchSecretQuestions,
+  fetchUsStates,
+  type Country,
   type PasswordRecoveryJson,
+  type UsState,
 } from '../api/postgrest';
 import PasswordRecoveryDialog, {
   type PasswordRecoveryAnswer,
@@ -19,6 +25,7 @@ import PasswordRecoveryDialog, {
 import AppTextField from '../components/AppTextField';
 import { centeredContentStackSx } from '../constants/layout';
 import { useMessages } from '../hooks/useMessages';
+import { pickRandomQuestionIds } from '../utils/secretQuestions';
 
 type RegisterForm = {
   username: string;
@@ -56,6 +63,37 @@ const initialForm: RegisterForm = {
 
 function digitsOnly(value: string, maxLength: number): string {
   return value.replace(/\D/g, '').slice(0, maxLength);
+}
+
+function isPhoneControlKey(key: string): boolean {
+  return (
+    key === 'Backspace' ||
+    key === 'Delete' ||
+    key === 'Tab' ||
+    key === 'ArrowLeft' ||
+    key === 'ArrowRight' ||
+    key === 'Home' ||
+    key === 'End'
+  );
+}
+
+function phoneInputSlotProps(maxLength: number) {
+  return {
+    htmlInput: {
+      inputMode: 'numeric' as const,
+      maxLength,
+      pattern: '[0-9]*',
+      onKeyDown: (event: KeyboardEvent<HTMLInputElement>) => {
+        if (event.ctrlKey || event.metaKey || isPhoneControlKey(event.key)) {
+          return;
+        }
+
+        if (!/^\d$/.test(event.key)) {
+          event.preventDefault();
+        }
+      },
+    },
+  };
 }
 
 function buildNameJson(firstName: string, lastName: string) {
@@ -118,10 +156,65 @@ export default function RegisterPage() {
   const [form, setForm] = useState<RegisterForm>(initialForm);
   const [recoveryOpen, setRecoveryOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [assignedQuestionIds, setAssignedQuestionIds] = useState<number[]>([]);
+  const [countries, setCountries] = useState<Country[]>([]);
+  const [states, setStates] = useState<UsState[]>([]);
+  const [loadingCountries, setLoadingCountries] = useState(true);
+  const [loadingStates, setLoadingStates] = useState(true);
 
   useEffect(() => {
     clearMessages();
   }, [clearMessages]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    Promise.all([fetchCountries(), fetchUsStates()])
+      .then(([countryItems, stateItems]) => {
+        if (cancelled) {
+          return;
+        }
+        setCountries(countryItems);
+        setStates(stateItems);
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          showProblem(
+            error instanceof Error ? error.message : 'Unable to load countries or states.',
+          );
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoadingCountries(false);
+          setLoadingStates(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetchSecretQuestions()
+      .then((items) => {
+        if (cancelled || items.length < 3) {
+          return;
+        }
+
+        setAssignedQuestionIds(pickRandomQuestionIds(items, 3));
+      })
+      .catch(() => {
+        // Dialog surfaces load errors when opened.
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const updateField =
     (field: keyof RegisterForm) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -134,6 +227,16 @@ export default function RegisterPage() {
       setForm((current) => ({
         ...current,
         [field]: digitsOnly(event.target.value, maxLength),
+      }));
+    };
+
+  const pastePhoneField =
+    (field: 'phoneArea' | 'phonePrefix' | 'phoneLine', maxLength: number) =>
+    (event: ClipboardEvent<HTMLInputElement>) => {
+      event.preventDefault();
+      setForm((current) => ({
+        ...current,
+        [field]: digitsOnly(event.clipboardData.getData('text'), maxLength),
       }));
     };
 
@@ -169,6 +272,11 @@ export default function RegisterPage() {
 
     if (!form.username.trim() || !form.email.trim() || !form.password.trim()) {
       showProblem('Username, email, and password are required.');
+      return;
+    }
+
+    if (!form.firstName.trim() || !form.lastName.trim()) {
+      showProblem('First name and last name are required.');
       return;
     }
 
@@ -273,6 +381,7 @@ export default function RegisterPage() {
               value={form.firstName}
               onChange={updateField('firstName')}
               fullWidth
+              required
               autoComplete="given-name"
             />
             <AppTextField
@@ -280,6 +389,7 @@ export default function RegisterPage() {
               value={form.lastName}
               onChange={updateField('lastName')}
               fullWidth
+              required
               autoComplete="family-name"
             />
             <AppTextField
@@ -297,44 +407,70 @@ export default function RegisterPage() {
               autoComplete="address-level2"
             />
             <AppTextField
+              select
               label="State"
               value={form.state}
               onChange={updateField('state')}
               fullWidth
+              disabled={loadingStates}
               autoComplete="address-level1"
-            />
+            >
+              <MenuItem value="">
+                <em>Select a state</em>
+              </MenuItem>
+              {states.map((state) => (
+                <MenuItem key={state.code} value={state.code}>
+                  {state.name}
+                </MenuItem>
+              ))}
+            </AppTextField>
             <AppTextField
+              select
               label="Country"
               value={form.country}
               onChange={updateField('country')}
               fullWidth
+              disabled={loadingCountries}
               autoComplete="country-name"
-            />
+            >
+              <MenuItem value="">
+                <em>Select a country</em>
+              </MenuItem>
+              <MenuItem value="UNL">Unlisted</MenuItem>
+              {countries.map((country) => (
+                <MenuItem key={country.iso3} value={country.iso3}>
+                  {country.long_name}
+                </MenuItem>
+              ))}
+            </AppTextField>
 
             <Typography variant="subtitle2" color="text.secondary">
               Phone (US)
             </Typography>
             <Stack direction="row" spacing={1} sx={{ width: '100%' }}>
               <AppTextField
-                label="Area"
+                placeholder="Area"
                 value={form.phoneArea}
                 onChange={updatePhoneField('phoneArea', 3)}
-                slotProps={{ htmlInput: { inputMode: 'numeric', maxLength: 3 } }}
+                onPaste={pastePhoneField('phoneArea', 3)}
+                slotProps={phoneInputSlotProps(3)}
                 fullWidth
                 autoComplete="tel-area-code"
               />
               <AppTextField
-                label="Prefix"
+                placeholder="Middle part"
                 value={form.phonePrefix}
                 onChange={updatePhoneField('phonePrefix', 3)}
-                slotProps={{ htmlInput: { inputMode: 'numeric', maxLength: 3 } }}
+                onPaste={pastePhoneField('phonePrefix', 3)}
+                slotProps={phoneInputSlotProps(3)}
                 fullWidth
               />
               <AppTextField
-                label="Line"
+                placeholder="Last part"
                 value={form.phoneLine}
                 onChange={updatePhoneField('phoneLine', 4)}
-                slotProps={{ htmlInput: { inputMode: 'numeric', maxLength: 4 } }}
+                onPaste={pastePhoneField('phoneLine', 4)}
+                slotProps={phoneInputSlotProps(4)}
                 fullWidth
               />
             </Stack>
@@ -343,6 +479,7 @@ export default function RegisterPage() {
               variant="outlined"
               size="large"
               fullWidth
+              disabled={assignedQuestionIds.length < 3 && savedQuestionIds.length < 3}
               onClick={() => setRecoveryOpen(true)}
             >
               Password Recovery
@@ -374,6 +511,7 @@ export default function RegisterPage() {
       <PasswordRecoveryDialog
         open={recoveryOpen}
         initialQuestionIds={savedQuestionIds}
+        assignedQuestionIds={assignedQuestionIds}
         onClose={() => setRecoveryOpen(false)}
         onSave={handleSavePasswordRecovery}
       />

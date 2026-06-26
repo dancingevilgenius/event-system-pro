@@ -350,6 +350,7 @@ export default function RegisterPage() {
               value={form.username}
               onChange={updateField('username')}
               fullWidth
+              required
               autoComplete="username"
             />
             <AppTextField
@@ -366,6 +367,7 @@ export default function RegisterPage() {
               value={form.password}
               onChange={updateField('password')}
               fullWidth
+              required
               autoComplete="new-password"
             />
             <AppTextField
@@ -374,6 +376,7 @@ export default function RegisterPage() {
               value={form.confirmPassword}
               onChange={updateField('confirmPassword')}
               fullWidth
+              required
               autoComplete="new-password"
             />
             <AppTextField

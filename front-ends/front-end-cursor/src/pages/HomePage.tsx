@@ -30,6 +30,9 @@ export default function HomePage() {
           >
             Competitor
           </Button>
+          <Button variant="contained" size="large" fullWidth onClick={() => navigate('/adminhome')}>
+            Admin
+          </Button>
         </Stack>
 
         <Stack spacing={2} sx={{ mb: 3, alignItems: 'center', width: '100%' }}>

@@ -84,6 +84,197 @@ export type RegisterUserResult = {
   email?: string;
 };
 
+export type ApiUserRecord = {
+  user_id: number;
+  username: string;
+  name_json: {
+    first?: string | null;
+    last?: string | null;
+    display?: string | null;
+  } | null;
+  addresses_json:
+    | Array<{
+        city?: string | null;
+        state_or_province?: string | null;
+      }>
+    | {
+        city?: string | null;
+        state_or_province?: string | null;
+      }
+    | null;
+  additional_info_json: Record<string, unknown> | null;
+};
+
+export type UserListRow = {
+  userId: number;
+  firstName: string;
+  lastName: string;
+  city: string;
+  state: string;
+  primaryRole: string;
+};
+
+export type UserFilters = {
+  firstName: string;
+  lastName: string;
+  city: string;
+  state: string;
+  primaryRole: '' | 'leader' | 'follower';
+};
+
+export type UserSortColumn = 'firstName' | 'lastName' | 'city' | 'state' | 'primaryRole';
+
+export type UserSort = {
+  column: UserSortColumn;
+  direction: 'asc' | 'desc';
+};
+
+export type FetchUsersPageResult = {
+  users: UserListRow[];
+  total: number;
+};
+
+const SORT_COLUMN_TO_POSTGREST: Record<UserSortColumn, string> = {
+  firstName: 'name_json->>first',
+  lastName: 'name_json->>last',
+  city: 'addresses_json->0->>city',
+  state: 'addresses_json->0->>state_or_province',
+  primaryRole: 'additional_info_json->>primary-role',
+};
+
+function escapePostgrestFilterValue(value: string): string {
+  return value.replace(/[*(),.\\]/g, (character) => `\\${character}`);
+}
+
+function appendIlikeFilter(params: URLSearchParams, column: string, value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return;
+  }
+
+  params.append(column, `ilike.*${escapePostgrestFilterValue(trimmed)}*`);
+}
+
+function appendEqFilter(params: URLSearchParams, column: string, value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return;
+  }
+
+  params.append(column, `eq.${trimmed}`);
+}
+
+function buildUserQueryParams(
+  offset: number,
+  limit: number,
+  filters: UserFilters,
+  sort: UserSort,
+): URLSearchParams {
+  const params = new URLSearchParams({
+    select: 'user_id,username,name_json,addresses_json,additional_info_json',
+    limit: String(limit),
+    offset: String(offset),
+  });
+
+  appendIlikeFilter(params, 'name_json->>first', filters.firstName);
+  appendIlikeFilter(params, 'name_json->>last', filters.lastName);
+  appendIlikeFilter(params, 'addresses_json->0->>city', filters.city);
+  appendEqFilter(params, 'addresses_json->0->>state_or_province', filters.state);
+  appendEqFilter(params, 'additional_info_json->>primary-role', filters.primaryRole);
+
+  const sortColumn = SORT_COLUMN_TO_POSTGREST[sort.column];
+  const nulls = sort.direction === 'asc' ? 'nullslast' : 'nullsfirst';
+  params.set('order', `${sortColumn}.${sort.direction}.${nulls},user_id.asc`);
+
+  return params;
+}
+
+function parseContentRangeTotal(contentRange: string | null): number | null {
+  if (!contentRange) {
+    return null;
+  }
+
+  const match = contentRange.match(/\/(\d+|\*)$/);
+  if (!match || match[1] === '*') {
+    return null;
+  }
+
+  return Number.parseInt(match[1], 10);
+}
+
+function primaryAddress(
+  addressesJson: ApiUserRecord['addresses_json'],
+): { city?: string | null; state_or_province?: string | null } | null {
+  if (Array.isArray(addressesJson)) {
+    return addressesJson[0] ?? null;
+  }
+
+  if (addressesJson && typeof addressesJson === 'object') {
+    return addressesJson;
+  }
+
+  return null;
+}
+
+function mapUserToListRow(user: ApiUserRecord): UserListRow {
+  const address = primaryAddress(user.addresses_json);
+  const additionalInfo = user.additional_info_json ?? {};
+  const primaryRole = additionalInfo['primary-role'];
+
+  return {
+    userId: user.user_id,
+    firstName: user.name_json?.first?.trim() ?? '',
+    lastName: user.name_json?.last?.trim() ?? '',
+    city: address?.city?.trim() ?? '',
+    state: address?.state_or_province?.trim() ?? '',
+    primaryRole: typeof primaryRole === 'string' ? primaryRole.trim() : '',
+  };
+}
+
+export async function fetchUsersPage(
+  offset: number,
+  limit: number,
+  filters: UserFilters = {
+    firstName: '',
+    lastName: '',
+    city: '',
+    state: '',
+    primaryRole: '',
+  },
+  sort: UserSort = { column: 'lastName', direction: 'asc' },
+): Promise<FetchUsersPageResult> {
+  const params = buildUserQueryParams(offset, limit, filters, sort);
+
+  const response = await fetch(`${POSTGREST_URL}/user?${params.toString()}`, {
+    headers: {
+      Prefer: 'count=exact',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Unable to load users (${response.status})`);
+  }
+
+  const records = (await response.json()) as ApiUserRecord[];
+  const total = parseContentRangeTotal(response.headers.get('Content-Range')) ?? records.length;
+
+  return {
+    users: records.map(mapUserToListRow),
+    total,
+  };
+}
+
+export async function fetchUsStateCodes(): Promise<string[]> {
+  const response = await fetch(`${POSTGREST_URL}/us_state_lu?select=code&order=code`);
+
+  if (!response.ok) {
+    throw new Error(`Unable to load state codes (${response.status})`);
+  }
+
+  const records = (await response.json()) as Array<{ code: string }>;
+  return records.map((record) => record.code);
+}
+
 export async function fetchSecretQuestions(): Promise<SecretQuestion[]> {
   const response = await fetch(
     `${POSTGREST_URL}/secret_question_lu?order=secret_question_id`,

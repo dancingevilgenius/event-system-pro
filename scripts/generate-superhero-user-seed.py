@@ -23,7 +23,7 @@ HEROES: list[tuple[str, str, str, str, str | None, str | None, str | None]] = [
     ("cyborg", "Victor", "Stone", "DC", "male", "silver", "red"),
     ("shazam", "Billy", "Batson", "DC", "male", "red", "gold"),
     ("robin", "Dick", "Grayson", "DC", "male", "red", "green"),
-    ("nightwing", "Dick", "Grayson", "DC", "male", "black", "blue"),
+    ("nightwing", "Richard", "Grayson", "DC", "male", "black", "blue"),
     ("batgirl", "Barbara", "Gordon", "DC", "female", "black", "yellow"),
     ("supergirl", "Kara", "Zor-El", "DC", "female", "blue", "red"),
     ("greenarrow", "Oliver", "Queen", "DC", "male", "green", "black"),
@@ -59,7 +59,7 @@ HEROES: list[tuple[str, str, str, str, str | None, str | None, str | None]] = [
     ("phantomstranger", "Jim", "Corrigan", "DC", "male", "purple", "black"),
     ("deadman", "Boston", "Brand", "DC", "male", "white", "red"),
     ("swampthing", "Alec", "Holland", "DC", "male", "green", "brown"),
-    ("spectre", "Jim", "Corrigan", "DC", "male", "white", "green"),
+    ("spectre", "Crispus", "Allen", "DC", "male", "white", "green"),
     ("doctorfate", "Kent", "Nelson", "DC", "male", "gold", "blue"),
     ("mister miracle", "Scott", "Free", "DC", "male", "green", "red"),
     ("big barda", "Barda", "Free", "DC", "female", "blue", "silver"),
@@ -97,7 +97,7 @@ HEROES: list[tuple[str, str, str, str, str | None, str | None, str | None]] = [
     ("huntress", "Helena", "Bertinelli", "DC", "female", "purple", "black"),
     ("batwoman", "Kate", "Kane", "DC", "female", "black", "red"),
     ("reneree", "Renee", "Montoya", "DC", "female", "brown", "black"),
-    ("oracle", "Barbara", "Gordon", "DC", "female", "black", "yellow"),
+    ("oracle", "Barbara", "Rand", "DC", "female", "black", "yellow"),
     ("timdrake", "Tim", "Drake", "DC", "male", "red", "black"),
     ("damianwayne", "Damian", "Wayne", "DC", "male", "green", "black"),
     ("stephaniebrown", "Stephanie", "Brown", "DC", "female", "purple", "black"),
@@ -205,7 +205,7 @@ HEROES: list[tuple[str, str, str, str, str | None, str | None, str | None]] = [
     ("shuri", "Shuri", "Udaku", "Marvel", "female", "black", "purple"),
     ("okoye", "Okoye", "Dora Milaje", "Marvel", "female", "red", "gold"),
     ("killmonger", "Erik", "Stevens", "Marvel", "male", "black", "gold"),
-    ("mysterio2", "Quentin", "Beck", "Marvel", "male", "silver", "green"),
+    ("mysterio2", "Ludwig", "Ravelli", "Marvel", "male", "silver", "green"),
     ("war machine", "James", "Rhodes", "Marvel", "male", "gray", "silver"),
     ("pepperpotts", "Virginia", "Potts", "Marvel", "female", "blue", "silver"),
     ("nickfury", "Nicholas", "Fury", "Marvel", "male", "black", "gray"),
@@ -323,13 +323,20 @@ def sql_json(value: dict | list) -> str:
 
 def main() -> None:
     seen: set[str] = set()
+    seen_names: set[tuple[str, str]] = set()
     rows: list[tuple[str, str, str, str, str, str, str, str, str]] = []
 
     for raw_username, first, last, publisher, sex, color1, color2 in HEROES:
         username = normalize_username(raw_username)
         if not username or username in seen:
             continue
+
+        name_key = (first.strip().lower(), last.strip().lower())
+        if name_key in seen_names:
+            continue
+
         seen.add(username)
+        seen_names.add(name_key)
 
         display = f"{first} {last}".strip()
         name_json = {

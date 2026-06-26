@@ -119,7 +119,7 @@ export type UserFilters = {
   lastName: string;
   city: string;
   state: string;
-  primaryRole: '' | 'leader' | 'follower';
+  primaryRole: null | 'leader' | 'follower';
 };
 
 export type UserSortColumn = 'firstName' | 'lastName' | 'city' | 'state' | 'primaryRole';
@@ -180,7 +180,9 @@ function buildUserQueryParams(
   appendIlikeFilter(params, 'name_json->>last', filters.lastName);
   appendIlikeFilter(params, 'addresses_json->0->>city', filters.city);
   appendEqFilter(params, 'addresses_json->0->>state_or_province', filters.state);
-  appendEqFilter(params, 'additional_info_json->>primary-role', filters.primaryRole);
+  if (filters.primaryRole !== null) {
+    appendEqFilter(params, 'additional_info_json->>primary-role', filters.primaryRole);
+  }
 
   const sortColumn = SORT_COLUMN_TO_POSTGREST[sort.column];
   const nulls = sort.direction === 'asc' ? 'nullslast' : 'nullsfirst';
@@ -239,7 +241,7 @@ export async function fetchUsersPage(
     lastName: '',
     city: '',
     state: '',
-    primaryRole: '',
+    primaryRole: null,
   },
   sort: UserSort = { column: 'lastName', direction: 'asc' },
 ): Promise<FetchUsersPageResult> {

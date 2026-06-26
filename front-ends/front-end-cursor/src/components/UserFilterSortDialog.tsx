@@ -24,7 +24,7 @@ export const EMPTY_USER_FILTERS: UserFilters = {
   lastName: '',
   city: '',
   state: '',
-  primaryRole: '',
+  primaryRole: null,
 };
 
 export const DEFAULT_USER_SORT: UserSort = {
@@ -40,8 +40,10 @@ const SORT_COLUMN_OPTIONS: { value: UserSort['column']; label: string }[] = [
   { value: 'primaryRole', label: 'Primary Role' },
 ];
 
+const PRIMARY_ROLE_NO_SELECTION = 'no-selection';
+
 const PRIMARY_ROLE_OPTIONS = [
-  { value: '', label: 'Any' },
+  { value: PRIMARY_ROLE_NO_SELECTION, label: 'no selection' },
   { value: 'leader', label: 'leader' },
   { value: 'follower', label: 'follower' },
 ] as const;
@@ -61,7 +63,10 @@ export default function UserFilterSortDialog({
   onClose,
   onApply,
 }: UserFilterSortDialogProps) {
-  const [filters, setFilters] = useState<UserFilters>(initialFilters);
+  const [filters, setFilters] = useState<UserFilters>({
+    ...initialFilters,
+    primaryRole: null,
+  });
   const [sort, setSort] = useState<UserSort>(initialSort);
   const [stateCodes, setStateCodes] = useState<string[]>([]);
   const [loadingStates, setLoadingStates] = useState(false);
@@ -72,7 +77,7 @@ export default function UserFilterSortDialog({
       return;
     }
 
-    setFilters(initialFilters);
+    setFilters({ ...initialFilters, primaryRole: null });
     setSort(initialSort);
     setLoadError(null);
     setLoadingStates(true);
@@ -183,10 +188,14 @@ export default function UserFilterSortDialog({
             <TextField
               select
               label="Primary Role"
-              value={filters.primaryRole}
-              onChange={(event) =>
-                updateFilter('primaryRole', event.target.value as UserFilters['primaryRole'])
-              }
+              value={filters.primaryRole ?? PRIMARY_ROLE_NO_SELECTION}
+              onChange={(event) => {
+                const value = event.target.value;
+                updateFilter(
+                  'primaryRole',
+                  value === PRIMARY_ROLE_NO_SELECTION ? null : (value as 'leader' | 'follower'),
+                );
+              }}
               fullWidth
             >
               {PRIMARY_ROLE_OPTIONS.map((option) => (

@@ -34,7 +34,7 @@ function hasActiveFilters(filters: UserFilters): boolean {
     filters.lastName.trim() !== '' ||
     filters.city.trim() !== '' ||
     filters.state !== '' ||
-    filters.primaryRole !== ''
+    filters.primaryRole !== null
   );
 }
 

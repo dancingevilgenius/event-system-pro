@@ -1,0 +1,379 @@
+"""Generate Application Rules PDF for Event System Pro."""
+
+from pathlib import Path
+
+from fpdf import FPDF
+
+OUTPUT_PATH = Path(__file__).resolve().parent.parent / "docs" / "cursor" / "application-rules.pdf"
+
+
+class RulesPDF(FPDF):
+    def header(self):
+        self.set_font("Helvetica", "B", 14)
+        self.cell(0, 10, "Event System Pro - Application Rules", new_x="LMARGIN", new_y="NEXT")
+        self.ln(2)
+
+    def footer(self):
+        self.set_y(-15)
+        self.set_font("Helvetica", "I", 8)
+        self.set_text_color(100, 100, 100)
+        self.cell(0, 10, f"Page {self.page_no()}", align="C")
+
+    def section_title(self, title: str):
+        self.ln(4)
+        self.set_x(self.l_margin)
+        self.set_font("Helvetica", "B", 12)
+        self.set_text_color(0, 0, 0)
+        self.multi_cell(self.epw, 7, title)
+        self.ln(1)
+
+    def subsection_title(self, title: str):
+        self.ln(2)
+        self.set_x(self.l_margin)
+        self.set_font("Helvetica", "B", 10)
+        self.multi_cell(self.epw, 6, title)
+
+    def body_text(self, text: str):
+        self.set_x(self.l_margin)
+        self.set_font("Helvetica", "", 10)
+        self.multi_cell(self.epw, 5, text)
+        self.ln(1)
+
+    def bullet(self, text: str):
+        self.set_x(self.l_margin)
+        self.set_font("Helvetica", "", 10)
+        self.multi_cell(self.epw, 5, f"  -  {text}")
+
+
+def build_pdf() -> None:
+    pdf = RulesPDF()
+    pdf.set_auto_page_break(auto=True, margin=20)
+    pdf.add_page()
+
+    pdf.body_text(
+        "Plain-language summary of rules, restrictions, and constraints "
+        "accumulated for the Event System Pro front-end (Judging page and related flows)."
+    )
+
+    pdf.section_title("General layout and navigation")
+    for item in [
+        "Main content blocks (messages, buttons, fields, dropdowns) are capped at 360px wide and centered.",
+        "Default route is Login (/). Unknown URLs redirect to login.",
+        "Staff reaches Judging via Staff -> Contest, which goes to /judging.",
+        "Judging Submit and Back to Staff both return to /staff.",
+        "Login currently accepts any credentials and goes to /home (no real auth yet).",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("Home page (/home)")
+    for item in [
+        "After login, user lands on Home (Staff / Competitor role selection).",
+        "Staff button navigates to /staff.",
+        "Competitor button navigates to /competitor.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("Competitor page (/competitor) - placeholder")
+    for item in [
+        "Opened from the Competitor button on Home.",
+        'Page title: Competitor (ContestSelectionPage with title="Competitor").',
+        "Three full-width buttons: Contest 1, Contest 2, Contest 3.",
+        "Contest buttons are placeholders - they do not navigate anywhere (no contestRoute).",
+        "Back to Home button navigates to /home.",
+        "Same layout shell as Staff but without a working contest destination yet.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Message boxes")
+    pdf.body_text(
+        "App-wide stacked alerts at the top of the screen (not Judging-specific). "
+        "Wrapped by MessageProvider in main.tsx."
+    )
+    pdf.subsection_title("Types and appearance")
+    for item in [
+        "Three message types: success, warning, and problem.",
+        "Each type uses a distinct outlined MUI Alert color scheme (green, amber, red).",
+        "Fixed at top center (top: 16px), capped at 360px wide (CONTENT_MAX_WIDTH).",
+        "Container uses aria-live: polite for screen readers.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("Stacking and dismissal")
+    for item in [
+        "Multiple messages can be visible at the same time, stacked vertically.",
+        "Messages do not auto-dismiss - they persist until the user clicks one.",
+        "Clicking a message plays a collapse animation (~350ms), then removes it.",
+        "New messages slide in from above when added.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("API and usage")
+    for item in [
+        "Any page can call useMessages() (must be inside MessageProvider).",
+        "Show messages with showSuccess(text), showWarning(text), or showProblem(text).",
+        "clearMessages() removes all messages immediately (no exit animation).",
+        "dismissMessage(id) removes a single message immediately (after collapse animation).",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("Page-specific behavior")
+    for item in [
+        "Login and Register call clearMessages() on mount.",
+        "Home has a Test Messages button that clears the stack, then shows one of each type:",
+        "  Success: Your change has been saved.",
+        "  Warning: Your event starts in less than 15 min.",
+        "  Problem: Your sign in time has passed.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Theme / skin switcher")
+    pdf.body_text(
+        "App-wide MUI theming via skins. AppThemeProvider wraps the app in main.tsx."
+    )
+    pdf.subsection_title("Home page placement")
+    for item in [
+        "Home page (/home) exposes the skin control via ThemeSwitcher.",
+        "Layout order: Staff and Competitor buttons, then Skin dropdown, then Test Messages and Back to Login.",
+        "Dropdown uses the same 360px centered width as other main controls.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("Dropdown behavior")
+    for item in [
+        'MUI Select with label "Skin" (FormControl, size small, full width).',
+        "Two options: Light and Dark.",
+        "Changing the selection updates the active skin immediately across the entire app.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("Persistence")
+    for item in [
+        "Selected skin id saved to localStorage key event-system-pro.skin-id.",
+        "On load, stored value is applied; invalid or missing values fall back to Light.",
+        "Legacy stored value default is treated as Light.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("App-wide application")
+    for item in [
+        "AppThemeProvider builds MUI theme from active skin and supplies ThemeProvider + CssBaseline.",
+        "All pages inherit the current skin.",
+        "useThemeSwitcher() exposes skinId, setSkin, skins, and currentSkin.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Judging page - competitor data")
+    for item in [
+        "Each session shows 20 couples (accordion rows).",
+        "Each couple has a bib number (1-999, unique within the set, sorted ascending), a Leader, and a Follower (first + last name).",
+        "Names come from Legion of Super-Heroes (DC) and Shi'ar Imperial Guard (Marvel-inspired) pools.",
+        "Each character has a sex value (male or female) based on common comic portrayals.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("Name selection rules")
+    for item in [
+        "Leader: pick a male character 90% of the time.",
+        "Follower: pick a female character 90% of the time.",
+        "The other 10% can be anyone still available in the pool.",
+        "A character may appear only once in the whole dataset, in either Leader or Follower slot.",
+        "Names are excluded if first or last name contains any whole word: boy, girl, lad, lass, man, woman (also ladd).",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Accordion behavior")
+    for item in [
+        "Only one panel can be open at a time.",
+        "Collapsed row (accordion title): bib # | leader swatch * names * follower swatch | score.",
+        "Leader color cell (when set) is to the left of the leader name.",
+        "Follower color cell (when set) is to the right of the follower name.",
+        "Names between swatches: Leader * Follower.",
+        "Expanded row shows: Raw Score first, then leader and follower rows (with color picking).",
+        "Clicking inside expanded details does not collapse the accordion.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("Sort/filter freeze while editing")
+    for item in [
+        "While a panel is open, the list does not re-sort or re-filter, even if scores change or the sort/filter dropdown changes.",
+        "Re-sort/re-filter happens when the user collapses the open panel or opens a different panel.",
+        "Changing the sort/filter dropdown always closes any open panel and applies the new option immediately.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Raw scores")
+    for item in [
+        'Label is "Raw Score".',
+        "Entered with 4 digit dropdowns (0-9), displayed as XX.XX (e.g. 87.43).",
+        "Score range: 0.00 to 99.99.",
+        "Summary score area is blank until the score has been touched/changed.",
+        "Once any digit changes, the score shows in the collapsed header immediately.",
+        "A couple counts as scored only if raw score is greater than 0.0 (not merely touched at 0.00).",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("Assign Random Scores")
+    for item in [
+        "Dropdown action (not a persistent sort mode).",
+        "Sets every couple to a random score between 30.0 and 99.9.",
+        "Marks all as touched, switches sort to Sort by Raw Score, and closes any open panel.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Sorting and filtering")
+    pdf.body_text("Dropdown options:")
+    for item in [
+        "Sort by Bib #: ascending bib number (default).",
+        "Sort by Raw Score: highest score first; unscored/touched-at-zero at bottom; bib # breaks ties.",
+        "Sort by Leader's Last Name: A-Z; bib # breaks ties.",
+        "Sort by Follower's Last Name: A-Z; bib # breaks ties.",
+        "Unscored Only: hides couples with a non-zero raw score.",
+        "Assign Random Scores: bulk random scoring (see above).",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("Additional sort rules")
+    for item in [
+        "When 100% complete is first reached, sort automatically switches to Sort by Raw Score.",
+        "Unscored Only treats a couple as unscored if never touched, or touched but still <= 0.0.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Progress and submit")
+    for item in [
+        'Top of page shows Percent Complete bar (replaces old "Judging" header).',
+        "Progress = couples with non-zero raw score / 20 x 100.",
+        "Text: Percent Complete: X%.",
+        "At 100%, the bar becomes a Submit button.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Duplicate raw scores")
+    pdf.body_text(
+        "When an accordion closes (collapse, switch panels, or change sort/filter while one was open), "
+        "if that couple's raw score matches another couple's score (> 0), open the Duplicate Score dialog."
+    )
+    pdf.subsection_title("Dialog rules")
+    for item in [
+        "Title: Duplicate Score.",
+        "Close X in top-right (dismisses without changing scores).",
+        "Two choices using leader and follower first names: put the current couple higher, or put the other couple higher.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("Resolution logic")
+    for item in [
+        "Preferred fix: raise the chosen couple's score by +0.1.",
+        "If +0.1 would collide with someone else's score: leave the chosen couple alone and lower the other duplicate couple by 0.1 instead.",
+        "Scores stay within 0.00-99.99.",
+        "After a choice, if sort is Sort by Raw Score, the list re-sorts to reflect new scores (including when another panel is still open).",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Color picking")
+    for item in [
+        "Each leader and follower can have two colors: top and bottom.",
+        "Colors are chosen from a fixed palette (8 columns x 14 rows).",
+        "Palette icon opens the dialog if no colors yet; swatch opens it if colors exist.",
+        "First click sets top color; second click sets bottom color, then auto-save and close.",
+        "Titles: Pick Top Color for {firstname}, then Pick Bottom Color {firstname}.",
+        "X cancels without saving.",
+        "Reopening shows prior selections; first click replaces top, second replaces bottom.",
+        "After one pick in a session, clicking the backdrop saves that one color and closes.",
+        "Color swatches appear in the collapsed summary when at least one color is set.",
+        "Colors are stored per bib + role (leader or follower).",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("Color swatch shape")
+    for item in [
+        "Each competitor's colors are shown in a square swatch cell (20x20px).",
+        "Top color fills the top half of the square; bottom color fills the bottom half.",
+        "The cell is split horizontally (top over bottom), not side-by-side.",
+        "In the expanded accordion, the swatch (or palette icon) is on the left of each leader/follower name; name is to the right.",
+        "In the collapsed accordion title, the same split square cells appear when colors are set.",
+        "Leader swatch: immediately to the left of the leader (first) name.",
+        "Follower swatch: immediately to the right of the follower (second) name.",
+        "If only top is set (no bottom yet), top fills the entire square until bottom is chosen.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Name display in summary row")
+    for item in [
+        "Names are shown as Leader * Follower in the collapsed accordion title.",
+        "Leader color swatch (when set) is to the left of the leader name.",
+        "Follower color swatch (when set) is to the right of the follower name.",
+        "If space is tight, names shorten progressively: both full -> leader initial -> follower initial -> both initials.",
+        "Shortening accounts for space taken by color swatches.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Mobile-friendly layout")
+    pdf.body_text(
+        "The app is designed to be usable on phones as well as desktop - "
+        "narrow, centered content rather than wide multi-column layouts."
+    )
+    pdf.subsection_title("Viewport and page shell")
+    for item in [
+        "index.html: width=device-width, initial-scale=1.0, interactive-widget=resizes-content.",
+        "body uses min-height 100vh with no default margin.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("Narrow centered column")
+    for item in [
+        "Primary content capped at 360px (CONTENT_MAX_WIDTH) and centered.",
+        "Applies to messages, buttons, fields, dropdowns, and centeredContentStackSx stacks.",
+        "MUI theme caps buttons and form controls at 360px.",
+        "Pages use Container (sm on Login/Register, md elsewhere) with py: 6.",
+        "Buttons in stacks use fullWidth within the centered column.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("Touch and small screens")
+    for item in [
+        "useIsMobileDevice: coarse pointer, or screen <= 768px and touch-capable.",
+        "Layout uses the narrow column; no separate desktop/mobile page layouts.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("Dialogs and overlays")
+    for item in [
+        "Modals use Dialog fullWidth maxWidth xs.",
+        "Message stack fixed at top with horizontal padding (px: 2).",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("Judging on narrow widths")
+    for item in [
+        "Accordion summary names shorten when space is tight (ResizeObserver).",
+        "Same accordion UI at all breakpoints; no mobile-only Judging layout.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Mobile and form behavior (Login / Register)")
+    for item in [
+        "AppTextField on mobile scrolls focused field into view when keyboard opens.",
+        "Tapping the field container focuses the input.",
+        "Default enterKeyHint: done (single-line) or enter (multiline).",
+        "Default inputMode: text (password fields excluded).",
+        "Register numeric fields use inputMode: numeric with max lengths on phone/zip fields.",
+        "Outlined inputs use 16px font size to reduce unwanted zoom on focus (especially iOS).",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Technical constraints (implicit but enforced)")
+    for item in [
+        "No @mui/icons-material - icons are local SVGs (CloseIcon, PaletteOutlinedIcon, etc.).",
+        "Judging entries are generated once per page load (random bib numbers and names are fixed for that visit).",
+        "Score digit dropdown clicks must not toggle the accordion (stopPropagation).",
+    ]:
+        pdf.bullet(item)
+
+    OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    pdf.output(OUTPUT_PATH)
+    print(f"Wrote {OUTPUT_PATH}")
+
+
+if __name__ == "__main__":
+    build_pdf()

@@ -8,11 +8,23 @@ import {
 } from '@mui/material';
 import { type ChangeEvent, type FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+  hashPasswordRecoveryAnswers,
+  registerUser,
+  type PasswordRecoveryJson,
+} from '../api/postgrest';
+import PasswordRecoveryDialog, {
+  type PasswordRecoveryAnswer,
+} from '../components/PasswordRecoveryDialog';
 import AppTextField from '../components/AppTextField';
 import { centeredContentStackSx } from '../constants/layout';
 import { useMessages } from '../hooks/useMessages';
 
 type RegisterForm = {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
   firstName: string;
   lastName: string;
   street: string;
@@ -22,9 +34,14 @@ type RegisterForm = {
   phoneArea: string;
   phonePrefix: string;
   phoneLine: string;
+  passwordRecoveryJson: PasswordRecoveryJson | null;
 };
 
 const initialForm: RegisterForm = {
+  username: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
   firstName: '',
   lastName: '',
   street: '',
@@ -34,16 +51,73 @@ const initialForm: RegisterForm = {
   phoneArea: '',
   phonePrefix: '',
   phoneLine: '',
+  passwordRecoveryJson: null,
 };
 
 function digitsOnly(value: string, maxLength: number): string {
   return value.replace(/\D/g, '').slice(0, maxLength);
 }
 
+function buildNameJson(firstName: string, lastName: string) {
+  const first = firstName.trim();
+  const last = lastName.trim();
+  const display = [first, last].filter(Boolean).join(' ');
+
+  return {
+    prefix: null,
+    first: first || null,
+    middle: null,
+    last: last || null,
+    suffix: null,
+    display: display || null,
+  };
+}
+
+function buildPhoneNumbersJson(phoneArea: string, phonePrefix: string, phoneLine: string) {
+  const number = `${phoneArea}${phonePrefix}${phoneLine}`;
+  if (number.length !== 10) {
+    return [];
+  }
+
+  return [
+    {
+      type: 'mobile',
+      country_code: '1',
+      number,
+      primary: true,
+    },
+  ];
+}
+
+function buildAddressesJson(
+  street: string,
+  city: string,
+  state: string,
+  country: string,
+) {
+  if (!street.trim() && !city.trim() && !state.trim() && !country.trim()) {
+    return [];
+  }
+
+  return [
+    {
+      label: 'home',
+      line1: street.trim() || null,
+      line2: null,
+      city: city.trim() || null,
+      state_or_province: state.trim() || null,
+      postal_code: null,
+      country_code: country.trim() || null,
+    },
+  ];
+}
+
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const { clearMessages } = useMessages();
+  const { clearMessages, showProblem, showSuccess } = useMessages();
   const [form, setForm] = useState<RegisterForm>(initialForm);
+  const [recoveryOpen, setRecoveryOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     clearMessages();
@@ -63,11 +137,93 @@ export default function RegisterPage() {
       }));
     };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    // Registration API will be wired up later.
-    navigate('/');
+  const handleSavePasswordRecovery = async (answers: PasswordRecoveryAnswer[]) => {
+    if (
+      answers.length !== 3 ||
+      answers.some((answer) => answer.answer.trim().length === 0)
+    ) {
+      throw new Error('Each answer must contain non-whitespace characters.');
+    }
+
+    const result = await hashPasswordRecoveryAnswers(
+      answers.map((answer) => ({
+        secret_question_id: answer.secretQuestionId,
+        answer: answer.answer,
+      })),
+    );
+
+    if (!result.ok || !result.password_recovery_json) {
+      throw new Error(result.message);
+    }
+
+    setForm((current) => ({
+      ...current,
+      passwordRecoveryJson: result.password_recovery_json ?? null,
+    }));
+    setRecoveryOpen(false);
+    showSuccess(result.message);
   };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (!form.username.trim() || !form.email.trim() || !form.password.trim()) {
+      showProblem('Username, email, and password are required.');
+      return;
+    }
+
+    if (form.password.length < 8) {
+      showProblem('Password must be at least 8 characters.');
+      return;
+    }
+
+    if (form.password !== form.confirmPassword) {
+      showProblem('Passwords do not match.');
+      return;
+    }
+
+    if (!form.passwordRecoveryJson) {
+      showProblem('Set up three password recovery secret questions before creating your account.');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const result = await registerUser({
+        username: form.username.trim(),
+        email: form.email.trim(),
+        password: form.password,
+        nameJson: buildNameJson(form.firstName, form.lastName),
+        phoneNumbersJson: buildPhoneNumbersJson(
+          form.phoneArea,
+          form.phonePrefix,
+          form.phoneLine,
+        ),
+        addressesJson: buildAddressesJson(
+          form.street,
+          form.city,
+          form.state,
+          form.country,
+        ),
+        passwordRecoveryJson: form.passwordRecoveryJson,
+      });
+
+      if (!result.ok) {
+        showProblem(result.message);
+        return;
+      }
+
+      showSuccess(result.message);
+      navigate('/');
+    } catch (error) {
+      showProblem(error instanceof Error ? error.message : 'Registration failed.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const savedQuestionIds =
+    form.passwordRecoveryJson?.questions.map((question) => question.secret_question_id) ?? [];
 
   return (
     <Container maxWidth="sm" sx={{ py: 6 }}>
@@ -79,8 +235,39 @@ export default function RegisterPage() {
           Create your account with contact information.
         </Typography>
 
-        <Box component="form" onSubmit={handleSubmit} noValidate>
+        <Box component="form" onSubmit={(event) => void handleSubmit(event)} noValidate>
           <Stack spacing={2} sx={centeredContentStackSx}>
+            <AppTextField
+              label="Username"
+              value={form.username}
+              onChange={updateField('username')}
+              fullWidth
+              autoComplete="username"
+            />
+            <AppTextField
+              label="Email"
+              type="email"
+              value={form.email}
+              onChange={updateField('email')}
+              fullWidth
+              autoComplete="email"
+            />
+            <AppTextField
+              label="Password"
+              type="password"
+              value={form.password}
+              onChange={updateField('password')}
+              fullWidth
+              autoComplete="new-password"
+            />
+            <AppTextField
+              label="Confirm Password"
+              type="password"
+              value={form.confirmPassword}
+              onChange={updateField('confirmPassword')}
+              fullWidth
+              autoComplete="new-password"
+            />
             <AppTextField
               label="First Name"
               value={form.firstName}
@@ -152,9 +339,29 @@ export default function RegisterPage() {
               />
             </Stack>
 
+            <Button
+              variant="outlined"
+              size="large"
+              fullWidth
+              onClick={() => setRecoveryOpen(true)}
+            >
+              Password Recovery
+            </Button>
+            {savedQuestionIds.length === 3 && (
+              <Typography variant="body2" color="text.secondary" align="center">
+                3 secret questions saved for password recovery.
+              </Typography>
+            )}
+
             <Stack spacing={2} sx={centeredContentStackSx}>
-              <Button type="submit" variant="contained" size="large" fullWidth>
-                Create Account
+              <Button
+                type="submit"
+                variant="contained"
+                size="large"
+                fullWidth
+                disabled={submitting}
+              >
+                {submitting ? 'Creating Account…' : 'Create Account'}
               </Button>
               <Button variant="text" fullWidth onClick={() => navigate('/')}>
                 Back to Login
@@ -163,6 +370,13 @@ export default function RegisterPage() {
           </Stack>
         </Box>
       </Paper>
+
+      <PasswordRecoveryDialog
+        open={recoveryOpen}
+        initialQuestionIds={savedQuestionIds}
+        onClose={() => setRecoveryOpen(false)}
+        onSave={handleSavePasswordRecovery}
+      />
     </Container>
   );
 }

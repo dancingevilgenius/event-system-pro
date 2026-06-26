@@ -56,6 +56,46 @@ export type LoginResult = {
   email?: string;
 };
 
+export type SecretQuestion = {
+  secret_question_id: number;
+  question: string;
+  created_date: string;
+};
+
+export type PasswordRecoveryJson = {
+  method: 'secret_questions';
+  questions: Array<{
+    secret_question_id: number;
+    answer_hash: string;
+  }>;
+};
+
+export type HashPasswordRecoveryResult = {
+  ok: boolean;
+  message: string;
+  password_recovery_json?: PasswordRecoveryJson;
+};
+
+export type RegisterUserResult = {
+  ok: boolean;
+  message: string;
+  user_id?: number;
+  username?: string;
+  email?: string;
+};
+
+export async function fetchSecretQuestions(): Promise<SecretQuestion[]> {
+  const response = await fetch(
+    `${POSTGREST_URL}/secret_question_lu?order=secret_question_id`,
+  );
+
+  if (!response.ok) {
+    throw new Error(`Unable to load secret questions (${response.status})`);
+  }
+
+  return (await response.json()) as SecretQuestion[];
+}
+
 export function login(identifier: string, password: string) {
   return callRpc<LoginResult>('login', {
     p_identifier: identifier,
@@ -85,5 +125,33 @@ export function forgotPasswordComplete(
     p_email: email,
     p_code: code,
     p_new_password: newPassword,
+  });
+}
+
+export function hashPasswordRecoveryAnswers(
+  answers: Array<{ secret_question_id: number; answer: string }>,
+) {
+  return callRpc<HashPasswordRecoveryResult>('hash_password_recovery_answers', {
+    p_answers: answers,
+  });
+}
+
+export function registerUser(params: {
+  username: string;
+  email: string;
+  password: string;
+  nameJson: Record<string, unknown>;
+  phoneNumbersJson: unknown[];
+  addressesJson: unknown[];
+  passwordRecoveryJson: PasswordRecoveryJson;
+}) {
+  return callRpc<RegisterUserResult>('register_user', {
+    p_username: params.username,
+    p_email: params.email,
+    p_password: params.password,
+    p_name_json: params.nameJson,
+    p_phone_numbers_json: params.phoneNumbersJson,
+    p_addresses_json: params.addressesJson,
+    p_password_recovery_json: params.passwordRecoveryJson,
   });
 }

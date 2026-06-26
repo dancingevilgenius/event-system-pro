@@ -17,10 +17,9 @@ import {
   Divider,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { centeredContentStackSx, pageContainerSx, CONTENT_MAX_WIDTH } from "@/constants/layout";
+import { centeredContentStackSx, pageContainerSx } from "@/constants/layout";
 import { PercentCompleteBar } from "@/components/PercentCompleteBar";
 import { CompetitorColorSwatchBox } from "@/components/CompetitorColorSwatchBox";
-import { CompetitorColorSwatch } from "@/components/CompetitorColorSwatch";
 import { CompetitorColorDialog } from "@/components/CompetitorColorDialog";
 import { DuplicateScoreDialog } from "@/components/DuplicateScoreDialog";
 import { PaletteOutlinedIcon } from "@/icons/PaletteOutlinedIcon";

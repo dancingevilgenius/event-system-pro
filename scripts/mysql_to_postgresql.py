@@ -1,9 +1,9 @@
 import re
 from pathlib import Path
 
-ROOT = Path(r"R:/event-system-pro")
-MYSQL_DUMP = ROOT / "tsl_db_dump_navicat_2021_04_04.sql"
-PG_OUTPUT = ROOT / "tsl_schema_postgresql.sql"
+ROOT = Path(__file__).resolve().parent.parent
+MYSQL_DUMP = ROOT / "database" / "tsl" / "tsl_db_dump_navicat_2021_04_04.sql"
+PG_OUTPUT = ROOT / "database" / "tsl" / "tsl_schema_postgresql.sql"
 
 TABLE_ORDER = [
     "competitor_type_lu", "country_lu", "us_state_lu", "secret_question_lu",
@@ -169,7 +169,7 @@ header = """-- PostgreSQL schema converted from tsl_db_dump_navicat_2021_04_04.s
 --   psql -U postgres -c \"CREATE DATABASE event_system_pro WITH ENCODING 'UTF8' TEMPLATE template0;\"
 --
 -- Step 2: apply schema and seed data
---   psql -U postgres -d event_system_pro -f tsl_schema_postgresql.sql
+--   psql -U postgres -d event_system_pro -f database/tsl/tsl_schema_postgresql.sql
 
 \\connect event_system_pro
 

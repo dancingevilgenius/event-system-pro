@@ -5,7 +5,7 @@
 --   psql -U postgres -c "CREATE DATABASE event_system_pro WITH ENCODING 'UTF8' TEMPLATE template0;"
 --
 -- Step 2: apply schema and seed data
---   psql -U postgres -d event_system_pro -f tsl_schema_postgresql.sql
+--   psql -U postgres -d event_system_pro -f database/tsl/tsl_schema_postgresql.sql
 
 \connect event_system_pro
 

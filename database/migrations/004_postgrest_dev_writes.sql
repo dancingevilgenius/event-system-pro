@@ -20,8 +20,8 @@ GRANT INSERT, UPDATE, DELETE ON
   public.competitor_type_lu,
   public.skill_level_lu,
   public.secret_question_lu,
-  public.fight_event_group,
-  public.fight_event,
+  public.event_group,
+  public.event,
   public.contest,
   public.competitor
 TO anon, authenticated;

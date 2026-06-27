@@ -37,7 +37,7 @@ GRANT USAGE ON SCHEMA api TO anon, authenticated;
 
 CREATE OR REPLACE VIEW api.event_type_lu AS
 SELECT event_type_code, description_json, created_date, created_by
-FROM public.event_type_lu;
+FROM public."event"_type_lu;
 
 CREATE OR REPLACE VIEW api.country_lu AS
 SELECT
@@ -71,7 +71,7 @@ CREATE OR REPLACE VIEW api.secret_question_lu AS
 SELECT secret_question_id, question, created_date
 FROM public.secret_question_lu;
 
-CREATE OR REPLACE VIEW api.fight_event_group AS
+CREATE OR REPLACE VIEW api.event_group AS
 SELECT
   event_group_code,
   full_name,
@@ -80,9 +80,9 @@ SELECT
   created_by,
   modified_date,
   modified_by
-FROM public.fight_event_group;
+FROM public."event"_group;
 
-CREATE OR REPLACE VIEW api.fight_event AS
+CREATE OR REPLACE VIEW api.event AS
 SELECT
   event_id,
   fight_event_group_code,
@@ -100,7 +100,7 @@ SELECT
   created_by,
   updated_date,
   updated_by
-FROM public.fight_event
+FROM public."event"
 WHERE active IS NOT FALSE;
 
 CREATE OR REPLACE VIEW api.contest AS

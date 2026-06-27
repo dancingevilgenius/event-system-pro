@@ -5,12 +5,20 @@ ROOT = Path(__file__).resolve().parent.parent
 MYSQL_DUMP = ROOT / "database" / "event-system-pro" / "tsl_db_dump_navicat_2021_04_04.sql"
 PG_OUTPUT = ROOT / "database" / "event-system-pro" / "evp_schema_postgresql.sql"
 
+TABLE_RENAMES = {
+    "fight_event_group": "event_group",
+    "fight_event": "event",
+}
+
 TABLE_ORDER = [
     "competitor_type_lu", "country_lu", "us_state_lu", "secret_question_lu",
     "skill_level_lu", "event_type_lu", "fight_event_group", "fight_event",
     "charter", "user", "contact", "image", "system_config", "contest",
     "competitor", "contest_heat", "fight_event_staff", "user_preference",
 ]
+
+def pg_table_name(mysql_table: str) -> str:
+    return TABLE_RENAMES.get(mysql_table, mysql_table)
 
 def strip_mysql_identifiers(text):
     return text.replace("`", "")
@@ -49,7 +57,7 @@ def convert_column_type(col_def):
     return col_def.strip()
 
 def quote_pg_identifier(name):
-    return f'"{name}"' if name.lower() == "user" else name
+    return f'"{name}"' if name.lower() in {"user", "event"} else name
 
 def split_sql_values(values: str) -> list[str]:
     parts, current, in_quote, escape = [], [], False, False
@@ -110,10 +118,14 @@ def parse_create_tables(content):
                     idx = re.sub(r"KEY `?(\w+)`?", r"\1", line)
                     m = re.match(r"(\w+) \((.+)\)", idx, flags=re.I)
                     if m:
-                        post_indexes.append(f"CREATE INDEX IF NOT EXISTS {m.group(1)} ON {quote_pg_identifier(table_name)} ({m.group(2)});")
+                        post_indexes.append(
+                            f"CREATE INDEX IF NOT EXISTS {m.group(1)} ON {quote_pg_identifier(pg_table_name(table_name))} ({m.group(2)});"
+                        )
                     continue
                 line = re.sub(r"REFERENCES `user`", 'REFERENCES "user"', line, flags=re.I)
                 line = re.sub(r"REFERENCES user \(", 'REFERENCES "user" (', line, flags=re.I)
+                line = re.sub(r"REFERENCES `fight_event`", 'REFERENCES "event"', line, flags=re.I)
+                line = re.sub(r"REFERENCES fight_event \(", 'REFERENCES "event" (', line, flags=re.I)
                 inline_constraints.append(line)
                 continue
             parts = line.split(None, 1)
@@ -122,7 +134,13 @@ def parse_create_tables(content):
                 converted_lines.append(f"  {quote_pg_identifier(col_name)} {convert_column_type(rest)}")
             else:
                 converted_lines.append(f"  {line}")
-        ddl = "CREATE TABLE IF NOT EXISTS " + quote_pg_identifier(table_name) + " (\n" + ",\n".join(converted_lines + inline_constraints) + "\n);"
+        ddl = (
+            "CREATE TABLE IF NOT EXISTS "
+            + quote_pg_identifier(pg_table_name(table_name))
+            + " (\n"
+            + ",\n".join(converted_lines + inline_constraints)
+            + "\n);"
+        )
         ddl = re.sub(r",\s*UNIQUE \(contest_id\)", "", ddl, flags=re.I)
         if post_indexes:
             ddl += "\n" + "\n".join(post_indexes)
@@ -155,7 +173,9 @@ def parse_inserts(content, table_columns):
         table, values = match.group(1), match.group(2)
         values = convert_insert_values(table, values, table_columns)
         values = re.sub(r"\bnull\b", "NULL", values, flags=re.I)
-        inserts.setdefault(table, []).append(f"INSERT INTO {quote_pg_identifier(table)} VALUES ({values});")
+        inserts.setdefault(table, []).append(
+            f"INSERT INTO {quote_pg_identifier(pg_table_name(table))} VALUES ({values});"
+        )
     return inserts
 
 content = MYSQL_DUMP.read_text(encoding="utf-8")
@@ -186,8 +206,8 @@ DROP TABLE IF EXISTS image CASCADE;
 DROP TABLE IF EXISTS system_config CASCADE;
 DROP TABLE IF EXISTS charter CASCADE;
 DROP TABLE IF EXISTS \"user\" CASCADE;
-DROP TABLE IF EXISTS fight_event CASCADE;
-DROP TABLE IF EXISTS fight_event_group CASCADE;
+DROP TABLE IF EXISTS \"event\" CASCADE;
+DROP TABLE IF EXISTS event_group CASCADE;
 DROP TABLE IF EXISTS event_type_lu CASCADE;
 DROP TABLE IF EXISTS skill_level_lu CASCADE;
 DROP TABLE IF EXISTS secret_question_lu CASCADE;
@@ -200,7 +220,7 @@ DROP TABLE IF EXISTS competitor_type_lu CASCADE;
 parts = [header]
 for table in TABLE_ORDER:
     if table in tables:
-        parts.append(f"-- Table: {table}\n" + tables[table] + "\n")
+        parts.append(f"-- Table: {pg_table_name(table)}\n" + tables[table] + "\n")
 
 parts.append("-- Seed data\n")
 for table in TABLE_ORDER:
@@ -209,7 +229,10 @@ for table in TABLE_ORDER:
 
 parts.append("\n-- Align identity sequences with seeded primary keys\n")
 for table, col in [("country_lu","country_id"),("us_state_lu","id"),("secret_question_lu","secret_question_id"),("fight_event","event_id")]:
-    parts.append(f"SELECT setval(pg_get_serial_sequence('{table}', '{col}'), COALESCE((SELECT MAX({col}) FROM {quote_pg_identifier(table)}), 1));")
+    pg_table = pg_table_name(table)
+    parts.append(
+        f"SELECT setval(pg_get_serial_sequence('{pg_table}', '{col}'), COALESCE((SELECT MAX({col}) FROM {quote_pg_identifier(pg_table)}), 1));"
+    )
 
 PG_OUTPUT.write_text("\n".join(parts), encoding="utf-8")
 print(f"Wrote {PG_OUTPUT} ({PG_OUTPUT.stat().st_size} bytes)")

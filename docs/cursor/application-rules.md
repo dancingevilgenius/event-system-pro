@@ -1,11 +1,27 @@
 # Event System Pro — Application Rules
 
-Plain-language summary of rules, restrictions, and constraints for the **front-end-cursor** app (Judging page and related flows).
+Plain-language summary of rules, restrictions, and constraints for the **front-end-cursor** app.
 
 **Primary code locations**
 
 | Area | Path |
 |------|------|
+| Routes | `front-ends/front-end-cursor/src/App.tsx` |
+| Route guard | `front-ends/front-end-cursor/src/components/ProtectedRoute.tsx` |
+| Session / roles | `front-ends/front-end-cursor/src/lib/session.ts` |
+| Auth context | `front-ends/front-end-cursor/src/context/AuthProvider.tsx` |
+| PostgREST API | `front-ends/front-end-cursor/src/api/postgrest.ts` |
+| Mailer API | `front-ends/front-end-cursor/src/api/mailer.ts` |
+| Login | `front-ends/front-end-cursor/src/pages/LoginPage.tsx` |
+| Register | `front-ends/front-end-cursor/src/pages/RegisterPage.tsx` |
+| Forgot password | `front-ends/front-end-cursor/src/pages/ForgotPasswordPage.tsx` |
+| Home | `front-ends/front-end-cursor/src/pages/HomePage.tsx` |
+| Account | `front-ends/front-end-cursor/src/pages/AccountPage.tsx` |
+| Change password | `front-ends/front-end-cursor/src/pages/ChangePasswordPage.tsx` |
+| Admin home | `front-ends/front-end-cursor/src/pages/AdminHomePage.tsx` |
+| Admin competitors | `front-ends/front-end-cursor/src/pages/AdminCompetitorsPage.tsx` |
+| Staff / contest pick | `front-ends/front-end-cursor/src/pages/StaffPage.tsx`, `ContestSelectionPage.tsx` |
+| Competitor placeholder | `front-ends/front-end-cursor/src/pages/CompetitorPage.tsx` |
 | Judging page | `front-ends/front-end-cursor/src/pages/JudgingPage.tsx` |
 | Competitor names | `front-ends/front-end-cursor/src/data/legionNames.ts` |
 | Raw score types/helpers | `front-ends/front-end-cursor/src/types/judgingScore.ts` |
@@ -16,7 +32,6 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 | Duplicate score dialog | `front-ends/front-end-cursor/src/components/DuplicateScoreDialog.tsx` |
 | Progress bar | `front-ends/front-end-cursor/src/components/PercentCompleteBar.tsx` |
 | Layout constants | `front-ends/front-end-cursor/src/constants/layout.ts` |
-| Routes | `front-ends/front-end-cursor/src/App.tsx` |
 | Message stack UI | `front-ends/front-end-cursor/src/components/MessageStack.tsx` |
 | Message provider / API | `front-ends/front-end-cursor/src/context/MessageProvider.tsx` |
 | `useMessages` hook | `front-ends/front-end-cursor/src/hooks/useMessages.ts` |
@@ -24,10 +39,6 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 | Theme provider | `front-ends/front-end-cursor/src/context/AppThemeProvider.tsx` |
 | Skin definitions | `front-ends/front-end-cursor/src/skins/` |
 | `useThemeSwitcher` hook | `front-ends/front-end-cursor/src/hooks/useThemeSwitcher.ts` |
-| Home page | `front-ends/front-end-cursor/src/pages/HomePage.tsx` |
-| Competitor placeholder page | `front-ends/front-end-cursor/src/pages/CompetitorPage.tsx` |
-| Contest selection layout | `front-ends/front-end-cursor/src/pages/ContestSelectionPage.tsx` |
-| Staff page | `front-ends/front-end-cursor/src/pages/StaffPage.tsx` |
 | Mobile device detection | `front-ends/front-end-cursor/src/hooks/useIsMobileDevice.ts` |
 | Viewport / page shell | `front-ends/front-end-cursor/index.html` |
 
@@ -37,20 +48,122 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 
 - Main content blocks (messages, buttons, fields, dropdowns) are capped at **360px** wide and centered (`CONTENT_MAX_WIDTH`).
 - Default route is **Login** (`/`). Unknown URLs redirect to login.
+- **Public routes:** `/` (login), `/register`, `/forgot-password`.
+- **Protected routes** require a signed-in session (see **Authentication** and **Roles and route guards**).
 - Staff reaches Judging via **Staff → Contest**, which navigates to `/judging`.
 - Judging **Submit** and **Back to Staff** both return to `/staff`.
-- Login currently accepts any credentials and navigates to `/home` (no real authentication yet).
 
-### Home page (`/home`)
+---
 
-- After login, the user lands on **Home** (Staff / Competitor role selection).
-- **Staff** button navigates to `/staff`.
-- **Competitor** button navigates to `/competitor`.
-- Other Home controls (Skin dropdown, Test Messages, Back to Login) are documented under **Theme / skin switcher** and **Message boxes**.
+## Authentication and session
 
-### Competitor page (`/competitor`) — placeholder
+- Login calls PostgREST RPC **`api.login`** with username or email and password.
+- Passwords are verified with **bcrypt** on the server; distinct error messages for unknown account vs incorrect password.
+- On success the app stores a **session** in `sessionStorage` (`esp_session`): `user_id`, `username`, `email`, `roles`, and JWT **`token`**.
+- Authenticated API calls send **`Authorization: Bearer <token>`** (see `postgrest.ts`).
+- **Logout** clears the session and returns to `/`.
+- Sign in again after database auth or role changes so the JWT includes current roles and username.
 
-- Route: **`/competitor`**, opened from the **Competitor** button on Home.
+---
+
+## Roles and route guards
+
+### App roles
+
+Seven roles from `user_app_role` (included in login JWT `app_roles`):
+
+`admin`, `staff`, `judge`, `headjudge`, `registration`, `floorcoordinator`, `competitor`
+
+### `ProtectedRoute` behavior
+
+- No session → redirect to **`/`** (login).
+- Session present but missing required role → redirect to **`/home`**.
+- Users with the **`admin`** role pass **any** role check (admin can open staff, competitor, and admin routes).
+
+### Route access
+
+| Route | Required role(s) |
+|-------|------------------|
+| `/home`, `/account`, `/changepassword` | Any signed-in user |
+| `/staff`, `/judging` | `staff` (or `admin`) |
+| `/competitor` | `competitor` (or `admin`) |
+| `/adminhome`, `/admin/event-details`, `/admin/contests`, `/admin/competitors`, `/admin/competition-entries` | `admin` |
+
+---
+
+## Home page (`/home`)
+
+- After login, the user lands on **Home** (role hub).
+- Buttons (top to bottom): **Staff** (`/staff`), **Competitor** (`/competitor`), **Admin** (`/adminhome`), **Account** (`/account`).
+- **Skin** dropdown (`ThemeSwitcher`) below the navigation buttons.
+- **Back to Login** logs out and returns to `/`.
+- **Test Messages** is on **Admin** home, not Home (see **Admin section**).
+
+---
+
+## Account and password
+
+### Account (`/account`)
+
+- Shows signed-in **username**.
+- **Change Password** navigates to `/changepassword`.
+- **Back to Home** returns to `/home`.
+
+### Change password (`/changepassword`)
+
+- Requires a signed-in session.
+- Fields: old password, new password, confirm password (with optional show/hide).
+- New password must be at least **8** characters and match confirmation.
+- Submits to RPC **`api.change_password`** with session `user_id`.
+- Server records **`modified_by`** = username and **`modified_date`** on the user row.
+- **Back to Account** returns to `/account`.
+
+### Forgot password (`/forgot-password`)
+
+Four-step stepper (public, no login required):
+
+1. **Find your account** — enter email or username; mailer sends a verification code (dev: Mailpit).
+2. **Verify code** — enter the 6-digit code (`api.forgot_password_verify`).
+3. **New password** — set new password (≥ 8 characters, must match confirm); `api.forgot_password_complete`.
+4. **Done** — return to login.
+
+Login page links: **Forgot password?** and **Register**.
+
+---
+
+## Registration (`/register`)
+
+- **Username**, **email**, and **password** are required (password ≥ 8 characters, must match confirm).
+- **First name** and **last name** are required.
+- Address fields use country/state lookups (`country_lu`, `us_state_lu`); phone uses numeric segments.
+- Before submit, user must complete **three secret password-recovery questions** (answers bcrypt-hashed via `api.hash_password_recovery_answers`, stored in `password_recovery_json`).
+- Submit calls **`api.register_user`**; on success navigates to login.
+- **Login** and **Register** call `clearMessages()` on mount.
+
+---
+
+## Admin section
+
+### Admin home (`/adminhome`)
+
+- Title: **Admin**.
+- Navigation buttons: **Event Details**, **Contests**, **Competitors**, **Competition Entries**, **Staff** (plus **Back to Home**).
+- **Test Messages** clears the stack and shows one success, one warning, and one problem alert (same copy as the former Home test button).
+- Event Details, Contests, and Competition Entries are **placeholder** pages for now.
+
+### Admin competitors (`/admin/competitors`)
+
+- Paginated **user** table (not contest entries): first name, last name, city, state, primary role.
+- Page size: **25** desktop, **10** mobile (`useIsMobileDevice`).
+- **Filter / Sort** dialog: filter by first name, last name, city, state, primary role; sort by last name, first name, or city (asc/desc).
+- Empty filter values shown as **—** in the table.
+- **Back to Admin** returns to `/adminhome`.
+
+---
+
+## Competitor page (`/competitor`) — placeholder
+
+- Route: **`/competitor`**, opened from the **Competitor** button on Home (requires `competitor` or `admin` role).
 - Page title: **Competitor** (`ContestSelectionPage` with `title="Competitor"`).
 - Shows three full-width contest buttons: **Contest 1**, **Contest 2**, **Contest 3**.
 - Contest buttons are **placeholders** — they do **not** navigate anywhere (`contestRoute` is not set).
@@ -86,8 +199,8 @@ App-wide stacked alerts at the top of the screen (not Judging-specific). Wrapped
 
 ### Page-specific behavior
 
-- **Login** and **Register** call `clearMessages()` on mount so no stale messages carry over.
-- **Home** has a **Test Messages** button that clears the stack, then shows one of each type:
+- **Login**, **Register**, and **Forgot password** call `clearMessages()` on mount so no stale messages carry over.
+- **Admin home** has a **Test Messages** button that clears the stack, then shows:
   - Success: `Your change has been saved.`
   - Warning: `Your event starts in less than 15 min.`
   - Problem: `Your sign in time has passed.`
@@ -102,9 +215,9 @@ App-wide MUI theming via **skins**. `AppThemeProvider` wraps the app in `main.ts
 
 - The **Home** page (`/home`) exposes the skin control via `ThemeSwitcher`.
 - Page layout order (top to bottom):
-  1. **Staff** and **Competitor** navigation buttons
+  1. **Staff**, **Competitor**, **Admin**, and **Account** navigation buttons
   2. **Skin** dropdown (`ThemeSwitcher`)
-  3. **Test Messages** and **Back to Login** buttons
+  3. **Back to Login**
 - The dropdown uses the same **360px** centered width as other main controls (`centeredContentStackSx`).
 
 ### Dropdown behavior
@@ -122,7 +235,7 @@ App-wide MUI theming via **skins**. `AppThemeProvider` wraps the app in `main.ts
 ### App-wide application
 
 - `AppThemeProvider` builds the MUI theme from the active skin (`createAppTheme`) and supplies it via MUI `ThemeProvider` + `CssBaseline`.
-- All pages (Login, Register, Home, Staff, Judging, Competitor, etc.) inherit the current skin.
+- All pages inherit the current skin.
 - Other components may read or change the skin via `useThemeSwitcher()` (`skinId`, `setSkin`, `skins`, `currentSkin`).
 
 ---

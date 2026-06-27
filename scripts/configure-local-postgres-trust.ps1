@@ -9,6 +9,14 @@
 
 $ErrorActionPreference = "Stop"
 
+$isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole(
+  [Security.Principal.WindowsBuiltInRole]::Administrator
+)
+if (-not $isAdmin) {
+  Write-Warning "Not running as Administrator. pg_hba.conf changes and PostgreSQL reload may fail."
+  Write-Warning "Right-click PowerShell and choose 'Run as administrator', then run this script again."
+}
+
 $hbaCandidates = @(
   "C:\Program Files\PostgreSQL\18\data\pg_hba.conf",
   "C:\Program Files\PostgreSQL\17\data\pg_hba.conf",
@@ -50,12 +58,22 @@ if ($service) {
   $pgCtl = Get-ChildItem "C:\Program Files\PostgreSQL\*\bin\pg_ctl.exe" -ErrorAction SilentlyContinue |
     Select-Object -First 1
   if ($pgCtl) {
+    $prevEap = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
     & $pgCtl.FullName reload -D (Split-Path $hbaPath -Parent) 2>$null
     if ($LASTEXITCODE -eq 0) { $reloadOk = $true }
+    $ErrorActionPreference = $prevEap
   }
   if (-not $reloadOk) {
-    Restart-Service $service.Name -Force
-    Write-Host "Restarted PostgreSQL service ($($service.Name))."
+    if ($isAdmin) {
+      Restart-Service $service.Name -Force
+      Write-Host "Restarted PostgreSQL service ($($service.Name))."
+    } else {
+      Write-Warning "Could not reload PostgreSQL (Operation not permitted)."
+      Write-Warning "If trust auth is already in pg_hba.conf, test with:"
+      Write-Warning '  psql -U postgres -c "SELECT 1"'
+      Write-Warning "Otherwise re-run this script in an elevated PowerShell window."
+    }
   } else {
     Write-Host "Reloaded PostgreSQL ($($service.Name))."
   }

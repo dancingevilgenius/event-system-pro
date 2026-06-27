@@ -71,7 +71,7 @@ CREATE OR REPLACE VIEW api.secret_question_lu AS
 SELECT secret_question_id, question, created_date
 FROM public.secret_question_lu;
 
-CREATE OR REPLACE VIEW api.fight_event_group AS
+CREATE OR REPLACE VIEW api.event_group AS
 SELECT
   event_group_code,
   full_name,
@@ -80,9 +80,9 @@ SELECT
   created_by,
   modified_date,
   modified_by
-FROM public.fight_event_group;
+FROM public.event_group;
 
-CREATE OR REPLACE VIEW api.fight_event AS
+CREATE OR REPLACE VIEW api.event AS
 SELECT
   event_id,
   fight_event_group_code,
@@ -100,7 +100,7 @@ SELECT
   created_by,
   updated_date,
   updated_by
-FROM public.fight_event
+FROM public."event"
 WHERE active IS NOT FALSE;
 
 CREATE OR REPLACE VIEW api.contest AS
@@ -163,6 +163,18 @@ SELECT
   gear_json,
   competitor_type_id
 FROM public.competitor;
+
+CREATE OR REPLACE VIEW api.judging_panel AS
+SELECT
+  judging_panel_id,
+  event_id,
+  contest_id,
+  judges_json,
+  created_by,
+  created_on,
+  last_modified_by,
+  last_modified_on
+FROM public.judging_panel;
 
 -- ---------------------------------------------------------------------------
 -- Grants

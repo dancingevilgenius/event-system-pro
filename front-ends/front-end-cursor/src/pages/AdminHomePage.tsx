@@ -1,6 +1,7 @@
 import { Button, Container, Paper, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { centeredContentStackSx } from '../constants/layout';
+import { useMessages } from '../hooks/useMessages';
 
 const ADMIN_BUTTONS = [
   { label: 'Event Details', path: '/admin/event-details' },
@@ -12,6 +13,14 @@ const ADMIN_BUTTONS = [
 
 export default function AdminHomePage() {
   const navigate = useNavigate();
+  const { showSuccess, showWarning, showProblem, clearMessages } = useMessages();
+
+  const handleTestMessages = () => {
+    clearMessages();
+    showSuccess('Your change has been saved.');
+    showWarning('Your event starts in less than 15 min.');
+    showProblem('Your sign in time has passed.');
+  };
 
   return (
     <Container maxWidth="md" sx={{ py: 6 }}>
@@ -34,7 +43,10 @@ export default function AdminHomePage() {
           ))}
         </Stack>
 
-        <Stack sx={centeredContentStackSx}>
+        <Stack spacing={2} sx={centeredContentStackSx}>
+          <Button variant="outlined" fullWidth onClick={handleTestMessages}>
+            Test Messages
+          </Button>
           <Button variant="outlined" fullWidth onClick={() => navigate('/home')}>
             Back to Home
           </Button>

@@ -31,7 +31,8 @@ $seeds = @(
   '007_dancingevilgenius_app_roles.sql',
   '008_event_group_fictional.sql',
   '009_event_group_robot.sql',
-  '010_event_group_plasma_duel.sql'
+  '010_event_group_plasma_duel.sql',
+  '011_event_fictional_instances.sql'
 )
 foreach ($s in $seeds) {
   Write-Host "  $s"

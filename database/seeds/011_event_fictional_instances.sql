@@ -1,6 +1,7 @@
 -- Three event instances per fictional event_group (seeds 008–010).
 -- I  = ~12 months in the past (Jun 2025), II = around today (Jun 2026), III = ~12 months ahead (Jun 2027).
--- number_of_days is 3, 4, or 5; end_date = start_date + number_of_days.
+-- number_of_days is a random 3–5 per row; start_date has a small per-group offset.
+-- end_date = start_date + number_of_days.
 -- event.name is event_group.full_name + year, or full_name + Roman suffix (~32% of groups).
 -- location_json.venue is a fictitious hotel, sports complex, or gym/dojo name.
 -- Safe to re-run: removes prior fictional-group events first.
@@ -59,8 +60,8 @@ VALUES
     '{"venue":"The Halcyon Harbor Hotel","street":"4182 Copper Veil Road","city":"Brindlewick","state":"MN","country":"USA"}',
     TRUE,
     3,
-    TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' - INTERVAL '2 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' - INTERVAL '2 days' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -70,9 +71,9 @@ VALUES
     'MN',
     '{"venue":"Meridian Wharf Sports Complex","street":"901 Meridian Wharf Lane","city":"Brindlewick","state":"MN","country":"USA"}',
     TRUE,
-    4,
-    TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    5,
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '1 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '1 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -83,8 +84,8 @@ VALUES
     '{"venue":"Ironvale Training Dojo","street":"77 Halcyon Foundry Way","city":"Brindlewick","state":"MN","country":"USA"}',
     TRUE,
     5,
-    TIMESTAMPTZ '2027-06-24 09:00:00-05',
-    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '5 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '1 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '1 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -106,9 +107,9 @@ VALUES
     'CA',
     '{"venue":"Valebridge Event Center","street":"633 Valebridge Court","city":"Larkspur","state":"CA","country":"USA"}',
     TRUE,
-    4,
-    TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    3,
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '2 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '2 days' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -118,9 +119,9 @@ VALUES
     'CA',
     '{"venue":"Foundry Lane Combat Gym","street":"15 Orchard Gate Parkway","city":"Larkspur","state":"CA","country":"USA"}',
     TRUE,
-    5,
-    TIMESTAMPTZ '2027-06-24 09:00:00-05',
-    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '5 days',
+    4,
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' - INTERVAL '1 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' - INTERVAL '1 days' + INTERVAL '4 days',
     'c-agent'
   ),
   (
@@ -130,9 +131,9 @@ VALUES
     'CO',
     '{"venue":"Copper Veil Inn & Suites","street":"2880 Ridgewell Station Drive","city":"Mariglen","state":"CO","country":"USA"}',
     TRUE,
-    3,
-    TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    5,
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '2 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '2 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -143,8 +144,8 @@ VALUES
     '{"venue":"Orchard Gate Athletic Complex","street":"504 Emberline Terrace","city":"Mariglen","state":"CO","country":"USA"}',
     TRUE,
     4,
-    TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '2 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '2 days' + INTERVAL '4 days',
     'c-agent'
   ),
   (
@@ -155,8 +156,8 @@ VALUES
     '{"venue":"Ashford Martial Arts Gym","street":"4182 Copper Veil Road","city":"Mariglen","state":"CO","country":"USA"}',
     TRUE,
     5,
-    TIMESTAMPTZ '2027-06-24 09:00:00-05',
-    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '5 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '1 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '1 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -166,9 +167,9 @@ VALUES
     'OH',
     '{"venue":"Ridgewell Station Hotel","street":"901 Meridian Wharf Lane","city":"Selwick","state":"OH","country":"USA"}',
     TRUE,
-    3,
-    TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    5,
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '1 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '1 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -178,9 +179,9 @@ VALUES
     'OH',
     '{"venue":"North Ashford Sportsplex","street":"77 Halcyon Foundry Way","city":"Selwick","state":"OH","country":"USA"}',
     TRUE,
-    4,
-    TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    5,
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '1 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '1 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -190,9 +191,9 @@ VALUES
     'OH',
     '{"venue":"Copper Veil Fitness Dojo","street":"1204 North Ashford Circle","city":"Selwick","state":"OH","country":"USA"}',
     TRUE,
-    5,
-    TIMESTAMPTZ '2027-06-24 09:00:00-05',
-    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '5 days',
+    3,
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' - INTERVAL '2 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' - INTERVAL '2 days' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -202,9 +203,9 @@ VALUES
     'FL',
     '{"venue":"Meridian Wharf Hotel","street":"633 Valebridge Court","city":"Thornbay","state":"FL","country":"USA"}',
     TRUE,
-    3,
-    TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    4,
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' - INTERVAL '2 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' - INTERVAL '2 days' + INTERVAL '4 days',
     'c-agent'
   ),
   (
@@ -215,8 +216,8 @@ VALUES
     '{"venue":"Copper Veil Arena & Fieldhouse","street":"15 Orchard Gate Parkway","city":"Thornbay","state":"FL","country":"USA"}',
     TRUE,
     4,
-    TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '1 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '1 days' + INTERVAL '4 days',
     'c-agent'
   ),
   (
@@ -226,9 +227,9 @@ VALUES
     'FL',
     '{"venue":"Meridian Wharf Gym & Dojo","street":"2880 Ridgewell Station Drive","city":"Thornbay","state":"FL","country":"USA"}',
     TRUE,
-    5,
-    TIMESTAMPTZ '2027-06-24 09:00:00-05',
-    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '5 days',
+    3,
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '2 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '2 days' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -239,8 +240,8 @@ VALUES
     '{"venue":"Valebridge Court Hotel","street":"504 Emberline Terrace","city":"Vellgrimm","state":"TX","country":"USA"}',
     TRUE,
     3,
-    TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' - INTERVAL '1 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' - INTERVAL '1 days' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -251,8 +252,8 @@ VALUES
     '{"venue":"Ridgewell Station Sports Complex","street":"4182 Copper Veil Road","city":"Vellgrimm","state":"TX","country":"USA"}',
     TRUE,
     4,
-    TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '2 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '2 days' + INTERVAL '4 days',
     'c-agent'
   ),
   (
@@ -262,9 +263,9 @@ VALUES
     'TX',
     '{"venue":"Emberline Athletic Gym","street":"901 Meridian Wharf Lane","city":"Vellgrimm","state":"TX","country":"USA"}',
     TRUE,
-    5,
-    TIMESTAMPTZ '2027-06-24 09:00:00-05',
-    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '5 days',
+    4,
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '1 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '1 days' + INTERVAL '4 days',
     'c-agent'
   ),
   (
@@ -274,9 +275,9 @@ VALUES
     'WA',
     '{"venue":"Orchard Gate Inn","street":"77 Halcyon Foundry Way","city":"Cinderholt","state":"WA","country":"USA"}',
     TRUE,
-    3,
+    5,
     TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -287,8 +288,8 @@ VALUES
     '{"venue":"Halcyon Foundry Athletic Center","street":"1204 North Ashford Circle","city":"Cinderholt","state":"WA","country":"USA"}',
     TRUE,
     4,
-    TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '1 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '1 days' + INTERVAL '4 days',
     'c-agent'
   ),
   (
@@ -298,9 +299,9 @@ VALUES
     'WA',
     '{"venue":"Brindlewick Dance & Fitness Studio","street":"633 Valebridge Court","city":"Cinderholt","state":"WA","country":"USA"}',
     TRUE,
-    5,
-    TIMESTAMPTZ '2027-06-24 09:00:00-05',
-    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '5 days',
+    3,
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' - INTERVAL '2 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' - INTERVAL '2 days' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -310,9 +311,9 @@ VALUES
     'NC',
     '{"venue":"North Ashford Hotel","street":"15 Orchard Gate Parkway","city":"Bramblegate","state":"NC","country":"USA"}',
     TRUE,
-    3,
-    TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    5,
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '2 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '2 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -322,9 +323,9 @@ VALUES
     'NC',
     '{"venue":"Emberline Regional Sports Complex","street":"2880 Ridgewell Station Drive","city":"Bramblegate","state":"NC","country":"USA"}',
     TRUE,
-    4,
-    TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    5,
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '1 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '1 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -334,9 +335,9 @@ VALUES
     'NC',
     '{"venue":"Larkspur Movement Dojo","street":"504 Emberline Terrace","city":"Bramblegate","state":"NC","country":"USA"}',
     TRUE,
-    5,
+    4,
     TIMESTAMPTZ '2027-06-24 09:00:00-05',
-    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '5 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '4 days',
     'c-agent'
   ),
   (
@@ -346,9 +347,9 @@ VALUES
     'MN',
     '{"venue":"Foundry Lane Hotel","street":"4182 Copper Veil Road","city":"Mosswick","state":"MN","country":"USA"}',
     TRUE,
-    3,
-    TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    5,
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '1 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '1 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -358,9 +359,9 @@ VALUES
     'MN',
     '{"venue":"Brindlewick Convention & Sports Center","street":"901 Meridian Wharf Lane","city":"Mosswick","state":"MN","country":"USA"}',
     TRUE,
-    4,
-    TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    5,
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '1 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '1 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -370,9 +371,9 @@ VALUES
     'MN',
     '{"venue":"Mariglen Training Gym","street":"77 Halcyon Foundry Way","city":"Mosswick","state":"MN","country":"USA"}',
     TRUE,
-    5,
-    TIMESTAMPTZ '2027-06-24 09:00:00-05',
-    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '5 days',
+    4,
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '2 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '2 days' + INTERVAL '4 days',
     'c-agent'
   ),
   (
@@ -383,8 +384,8 @@ VALUES
     '{"venue":"Brindlewick Lodge","street":"1204 North Ashford Circle","city":"Hollowfen","state":"WI","country":"USA"}',
     TRUE,
     3,
-    TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' - INTERVAL '2 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' - INTERVAL '2 days' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -395,8 +396,8 @@ VALUES
     '{"venue":"Larkspur Fieldhouse Complex","street":"633 Valebridge Court","city":"Hollowfen","state":"WI","country":"USA"}',
     TRUE,
     4,
-    TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '2 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '2 days' + INTERVAL '4 days',
     'c-agent'
   ),
   (
@@ -407,8 +408,8 @@ VALUES
     '{"venue":"Selwick Academy Dojo","street":"15 Orchard Gate Parkway","city":"Hollowfen","state":"WI","country":"USA"}',
     TRUE,
     5,
-    TIMESTAMPTZ '2027-06-24 09:00:00-05',
-    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '5 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '2 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '2 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -419,8 +420,8 @@ VALUES
     '{"venue":"Mariglen House Hotel","street":"2880 Ridgewell Station Drive","city":"Riveton","state":"CO","country":"USA"}',
     TRUE,
     3,
-    TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '2 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '2 days' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -430,9 +431,9 @@ VALUES
     'CO',
     '{"venue":"Mariglen Sports Pavilion","street":"504 Emberline Terrace","city":"Riveton","state":"CO","country":"USA"}',
     TRUE,
-    4,
-    TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    5,
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '1 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '1 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -443,8 +444,8 @@ VALUES
     '{"venue":"Thornbay Couples Dance Gym","street":"4182 Copper Veil Road","city":"Riveton","state":"CO","country":"USA"}',
     TRUE,
     5,
-    TIMESTAMPTZ '2027-06-24 09:00:00-05',
-    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '5 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' - INTERVAL '1 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' - INTERVAL '1 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -454,9 +455,9 @@ VALUES
     'OH',
     '{"venue":"Selwick Terrace Hotel","street":"901 Meridian Wharf Lane","city":"Glimmerwick","state":"OH","country":"USA"}',
     TRUE,
-    3,
-    TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    5,
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '2 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '2 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -466,9 +467,9 @@ VALUES
     'OH',
     '{"venue":"Selwick Metro Athletic Complex","street":"77 Halcyon Foundry Way","city":"Glimmerwick","state":"OH","country":"USA"}',
     TRUE,
-    4,
+    3,
     TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -478,9 +479,9 @@ VALUES
     'OH',
     '{"venue":"Vellgrimm Longsword Dojo","street":"1204 North Ashford Circle","city":"Glimmerwick","state":"OH","country":"USA"}',
     TRUE,
-    5,
+    3,
     TIMESTAMPTZ '2027-06-24 09:00:00-05',
-    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '5 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -490,9 +491,9 @@ VALUES
     'FL',
     '{"venue":"Thornbay Harbor Inn","street":"633 Valebridge Court","city":"Drakewell","state":"FL","country":"USA"}',
     TRUE,
-    3,
-    TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    4,
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '1 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '1 days' + INTERVAL '4 days',
     'c-agent'
   ),
   (
@@ -502,9 +503,9 @@ VALUES
     'FL',
     '{"venue":"Thornbay Riverfront Sports Center","street":"15 Orchard Gate Parkway","city":"Drakewell","state":"FL","country":"USA"}',
     TRUE,
-    4,
+    3,
     TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -515,8 +516,8 @@ VALUES
     '{"venue":"Cinderholt HEMA Gym","street":"2880 Ridgewell Station Drive","city":"Drakewell","state":"FL","country":"USA"}',
     TRUE,
     5,
-    TIMESTAMPTZ '2027-06-24 09:00:00-05',
-    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '5 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '2 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '2 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -527,8 +528,8 @@ VALUES
     '{"venue":"Vellgrimm Plaza Hotel","street":"504 Emberline Terrace","city":"Quarrylane","state":"TX","country":"USA"}',
     TRUE,
     3,
-    TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' - INTERVAL '1 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' - INTERVAL '1 days' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -538,9 +539,9 @@ VALUES
     'TX',
     '{"venue":"Vellgrimm Combat Sports Complex","street":"4182 Copper Veil Road","city":"Quarrylane","state":"TX","country":"USA"}',
     TRUE,
-    4,
-    TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    5,
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '1 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '1 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -551,8 +552,8 @@ VALUES
     '{"venue":"Bramblegate Rapier Dojo","street":"901 Meridian Wharf Lane","city":"Quarrylane","state":"TX","country":"USA"}',
     TRUE,
     5,
-    TIMESTAMPTZ '2027-06-24 09:00:00-05',
-    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '5 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' - INTERVAL '2 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' - INTERVAL '2 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -562,9 +563,9 @@ VALUES
     'WA',
     '{"venue":"Cinderholt Inn","street":"77 Halcyon Foundry Way","city":"Foxmere","state":"WA","country":"USA"}',
     TRUE,
-    3,
-    TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    5,
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '1 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '1 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -574,9 +575,9 @@ VALUES
     'WA',
     '{"venue":"Cinderholt Multi-Sport Arena","street":"1204 North Ashford Circle","city":"Foxmere","state":"WA","country":"USA"}',
     TRUE,
-    4,
-    TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    5,
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '2 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '2 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -586,9 +587,9 @@ VALUES
     'WA',
     '{"venue":"Mosswick Steel Academy Gym","street":"633 Valebridge Court","city":"Foxmere","state":"WA","country":"USA"}',
     TRUE,
-    5,
+    3,
     TIMESTAMPTZ '2027-06-24 09:00:00-05',
-    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '5 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -598,9 +599,9 @@ VALUES
     'NC',
     '{"venue":"Bramblegate Hotel","street":"15 Orchard Gate Parkway","city":"Robot Riot","state":"NC","country":"USA"}',
     TRUE,
-    3,
-    TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    5,
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '1 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '1 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -610,9 +611,9 @@ VALUES
     'NC',
     '{"venue":"Bramblegate Athletic Center","street":"2880 Ridgewell Station Drive","city":"Robot Riot","state":"NC","country":"USA"}',
     TRUE,
-    4,
-    TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    5,
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '1 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '1 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -622,9 +623,9 @@ VALUES
     'NC',
     '{"venue":"Hollowfen Blade Dojo","street":"504 Emberline Terrace","city":"Robot Riot","state":"NC","country":"USA"}',
     TRUE,
-    5,
-    TIMESTAMPTZ '2027-06-24 09:00:00-05',
-    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '5 days',
+    3,
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' - INTERVAL '2 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' - INTERVAL '2 days' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -635,8 +636,8 @@ VALUES
     '{"venue":"Mosswick Station Inn","street":"4182 Copper Veil Road","city":"Servo Slam","state":"MN","country":"USA"}',
     TRUE,
     3,
-    TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '1 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '1 days' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -646,9 +647,9 @@ VALUES
     'MN',
     '{"venue":"Mosswick Sports Coliseum","street":"901 Meridian Wharf Lane","city":"Servo Slam","state":"MN","country":"USA"}',
     TRUE,
-    4,
-    TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    3,
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '2 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '2 days' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -658,9 +659,9 @@ VALUES
     'MN',
     '{"venue":"Riveton Kart Fitness Gym","street":"77 Halcyon Foundry Way","city":"Servo Slam","state":"MN","country":"USA"}',
     TRUE,
-    5,
-    TIMESTAMPTZ '2027-06-24 09:00:00-05',
-    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '5 days',
+    4,
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '1 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '1 days' + INTERVAL '4 days',
     'c-agent'
   ),
   (
@@ -671,8 +672,8 @@ VALUES
     '{"venue":"Hollowfen Lodge","street":"1204 North Ashford Circle","city":"Rivet Rumble","state":"WI","country":"USA"}',
     TRUE,
     3,
-    TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' - INTERVAL '2 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' - INTERVAL '2 days' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -682,9 +683,9 @@ VALUES
     'WI',
     '{"venue":"Hollowfen Field Complex","street":"633 Valebridge Court","city":"Rivet Rumble","state":"WI","country":"USA"}',
     TRUE,
-    4,
-    TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    5,
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '1 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '1 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -706,9 +707,9 @@ VALUES
     'CO',
     '{"venue":"Riveton Bay Hotel","street":"2880 Ridgewell Station Drive","city":"Circuit Carnage","state":"CO","country":"USA"}',
     TRUE,
-    3,
-    TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    5,
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' - INTERVAL '1 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' - INTERVAL '1 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -718,9 +719,9 @@ VALUES
     'CO',
     '{"venue":"Riveton Kart & Sports Center","street":"504 Emberline Terrace","city":"Circuit Carnage","state":"CO","country":"USA"}',
     TRUE,
-    4,
-    TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    5,
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '1 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '1 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -730,9 +731,9 @@ VALUES
     'CO',
     '{"venue":"Drakewell Oval Gym","street":"4182 Copper Veil Road","city":"Circuit Carnage","state":"CO","country":"USA"}',
     TRUE,
-    5,
-    TIMESTAMPTZ '2027-06-24 09:00:00-05',
-    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '5 days',
+    3,
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '1 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '1 days' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -742,9 +743,9 @@ VALUES
     'OH',
     '{"venue":"Glimmerwick Grand","street":"901 Meridian Wharf Lane","city":"Gasket Gauntlet","state":"OH","country":"USA"}',
     TRUE,
-    3,
-    TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    4,
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '2 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '2 days' + INTERVAL '4 days',
     'c-agent'
   ),
   (
@@ -754,9 +755,9 @@ VALUES
     'OH',
     '{"venue":"Glimmerwick Sprint Complex","street":"77 Halcyon Foundry Way","city":"Gasket Gauntlet","state":"OH","country":"USA"}',
     TRUE,
-    4,
-    TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    3,
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '2 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '2 days' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -766,9 +767,9 @@ VALUES
     'OH',
     '{"venue":"Quarrylane Velocity Dojo","street":"1204 North Ashford Circle","city":"Gasket Gauntlet","state":"OH","country":"USA"}',
     TRUE,
-    5,
-    TIMESTAMPTZ '2027-06-24 09:00:00-05',
-    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '5 days',
+    4,
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' - INTERVAL '2 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' - INTERVAL '2 days' + INTERVAL '4 days',
     'c-agent'
   ),
   (
@@ -778,9 +779,9 @@ VALUES
     'OR',
     '{"venue":"Drakewell Inn","street":"633 Valebridge Court","city":"Portland","state":"OR","country":"USA"}',
     TRUE,
-    3,
+    4,
     TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '4 days',
     'c-agent'
   ),
   (
@@ -790,9 +791,9 @@ VALUES
     'OR',
     '{"venue":"Drakewell Oval Sports Park","street":"15 Orchard Gate Parkway","city":"Portland","state":"OR","country":"USA"}',
     TRUE,
-    4,
-    TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    3,
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '1 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '1 days' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -802,9 +803,9 @@ VALUES
     'OR',
     '{"venue":"Foxmere Martial Gym","street":"2880 Ridgewell Station Drive","city":"Portland","state":"OR","country":"USA"}',
     TRUE,
-    5,
-    TIMESTAMPTZ '2027-06-24 09:00:00-05',
-    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '5 days',
+    4,
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '2 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '2 days' + INTERVAL '4 days',
     'c-agent'
   ),
   (
@@ -815,8 +816,8 @@ VALUES
     '{"venue":"Quarrylane Hotel","street":"504 Emberline Terrace","city":"Chicago","state":"IL","country":"USA"}',
     TRUE,
     3,
-    TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '2 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '2 days' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -826,9 +827,9 @@ VALUES
     'IL',
     '{"venue":"Quarrylane Velocity Arena","street":"4182 Copper Veil Road","city":"Chicago","state":"IL","country":"USA"}',
     TRUE,
-    4,
+    3,
     TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -838,9 +839,9 @@ VALUES
     'IL',
     '{"venue":"Servo Slam Dojo","street":"901 Meridian Wharf Lane","city":"Chicago","state":"IL","country":"USA"}',
     TRUE,
-    5,
-    TIMESTAMPTZ '2027-06-24 09:00:00-05',
-    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '5 days',
+    3,
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' - INTERVAL '2 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' - INTERVAL '2 days' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -850,9 +851,9 @@ VALUES
     'WA',
     '{"venue":"Foxmere Court Hotel","street":"77 Halcyon Foundry Way","city":"Stellar Showdown","state":"WA","country":"USA"}',
     TRUE,
-    3,
-    TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    4,
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' - INTERVAL '2 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' - INTERVAL '2 days' + INTERVAL '4 days',
     'c-agent'
   ),
   (
@@ -862,9 +863,9 @@ VALUES
     'WA',
     '{"venue":"Foxmere Circuit Sports Complex","street":"1204 North Ashford Circle","city":"Stellar Showdown","state":"WA","country":"USA"}',
     TRUE,
-    4,
-    TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    5,
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '2 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '2 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -874,9 +875,9 @@ VALUES
     'WA',
     '{"venue":"Circuit Carnage Gym","street":"633 Valebridge Court","city":"Stellar Showdown","state":"WA","country":"USA"}',
     TRUE,
-    5,
-    TIMESTAMPTZ '2027-06-24 09:00:00-05',
-    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '5 days',
+    4,
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '2 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '2 days' + INTERVAL '4 days',
     'c-agent'
   ),
   (
@@ -886,9 +887,9 @@ VALUES
     'NC',
     '{"venue":"Servo Tower Hotel","street":"15 Orchard Gate Parkway","city":"Neon Nexus","state":"NC","country":"USA"}',
     TRUE,
-    3,
-    TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    5,
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' - INTERVAL '1 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' - INTERVAL '1 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -899,8 +900,8 @@ VALUES
     '{"venue":"Robot Foundry Sports Center","street":"2880 Ridgewell Station Drive","city":"Neon Nexus","state":"NC","country":"USA"}',
     TRUE,
     4,
-    TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '2 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '2 days' + INTERVAL '4 days',
     'c-agent'
   ),
   (
@@ -911,8 +912,8 @@ VALUES
     '{"venue":"Gasket Gauntlet Training Center","street":"504 Emberline Terrace","city":"Neon Nexus","state":"NC","country":"USA"}',
     TRUE,
     5,
-    TIMESTAMPTZ '2027-06-24 09:00:00-05',
-    TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '5 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' - INTERVAL '1 days',
+    TIMESTAMPTZ '2027-06-24 09:00:00-05' - INTERVAL '1 days' + INTERVAL '5 days',
     'c-agent'
   ),
   (
@@ -923,8 +924,8 @@ VALUES
     '{"venue":"Neon Nexus Hotel","street":"4182 Copper Veil Road","city":"Meridian Melee","state":"MN","country":"USA"}',
     TRUE,
     3,
-    TIMESTAMPTZ '2025-06-22 09:00:00-05',
-    TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '3 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' - INTERVAL '1 days',
+    TIMESTAMPTZ '2025-06-22 09:00:00-05' - INTERVAL '1 days' + INTERVAL '3 days',
     'c-agent'
   ),
   (
@@ -935,8 +936,8 @@ VALUES
     '{"venue":"Stellar Showdown Arena","street":"901 Meridian Wharf Lane","city":"Meridian Melee","state":"MN","country":"USA"}',
     TRUE,
     4,
-    TIMESTAMPTZ '2026-06-24 09:00:00-05',
-    TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '4 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '1 days',
+    TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '1 days' + INTERVAL '4 days',
     'c-agent'
   ),
   (

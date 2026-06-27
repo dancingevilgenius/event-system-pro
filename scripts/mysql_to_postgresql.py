@@ -14,7 +14,7 @@ TABLE_ORDER = [
     "competitor_type_lu", "country_lu", "us_state_lu", "secret_question_lu",
     "skill_level_lu", "event_type_lu", "fight_event_group", "fight_event",
     "charter", "user", "contact", "image", "system_config", "contest",
-    "competitor", "contest_heat", "fight_event_staff", "user_preference",
+    "competitor", "contest_heat", "event_staff_pool", "user_preference",
 ]
 
 def pg_table_name(mysql_table: str) -> str:
@@ -197,7 +197,7 @@ header = """-- Event System Pro PostgreSQL schema and seed data
 SET client_encoding = 'UTF8';
 
 DROP TABLE IF EXISTS user_preference CASCADE;
-DROP TABLE IF EXISTS fight_event_staff CASCADE;
+DROP TABLE IF EXISTS event_staff_pool CASCADE;
 DROP TABLE IF EXISTS contest_heat CASCADE;
 DROP TABLE IF EXISTS competitor CASCADE;
 DROP TABLE IF EXISTS contest CASCADE;

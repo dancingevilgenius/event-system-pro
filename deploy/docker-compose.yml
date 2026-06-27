@@ -106,6 +106,31 @@ services:
       - postgrest
       - mailer
 
+  scheduler:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      PGHOST: postgres
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-event_system_pro}
+      TZ: ${TZ:-America/Chicago}
+    volumes:
+      - ./scripts/nightly-cleanup.sh:/nightly-cleanup.sh:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        tr -d '\r' < /nightly-cleanup.sh > /tmp/nightly-cleanup.sh
+        chmod +x /tmp/nightly-cleanup.sh
+        echo "0 0 * * * /tmp/nightly-cleanup.sh" | crontab -
+        crond -f -l 2
+
 volumes:
   pgdata:
   caddy_data:

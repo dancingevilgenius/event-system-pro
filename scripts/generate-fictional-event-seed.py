@@ -4,10 +4,17 @@
 from __future__ import annotations
 
 import json
+import random
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "database" / "seeds" / "011_event_fictional_instances.sql"
+
+# Stable seed so regenerated SQL is reproducible but number_of_days varies per row.
+RNG = random.Random(0x4556505F44454D4F)  # "EVP_DEMO"
+
+MIN_EVENT_DAYS = 3
+MAX_EVENT_DAYS = 5
 
 # event_group_code, full_name, short_name, optional (country, state, city)
 GROUPS: list[tuple[str, str, str, tuple[str, str, str] | None]] = [
@@ -38,7 +45,6 @@ GROUPS: list[tuple[str, str, str, tuple[str, str, str] | None]] = [
     ("MERIDIAN_MELEE", "Meridian Melee", "Meridian Melee", None),
 ]
 
-DAYS = (3, 4, 5)
 # Past / current / future instances (~12 months apart).
 START_DATES = (
     "2025-06-22 09:00:00-05",
@@ -186,11 +192,29 @@ def event_name(full_name: str, group_index: int, instance: int) -> str:
     return f"{full_name} {START_YEARS[instance]}"
 
 
+def number_of_days_for(group_index: int, instance: int) -> int:
+    """Random 3–5 days per event row (deterministic via RNG)."""
+    del group_index, instance
+    return RNG.randint(MIN_EVENT_DAYS, MAX_EVENT_DAYS)
+
+
+def start_date_for(instance: int, group_index: int) -> str:
+    """Anchor start dates with a small per-group offset so end dates spread out."""
+    base = START_DATES[instance]
+    day_offset = RNG.randint(-2, 2)
+    quoted = f"TIMESTAMPTZ '{base}'"
+    if day_offset == 0:
+        return quoted
+    sign = "+" if day_offset > 0 else "-"
+    return f"{quoted} {sign} INTERVAL '{abs(day_offset)} days'"
+
+
 def main() -> None:
     lines = [
         "-- Three event instances per fictional event_group (seeds 008–010).",
         "-- I  = ~12 months in the past (Jun 2025), II = around today (Jun 2026), III = ~12 months ahead (Jun 2027).",
-        "-- number_of_days is 3, 4, or 5; end_date = start_date + number_of_days.",
+        "-- number_of_days is a random 3–5 per row; start_date has a small per-group offset.",
+        "-- end_date = start_date + number_of_days.",
         "-- event.name is event_group.full_name + year, or full_name + Roman suffix (~32% of groups).",
         "-- location_json.venue is a fictitious hotel, sports complex, or gym/dojo name.",
         "-- Safe to re-run: removes prior fictional-group events first.",
@@ -235,8 +259,8 @@ def main() -> None:
             city = short
 
         for instance in range(3):
-            days = DAYS[instance]
-            start = START_DATES[instance]
+            days = number_of_days_for(group_index, instance)
+            start_expr = start_date_for(instance, group_index)
             name = event_name(full_name, group_index, instance)
             venue_pool = VENUE_NAMES_BY_INSTANCE[instance]
             venue = venue_pool[group_index % len(venue_pool)]
@@ -261,8 +285,8 @@ def main() -> None:
                 f"    {sql_str(location_json)},\n"
                 "    TRUE,\n"
                 f"    {days},\n"
-                f"    TIMESTAMPTZ '{start}',\n"
-                f"    TIMESTAMPTZ '{start}' + INTERVAL '{days} days',\n"
+                f"    {start_expr},\n"
+                f"    {start_expr} + INTERVAL '{days} days',\n"
                 "    'c-agent'\n"
                 "  )"
             )

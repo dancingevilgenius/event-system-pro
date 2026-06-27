@@ -164,6 +164,18 @@ SELECT
   competitor_type_id
 FROM public.competitor;
 
+CREATE OR REPLACE VIEW api.judging_panel AS
+SELECT
+  judging_panel_id,
+  event_id,
+  contest_id,
+  judges_json,
+  created_by,
+  created_on,
+  last_modified_by,
+  last_modified_on
+FROM public.judging_panel;
+
 -- ---------------------------------------------------------------------------
 -- Grants
 -- ---------------------------------------------------------------------------

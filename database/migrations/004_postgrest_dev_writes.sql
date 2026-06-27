@@ -21,9 +21,10 @@ GRANT INSERT, UPDATE, DELETE ON
   public.skill_level_lu,
   public.secret_question_lu,
   public.event_group,
-  public.event,
+  public."event",
   public.contest,
-  public.competitor
+  public.competitor,
+  public.judging_panel
 TO anon, authenticated;
 
 -- User API is read-only (password_encrypted is not exposed on api."user").

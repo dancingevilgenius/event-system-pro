@@ -1,3 +1,5 @@
+import { loadSession, type AppRole } from '../lib/session';
+
 const POSTGREST_URL =
   import.meta.env.VITE_POSTGREST_URL ?? 'http://localhost:3000';
 
@@ -7,16 +9,27 @@ type RpcErrorBody = {
   details?: string;
 };
 
+function buildAuthHeaders(extra?: Record<string, string>): Record<string, string> {
+  const headers: Record<string, string> = { ...extra };
+  const token = loadSession()?.token;
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  return headers;
+}
+
 async function callRpc<TResponse>(
   functionName: string,
   body: Record<string, unknown>,
 ): Promise<TResponse> {
   const response = await fetch(`${POSTGREST_URL}/rpc/${functionName}`, {
     method: 'POST',
-    headers: {
+    headers: buildAuthHeaders({
       'Content-Type': 'application/json',
       Prefer: 'return=representation',
-    },
+    }),
     body: JSON.stringify(body),
   });
 
@@ -54,6 +67,8 @@ export type LoginResult = {
   user_id?: number;
   username?: string;
   email?: string;
+  roles?: AppRole[];
+  token?: string | null;
 };
 
 export type SecretQuestion = {
@@ -258,9 +273,9 @@ export async function fetchUsersPage(
   const params = buildUserQueryParams(offset, limit, filters, sort);
 
   const response = await fetch(`${POSTGREST_URL}/user?${params.toString()}`, {
-    headers: {
+    headers: buildAuthHeaders({
       Prefer: 'count=exact',
-    },
+    }),
   });
 
   if (!response.ok) {
@@ -282,7 +297,9 @@ export async function fetchUsStateCodes(): Promise<string[]> {
 }
 
 export async function fetchUsStates(): Promise<UsState[]> {
-  const response = await fetch(`${POSTGREST_URL}/us_state_lu?select=code,name&order=name`);
+  const response = await fetch(`${POSTGREST_URL}/us_state_lu?select=code,name&order=name`, {
+    headers: buildAuthHeaders(),
+  });
 
   if (!response.ok) {
     throw new Error(`Unable to load states (${response.status})`);
@@ -294,6 +311,7 @@ export async function fetchUsStates(): Promise<UsState[]> {
 export async function fetchCountries(): Promise<Country[]> {
   const response = await fetch(
     `${POSTGREST_URL}/country_lu?select=iso3,long_name&iso3=not.is.null&order=long_name`,
+    { headers: buildAuthHeaders() },
   );
 
   if (!response.ok) {
@@ -306,6 +324,7 @@ export async function fetchCountries(): Promise<Country[]> {
 export async function fetchSecretQuestions(): Promise<SecretQuestion[]> {
   const response = await fetch(
     `${POSTGREST_URL}/secret_question_lu?order=secret_question_id`,
+    { headers: buildAuthHeaders() },
   );
 
   if (!response.ok) {

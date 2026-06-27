@@ -2,9 +2,11 @@ import { Button, Container, Paper, Stack } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ThemeSwitcher from '../components/ThemeSwitcher';
 import { centeredContentStackSx } from '../constants/layout';
+import { useAuth } from '../hooks/useAuth';
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   return (
     <Container maxWidth="md" sx={{ py: 6 }}>
@@ -34,7 +36,14 @@ export default function HomePage() {
         </Stack>
 
         <Stack spacing={2} sx={centeredContentStackSx}>
-          <Button variant="outlined" fullWidth onClick={() => navigate('/')}>
+          <Button
+            variant="outlined"
+            fullWidth
+            onClick={() => {
+              logout();
+              navigate('/');
+            }}
+          >
             Back to Login
           </Button>
         </Stack>

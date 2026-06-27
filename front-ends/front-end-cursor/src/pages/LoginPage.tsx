@@ -12,11 +12,13 @@ import { useNavigate } from 'react-router-dom';
 import { login } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
 import { centeredContentStackSx } from '../constants/layout';
+import { useAuth } from '../hooks/useAuth';
 import { useMessages } from '../hooks/useMessages';
-import { saveSession } from '../lib/session';
+import type { AppRole } from '../lib/session';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { setSession } = useAuth();
   const { clearMessages, showProblem, showSuccess } = useMessages();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
@@ -42,10 +44,12 @@ export default function LoginPage() {
         return;
       }
       if (result.user_id && result.username && result.email) {
-        saveSession({
+        setSession({
           user_id: result.user_id,
           username: result.username,
           email: result.email,
+          roles: (result.roles ?? []) as AppRole[],
+          token: result.token ?? null,
         });
       }
       showSuccess(result.message);

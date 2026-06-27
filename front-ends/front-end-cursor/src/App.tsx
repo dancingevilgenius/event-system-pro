@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
+import ProtectedRoute from './components/ProtectedRoute';
 import AccountPage from './pages/AccountPage';
 import AdminCompetitorsPage from './pages/AdminCompetitorsPage';
 import AdminHomePage from './pages/AdminHomePage';
@@ -18,20 +19,94 @@ export default function App() {
       <Route path="/" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-      <Route path="/home" element={<HomePage />} />
-      <Route path="/account" element={<AccountPage />} />
-      <Route path="/changepassword" element={<ChangePasswordPage />} />
-      <Route path="/adminhome" element={<AdminHomePage />} />
-      <Route path="/admin/event-details" element={<AdminPlaceholderPage title="Event Details" />} />
-      <Route path="/admin/contests" element={<AdminPlaceholderPage title="Contests" />} />
-      <Route path="/admin/competitors" element={<AdminCompetitorsPage />} />
+      <Route
+        path="/home"
+        element={
+          <ProtectedRoute>
+            <HomePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/account"
+        element={
+          <ProtectedRoute>
+            <AccountPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/changepassword"
+        element={
+          <ProtectedRoute>
+            <ChangePasswordPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/adminhome"
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <AdminHomePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/event-details"
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <AdminPlaceholderPage title="Event Details" />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/contests"
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <AdminPlaceholderPage title="Contests" />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/competitors"
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <AdminCompetitorsPage />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/admin/competition-entries"
-        element={<AdminPlaceholderPage title="Competition Entries" />}
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <AdminPlaceholderPage title="Competition Entries" />
+          </ProtectedRoute>
+        }
       />
-      <Route path="/staff" element={<StaffPage />} />
-      <Route path="/judging" element={<JudgingPage />} />
-      <Route path="/competitor" element={<CompetitorPage />} />
+      <Route
+        path="/staff"
+        element={
+          <ProtectedRoute roles={['staff']}>
+            <StaffPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/judging"
+        element={
+          <ProtectedRoute roles={['staff']}>
+            <JudgingPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/competitor"
+        element={
+          <ProtectedRoute roles={['competitor']}>
+            <CompetitorPage />
+          </ProtectedRoute>
+        }
+      />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

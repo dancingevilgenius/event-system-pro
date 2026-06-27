@@ -23,6 +23,8 @@ This updates `pg_hba.conf` for `local`, `127.0.0.1`, and `::1` only, then reload
 
 PostgREST Docker still uses the `authenticator` role password in `back-ends/postgrest/.env` — that is separate from the `postgres` superuser used for migrations.
 
+**API grants:** Migration `004_postgrest_dev_writes.sql` allows anonymous REST writes (local Swagger testing). Migration `021_prod_grants.sql` revokes those and limits writes to the `authenticated` role (JWT required). Apply `021` on any environment that should not allow open anon mutations.
+
 ## Apply schema
 
 ```powershell

@@ -5,27 +5,13 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { centeredContentStackSx } from '../constants/layout';
-import { useMessages } from '../hooks/useMessages';
-import { loadSession } from '../lib/session';
+import { useAuth } from '../hooks/useAuth';
 
 export default function AccountPage() {
   const navigate = useNavigate();
-  const { clearMessages, showProblem } = useMessages();
-  const [session] = useState(() => loadSession());
-
-  useEffect(() => {
-    clearMessages();
-  }, [clearMessages]);
-
-  useEffect(() => {
-    if (!session) {
-      showProblem('Sign in to manage your account.');
-      navigate('/', { replace: true });
-    }
-  }, [navigate, session, showProblem]);
+  const { session } = useAuth();
 
   if (!session) {
     return null;

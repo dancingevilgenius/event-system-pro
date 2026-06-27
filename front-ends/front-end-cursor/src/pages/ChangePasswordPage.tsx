@@ -11,13 +11,13 @@ import { useNavigate } from 'react-router-dom';
 import { changePassword } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
 import { centeredContentStackSx } from '../constants/layout';
+import { useAuth } from '../hooks/useAuth';
 import { useMessages } from '../hooks/useMessages';
-import { loadSession } from '../lib/session';
 
 export default function ChangePasswordPage() {
   const navigate = useNavigate();
+  const { session } = useAuth();
   const { clearMessages, showProblem, showSuccess } = useMessages();
-  const [session] = useState(() => loadSession());
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -27,13 +27,6 @@ export default function ChangePasswordPage() {
   useEffect(() => {
     clearMessages();
   }, [clearMessages]);
-
-  useEffect(() => {
-    if (!session) {
-      showProblem('Sign in to change your password.');
-      navigate('/', { replace: true });
-    }
-  }, [navigate, session, showProblem]);
 
   if (!session) {
     return null;

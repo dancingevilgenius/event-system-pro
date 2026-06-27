@@ -1,6 +1,7 @@
 -- Three event instances per fictional event_group (seeds 008–010).
 -- I  = ~12 months in the past (Jun 2025), II = around today (Jun 2026), III = ~12 months ahead (Jun 2027).
 -- number_of_days is 3, 4, or 5; end_date = start_date + number_of_days.
+-- event.name is event_group.full_name + year, or full_name + Roman suffix (~32% of groups).
 -- location_json.venue is a fictitious hotel, sports complex, or gym/dojo name.
 -- Safe to re-run: removes prior fictional-group events first.
 --
@@ -52,7 +53,7 @@ INSERT INTO public."event" (
 VALUES
   (
     'BRINDLEWICK_CLASSIC',
-    'Brindlewick I',
+    'Brindlewick Classic 2025',
     'USA',
     'MN',
     '{"venue":"The Halcyon Harbor Hotel","street":"4182 Copper Veil Road","city":"Brindlewick","state":"MN","country":"USA"}',
@@ -64,7 +65,7 @@ VALUES
   ),
   (
     'BRINDLEWICK_CLASSIC',
-    'Brindlewick II',
+    'Brindlewick Classic 2026',
     'USA',
     'MN',
     '{"venue":"Meridian Wharf Sports Complex","street":"901 Meridian Wharf Lane","city":"Brindlewick","state":"MN","country":"USA"}',
@@ -76,7 +77,7 @@ VALUES
   ),
   (
     'BRINDLEWICK_CLASSIC',
-    'Brindlewick III',
+    'Brindlewick Classic 2027',
     'USA',
     'MN',
     '{"venue":"Ironvale Training Dojo","street":"77 Halcyon Foundry Way","city":"Brindlewick","state":"MN","country":"USA"}',
@@ -88,7 +89,7 @@ VALUES
   ),
   (
     'LARKSPUR_OPEN',
-    'Larkspur I',
+    'Larkspur Open I',
     'USA',
     'CA',
     '{"venue":"Emberline Grand Hotel","street":"1204 North Ashford Circle","city":"Larkspur","state":"CA","country":"USA"}',
@@ -100,7 +101,7 @@ VALUES
   ),
   (
     'LARKSPUR_OPEN',
-    'Larkspur II',
+    'Larkspur Open II',
     'USA',
     'CA',
     '{"venue":"Valebridge Event Center","street":"633 Valebridge Court","city":"Larkspur","state":"CA","country":"USA"}',
@@ -112,7 +113,7 @@ VALUES
   ),
   (
     'LARKSPUR_OPEN',
-    'Larkspur III',
+    'Larkspur Open III',
     'USA',
     'CA',
     '{"venue":"Foundry Lane Combat Gym","street":"15 Orchard Gate Parkway","city":"Larkspur","state":"CA","country":"USA"}',
@@ -124,7 +125,7 @@ VALUES
   ),
   (
     'MARIGLEN_INVITATIONAL',
-    'Mariglen I',
+    'Mariglen Invitational 2025',
     'USA',
     'CO',
     '{"venue":"Copper Veil Inn & Suites","street":"2880 Ridgewell Station Drive","city":"Mariglen","state":"CO","country":"USA"}',
@@ -136,7 +137,7 @@ VALUES
   ),
   (
     'MARIGLEN_INVITATIONAL',
-    'Mariglen II',
+    'Mariglen Invitational 2026',
     'USA',
     'CO',
     '{"venue":"Orchard Gate Athletic Complex","street":"504 Emberline Terrace","city":"Mariglen","state":"CO","country":"USA"}',
@@ -148,7 +149,7 @@ VALUES
   ),
   (
     'MARIGLEN_INVITATIONAL',
-    'Mariglen III',
+    'Mariglen Invitational 2027',
     'USA',
     'CO',
     '{"venue":"Ashford Martial Arts Gym","street":"4182 Copper Veil Road","city":"Mariglen","state":"CO","country":"USA"}',
@@ -160,7 +161,7 @@ VALUES
   ),
   (
     'SELWICK_CONGRESS',
-    'Selwick I',
+    'Selwick Congress 2025',
     'USA',
     'OH',
     '{"venue":"Ridgewell Station Hotel","street":"901 Meridian Wharf Lane","city":"Selwick","state":"OH","country":"USA"}',
@@ -172,7 +173,7 @@ VALUES
   ),
   (
     'SELWICK_CONGRESS',
-    'Selwick II',
+    'Selwick Congress 2026',
     'USA',
     'OH',
     '{"venue":"North Ashford Sportsplex","street":"77 Halcyon Foundry Way","city":"Selwick","state":"OH","country":"USA"}',
@@ -184,7 +185,7 @@ VALUES
   ),
   (
     'SELWICK_CONGRESS',
-    'Selwick III',
+    'Selwick Congress 2027',
     'USA',
     'OH',
     '{"venue":"Copper Veil Fitness Dojo","street":"1204 North Ashford Circle","city":"Selwick","state":"OH","country":"USA"}',
@@ -196,7 +197,7 @@ VALUES
   ),
   (
     'THORNBAY_COUPLES_CHAMPIONSHIP',
-    'Thornbay I',
+    'Thornbay Couples Championship II',
     'USA',
     'FL',
     '{"venue":"Meridian Wharf Hotel","street":"633 Valebridge Court","city":"Thornbay","state":"FL","country":"USA"}',
@@ -208,7 +209,7 @@ VALUES
   ),
   (
     'THORNBAY_COUPLES_CHAMPIONSHIP',
-    'Thornbay II',
+    'Thornbay Couples Championship III',
     'USA',
     'FL',
     '{"venue":"Copper Veil Arena & Fieldhouse","street":"15 Orchard Gate Parkway","city":"Thornbay","state":"FL","country":"USA"}',
@@ -220,7 +221,7 @@ VALUES
   ),
   (
     'THORNBAY_COUPLES_CHAMPIONSHIP',
-    'Thornbay III',
+    'Thornbay Couples Championship IV',
     'USA',
     'FL',
     '{"venue":"Meridian Wharf Gym & Dojo","street":"2880 Ridgewell Station Drive","city":"Thornbay","state":"FL","country":"USA"}',
@@ -232,7 +233,7 @@ VALUES
   ),
   (
     'VELLGRIMM_LONGSWORD_OPEN',
-    'Vellgrimm I',
+    'Vellgrimm Longsword Open 2025',
     'USA',
     'TX',
     '{"venue":"Valebridge Court Hotel","street":"504 Emberline Terrace","city":"Vellgrimm","state":"TX","country":"USA"}',
@@ -244,7 +245,7 @@ VALUES
   ),
   (
     'VELLGRIMM_LONGSWORD_OPEN',
-    'Vellgrimm II',
+    'Vellgrimm Longsword Open 2026',
     'USA',
     'TX',
     '{"venue":"Ridgewell Station Sports Complex","street":"4182 Copper Veil Road","city":"Vellgrimm","state":"TX","country":"USA"}',
@@ -256,7 +257,7 @@ VALUES
   ),
   (
     'VELLGRIMM_LONGSWORD_OPEN',
-    'Vellgrimm III',
+    'Vellgrimm Longsword Open 2027',
     'USA',
     'TX',
     '{"venue":"Emberline Athletic Gym","street":"901 Meridian Wharf Lane","city":"Vellgrimm","state":"TX","country":"USA"}',
@@ -268,7 +269,7 @@ VALUES
   ),
   (
     'CINDERHOLT_HEMA_SYMPOSIUM',
-    'Cinderholt I',
+    'Cinderholt HEMA Symposium 2025',
     'USA',
     'WA',
     '{"venue":"Orchard Gate Inn","street":"77 Halcyon Foundry Way","city":"Cinderholt","state":"WA","country":"USA"}',
@@ -280,7 +281,7 @@ VALUES
   ),
   (
     'CINDERHOLT_HEMA_SYMPOSIUM',
-    'Cinderholt II',
+    'Cinderholt HEMA Symposium 2026',
     'USA',
     'WA',
     '{"venue":"Halcyon Foundry Athletic Center","street":"1204 North Ashford Circle","city":"Cinderholt","state":"WA","country":"USA"}',
@@ -292,7 +293,7 @@ VALUES
   ),
   (
     'CINDERHOLT_HEMA_SYMPOSIUM',
-    'Cinderholt III',
+    'Cinderholt HEMA Symposium 2027',
     'USA',
     'WA',
     '{"venue":"Brindlewick Dance & Fitness Studio","street":"633 Valebridge Court","city":"Cinderholt","state":"WA","country":"USA"}',
@@ -304,7 +305,7 @@ VALUES
   ),
   (
     'BRAMBLEGATE_RAPIER_CUP',
-    'Bramblegate I',
+    'Bramblegate Rapier Cup III',
     'USA',
     'NC',
     '{"venue":"North Ashford Hotel","street":"15 Orchard Gate Parkway","city":"Bramblegate","state":"NC","country":"USA"}',
@@ -316,7 +317,7 @@ VALUES
   ),
   (
     'BRAMBLEGATE_RAPIER_CUP',
-    'Bramblegate II',
+    'Bramblegate Rapier Cup IV',
     'USA',
     'NC',
     '{"venue":"Emberline Regional Sports Complex","street":"2880 Ridgewell Station Drive","city":"Bramblegate","state":"NC","country":"USA"}',
@@ -328,7 +329,7 @@ VALUES
   ),
   (
     'BRAMBLEGATE_RAPIER_CUP',
-    'Bramblegate III',
+    'Bramblegate Rapier Cup V',
     'USA',
     'NC',
     '{"venue":"Larkspur Movement Dojo","street":"504 Emberline Terrace","city":"Bramblegate","state":"NC","country":"USA"}',
@@ -340,7 +341,7 @@ VALUES
   ),
   (
     'MOSSWICK_STEEL_ACADEMY_OPEN',
-    'Mosswick I',
+    'Mosswick Steel Academy Open 2025',
     'USA',
     'MN',
     '{"venue":"Foundry Lane Hotel","street":"4182 Copper Veil Road","city":"Mosswick","state":"MN","country":"USA"}',
@@ -352,7 +353,7 @@ VALUES
   ),
   (
     'MOSSWICK_STEEL_ACADEMY_OPEN',
-    'Mosswick II',
+    'Mosswick Steel Academy Open 2026',
     'USA',
     'MN',
     '{"venue":"Brindlewick Convention & Sports Center","street":"901 Meridian Wharf Lane","city":"Mosswick","state":"MN","country":"USA"}',
@@ -364,7 +365,7 @@ VALUES
   ),
   (
     'MOSSWICK_STEEL_ACADEMY_OPEN',
-    'Mosswick III',
+    'Mosswick Steel Academy Open 2027',
     'USA',
     'MN',
     '{"venue":"Mariglen Training Gym","street":"77 Halcyon Foundry Way","city":"Mosswick","state":"MN","country":"USA"}',
@@ -376,7 +377,7 @@ VALUES
   ),
   (
     'HOLLOWFEN_BLADE_CONGRESS',
-    'Hollowfen I',
+    'Hollowfen Blade Congress 2025',
     'USA',
     'WI',
     '{"venue":"Brindlewick Lodge","street":"1204 North Ashford Circle","city":"Hollowfen","state":"WI","country":"USA"}',
@@ -388,7 +389,7 @@ VALUES
   ),
   (
     'HOLLOWFEN_BLADE_CONGRESS',
-    'Hollowfen II',
+    'Hollowfen Blade Congress 2026',
     'USA',
     'WI',
     '{"venue":"Larkspur Fieldhouse Complex","street":"633 Valebridge Court","city":"Hollowfen","state":"WI","country":"USA"}',
@@ -400,7 +401,7 @@ VALUES
   ),
   (
     'HOLLOWFEN_BLADE_CONGRESS',
-    'Hollowfen III',
+    'Hollowfen Blade Congress 2027',
     'USA',
     'WI',
     '{"venue":"Selwick Academy Dojo","street":"15 Orchard Gate Parkway","city":"Hollowfen","state":"WI","country":"USA"}',
@@ -412,7 +413,7 @@ VALUES
   ),
   (
     'RIVETON_KART_GRAND_PRIX',
-    'Riveton I',
+    'Riveton Kart Grand Prix IV',
     'USA',
     'CO',
     '{"venue":"Mariglen House Hotel","street":"2880 Ridgewell Station Drive","city":"Riveton","state":"CO","country":"USA"}',
@@ -424,7 +425,7 @@ VALUES
   ),
   (
     'RIVETON_KART_GRAND_PRIX',
-    'Riveton II',
+    'Riveton Kart Grand Prix V',
     'USA',
     'CO',
     '{"venue":"Mariglen Sports Pavilion","street":"504 Emberline Terrace","city":"Riveton","state":"CO","country":"USA"}',
@@ -436,7 +437,7 @@ VALUES
   ),
   (
     'RIVETON_KART_GRAND_PRIX',
-    'Riveton III',
+    'Riveton Kart Grand Prix VI',
     'USA',
     'CO',
     '{"venue":"Thornbay Couples Dance Gym","street":"4182 Copper Veil Road","city":"Riveton","state":"CO","country":"USA"}',
@@ -448,7 +449,7 @@ VALUES
   ),
   (
     'GLIMMERWICK_SPRINT_CUP',
-    'Glimmerwick I',
+    'Glimmerwick Sprint Cup 2025',
     'USA',
     'OH',
     '{"venue":"Selwick Terrace Hotel","street":"901 Meridian Wharf Lane","city":"Glimmerwick","state":"OH","country":"USA"}',
@@ -460,7 +461,7 @@ VALUES
   ),
   (
     'GLIMMERWICK_SPRINT_CUP',
-    'Glimmerwick II',
+    'Glimmerwick Sprint Cup 2026',
     'USA',
     'OH',
     '{"venue":"Selwick Metro Athletic Complex","street":"77 Halcyon Foundry Way","city":"Glimmerwick","state":"OH","country":"USA"}',
@@ -472,7 +473,7 @@ VALUES
   ),
   (
     'GLIMMERWICK_SPRINT_CUP',
-    'Glimmerwick III',
+    'Glimmerwick Sprint Cup 2027',
     'USA',
     'OH',
     '{"venue":"Vellgrimm Longsword Dojo","street":"1204 North Ashford Circle","city":"Glimmerwick","state":"OH","country":"USA"}',
@@ -484,7 +485,7 @@ VALUES
   ),
   (
     'DRAKEWELL_OVAL_CLASSIC',
-    'Drakewell I',
+    'Drakewell Oval Classic 2025',
     'USA',
     'FL',
     '{"venue":"Thornbay Harbor Inn","street":"633 Valebridge Court","city":"Drakewell","state":"FL","country":"USA"}',
@@ -496,7 +497,7 @@ VALUES
   ),
   (
     'DRAKEWELL_OVAL_CLASSIC',
-    'Drakewell II',
+    'Drakewell Oval Classic 2026',
     'USA',
     'FL',
     '{"venue":"Thornbay Riverfront Sports Center","street":"15 Orchard Gate Parkway","city":"Drakewell","state":"FL","country":"USA"}',
@@ -508,7 +509,7 @@ VALUES
   ),
   (
     'DRAKEWELL_OVAL_CLASSIC',
-    'Drakewell III',
+    'Drakewell Oval Classic 2027',
     'USA',
     'FL',
     '{"venue":"Cinderholt HEMA Gym","street":"2880 Ridgewell Station Drive","city":"Drakewell","state":"FL","country":"USA"}',
@@ -520,7 +521,7 @@ VALUES
   ),
   (
     'QUARRYLANE_VELOCITY_200',
-    'Quarrylane I',
+    'Quarrylane Velocity 200 V',
     'USA',
     'TX',
     '{"venue":"Vellgrimm Plaza Hotel","street":"504 Emberline Terrace","city":"Quarrylane","state":"TX","country":"USA"}',
@@ -532,7 +533,7 @@ VALUES
   ),
   (
     'QUARRYLANE_VELOCITY_200',
-    'Quarrylane II',
+    'Quarrylane Velocity 200 VI',
     'USA',
     'TX',
     '{"venue":"Vellgrimm Combat Sports Complex","street":"4182 Copper Veil Road","city":"Quarrylane","state":"TX","country":"USA"}',
@@ -544,7 +545,7 @@ VALUES
   ),
   (
     'QUARRYLANE_VELOCITY_200',
-    'Quarrylane III',
+    'Quarrylane Velocity 200 VII',
     'USA',
     'TX',
     '{"venue":"Bramblegate Rapier Dojo","street":"901 Meridian Wharf Lane","city":"Quarrylane","state":"TX","country":"USA"}',
@@ -556,7 +557,7 @@ VALUES
   ),
   (
     'FOXMERE_KART_INVITATIONAL',
-    'Foxmere I',
+    'Foxmere Kart Invitational 2025',
     'USA',
     'WA',
     '{"venue":"Cinderholt Inn","street":"77 Halcyon Foundry Way","city":"Foxmere","state":"WA","country":"USA"}',
@@ -568,7 +569,7 @@ VALUES
   ),
   (
     'FOXMERE_KART_INVITATIONAL',
-    'Foxmere II',
+    'Foxmere Kart Invitational 2026',
     'USA',
     'WA',
     '{"venue":"Cinderholt Multi-Sport Arena","street":"1204 North Ashford Circle","city":"Foxmere","state":"WA","country":"USA"}',
@@ -580,7 +581,7 @@ VALUES
   ),
   (
     'FOXMERE_KART_INVITATIONAL',
-    'Foxmere III',
+    'Foxmere Kart Invitational 2027',
     'USA',
     'WA',
     '{"venue":"Mosswick Steel Academy Gym","street":"633 Valebridge Court","city":"Foxmere","state":"WA","country":"USA"}',
@@ -592,7 +593,7 @@ VALUES
   ),
   (
     'ROBOT_RIOT',
-    'Robot Riot I',
+    'Robot Riot 2025',
     'USA',
     'NC',
     '{"venue":"Bramblegate Hotel","street":"15 Orchard Gate Parkway","city":"Robot Riot","state":"NC","country":"USA"}',
@@ -604,7 +605,7 @@ VALUES
   ),
   (
     'ROBOT_RIOT',
-    'Robot Riot II',
+    'Robot Riot 2026',
     'USA',
     'NC',
     '{"venue":"Bramblegate Athletic Center","street":"2880 Ridgewell Station Drive","city":"Robot Riot","state":"NC","country":"USA"}',
@@ -616,7 +617,7 @@ VALUES
   ),
   (
     'ROBOT_RIOT',
-    'Robot Riot III',
+    'Robot Riot 2027',
     'USA',
     'NC',
     '{"venue":"Hollowfen Blade Dojo","street":"504 Emberline Terrace","city":"Robot Riot","state":"NC","country":"USA"}',
@@ -628,7 +629,7 @@ VALUES
   ),
   (
     'SERVO_SLAM',
-    'Servo Slam I',
+    'Servo Slam VI',
     'USA',
     'MN',
     '{"venue":"Mosswick Station Inn","street":"4182 Copper Veil Road","city":"Servo Slam","state":"MN","country":"USA"}',
@@ -640,7 +641,7 @@ VALUES
   ),
   (
     'SERVO_SLAM',
-    'Servo Slam II',
+    'Servo Slam VII',
     'USA',
     'MN',
     '{"venue":"Mosswick Sports Coliseum","street":"901 Meridian Wharf Lane","city":"Servo Slam","state":"MN","country":"USA"}',
@@ -652,7 +653,7 @@ VALUES
   ),
   (
     'SERVO_SLAM',
-    'Servo Slam III',
+    'Servo Slam VIII',
     'USA',
     'MN',
     '{"venue":"Riveton Kart Fitness Gym","street":"77 Halcyon Foundry Way","city":"Servo Slam","state":"MN","country":"USA"}',
@@ -664,7 +665,7 @@ VALUES
   ),
   (
     'RIVET_RUMBLE',
-    'Rivet Rumble I',
+    'Rivet Rumble 2025',
     'USA',
     'WI',
     '{"venue":"Hollowfen Lodge","street":"1204 North Ashford Circle","city":"Rivet Rumble","state":"WI","country":"USA"}',
@@ -676,7 +677,7 @@ VALUES
   ),
   (
     'RIVET_RUMBLE',
-    'Rivet Rumble II',
+    'Rivet Rumble 2026',
     'USA',
     'WI',
     '{"venue":"Hollowfen Field Complex","street":"633 Valebridge Court","city":"Rivet Rumble","state":"WI","country":"USA"}',
@@ -688,7 +689,7 @@ VALUES
   ),
   (
     'RIVET_RUMBLE',
-    'Rivet Rumble III',
+    'Rivet Rumble 2027',
     'USA',
     'WI',
     '{"venue":"Glimmerwick Training Dojo","street":"15 Orchard Gate Parkway","city":"Rivet Rumble","state":"WI","country":"USA"}',
@@ -700,7 +701,7 @@ VALUES
   ),
   (
     'CIRCUIT_CARNAGE',
-    'Circuit Carnage I',
+    'Circuit Carnage 2025',
     'USA',
     'CO',
     '{"venue":"Riveton Bay Hotel","street":"2880 Ridgewell Station Drive","city":"Circuit Carnage","state":"CO","country":"USA"}',
@@ -712,7 +713,7 @@ VALUES
   ),
   (
     'CIRCUIT_CARNAGE',
-    'Circuit Carnage II',
+    'Circuit Carnage 2026',
     'USA',
     'CO',
     '{"venue":"Riveton Kart & Sports Center","street":"504 Emberline Terrace","city":"Circuit Carnage","state":"CO","country":"USA"}',
@@ -724,7 +725,7 @@ VALUES
   ),
   (
     'CIRCUIT_CARNAGE',
-    'Circuit Carnage III',
+    'Circuit Carnage 2027',
     'USA',
     'CO',
     '{"venue":"Drakewell Oval Gym","street":"4182 Copper Veil Road","city":"Circuit Carnage","state":"CO","country":"USA"}',
@@ -736,7 +737,7 @@ VALUES
   ),
   (
     'GASKET_GAUNTLET',
-    'Gasket Gauntlet I',
+    'Gasket Gauntlet VII',
     'USA',
     'OH',
     '{"venue":"Glimmerwick Grand","street":"901 Meridian Wharf Lane","city":"Gasket Gauntlet","state":"OH","country":"USA"}',
@@ -748,7 +749,7 @@ VALUES
   ),
   (
     'GASKET_GAUNTLET',
-    'Gasket Gauntlet II',
+    'Gasket Gauntlet VIII',
     'USA',
     'OH',
     '{"venue":"Glimmerwick Sprint Complex","street":"77 Halcyon Foundry Way","city":"Gasket Gauntlet","state":"OH","country":"USA"}',
@@ -760,7 +761,7 @@ VALUES
   ),
   (
     'GASKET_GAUNTLET',
-    'Gasket Gauntlet III',
+    'Gasket Gauntlet IX',
     'USA',
     'OH',
     '{"venue":"Quarrylane Velocity Dojo","street":"1204 North Ashford Circle","city":"Gasket Gauntlet","state":"OH","country":"USA"}',
@@ -772,7 +773,7 @@ VALUES
   ),
   (
     'PORTLAND_PLASMA_PRIX',
-    'Portland I',
+    'Portland Plasma Prix 2025',
     'USA',
     'OR',
     '{"venue":"Drakewell Inn","street":"633 Valebridge Court","city":"Portland","state":"OR","country":"USA"}',
@@ -784,7 +785,7 @@ VALUES
   ),
   (
     'PORTLAND_PLASMA_PRIX',
-    'Portland II',
+    'Portland Plasma Prix 2026',
     'USA',
     'OR',
     '{"venue":"Drakewell Oval Sports Park","street":"15 Orchard Gate Parkway","city":"Portland","state":"OR","country":"USA"}',
@@ -796,7 +797,7 @@ VALUES
   ),
   (
     'PORTLAND_PLASMA_PRIX',
-    'Portland III',
+    'Portland Plasma Prix 2027',
     'USA',
     'OR',
     '{"venue":"Foxmere Martial Gym","street":"2880 Ridgewell Station Drive","city":"Portland","state":"OR","country":"USA"}',
@@ -808,7 +809,7 @@ VALUES
   ),
   (
     'CHICAGO_CHROME_CLASH',
-    'Chicago I',
+    'Chicago Chrome Clash 2025',
     'USA',
     'IL',
     '{"venue":"Quarrylane Hotel","street":"504 Emberline Terrace","city":"Chicago","state":"IL","country":"USA"}',
@@ -820,7 +821,7 @@ VALUES
   ),
   (
     'CHICAGO_CHROME_CLASH',
-    'Chicago II',
+    'Chicago Chrome Clash 2026',
     'USA',
     'IL',
     '{"venue":"Quarrylane Velocity Arena","street":"4182 Copper Veil Road","city":"Chicago","state":"IL","country":"USA"}',
@@ -832,7 +833,7 @@ VALUES
   ),
   (
     'CHICAGO_CHROME_CLASH',
-    'Chicago III',
+    'Chicago Chrome Clash 2027',
     'USA',
     'IL',
     '{"venue":"Servo Slam Dojo","street":"901 Meridian Wharf Lane","city":"Chicago","state":"IL","country":"USA"}',
@@ -844,7 +845,7 @@ VALUES
   ),
   (
     'STELLAR_SHOWDOWN',
-    'Stellar Showdown I',
+    'Stellar Showdown VIII',
     'USA',
     'WA',
     '{"venue":"Foxmere Court Hotel","street":"77 Halcyon Foundry Way","city":"Stellar Showdown","state":"WA","country":"USA"}',
@@ -856,7 +857,7 @@ VALUES
   ),
   (
     'STELLAR_SHOWDOWN',
-    'Stellar Showdown II',
+    'Stellar Showdown IX',
     'USA',
     'WA',
     '{"venue":"Foxmere Circuit Sports Complex","street":"1204 North Ashford Circle","city":"Stellar Showdown","state":"WA","country":"USA"}',
@@ -868,7 +869,7 @@ VALUES
   ),
   (
     'STELLAR_SHOWDOWN',
-    'Stellar Showdown III',
+    'Stellar Showdown X',
     'USA',
     'WA',
     '{"venue":"Circuit Carnage Gym","street":"633 Valebridge Court","city":"Stellar Showdown","state":"WA","country":"USA"}',
@@ -880,7 +881,7 @@ VALUES
   ),
   (
     'NEON_NEXUS',
-    'Neon Nexus I',
+    'Neon Nexus 2025',
     'USA',
     'NC',
     '{"venue":"Servo Tower Hotel","street":"15 Orchard Gate Parkway","city":"Neon Nexus","state":"NC","country":"USA"}',
@@ -892,7 +893,7 @@ VALUES
   ),
   (
     'NEON_NEXUS',
-    'Neon Nexus II',
+    'Neon Nexus 2026',
     'USA',
     'NC',
     '{"venue":"Robot Foundry Sports Center","street":"2880 Ridgewell Station Drive","city":"Neon Nexus","state":"NC","country":"USA"}',
@@ -904,7 +905,7 @@ VALUES
   ),
   (
     'NEON_NEXUS',
-    'Neon Nexus III',
+    'Neon Nexus 2027',
     'USA',
     'NC',
     '{"venue":"Gasket Gauntlet Training Center","street":"504 Emberline Terrace","city":"Neon Nexus","state":"NC","country":"USA"}',
@@ -916,7 +917,7 @@ VALUES
   ),
   (
     'MERIDIAN_MELEE',
-    'Meridian Melee I',
+    'Meridian Melee 2025',
     'USA',
     'MN',
     '{"venue":"Neon Nexus Hotel","street":"4182 Copper Veil Road","city":"Meridian Melee","state":"MN","country":"USA"}',
@@ -928,7 +929,7 @@ VALUES
   ),
   (
     'MERIDIAN_MELEE',
-    'Meridian Melee II',
+    'Meridian Melee 2026',
     'USA',
     'MN',
     '{"venue":"Stellar Showdown Arena","street":"901 Meridian Wharf Lane","city":"Meridian Melee","state":"MN","country":"USA"}',
@@ -940,7 +941,7 @@ VALUES
   ),
   (
     'MERIDIAN_MELEE',
-    'Meridian Melee III',
+    'Meridian Melee 2027',
     'USA',
     'MN',
     '{"venue":"Portland Plasma Dojo","street":"77 Halcyon Foundry Way","city":"Meridian Melee","state":"MN","country":"USA"}',

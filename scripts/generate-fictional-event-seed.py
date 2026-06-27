@@ -38,13 +38,24 @@ GROUPS: list[tuple[str, str, str, tuple[str, str, str] | None]] = [
     ("MERIDIAN_MELEE", "Meridian Melee", "Meridian Melee", None),
 ]
 
-ROMAN = ("I", "II", "III")
 DAYS = (3, 4, 5)
-# I = ~12 months ago, II = centered on today (2026-06-26), III = ~12 months ahead
+# Past / current / future instances (~12 months apart).
 START_DATES = (
     "2025-06-22 09:00:00-05",
     "2026-06-24 09:00:00-05",
     "2027-06-24 09:00:00-05",
+)
+START_YEARS = (2025, 2026, 2027)
+
+# ~32% of groups (8/25) use Roman suffixes; remainder use full_name + year.
+ROMAN_SUFFIX_GROUP_INDICES = {index for index in range(len(GROUPS)) if index % 3 == 1}
+
+ROMAN_VALUES = (
+    (10, "X"),
+    (9, "IX"),
+    (5, "V"),
+    (4, "IV"),
+    (1, "I"),
 )
 # Fictitious venue names (one category per instance: I=hotel, II=sports complex, III=gym/dojo).
 HOTEL_NAMES = (
@@ -150,11 +161,37 @@ def sql_str(value: str) -> str:
     return "'" + value.replace("'", "''") + "'"
 
 
+def to_roman(value: int) -> str:
+    parts: list[str] = []
+    remaining = value
+
+    for amount, numeral in ROMAN_VALUES:
+        while remaining >= amount:
+            parts.append(numeral)
+            remaining -= amount
+
+    return "".join(parts)
+
+
+def roman_start_for_group(group_index: int) -> int:
+    """Deterministic pseudo-random Roman numeral (I–X) for the past-year instance."""
+    return (group_index * 7 + 3) % 10 + 1
+
+
+def event_name(full_name: str, group_index: int, instance: int) -> str:
+    if group_index in ROMAN_SUFFIX_GROUP_INDICES:
+        roman = to_roman(roman_start_for_group(group_index) + instance)
+        return f"{full_name} {roman}"
+
+    return f"{full_name} {START_YEARS[instance]}"
+
+
 def main() -> None:
     lines = [
         "-- Three event instances per fictional event_group (seeds 008–010).",
         "-- I  = ~12 months in the past (Jun 2025), II = around today (Jun 2026), III = ~12 months ahead (Jun 2027).",
         "-- number_of_days is 3, 4, or 5; end_date = start_date + number_of_days.",
+        "-- event.name is event_group.full_name + year, or full_name + Roman suffix (~32% of groups).",
         "-- location_json.venue is a fictitious hotel, sports complex, or gym/dojo name.",
         "-- Safe to re-run: removes prior fictional-group events first.",
         "--",
@@ -189,7 +226,7 @@ def main() -> None:
     value_rows: list[str] = []
     street_index = 0
 
-    for group_index, (code, _full, short, geo) in enumerate(GROUPS):
+    for group_index, (code, full_name, short, geo) in enumerate(GROUPS):
         if geo:
             country, state, city = geo
         else:
@@ -199,9 +236,8 @@ def main() -> None:
 
         for instance in range(3):
             days = DAYS[instance]
-            roman = ROMAN[instance]
             start = START_DATES[instance]
-            name = f"{short} {roman}"
+            name = event_name(full_name, group_index, instance)
             venue_pool = VENUE_NAMES_BY_INSTANCE[instance]
             venue = venue_pool[group_index % len(venue_pool)]
             street = STREETS[street_index % len(STREETS)]

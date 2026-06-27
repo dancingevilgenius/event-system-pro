@@ -51,6 +51,10 @@ Use this file to track planned work across the front end, database, and deploy s
 - [ ] Update `docs/cursor/application-rules.md` when placeholder pages and mock data are replaced.
 - [ ] Document the event → contest → entry → judging data model for future contributors.
 
+## Deferred
+
+- [ ] **Sex offender / background check search** — Search by first name, last name, and optional state. Deferred pending legal/compliance review. Do not scrape public registries; if pursued, integrate a licensed background-check provider with user consent, disclosures, and pass/fail status only (no raw registry data in-app). Official one-off lookup: [nsopw.gov](https://www.nsopw.gov/).
+
 ---
 
 ## Recently completed (2026-06-27)

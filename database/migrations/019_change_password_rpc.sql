@@ -58,8 +58,8 @@ BEGIN
 
   UPDATE public."user"
   SET password_encrypted = crypt(trim(p_new_password), gen_salt('bf')),
-      updated_date = NOW(),
-      updated_by = 'change_password'
+      modified_date = CURRENT_TIMESTAMP,
+      modified_by = v_user.username
   WHERE user_id = v_user.user_id;
 
   RETURN json_build_object('ok', true, 'message', 'Your password has been updated.');

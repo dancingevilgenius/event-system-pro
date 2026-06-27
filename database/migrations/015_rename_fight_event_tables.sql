@@ -37,8 +37,8 @@ SELECT
   end_date,
   created_date,
   created_by,
-  updated_date,
-  updated_by
+  modified_date,
+  modified_by
 FROM public."event"
 WHERE active IS NOT FALSE;
 

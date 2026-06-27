@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS public.user_password_reset (
   code_hash TEXT NOT NULL,
   expires_at TIMESTAMPTZ NOT NULL,
   used_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+  created_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX IF NOT EXISTS idx_user_password_reset_user_id
@@ -103,7 +103,7 @@ BEGIN
   WHERE r.user_id = v_user_id
     AND r.used_at IS NULL
     AND r.expires_at > NOW()
-  ORDER BY r.created_at DESC
+  ORDER BY r.created_date DESC
   LIMIT 1;
 
   IF NOT FOUND OR crypt(trim(p_code), v_reset.code_hash) <> v_reset.code_hash THEN
@@ -132,6 +132,7 @@ SET search_path = public, api
 AS $$
 DECLARE
   v_user_id bigint;
+  v_username text;
   v_reset public.user_password_reset%ROWTYPE;
 BEGIN
   IF p_new_password IS NULL OR length(trim(p_new_password)) < 8 THEN
@@ -141,8 +142,8 @@ BEGIN
     );
   END IF;
 
-  SELECT u.user_id
-  INTO v_user_id
+  SELECT u.user_id, u.username
+  INTO v_user_id, v_username
   FROM public."user" u
   WHERE lower(u.email) = lower(trim(p_email))
   LIMIT 1;
@@ -157,7 +158,7 @@ BEGIN
   WHERE r.user_id = v_user_id
     AND r.used_at IS NULL
     AND r.expires_at > NOW()
-  ORDER BY r.created_at DESC
+  ORDER BY r.created_date DESC
   LIMIT 1;
 
   IF NOT FOUND OR crypt(trim(p_code), v_reset.code_hash) <> v_reset.code_hash THEN
@@ -166,12 +167,14 @@ BEGIN
 
   UPDATE public."user"
   SET password_encrypted = crypt(trim(p_new_password), gen_salt('bf')),
-      updated_date = NOW(),
-      updated_by = 'forgot_password'
+      modified_date = CURRENT_TIMESTAMP,
+      modified_by = v_username
   WHERE user_id = v_user_id;
 
   UPDATE public.user_password_reset
-  SET used_at = NOW()
+  SET used_at = NOW(),
+      modified_date = CURRENT_TIMESTAMP,
+      modified_by = v_username
   WHERE reset_id = v_reset.reset_id;
 
   RETURN json_build_object('ok', true, 'message', 'Your password has been updated.');

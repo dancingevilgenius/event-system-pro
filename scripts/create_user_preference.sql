@@ -6,8 +6,8 @@
   active BOOLEAN DEFAULT TRUE,
   created_by varchar(128) DEFAULT NULL,
   created_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_by varchar(128) DEFAULT NULL,
-  updated_date TIMESTAMPTZ NOT NULL DEFAULT TIMESTAMPTZ '1970-01-01 02:00:01+00',
+  modified_by varchar(128) DEFAULT NULL,
+  modified_date TIMESTAMPTZ NULL DEFAULT NULL,
   PRIMARY KEY (user_preference_id),
   CONSTRAINT user_preference_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (user_id) ON DELETE RESTRICT ON UPDATE RESTRICT
 );

@@ -98,8 +98,8 @@ SELECT
   end_date,
   created_date,
   created_by,
-  updated_date,
-  updated_by
+  modified_date,
+  modified_by
 FROM public."event"
 WHERE active IS NOT FALSE;
 
@@ -147,8 +147,8 @@ SELECT
   active,
   created_date,
   created_by,
-  updated_date,
-  updated_by
+  modified_date,
+  modified_by
 FROM public."user"
 WHERE active IS NOT FALSE;
 
@@ -171,9 +171,9 @@ SELECT
   contest_id,
   judges_json,
   created_by,
-  created_on,
-  last_modified_by,
-  last_modified_on
+  created_date,
+  modified_by,
+  modified_date
 FROM public.judging_panel;
 
 -- ---------------------------------------------------------------------------

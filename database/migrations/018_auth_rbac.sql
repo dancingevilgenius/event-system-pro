@@ -20,7 +20,7 @@ ALTER DATABASE event_system_pro
 CREATE TABLE IF NOT EXISTS public.user_app_role (
   user_id   bigint NOT NULL,
   role_code text   NOT NULL,
-  created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  created_date timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (user_id, role_code),
   CONSTRAINT user_app_role_fk_user
     FOREIGN KEY (user_id) REFERENCES public."user" (user_id) ON DELETE CASCADE,
@@ -185,6 +185,7 @@ BEGIN
     json_build_object(
       'role', 'authenticated',
       'sub', v_user.user_id::text,
+      'username', v_user.username,
       'app_roles', to_jsonb(v_role_codes)
     ),
     v_secret

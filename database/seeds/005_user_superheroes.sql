@@ -21,7 +21,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'superman',
@@ -35,8 +36,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "red"}'::json,
   '[{"label": "home", "line1": "344 Clinton St", "line2": null, "city": "Metropolis", "state_or_province": "NY", "postal_code": "10000", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'superman'
 );
@@ -54,7 +56,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'batman',
@@ -68,8 +71,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "yellow"}'::json,
   '[{"label": "home", "line1": "1007 Mountain Drive", "line2": null, "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10001", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'batman'
 );
@@ -87,7 +91,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'wonderwoman',
@@ -101,8 +106,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "1600 Pennsylvania Ave NW", "line2": null, "city": "Washington", "state_or_province": "DC", "postal_code": "10002", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'wonderwoman'
 );
@@ -120,7 +126,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'flash',
@@ -134,8 +141,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "yellow"}'::json,
   '[{"label": "home", "line1": "2121 Main St", "line2": null, "city": "Central City", "state_or_province": "MO", "postal_code": "10003", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'flash'
 );
@@ -153,7 +161,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'greenlantern',
@@ -167,8 +176,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "black"}'::json,
   '[{"label": "home", "line1": "1200 Coast Blvd", "line2": null, "city": "Coast City", "state_or_province": "CA", "postal_code": "10004", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'greenlantern'
 );
@@ -186,7 +196,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'aquaman',
@@ -200,8 +211,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "green"}'::json,
   '[{"label": "home", "line1": "Atlantean Embassy", "line2": null, "city": "Atlantis", "state_or_province": "FL", "postal_code": "10005", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'aquaman'
 );
@@ -219,7 +231,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'cyborg',
@@ -233,8 +246,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "silver", "color2": "red"}'::json,
   '[{"label": "home", "line1": "106 Hero Lane", "line2": null, "city": "Detroit", "state_or_province": "MI", "postal_code": "10006", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'cyborg'
 );
@@ -252,7 +266,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'shazam',
@@ -266,8 +281,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "107 Hero Lane", "line2": null, "city": "Fawcett City", "state_or_province": "IN", "postal_code": "10007", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'shazam'
 );
@@ -285,7 +301,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'robin',
@@ -299,8 +316,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "green"}'::json,
   '[{"label": "home", "line1": "108 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10008", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'robin'
 );
@@ -318,7 +336,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'nightwing',
@@ -332,8 +351,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "1 Bludhaven Pier", "line2": null, "city": "Bludhaven", "state_or_province": "NJ", "postal_code": "10009", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'nightwing'
 );
@@ -351,7 +371,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'batgirl',
@@ -365,8 +386,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "yellow"}'::json,
   '[{"label": "home", "line1": "110 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10010", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'batgirl'
 );
@@ -384,7 +406,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'supergirl',
@@ -398,8 +421,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "red"}'::json,
   '[{"label": "home", "line1": "111 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10011", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'supergirl'
 );
@@ -417,7 +441,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'greenarrow',
@@ -431,8 +456,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "black"}'::json,
   '[{"label": "home", "line1": "1401 Starling Ave", "line2": null, "city": "Star City", "state_or_province": "WA", "postal_code": "10012", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'greenarrow'
 );
@@ -450,7 +476,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'blackcanary',
@@ -464,8 +491,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "yellow"}'::json,
   '[{"label": "home", "line1": "113 Hero Lane", "line2": "Star City HQ", "city": "Star City", "state_or_province": "WA", "postal_code": "10013", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'blackcanary'
 );
@@ -483,7 +511,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'martianmanhunter',
@@ -497,8 +526,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "red"}'::json,
   '[{"label": "home", "line1": "114 Hero Lane", "line2": null, "city": "Middleton", "state_or_province": "CO", "postal_code": "10014", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'martianmanhunter'
 );
@@ -516,7 +546,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'hawkman',
@@ -530,8 +561,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "brown", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "115 Hero Lane", "line2": null, "city": "St. Roch", "state_or_province": "LA", "postal_code": "10015", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'hawkman'
 );
@@ -549,7 +581,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'hawkgirl',
@@ -563,8 +596,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "brown", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "116 Hero Lane", "line2": null, "city": "St. Roch", "state_or_province": "LA", "postal_code": "10016", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'hawkgirl'
 );
@@ -582,7 +616,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'zatanna',
@@ -596,8 +631,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "white"}'::json,
   '[{"label": "home", "line1": "117 Hero Lane", "line2": null, "city": "San Francisco", "state_or_province": "CA", "postal_code": "10017", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'zatanna'
 );
@@ -615,7 +651,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'constantine',
@@ -629,8 +666,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "beige", "color2": "black"}'::json,
   '[{"label": "home", "line1": "118 Hero Lane", "line2": null, "city": "Los Angeles", "state_or_province": "CA", "postal_code": "10018", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'constantine'
 );
@@ -648,7 +686,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'raven',
@@ -662,8 +701,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "indigo", "color2": "black"}'::json,
   '[{"label": "home", "line1": "119 Hero Lane", "line2": null, "city": "Jump City", "state_or_province": "CA", "postal_code": "10019", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'raven'
 );
@@ -681,7 +721,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'starfire',
@@ -695,8 +736,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "orange"}'::json,
   '[{"label": "home", "line1": "120 Hero Lane", "line2": null, "city": "Jump City", "state_or_province": "CA", "postal_code": "10020", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'starfire'
 );
@@ -714,7 +756,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'beastboy',
@@ -728,8 +771,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "purple"}'::json,
   '[{"label": "home", "line1": "121 Hero Lane", "line2": null, "city": "Jump City", "state_or_province": "CA", "postal_code": "10021", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'beastboy'
 );
@@ -747,7 +791,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'redhood',
@@ -761,8 +806,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
   '[{"label": "home", "line1": "122 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10022", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'redhood'
 );
@@ -780,7 +826,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'harleyquinn',
@@ -794,8 +841,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "black"}'::json,
   '[{"label": "home", "line1": "123 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10023", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'harleyquinn'
 );
@@ -813,7 +861,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'joker',
@@ -827,8 +876,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "purple", "color2": "green"}'::json,
   '[{"label": "home", "line1": "124 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10024", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'joker'
 );
@@ -846,7 +896,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'catwoman',
@@ -860,8 +911,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "purple"}'::json,
   '[{"label": "home", "line1": "125 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10025", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'catwoman'
 );
@@ -879,7 +931,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'poisonivy',
@@ -893,8 +946,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "red"}'::json,
   '[{"label": "home", "line1": "126 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10026", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'poisonivy'
 );
@@ -912,7 +966,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'twoface',
@@ -926,8 +981,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "purple"}'::json,
   '[{"label": "home", "line1": "127 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10027", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'twoface'
 );
@@ -945,7 +1001,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'riddler',
@@ -959,8 +1016,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "purple"}'::json,
   '[{"label": "home", "line1": "128 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10028", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'riddler'
 );
@@ -978,7 +1036,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'scarecrow',
@@ -992,8 +1051,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "brown", "color2": "yellow"}'::json,
   '[{"label": "home", "line1": "129 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10029", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'scarecrow'
 );
@@ -1011,7 +1071,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'bane',
@@ -1025,8 +1086,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "green"}'::json,
   '[{"label": "home", "line1": "130 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10030", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'bane'
 );
@@ -1044,7 +1106,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'darkseid',
@@ -1058,8 +1121,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "gray", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "131 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10031", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'darkseid'
 );
@@ -1077,7 +1141,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'brainiac',
@@ -1091,8 +1156,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "purple"}'::json,
   '[{"label": "home", "line1": "132 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10032", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'brainiac'
 );
@@ -1110,7 +1176,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'lexluthor',
@@ -1124,8 +1191,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "purple", "color2": "green"}'::json,
   '[{"label": "home", "line1": "LexCorp Plaza", "line2": null, "city": "Metropolis", "state_or_province": "NY", "postal_code": "10033", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'lexluthor'
 );
@@ -1143,7 +1211,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'deathstroke',
@@ -1157,8 +1226,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "black"}'::json,
   '[{"label": "home", "line1": "134 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10034", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'deathstroke'
 );
@@ -1176,7 +1246,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'blackadam',
@@ -1190,8 +1261,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "135 Hero Lane", "line2": null, "city": "Kahndaq", "state_or_province": "IL", "postal_code": "10035", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'blackadam'
 );
@@ -1209,7 +1281,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'captaincold',
@@ -1223,8 +1296,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "white"}'::json,
   '[{"label": "home", "line1": "136 Hero Lane", "line2": "Central City HQ", "city": "Central City", "state_or_province": "MO", "postal_code": "10036", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'captaincold'
 );
@@ -1242,7 +1316,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'reverseflash',
@@ -1256,8 +1331,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "yellow", "color2": "red"}'::json,
   '[{"label": "home", "line1": "137 Hero Lane", "line2": "Central City HQ", "city": "Central City", "state_or_province": "MO", "postal_code": "10037", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'reverseflash'
 );
@@ -1275,7 +1351,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'kidflash',
@@ -1289,8 +1366,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "yellow"}'::json,
   '[{"label": "home", "line1": "138 Hero Lane", "line2": "Central City HQ", "city": "Central City", "state_or_province": "MO", "postal_code": "10038", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'kidflash'
 );
@@ -1308,7 +1386,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'bluebeetle',
@@ -1322,8 +1401,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "black"}'::json,
   '[{"label": "home", "line1": "139 Hero Lane", "line2": null, "city": "El Paso", "state_or_province": "TX", "postal_code": "10039", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'bluebeetle'
 );
@@ -1341,7 +1421,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'boostergold',
@@ -1355,8 +1436,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "gold", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "140 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10040", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'boostergold'
 );
@@ -1374,7 +1456,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'question',
@@ -1388,8 +1471,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "black"}'::json,
   '[{"label": "home", "line1": "141 Hero Lane", "line2": null, "city": "Hub City", "state_or_province": "IL", "postal_code": "10041", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'question'
 );
@@ -1407,7 +1491,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'phantomstranger',
@@ -1421,8 +1506,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "purple", "color2": "black"}'::json,
   '[{"label": "home", "line1": "142 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10042", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'phantomstranger'
 );
@@ -1440,7 +1526,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'deadman',
@@ -1454,8 +1541,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "white", "color2": "red"}'::json,
   '[{"label": "home", "line1": "143 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10043", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'deadman'
 );
@@ -1473,7 +1561,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'swampthing',
@@ -1487,8 +1576,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "brown"}'::json,
   '[{"label": "home", "line1": "144 Hero Lane", "line2": null, "city": "New Orleans", "state_or_province": "LA", "postal_code": "10044", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'swampthing'
 );
@@ -1506,7 +1596,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'spectre',
@@ -1520,8 +1611,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "white", "color2": "green"}'::json,
   '[{"label": "home", "line1": "145 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10045", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'spectre'
 );
@@ -1539,7 +1631,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'doctorfate',
@@ -1553,8 +1646,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "gold", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "146 Hero Lane", "line2": null, "city": "Boston", "state_or_province": "MA", "postal_code": "10046", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'doctorfate'
 );
@@ -1572,7 +1666,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'mistermiracle',
@@ -1586,8 +1681,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "red"}'::json,
   '[{"label": "home", "line1": "147 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10047", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'mistermiracle'
 );
@@ -1605,7 +1701,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'bigbarda',
@@ -1619,8 +1716,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
   '[{"label": "home", "line1": "148 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10048", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'bigbarda'
 );
@@ -1638,7 +1736,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'orion',
@@ -1652,8 +1751,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "gray"}'::json,
   '[{"label": "home", "line1": "149 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10049", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'orion'
 );
@@ -1671,7 +1771,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'lobo',
@@ -1685,8 +1786,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
   '[{"label": "home", "line1": "150 Hero Lane", "line2": null, "city": "Las Vegas", "state_or_province": "NV", "postal_code": "10050", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'lobo'
 );
@@ -1704,7 +1806,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'static',
@@ -1718,8 +1821,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "yellow"}'::json,
   '[{"label": "home", "line1": "151 Hero Lane", "line2": null, "city": "Dakota City", "state_or_province": "MO", "postal_code": "10051", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'static'
 );
@@ -1737,7 +1841,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'blacklightning',
@@ -1751,8 +1856,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "black"}'::json,
   '[{"label": "home", "line1": "152 Hero Lane", "line2": null, "city": "Freeland", "state_or_province": "MD", "postal_code": "10052", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'blacklightning'
 );
@@ -1770,7 +1876,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'vixen',
@@ -1784,8 +1891,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "orange", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "153 Hero Lane", "line2": null, "city": "Detroit", "state_or_province": "MI", "postal_code": "10053", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'vixen'
 );
@@ -1803,7 +1911,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'firestorm',
@@ -1817,8 +1926,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "yellow"}'::json,
   '[{"label": "home", "line1": "154 Hero Lane", "line2": null, "city": "Pittsburgh", "state_or_province": "PA", "postal_code": "10054", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'firestorm'
 );
@@ -1836,7 +1946,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'atom',
@@ -1850,8 +1961,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "155 Hero Lane", "line2": null, "city": "Ivy Town", "state_or_province": "CT", "postal_code": "10055", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'atom'
 );
@@ -1869,7 +1981,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'stargirl',
@@ -1883,8 +1996,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "white"}'::json,
   '[{"label": "home", "line1": "156 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10056", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'stargirl'
 );
@@ -1902,7 +2016,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'drmidnite',
@@ -1916,8 +2031,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "red"}'::json,
   '[{"label": "home", "line1": "157 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10057", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'drmidnite'
 );
@@ -1935,7 +2051,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'sandman',
@@ -1949,8 +2066,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "brown"}'::json,
   '[{"label": "home", "line1": "158 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10058", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'sandman'
 );
@@ -1968,7 +2086,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'wildcat',
@@ -1982,8 +2101,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "yellow"}'::json,
   '[{"label": "home", "line1": "159 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10059", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'wildcat'
 );
@@ -2001,7 +2121,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'hourman',
@@ -2015,8 +2136,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "160 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10060", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'hourman'
 );
@@ -2034,7 +2156,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'doctormidnite',
@@ -2048,8 +2171,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "red"}'::json,
   '[{"label": "home", "line1": "161 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10061", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'doctormidnite'
 );
@@ -2067,7 +2191,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'redtornado',
@@ -2081,8 +2206,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "yellow"}'::json,
   '[{"label": "home", "line1": "162 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10062", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'redtornado'
 );
@@ -2100,7 +2226,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'plasticman',
@@ -2114,8 +2241,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "yellow"}'::json,
   '[{"label": "home", "line1": "163 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10063", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'plasticman'
 );
@@ -2133,7 +2261,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'elongatedman',
@@ -2147,8 +2276,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "purple", "color2": "black"}'::json,
   '[{"label": "home", "line1": "164 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10064", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'elongatedman'
 );
@@ -2166,7 +2296,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'metamorpho',
@@ -2180,8 +2311,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "purple"}'::json,
   '[{"label": "home", "line1": "165 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10065", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'metamorpho'
 );
@@ -2199,7 +2331,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'doompatrolrobotman',
@@ -2213,8 +2346,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "silver"}'::json,
   '[{"label": "home", "line1": "166 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10066", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'doompatrolrobotman'
 );
@@ -2232,7 +2366,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'negativeman',
@@ -2246,8 +2381,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
   '[{"label": "home", "line1": "167 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10067", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'negativeman'
 );
@@ -2265,7 +2401,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'crazyjane',
@@ -2279,8 +2416,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
   '[{"label": "home", "line1": "168 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10068", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'crazyjane'
 );
@@ -2298,7 +2436,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'animalman',
@@ -2312,8 +2451,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
   '[{"label": "home", "line1": "169 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10069", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'animalman'
 );
@@ -2331,7 +2471,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'kamandi',
@@ -2345,8 +2486,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "170 Hero Lane", "line2": null, "city": "Command D", "state_or_province": "NY", "postal_code": "10070", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'kamandi'
 );
@@ -2364,7 +2506,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'jonahhex',
@@ -2378,8 +2521,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "brown", "color2": "gray"}'::json,
   '[{"label": "home", "line1": "171 Hero Lane", "line2": null, "city": "Confederate Territory", "state_or_province": "TX", "postal_code": "10071", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'jonahhex'
 );
@@ -2397,7 +2541,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'lucifermorningstar',
@@ -2411,8 +2556,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "white", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "172 Hero Lane", "line2": null, "city": "Los Angeles", "state_or_province": "CA", "postal_code": "10072", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'lucifermorningstar'
 );
@@ -2430,7 +2576,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'deadshot',
@@ -2444,8 +2591,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
   '[{"label": "home", "line1": "173 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10073", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'deadshot'
 );
@@ -2463,7 +2611,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'captainboomerang',
@@ -2477,8 +2626,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "white"}'::json,
   '[{"label": "home", "line1": "174 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10074", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'captainboomerang'
 );
@@ -2496,7 +2646,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'enchantress',
@@ -2510,8 +2661,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "175 Hero Lane", "line2": null, "city": "Washington", "state_or_province": "DC", "postal_code": "10075", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'enchantress'
 );
@@ -2529,7 +2681,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'killerfrost',
@@ -2543,8 +2696,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "white"}'::json,
   '[{"label": "home", "line1": "176 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10076", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'killerfrost'
 );
@@ -2562,7 +2716,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'fire',
@@ -2576,8 +2731,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "red"}'::json,
   '[{"label": "home", "line1": "177 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10077", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'fire'
 );
@@ -2595,7 +2751,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'ice',
@@ -2609,8 +2766,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "white"}'::json,
   '[{"label": "home", "line1": "178 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10078", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'ice'
 );
@@ -2628,7 +2786,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'powergirl',
@@ -2642,8 +2801,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
   '[{"label": "home", "line1": "179 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10079", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'powergirl'
 );
@@ -2661,7 +2821,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'huntress',
@@ -2675,8 +2836,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
   '[{"label": "home", "line1": "180 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10080", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'huntress'
 );
@@ -2694,7 +2856,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'batwoman',
@@ -2708,8 +2871,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "red"}'::json,
   '[{"label": "home", "line1": "181 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10081", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'batwoman'
 );
@@ -2727,7 +2891,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'reneree',
@@ -2741,8 +2906,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "brown", "color2": "black"}'::json,
   '[{"label": "home", "line1": "182 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10082", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'reneree'
 );
@@ -2760,7 +2926,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'oracle',
@@ -2774,8 +2941,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "yellow"}'::json,
   '[{"label": "home", "line1": "183 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10083", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'oracle'
 );
@@ -2793,7 +2961,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'timdrake',
@@ -2807,8 +2976,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
   '[{"label": "home", "line1": "184 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10084", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'timdrake'
 );
@@ -2826,7 +2996,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'damianwayne',
@@ -2840,8 +3011,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "black"}'::json,
   '[{"label": "home", "line1": "185 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10085", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'damianwayne'
 );
@@ -2859,7 +3031,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'stephaniebrown',
@@ -2873,8 +3046,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
   '[{"label": "home", "line1": "186 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10086", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'stephaniebrown'
 );
@@ -2892,7 +3066,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'cassandracain',
@@ -2906,8 +3081,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "gray"}'::json,
   '[{"label": "home", "line1": "187 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10087", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'cassandracain'
 );
@@ -2925,7 +3101,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'blackmanta',
@@ -2939,8 +3116,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "silver"}'::json,
   '[{"label": "home", "line1": "188 Hero Lane", "line2": "Atlantis HQ", "city": "Atlantis", "state_or_province": "FL", "postal_code": "10088", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'blackmanta'
 );
@@ -2958,7 +3136,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'oceanmaster',
@@ -2972,8 +3151,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "189 Hero Lane", "line2": "Atlantis HQ", "city": "Atlantis", "state_or_province": "FL", "postal_code": "10089", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'oceanmaster'
 );
@@ -2991,7 +3171,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'sinestro',
@@ -3005,8 +3186,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "yellow", "color2": "black"}'::json,
   '[{"label": "home", "line1": "190 Hero Lane", "line2": "Coast City HQ", "city": "Coast City", "state_or_province": "CA", "postal_code": "10090", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'sinestro'
 );
@@ -3024,7 +3206,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'atrocitus',
@@ -3038,8 +3221,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
   '[{"label": "home", "line1": "191 Hero Lane", "line2": null, "city": "Ysmault", "state_or_province": "NV", "postal_code": "10091", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'atrocitus'
 );
@@ -3057,7 +3241,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'saintwalker',
@@ -3071,8 +3256,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "white"}'::json,
   '[{"label": "home", "line1": "192 Hero Lane", "line2": null, "city": "Odym", "state_or_province": "CO", "postal_code": "10092", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'saintwalker'
 );
@@ -3090,7 +3276,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'starsapphire',
@@ -3104,8 +3291,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "violet", "color2": "white"}'::json,
   '[{"label": "home", "line1": "193 Hero Lane", "line2": "Coast City HQ", "city": "Coast City", "state_or_province": "CA", "postal_code": "10093", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'starsapphire'
 );
@@ -3123,7 +3311,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'lobohunter',
@@ -3137,8 +3326,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "red"}'::json,
   '[{"label": "home", "line1": "194 Hero Lane", "line2": null, "city": "Las Vegas", "state_or_province": "NV", "postal_code": "10094", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'lobohunter'
 );
@@ -3156,7 +3346,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'grannygoodness',
@@ -3170,8 +3361,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "gray"}'::json,
   '[{"label": "home", "line1": "195 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10095", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'grannygoodness'
 );
@@ -3189,7 +3381,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'steppenwolf',
@@ -3203,8 +3396,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "gray", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "196 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10096", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'steppenwolf'
 );
@@ -3222,7 +3416,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'parademon',
@@ -3236,8 +3431,9 @@ SELECT
   '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "gray", "color2": "red"}'::json,
   '[{"label": "home", "line1": "197 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10097", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'parademon'
 );
@@ -3255,7 +3451,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'ironman',
@@ -3269,8 +3466,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "10880 Malibu Point", "line2": null, "city": "Malibu", "state_or_province": "CA", "postal_code": "10098", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'ironman'
 );
@@ -3288,7 +3486,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'captainamerica',
@@ -3302,8 +3501,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "red"}'::json,
   '[{"label": "home", "line1": "569 Leaman Pl", "line2": null, "city": "Brooklyn", "state_or_province": "NY", "postal_code": "10099", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'captainamerica'
 );
@@ -3321,7 +3521,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'spiderman',
@@ -3335,8 +3536,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "20 Ingram St", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10100", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'spiderman'
 );
@@ -3354,7 +3556,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'hulk',
@@ -3368,8 +3571,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "purple"}'::json,
   '[{"label": "home", "line1": "201 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10101", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'hulk'
 );
@@ -3387,7 +3591,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'thor',
@@ -3401,8 +3606,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "silver"}'::json,
   '[{"label": "home", "line1": "202 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10102", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'thor'
 );
@@ -3420,7 +3626,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'blackwidow',
@@ -3434,8 +3641,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "red"}'::json,
   '[{"label": "home", "line1": "203 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10103", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'blackwidow'
 );
@@ -3453,7 +3661,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'hawkeye',
@@ -3467,8 +3676,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "purple", "color2": "black"}'::json,
   '[{"label": "home", "line1": "204 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10104", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'hawkeye'
 );
@@ -3486,7 +3696,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'scarletwitch',
@@ -3500,8 +3711,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "pink"}'::json,
   '[{"label": "home", "line1": "205 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10105", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'scarletwitch'
 );
@@ -3519,7 +3731,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'vision',
@@ -3533,8 +3746,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "green"}'::json,
   '[{"label": "home", "line1": "206 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10106", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'vision'
 );
@@ -3552,7 +3766,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'falcon',
@@ -3566,8 +3781,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "white"}'::json,
   '[{"label": "home", "line1": "207 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10107", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'falcon'
 );
@@ -3585,7 +3801,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'wintersoldier',
@@ -3599,8 +3816,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "silver"}'::json,
   '[{"label": "home", "line1": "208 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10108", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'wintersoldier'
 );
@@ -3618,7 +3836,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'antman',
@@ -3632,8 +3851,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
   '[{"label": "home", "line1": "209 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10109", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'antman'
 );
@@ -3651,7 +3871,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'wasp',
@@ -3665,8 +3886,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "black"}'::json,
   '[{"label": "home", "line1": "210 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10110", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'wasp'
 );
@@ -3684,7 +3906,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'blackpanther',
@@ -3698,8 +3921,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "purple"}'::json,
   '[{"label": "home", "line1": "Royal Palace", "line2": null, "city": "Wakanda", "state_or_province": "GA", "postal_code": "10111", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'blackpanther'
 );
@@ -3717,7 +3941,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'doctorstrange',
@@ -3731,8 +3956,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "red"}'::json,
   '[{"label": "home", "line1": "177A Bleecker St", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10112", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'doctorstrange'
 );
@@ -3750,7 +3976,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'captainmarvel',
@@ -3764,8 +3991,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "213 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10113", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'captainmarvel'
 );
@@ -3783,7 +4011,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'msmarvel',
@@ -3797,8 +4026,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "214 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10114", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'msmarvel'
 );
@@ -3816,7 +4046,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'shehulk',
@@ -3830,8 +4061,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "purple"}'::json,
   '[{"label": "home", "line1": "215 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10115", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'shehulk'
 );
@@ -3849,7 +4081,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'daredevil',
@@ -3863,8 +4096,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
   '[{"label": "home", "line1": "250 W 57th St", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10116", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'daredevil'
 );
@@ -3882,7 +4116,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'punisher',
@@ -3896,8 +4131,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
   '[{"label": "home", "line1": "123 Hell''s Kitchen Ave", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10117", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'punisher'
 );
@@ -3915,7 +4151,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'lukecage',
@@ -3929,8 +4166,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "yellow", "color2": "black"}'::json,
   '[{"label": "home", "line1": "218 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10118", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'lukecage'
 );
@@ -3948,7 +4186,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'ironfist',
@@ -3962,8 +4201,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "219 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10119", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'ironfist'
 );
@@ -3981,7 +4221,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'jessicajones',
@@ -3995,8 +4236,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "white"}'::json,
   '[{"label": "home", "line1": "220 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10120", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'jessicajones'
 );
@@ -4014,7 +4256,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'ghostrider',
@@ -4028,8 +4271,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "orange"}'::json,
   '[{"label": "home", "line1": "221 Hero Lane", "line2": null, "city": "Los Angeles", "state_or_province": "CA", "postal_code": "10121", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'ghostrider'
 );
@@ -4047,7 +4291,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'silversurfer',
@@ -4061,8 +4306,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "silver", "color2": "black"}'::json,
   '[{"label": "home", "line1": "222 Hero Lane", "line2": null, "city": "Knowhere", "state_or_province": "NV", "postal_code": "10122", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'silversurfer'
 );
@@ -4080,7 +4326,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'fantasticfourmr',
@@ -4094,8 +4341,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "white"}'::json,
   '[{"label": "home", "line1": "42nd St and Madison Ave", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10123", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'fantasticfourmr'
 );
@@ -4113,7 +4361,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'invisiblewoman',
@@ -4127,8 +4376,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "white"}'::json,
   '[{"label": "home", "line1": "224 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10124", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'invisiblewoman'
 );
@@ -4146,7 +4396,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'humantorch',
@@ -4160,8 +4411,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "yellow"}'::json,
   '[{"label": "home", "line1": "225 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10125", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'humantorch'
 );
@@ -4179,7 +4431,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'thething',
@@ -4193,8 +4446,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
   '[{"label": "home", "line1": "226 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10126", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'thething'
 );
@@ -4212,7 +4466,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'deadpool',
@@ -4226,8 +4481,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
   '[{"label": "home", "line1": "227 Hero Lane", "line2": null, "city": "San Francisco", "state_or_province": "CA", "postal_code": "10127", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'deadpool'
 );
@@ -4245,7 +4501,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'wolverine',
@@ -4259,8 +4516,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "yellow", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "228 Hero Lane", "line2": null, "city": "Westchester", "state_or_province": "NY", "postal_code": "10128", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'wolverine'
 );
@@ -4278,7 +4536,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'storm',
@@ -4292,8 +4551,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "229 Hero Lane", "line2": null, "city": "Westchester", "state_or_province": "NY", "postal_code": "10129", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'storm'
 );
@@ -4311,7 +4571,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'cyclops',
@@ -4325,8 +4586,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "yellow"}'::json,
   '[{"label": "home", "line1": "230 Hero Lane", "line2": null, "city": "Westchester", "state_or_province": "NY", "postal_code": "10130", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'cyclops'
 );
@@ -4344,7 +4606,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'jeangrey',
@@ -4358,8 +4621,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "gold", "color2": "green"}'::json,
   '[{"label": "home", "line1": "231 Hero Lane", "line2": null, "city": "Westchester", "state_or_province": "NY", "postal_code": "10131", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'jeangrey'
 );
@@ -4377,7 +4641,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'professorx',
@@ -4391,8 +4656,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "1407 Graymalkin Ln", "line2": null, "city": "Westchester", "state_or_province": "NY", "postal_code": "10132", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'professorx'
 );
@@ -4410,7 +4676,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'magneto',
@@ -4424,8 +4691,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "purple"}'::json,
   '[{"label": "home", "line1": "233 Hero Lane", "line2": null, "city": "Westchester", "state_or_province": "NY", "postal_code": "10133", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'magneto'
 );
@@ -4443,7 +4711,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'rogue',
@@ -4457,8 +4726,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "yellow"}'::json,
   '[{"label": "home", "line1": "234 Hero Lane", "line2": null, "city": "Westchester", "state_or_province": "NY", "postal_code": "10134", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'rogue'
 );
@@ -4476,7 +4746,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'gambit',
@@ -4490,8 +4761,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "purple", "color2": "pink"}'::json,
   '[{"label": "home", "line1": "235 Hero Lane", "line2": null, "city": "Westchester", "state_or_province": "NY", "postal_code": "10135", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'gambit'
 );
@@ -4509,7 +4781,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'nightcrawler',
@@ -4523,8 +4796,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "black"}'::json,
   '[{"label": "home", "line1": "236 Hero Lane", "line2": null, "city": "Westchester", "state_or_province": "NY", "postal_code": "10136", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'nightcrawler'
 );
@@ -4542,7 +4816,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'colossus',
@@ -4556,8 +4831,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "silver"}'::json,
   '[{"label": "home", "line1": "237 Hero Lane", "line2": null, "city": "Westchester", "state_or_province": "NY", "postal_code": "10137", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'colossus'
 );
@@ -4575,7 +4851,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'iceman',
@@ -4589,8 +4866,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "white"}'::json,
   '[{"label": "home", "line1": "238 Hero Lane", "line2": null, "city": "Westchester", "state_or_province": "NY", "postal_code": "10138", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'iceman'
 );
@@ -4608,7 +4886,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'beast',
@@ -4622,8 +4901,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "black"}'::json,
   '[{"label": "home", "line1": "239 Hero Lane", "line2": null, "city": "Westchester", "state_or_province": "NY", "postal_code": "10139", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'beast'
 );
@@ -4641,7 +4921,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'kittypryde',
@@ -4655,8 +4936,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "black"}'::json,
   '[{"label": "home", "line1": "240 Hero Lane", "line2": null, "city": "Westchester", "state_or_province": "NY", "postal_code": "10140", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'kittypryde'
 );
@@ -4674,7 +4956,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'jubilee',
@@ -4688,8 +4971,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "pink"}'::json,
   '[{"label": "home", "line1": "241 Hero Lane", "line2": null, "city": "Westchester", "state_or_province": "NY", "postal_code": "10141", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'jubilee'
 );
@@ -4707,7 +4991,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'psylocke',
@@ -4721,8 +5006,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "242 Hero Lane", "line2": null, "city": "Westchester", "state_or_province": "NY", "postal_code": "10142", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'psylocke'
 );
@@ -4740,7 +5026,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'cable',
@@ -4754,8 +5041,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "silver"}'::json,
   '[{"label": "home", "line1": "243 Hero Lane", "line2": null, "city": "Westchester", "state_or_province": "NY", "postal_code": "10143", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'cable'
 );
@@ -4773,7 +5061,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'domino',
@@ -4787,8 +5076,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "white"}'::json,
   '[{"label": "home", "line1": "244 Hero Lane", "line2": null, "city": "Westchester", "state_or_province": "NY", "postal_code": "10144", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'domino'
 );
@@ -4806,7 +5096,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'cablegirl',
@@ -4820,8 +5111,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "245 Hero Lane", "line2": null, "city": "Westchester", "state_or_province": "NY", "postal_code": "10145", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'cablegirl'
 );
@@ -4839,7 +5131,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'x23',
@@ -4853,8 +5146,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "246 Hero Lane", "line2": null, "city": "Westchester", "state_or_province": "NY", "postal_code": "10146", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'x23'
 );
@@ -4872,7 +5166,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'dazzler',
@@ -4886,8 +5181,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "silver", "color2": "pink"}'::json,
   '[{"label": "home", "line1": "247 Hero Lane", "line2": null, "city": "Westchester", "state_or_province": "NY", "postal_code": "10147", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'dazzler'
 );
@@ -4905,7 +5201,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'bishop',
@@ -4919,8 +5216,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
   '[{"label": "home", "line1": "248 Hero Lane", "line2": null, "city": "Westchester", "state_or_province": "NY", "postal_code": "10148", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'bishop'
 );
@@ -4938,7 +5236,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'sunspot',
@@ -4952,8 +5251,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "249 Hero Lane", "line2": null, "city": "Westchester", "state_or_province": "NY", "postal_code": "10149", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'sunspot'
 );
@@ -4971,7 +5271,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'magik',
@@ -4985,8 +5286,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "gold", "color2": "black"}'::json,
   '[{"label": "home", "line1": "250 Hero Lane", "line2": null, "city": "Westchester", "state_or_province": "NY", "postal_code": "10150", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'magik'
 );
@@ -5004,7 +5306,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'namor',
@@ -5018,8 +5321,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "251 Hero Lane", "line2": "Atlantis HQ", "city": "Atlantis", "state_or_province": "FL", "postal_code": "10151", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'namor'
 );
@@ -5037,7 +5341,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'sentry',
@@ -5051,8 +5356,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "yellow", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "252 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10152", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'sentry'
 );
@@ -5070,7 +5376,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'moonknight',
@@ -5084,8 +5391,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "white", "color2": "silver"}'::json,
   '[{"label": "home", "line1": "253 Hero Lane", "line2": null, "city": "Chicago", "state_or_province": "IL", "postal_code": "10153", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'moonknight'
 );
@@ -5103,7 +5411,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'blade',
@@ -5117,8 +5426,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "silver"}'::json,
   '[{"label": "home", "line1": "254 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10154", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'blade'
 );
@@ -5136,7 +5446,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'ghostspider',
@@ -5150,8 +5461,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "pink"}'::json,
   '[{"label": "home", "line1": "255 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10155", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'ghostspider'
 );
@@ -5169,7 +5481,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'milesmorales',
@@ -5183,8 +5496,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "red"}'::json,
   '[{"label": "home", "line1": "256 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10156", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'milesmorales'
 );
@@ -5202,7 +5516,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'venom',
@@ -5216,8 +5531,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
   '[{"label": "home", "line1": "257 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10157", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'venom'
 );
@@ -5235,7 +5551,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'greengoblin',
@@ -5249,8 +5566,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "purple"}'::json,
   '[{"label": "home", "line1": "258 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10158", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'greengoblin'
 );
@@ -5268,7 +5586,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'doctoroctopus',
@@ -5282,8 +5601,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "silver"}'::json,
   '[{"label": "home", "line1": "259 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10159", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'doctoroctopus'
 );
@@ -5301,7 +5621,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'lizard',
@@ -5315,8 +5636,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "brown"}'::json,
   '[{"label": "home", "line1": "260 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10160", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'lizard'
 );
@@ -5334,7 +5656,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'kingpin',
@@ -5348,8 +5671,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "white", "color2": "black"}'::json,
   '[{"label": "home", "line1": "261 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10161", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'kingpin'
 );
@@ -5367,7 +5691,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'electro',
@@ -5381,8 +5706,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "yellow"}'::json,
   '[{"label": "home", "line1": "262 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10162", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'electro'
 );
@@ -5400,7 +5726,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'vulture',
@@ -5414,8 +5741,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "black"}'::json,
   '[{"label": "home", "line1": "263 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10163", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'vulture'
 );
@@ -5433,7 +5761,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'mysterio',
@@ -5447,8 +5776,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "264 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10164", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'mysterio'
 );
@@ -5466,7 +5796,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'rhino',
@@ -5480,8 +5811,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "gray", "color2": "white"}'::json,
   '[{"label": "home", "line1": "265 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10165", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'rhino'
 );
@@ -5499,7 +5831,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'shocker',
@@ -5513,8 +5846,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "yellow", "color2": "brown"}'::json,
   '[{"label": "home", "line1": "266 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10166", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'shocker'
 );
@@ -5532,7 +5866,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'scorpion',
@@ -5546,8 +5881,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "brown"}'::json,
   '[{"label": "home", "line1": "267 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10167", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'scorpion'
 );
@@ -5565,7 +5901,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'kraven',
@@ -5579,8 +5916,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "brown", "color2": "yellow"}'::json,
   '[{"label": "home", "line1": "268 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10168", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'kraven'
 );
@@ -5598,7 +5936,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'morbius',
@@ -5612,8 +5951,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "red"}'::json,
   '[{"label": "home", "line1": "269 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10169", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'morbius'
 );
@@ -5631,7 +5971,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'nova',
@@ -5645,8 +5986,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "gold", "color2": "black"}'::json,
   '[{"label": "home", "line1": "270 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10170", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'nova'
 );
@@ -5664,7 +6006,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'starlord',
@@ -5678,8 +6021,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "271 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10171", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'starlord'
 );
@@ -5697,7 +6041,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'gamora',
@@ -5711,8 +6056,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "black"}'::json,
   '[{"label": "home", "line1": "272 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10172", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'gamora'
 );
@@ -5730,7 +6076,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'drax',
@@ -5744,8 +6091,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "red"}'::json,
   '[{"label": "home", "line1": "273 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10173", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'drax'
 );
@@ -5763,7 +6111,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'rocket',
@@ -5777,8 +6126,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "brown", "color2": "orange"}'::json,
   '[{"label": "home", "line1": "274 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10174", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'rocket'
 );
@@ -5796,7 +6146,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'groot',
@@ -5810,8 +6161,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "brown", "color2": "green"}'::json,
   '[{"label": "home", "line1": "275 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10175", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'groot'
 );
@@ -5829,7 +6181,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'mantis',
@@ -5843,8 +6196,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "black"}'::json,
   '[{"label": "home", "line1": "276 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10176", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'mantis'
 );
@@ -5862,7 +6216,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'nebula',
@@ -5876,8 +6231,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "purple"}'::json,
   '[{"label": "home", "line1": "277 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10177", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'nebula'
 );
@@ -5895,7 +6251,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'yondu',
@@ -5909,8 +6266,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "red"}'::json,
   '[{"label": "home", "line1": "278 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10178", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'yondu'
 );
@@ -5928,7 +6286,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'adamwarlock',
@@ -5942,8 +6301,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "gold", "color2": "red"}'::json,
   '[{"label": "home", "line1": "279 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10179", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'adamwarlock'
 );
@@ -5961,7 +6321,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'thanos',
@@ -5975,8 +6336,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "purple", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "280 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10180", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'thanos'
 );
@@ -5994,7 +6356,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'loki',
@@ -6008,8 +6371,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "281 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10181", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'loki'
 );
@@ -6027,7 +6391,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'hela',
@@ -6041,8 +6406,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "green"}'::json,
   '[{"label": "home", "line1": "282 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10182", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'hela'
 );
@@ -6060,7 +6426,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'valkyrie',
@@ -6074,8 +6441,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "283 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10183", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'valkyrie'
 );
@@ -6093,7 +6461,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'korg',
@@ -6107,8 +6476,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "gray", "color2": "brown"}'::json,
   '[{"label": "home", "line1": "284 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10184", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'korg'
 );
@@ -6126,7 +6496,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'miek',
@@ -6140,8 +6511,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "brown", "color2": "red"}'::json,
   '[{"label": "home", "line1": "285 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10185", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'miek'
 );
@@ -6159,7 +6531,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'shuri',
@@ -6173,8 +6546,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "purple"}'::json,
   '[{"label": "home", "line1": "286 Hero Lane", "line2": "Wakanda HQ", "city": "Wakanda", "state_or_province": "GA", "postal_code": "10186", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'shuri'
 );
@@ -6192,7 +6566,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'okoye',
@@ -6206,8 +6581,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "287 Hero Lane", "line2": "Wakanda HQ", "city": "Wakanda", "state_or_province": "GA", "postal_code": "10187", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'okoye'
 );
@@ -6225,7 +6601,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'killmonger',
@@ -6239,8 +6616,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "288 Hero Lane", "line2": "Wakanda HQ", "city": "Wakanda", "state_or_province": "GA", "postal_code": "10188", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'killmonger'
 );
@@ -6258,7 +6636,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'mysterio2',
@@ -6272,8 +6651,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "silver", "color2": "green"}'::json,
   '[{"label": "home", "line1": "289 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10189", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'mysterio2'
 );
@@ -6291,7 +6671,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'warmachine',
@@ -6305,8 +6686,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "gray", "color2": "silver"}'::json,
   '[{"label": "home", "line1": "290 Hero Lane", "line2": null, "city": "Malibu", "state_or_province": "CA", "postal_code": "10190", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'warmachine'
 );
@@ -6324,7 +6706,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'pepperpotts',
@@ -6338,8 +6721,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
   '[{"label": "home", "line1": "291 Hero Lane", "line2": null, "city": "Malibu", "state_or_province": "CA", "postal_code": "10191", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'pepperpotts'
 );
@@ -6357,7 +6741,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'nickfury',
@@ -6371,8 +6756,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "gray"}'::json,
   '[{"label": "home", "line1": "292 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10192", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'nickfury'
 );
@@ -6390,7 +6776,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'agentcoulson',
@@ -6404,8 +6791,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "gray"}'::json,
   '[{"label": "home", "line1": "293 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10193", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'agentcoulson'
 );
@@ -6423,7 +6811,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'mariahill',
@@ -6437,8 +6826,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "gray"}'::json,
   '[{"label": "home", "line1": "294 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10194", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'mariahill'
 );
@@ -6456,7 +6846,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'sharoncarter',
@@ -6470,8 +6861,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "295 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10195", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'sharoncarter'
 );
@@ -6489,7 +6881,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'buckybarnes',
@@ -6503,8 +6896,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "silver"}'::json,
   '[{"label": "home", "line1": "296 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10196", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'buckybarnes'
 );
@@ -6522,7 +6916,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'quicksilver',
@@ -6536,8 +6931,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "white"}'::json,
   '[{"label": "home", "line1": "297 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10197", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'quicksilver'
 );
@@ -6555,7 +6951,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'scarletspider',
@@ -6569,8 +6966,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "298 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10198", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'scarletspider'
 );
@@ -6588,7 +6986,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'spiderwoman',
@@ -6602,8 +7001,9 @@ SELECT
   '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "yellow"}'::json,
   '[{"label": "home", "line1": "299 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10199", "country_code": "USA"}]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'spiderwoman'
 );

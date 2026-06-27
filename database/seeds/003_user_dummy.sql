@@ -18,7 +18,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'demo_alice',
@@ -66,8 +67,9 @@ SELECT
     }
   ]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'demo_alice'
 );
@@ -85,7 +87,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'demo_bob',
@@ -137,8 +140,9 @@ SELECT
     }
   ]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'demo_bob'
 );
@@ -156,7 +160,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   'demo_carol',
@@ -202,8 +207,9 @@ SELECT
     }
   ]'::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 WHERE NOT EXISTS (
   SELECT 1 FROM public."user" WHERE username = 'demo_carol'
 );

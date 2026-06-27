@@ -60,7 +60,8 @@ INSERT INTO public."user" (
   addresses_json,
   active,
   created_by,
-  updated_by
+  modified_by,
+  modified_date
 )
 SELECT
   v.username,
@@ -81,8 +82,9 @@ SELECT
   v.additional_info_json::json,
   v.addresses_json::json,
   TRUE,
-  'seed',
-  'seed'
+  'c-agent',
+  NULL,
+  NULL
 FROM (
   VALUES
     (

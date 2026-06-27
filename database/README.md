@@ -25,6 +25,8 @@ PostgREST Docker still uses the `authenticator` role password in `back-ends/post
 
 **API grants:** Migration `004_postgrest_dev_writes.sql` allows anonymous REST writes (local Swagger testing). Migration `021_prod_grants.sql` revokes those and limits writes to the `authenticated` role (JWT required). Apply `021` on any environment that should not allow open anon mutations.
 
+**Audit columns:** All tables use `created_date`, `created_by`, `modified_date`, `modified_by`. On insert, `modified_date` and `modified_by` are NULL; no epoch (`1970`/`1969`) column defaults. Agent-written SQL uses `c-agent` for `created_by` on insert (see `.cursor/rules/database-audit-columns.mdc` and migration `024_unify_audit_columns.sql`).
+
 ## Apply schema
 
 ```powershell

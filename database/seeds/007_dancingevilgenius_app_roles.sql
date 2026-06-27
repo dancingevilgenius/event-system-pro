@@ -9,7 +9,7 @@
 CREATE TABLE IF NOT EXISTS public.user_app_role (
   user_id   bigint NOT NULL,
   role_code text   NOT NULL,
-  created_at timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  created_date timestamptz NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (user_id, role_code),
   CONSTRAINT user_app_role_fk_user
     FOREIGN KEY (user_id) REFERENCES public."user" (user_id) ON DELETE CASCADE,
@@ -35,9 +35,7 @@ SET
     COALESCE(u.volunteer_json::jsonb, '{}'::jsonb),
     '{roles}',
     '["admin", "staff", "judge", "headjudge", "registration", "floorcoordinator", "competitor"]'::jsonb
-  )::json,
-  updated_by = 'seed',
-  updated_date = CURRENT_TIMESTAMP
+  )::json
 WHERE u.username = 'dancingevilgenius';
 
 SELECT u.user_id, u.username, u.email, array_agg(r.role_code ORDER BY r.role_code) AS app_roles

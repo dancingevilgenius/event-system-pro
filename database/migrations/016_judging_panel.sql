@@ -13,9 +13,9 @@ CREATE TABLE IF NOT EXISTS public.judging_panel (
   contest_id bigint NOT NULL,
   judges_json JSONB NOT NULL DEFAULT '[]'::jsonb,
   created_by varchar(128) NOT NULL,
-  created_on TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_modified_by varchar(128) NOT NULL,
-  last_modified_on TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  created_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  modified_by varchar(128) NULL DEFAULT NULL,
+  modified_date TIMESTAMPTZ NULL DEFAULT NULL,
   PRIMARY KEY (judging_panel_id),
   CONSTRAINT judging_panel_fk_event FOREIGN KEY (event_id) REFERENCES public."event" (event_id) ON DELETE RESTRICT,
   CONSTRAINT judging_panel_fk_contest FOREIGN KEY (contest_id) REFERENCES public.contest (contest_id) ON DELETE RESTRICT
@@ -31,9 +31,9 @@ SELECT
   contest_id,
   judges_json,
   created_by,
-  created_on,
-  last_modified_by,
-  last_modified_on
+  created_date,
+  modified_by,
+  modified_date
 FROM public.judging_panel;
 
 GRANT SELECT ON api.judging_panel TO anon, authenticated;

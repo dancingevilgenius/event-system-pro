@@ -133,7 +133,8 @@ BEGIN
     addresses_json,
     password_recovery_json,
     created_by,
-    updated_by
+    modified_by,
+    modified_date
   )
   VALUES (
     trim(p_username),
@@ -143,8 +144,9 @@ BEGIN
     p_phone_numbers_json,
     p_addresses_json,
     p_password_recovery_json,
-    'register',
-    'register'
+    trim(p_username),
+    NULL,
+    NULL
   )
   RETURNING user_id INTO v_user_id;
 

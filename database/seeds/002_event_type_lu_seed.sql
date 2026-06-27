@@ -10,7 +10,7 @@ VALUES (
     "min_persons_per_entry": 2,
     "max_persons_per_entry": 16
   }'::jsonb,
-  'system'
+  'c-agent'
 );
 
 INSERT INTO event_type_lu (event_type_code, description_json, created_by)
@@ -23,7 +23,7 @@ VALUES (
     "min_persons_per_entry": 2,
     "max_persons_per_entry": 16
   }'::jsonb,
-  'system'
+  'c-agent'
 );
 
 INSERT INTO event_type_lu (event_type_code, description_json, created_by)
@@ -36,7 +36,7 @@ VALUES (
     "min_persons_per_entry": 2,
     "max_persons_per_entry": 16
   }'::jsonb,
-  'system'
+  'c-agent'
 );
 
 INSERT INTO event_type_lu (event_type_code, description_json, created_by)
@@ -49,7 +49,7 @@ VALUES (
     "min_persons_per_entry": 2,
     "max_persons_per_entry": 16
   }'::jsonb,
-  'system'
+  'c-agent'
 );
 
 INSERT INTO event_type_lu (event_type_code, description_json, created_by)
@@ -62,7 +62,7 @@ VALUES (
     "min_persons_per_entry": 1,
     "max_persons_per_entry": 2
   }'::jsonb,
-  'system'
+  'c-agent'
 );
 
 INSERT INTO event_type_lu (event_type_code, description_json, created_by)
@@ -75,7 +75,7 @@ VALUES (
     "min_persons_per_entry": 1,
     "max_persons_per_entry": 2
   }'::jsonb,
-  'system'
+  'c-agent'
 );
 
 INSERT INTO event_type_lu (event_type_code, description_json, created_by)
@@ -88,5 +88,5 @@ VALUES (
     "min_persons_per_entry": 1,
     "max_persons_per_entry": 2
   }'::jsonb,
-  'system'
+  'c-agent'
 );

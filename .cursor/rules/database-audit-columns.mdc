@@ -1,0 +1,41 @@
+---
+description: Standard row audit columns for database tables and SQL written by the agent
+globs: database/**/*
+alwaysApply: false
+---
+
+# Database audit columns
+
+Every `public` table uses these four columns:
+
+| Column | Type | Notes |
+|--------|------|--------|
+| `created_date` | `TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP` | Set on insert |
+| `created_by` | `varchar(128) NOT NULL` | Who created the row |
+| `modified_date` | `TIMESTAMPTZ NULL DEFAULT NULL` | Set on every update; **NULL on insert** |
+| `modified_by` | `varchar(128) NULL DEFAULT NULL` | Who last changed the row; **NULL on insert** |
+
+Do **not** use epoch placeholder defaults (`1970-01-01`, `1969-12-31`, etc.).
+
+## Cursor AI Agent (seeds / migrations)
+
+- **Insert:** `created_by = 'c-agent'`; leave `modified_by` and `modified_date` **NULL** (omit from column list or set explicitly to `NULL`).
+- **Seed UPDATE scripts:** do **not** set `modified_by` / `modified_date` (leave unchanged from insert).
+- **Agent UPDATE** (non-seed): `modified_by = 'c-agent'` and `modified_date = CURRENT_TIMESTAMP`.
+
+## Application / logged-in users
+
+- **Insert (self-registration):** `created_by = username`; `modified_by` / `modified_date` NULL.
+- **Update (RPC or REST PATCH):** `modified_by =` acting user's **username**; `modified_date = CURRENT_TIMESTAMP`.
+- Migration `025_modified_by_username.sql` adds a `BEFORE UPDATE` trigger that sets `modified_by` / `modified_date` from the JWT when `api.current_username()` is available.
+
+```sql
+INSERT INTO public.country_lu (iso2, short_name, long_name, created_by)
+VALUES ('XX', 'Example', 'Example Country', 'c-agent');
+
+UPDATE public."user"
+SET email = lower(trim(p_email)),
+    modified_by = 'c-agent',
+    modified_date = CURRENT_TIMESTAMP
+WHERE user_id = v_user_id;
+```

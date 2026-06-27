@@ -37,7 +37,7 @@ GRANT USAGE ON SCHEMA api TO anon, authenticated;
 
 CREATE OR REPLACE VIEW api.event_type_lu AS
 SELECT event_type_code, description_json, created_date, created_by
-FROM public."event"_type_lu;
+FROM public.event_type_lu;
 
 CREATE OR REPLACE VIEW api.country_lu AS
 SELECT
@@ -80,7 +80,7 @@ SELECT
   created_by,
   modified_date,
   modified_by
-FROM public."event"_group;
+FROM public.event_group;
 
 CREATE OR REPLACE VIEW api.event AS
 SELECT

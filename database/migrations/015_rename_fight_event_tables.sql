@@ -19,7 +19,7 @@ SELECT
   created_by,
   modified_date,
   modified_by
-FROM public."event"_group;
+FROM public.event_group;
 
 CREATE OR REPLACE VIEW api.event AS
 SELECT
@@ -44,4 +44,4 @@ WHERE active IS NOT FALSE;
 
 GRANT SELECT ON api.event_group, api.event TO anon, authenticated;
 
-GRANT INSERT, UPDATE, DELETE ON public.event_group, public.event TO anon, authenticated;
+GRANT INSERT, UPDATE, DELETE ON public.event_group, public."event" TO anon, authenticated;

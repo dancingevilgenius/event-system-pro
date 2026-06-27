@@ -132,7 +132,7 @@ export default function UserFilterSortDialog({
 
       <DialogContent sx={{ pt: 1 }}>
         {loadingStates && (
-          <Stack alignItems="center" sx={{ py: 3 }}>
+          <Stack sx={{ py: 3, alignItems: 'center' }}>
             <CircularProgress size={28} />
           </Stack>
         )}

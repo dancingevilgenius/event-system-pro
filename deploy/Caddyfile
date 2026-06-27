@@ -1,0 +1,32 @@
+# Reverse proxy: one browser origin for UI, PostgREST, and mailer.
+# Listens on port 80 inside the container (mapped to APP_PORT on the host).
+#
+# Routes:
+#   /           -> web (React SPA)
+#   /api/*      -> postgrest:3000  (prefix stripped)
+#   /mailer/*   -> mailer:3001     (prefix stripped)
+#
+# Production TLS: replace :80 with your domain, e.g.
+#   app.example.com {
+#     handle_path /api/* { reverse_proxy postgrest:3000 }
+#     handle_path /mailer/* { reverse_proxy mailer:3001 }
+#     handle { reverse_proxy web:80 }
+#   }
+
+{
+  auto_https off
+}
+
+:80 {
+  handle_path /api/* {
+    reverse_proxy postgrest:3000
+  }
+
+  handle_path /mailer/* {
+    reverse_proxy mailer:3001
+  }
+
+  handle {
+    reverse_proxy web:80
+  }
+}

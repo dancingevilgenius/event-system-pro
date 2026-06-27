@@ -1,0 +1,110 @@
+# Full stack with reverse proxy (step 3).
+#
+# From repo root:
+#   copy deploy\.env.example deploy\.env
+#   docker compose -f deploy/docker-compose.yml --env-file deploy/.env up --build
+#
+# Open http://localhost:8090  (single URL for UI + API + mailer)
+# Mailpit UI: http://localhost:8025
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-event_system_pro}
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - ../database:/sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-event_system_pro}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    image: postgres:18-alpine
+    restart: "no"
+    environment:
+      PGHOST: postgres
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-event_system_pro}
+    volumes:
+      - ../database:/sql:ro
+      - ./scripts/migrate.sh:/migrate.sh:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c", "tr -d '\\r' < /migrate.sh | /bin/sh"]
+
+  postgrest:
+    image: postgrest/postgrest:v12.2.8
+    restart: unless-stopped
+    environment:
+      PGRST_DB_URI: postgres://authenticator:${PGRST_AUTHENTICATOR_PASSWORD:-postgrest_dev_password}@postgres:5432/${POSTGRES_DB:-event_system_pro}
+      PGRST_DB_SCHEMAS: api
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_DB_POOL: "10"
+      PGRST_SERVER_HOST: 0.0.0.0
+      PGRST_SERVER_PORT: "3000"
+      PGRST_OPENAPI_SERVER_PROXY_URI: ${APP_URL:-http://localhost:8090}/api
+      PGRST_SERVER_CORS_ALLOWED_ORIGINS: ${CORS_ORIGINS:-http://localhost:8090,http://127.0.0.1:8090}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    ports:
+      - "${MAILPIT_SMTP_PORT:-1025}:1025"
+      - "${MAILPIT_UI_PORT:-8025}:8025"
+
+  mailer:
+    build:
+      context: ../back-ends/mailer
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://mailer:${MAILER_DB_PASSWORD:-mailer_dev_password}@postgres:5432/${POSTGRES_DB:-event_system_pro}
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
+      SMTP_SECURE: "false"
+      EMAIL_FROM: Event System Pro <no-reply@eventsystempro.local>
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8090,http://127.0.0.1:8090}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      mailpit:
+        condition: service_started
+
+  web:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.web
+      args:
+        VITE_POSTGREST_URL: ${VITE_POSTGREST_URL:-http://localhost:8090/api}
+        VITE_MAILER_URL: ${VITE_MAILER_URL:-http://localhost:8090/mailer}
+    restart: unless-stopped
+    depends_on:
+      - postgrest
+      - mailer
+
+  proxy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8090}:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    depends_on:
+      - web
+      - postgrest
+      - mailer
+
+volumes:
+  pgdata:
+  caddy_data:

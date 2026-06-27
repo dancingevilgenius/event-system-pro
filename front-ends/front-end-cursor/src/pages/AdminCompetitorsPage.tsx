@@ -111,8 +111,11 @@ export default function AdminCompetitorsPage() {
         </Typography>
 
         <Stack
-          alignItems={isMobile ? 'center' : 'flex-start'}
-          sx={{ mb: 2, width: '100%' }}
+          sx={{
+            mb: 2,
+            width: '100%',
+            alignItems: isMobile ? 'center' : 'flex-start',
+          }}
         >
           <Button
             variant="outlined"
@@ -162,7 +165,7 @@ export default function AdminCompetitorsPage() {
         </Stack>
 
         {loading && (
-          <Stack alignItems="center" sx={{ py: 6 }}>
+          <Stack sx={{ py: 6, alignItems: 'center' }}>
             <CircularProgress size={32} />
           </Stack>
         )}

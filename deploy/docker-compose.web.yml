@@ -1,0 +1,16 @@
+# Standalone frontend container for smoke-testing the production build.
+# From repo root:
+#   docker compose -f deploy/docker-compose.web.yml up --build
+#
+# Open http://localhost:8088
+
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.web
+      args:
+        VITE_POSTGREST_URL: http://localhost:3000
+        VITE_MAILER_URL: http://localhost:3001
+    ports:
+      - "${WEB_PORT:-8088}:80"

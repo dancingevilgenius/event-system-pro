@@ -14,7 +14,7 @@ ALTER DATABASE event_system_pro
   SET app.jwt_secret = 'esp-dev-jwt-secret-change-in-production-min-32-chars';
 
 -- ---------------------------------------------------------------------------
--- App roles (admin, staff, judge, competitor — separate from dance primary-role)
+-- App roles (admin, staff, judge, headjudge, registration, floorcoordinator, competitor)
 -- ---------------------------------------------------------------------------
 
 CREATE TABLE IF NOT EXISTS public.user_app_role (
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS public.user_app_role (
   CONSTRAINT user_app_role_fk_user
     FOREIGN KEY (user_id) REFERENCES public."user" (user_id) ON DELETE CASCADE,
   CONSTRAINT user_app_role_role_code_check
-    CHECK (role_code IN ('admin', 'staff', 'judge', 'competitor'))
+    CHECK (role_code IN ('admin', 'staff', 'judge', 'headjudge', 'registration', 'floorcoordinator', 'competitor'))
 );
 
 CREATE INDEX IF NOT EXISTS user_app_role_role_code_idx

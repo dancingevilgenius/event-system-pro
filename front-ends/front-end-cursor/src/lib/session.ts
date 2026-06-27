@@ -1,6 +1,13 @@
 const SESSION_KEY = 'esp_session';
 
-export type AppRole = 'admin' | 'staff' | 'judge' | 'competitor';
+export type AppRole =
+  | 'admin'
+  | 'staff'
+  | 'judge'
+  | 'headjudge'
+  | 'registration'
+  | 'floorcoordinator'
+  | 'competitor';
 
 export type UserSession = {
   user_id: number;
@@ -10,7 +17,15 @@ export type UserSession = {
   token: string | null;
 };
 
-const APP_ROLES: AppRole[] = ['admin', 'staff', 'judge', 'competitor'];
+const APP_ROLES: AppRole[] = [
+  'admin',
+  'staff',
+  'judge',
+  'headjudge',
+  'registration',
+  'floorcoordinator',
+  'competitor',
+];
 
 function isAppRole(value: unknown): value is AppRole {
   return typeof value === 'string' && APP_ROLES.includes(value as AppRole);

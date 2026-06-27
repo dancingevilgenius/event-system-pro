@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS public.user_app_role (
   CONSTRAINT user_app_role_fk_user
     FOREIGN KEY (user_id) REFERENCES public."user" (user_id) ON DELETE CASCADE,
   CONSTRAINT user_app_role_role_code_check
-    CHECK (role_code IN ('admin', 'staff', 'judge', 'competitor'))
+    CHECK (role_code IN ('admin', 'staff', 'judge', 'headjudge', 'registration', 'floorcoordinator', 'competitor'))
 );
 
 CREATE INDEX IF NOT EXISTS user_app_role_role_code_idx
@@ -24,7 +24,7 @@ INSERT INTO public.user_app_role (user_id, role_code)
 SELECT u.user_id, r.role_code
 FROM public."user" u
 CROSS JOIN (
-  VALUES ('admin'), ('staff'), ('judge'), ('competitor')
+  VALUES ('admin'), ('staff'), ('judge'), ('headjudge'), ('registration'), ('floorcoordinator'), ('competitor')
 ) AS r(role_code)
 WHERE u.username = 'dancingevilgenius'
 ON CONFLICT DO NOTHING;
@@ -34,7 +34,7 @@ SET
   volunteer_json = jsonb_set(
     COALESCE(u.volunteer_json::jsonb, '{}'::jsonb),
     '{roles}',
-    '["admin", "staff", "judge", "competitor"]'::jsonb
+    '["admin", "staff", "judge", "headjudge", "registration", "floorcoordinator", "competitor"]'::jsonb
   )::json,
   updated_by = 'seed',
   updated_date = CURRENT_TIMESTAMP

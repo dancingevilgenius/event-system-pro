@@ -3,6 +3,7 @@ import AccountPage from './pages/AccountPage';
 import AdminCompetitorsPage from './pages/AdminCompetitorsPage';
 import AdminHomePage from './pages/AdminHomePage';
 import AdminPlaceholderPage from './pages/AdminPlaceholderPage';
+import ChangePasswordPage from './pages/ChangePasswordPage';
 import CompetitorPage from './pages/CompetitorPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import HomePage from './pages/HomePage';
@@ -19,6 +20,7 @@ export default function App() {
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/home" element={<HomePage />} />
       <Route path="/account" element={<AccountPage />} />
+      <Route path="/changepassword" element={<ChangePasswordPage />} />
       <Route path="/adminhome" element={<AdminHomePage />} />
       <Route path="/admin/event-details" element={<AdminPlaceholderPage title="Event Details" />} />
       <Route path="/admin/contests" element={<AdminPlaceholderPage title="Contests" />} />

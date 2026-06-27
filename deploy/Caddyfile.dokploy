@@ -1,0 +1,19 @@
+# Dokploy entry proxy: single public service for eventsystem.pro
+# Dokploy/Traefik terminates TLS; Caddy routes by path inside the stack.
+#
+#   /      -> web (React SPA)
+#   /api/* -> postgrest:3000
+
+{
+  auto_https off
+}
+
+:80 {
+  handle_path /api/* {
+    reverse_proxy postgrest:3000
+  }
+
+  handle {
+    reverse_proxy web:80
+  }
+}

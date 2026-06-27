@@ -1,0 +1,84 @@
+# Dokploy full stack (postgres + migrate + PostgREST + web + Caddy proxy).
+# Mailer omitted initially — add later when SMTP is configured.
+#
+# Dokploy UI:
+#   Type: Docker Compose
+#   Compose path: deploy/docker-compose.dokploy.yml
+#   Domain: eventsystem.pro -> service "proxy", container port 80
+#   Env: copy from deploy/.env.dokploy.example
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in Dokploy}
+      POSTGRES_DB: ${POSTGRES_DB:-event_system_pro}
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - ../database:/sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-event_system_pro}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    image: postgres:18-alpine
+    restart: "no"
+    environment:
+      PGHOST: postgres
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in Dokploy}
+      POSTGRES_DB: ${POSTGRES_DB:-event_system_pro}
+    volumes:
+      - ../database:/sql:ro
+      - ./scripts/migrate.sh:/migrate.sh:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c", "tr -d '\\r' < /migrate.sh | /bin/sh"]
+
+  postgrest:
+    image: postgrest/postgrest:v12.2.8
+    restart: unless-stopped
+    environment:
+      PGRST_DB_URI: postgres://authenticator:${PGRST_AUTHENTICATOR_PASSWORD:?Set PGRST_AUTHENTICATOR_PASSWORD}@postgres:5432/${POSTGRES_DB:-event_system_pro}
+      PGRST_DB_SCHEMAS: api
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_DB_POOL: "10"
+      PGRST_SERVER_HOST: 0.0.0.0
+      PGRST_SERVER_PORT: "3000"
+      PGRST_OPENAPI_SERVER_PROXY_URI: ${APP_URL:-https://eventsystem.pro}/api
+      PGRST_SERVER_CORS_ALLOWED_ORIGINS: ${CORS_ORIGINS:-https://eventsystem.pro}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  web:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      args:
+        VITE_POSTGREST_URL: ${VITE_POSTGREST_URL:-https://eventsystem.pro/api}
+        VITE_MAILER_URL: ${VITE_MAILER_URL:-https://eventsystem.pro/mailer}
+    restart: unless-stopped
+    depends_on:
+      - postgrest
+
+  proxy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8090}:80"
+    volumes:
+      - ./Caddyfile.dokploy:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    depends_on:
+      - web
+      - postgrest
+
+volumes:
+  pgdata:
+  caddy_data:

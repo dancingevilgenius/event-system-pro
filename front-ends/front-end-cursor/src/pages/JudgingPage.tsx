@@ -27,10 +27,12 @@ import PaletteOutlinedIcon from '../components/PaletteOutlinedIcon';
 import PercentCompleteBar from '../components/PercentCompleteBar';
 import { centeredContentStackSx, CONTENT_MAX_WIDTH } from '../constants/layout';
 import {
+  createMockContestEntries,
+  type MockContestEntry,
+} from '../data/mockContestEntries';
+import {
   formatCompetitorPairNames,
   formatFullFirstLast,
-  memberKey,
-  pickRandomLegionMember,
   type LegionMember,
 } from '../data/legionNames';
 import {
@@ -52,7 +54,6 @@ import {
   type JudgingScoreDigits,
 } from '../types/judgingScore';
 
-const ENTRY_COUNT = 20;
 const JUDGING_PAGE_SIZE = 10;
 const NUMBER_COLUMN_WIDTH = '2.75rem';
 const SCORE_DISPLAY_WIDTH = '5ch';
@@ -101,36 +102,7 @@ function summarySwatchReserve(hasLeaderColors: boolean, hasFollowerColors: boole
   return reserve;
 }
 
-type JudgingEntry = {
-  number: number;
-  leader: LegionMember;
-  follower: LegionMember;
-};
-
-function createJudgingEntries(): JudgingEntry[] {
-  const numbers = new Set<number>();
-
-  while (numbers.size < ENTRY_COUNT) {
-    numbers.add(Math.floor(Math.random() * 999) + 1);
-  }
-
-  const usedMemberKeys = new Set<string>();
-
-  return [...numbers]
-    .sort((a, b) => a - b)
-    .map((number) => {
-      const leader = pickRandomLegionMember({ preferSex: 'male', usedKeys: usedMemberKeys });
-      usedMemberKeys.add(memberKey(leader));
-
-      const follower = pickRandomLegionMember({
-        preferSex: 'female',
-        usedKeys: usedMemberKeys,
-      });
-      usedMemberKeys.add(memberKey(follower));
-
-      return { number, leader, follower };
-    });
-}
+type JudgingEntry = MockContestEntry;
 
 function entryHasNonZeroScore(
   bibNumber: number,
@@ -535,7 +507,7 @@ function JudgingEntryAccordion({
 
 export default function JudgingPage() {
   const navigate = useNavigate();
-  const entries = useMemo(() => createJudgingEntries(), []);
+  const entries = useMemo(() => createMockContestEntries(), []);
   const [paletteTarget, setPaletteTarget] = useState<PaletteTarget | null>(null);
   const [competitorColors, setCompetitorColors] = useState<
     Record<string, CompetitorColorRecord>

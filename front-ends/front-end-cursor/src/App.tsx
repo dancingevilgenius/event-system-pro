@@ -2,6 +2,8 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import AccountPage from './pages/AccountPage';
 import AdminCompetitorsPage from './pages/AdminCompetitorsPage';
+import AdminContestResultsPage from './pages/AdminContestResultsPage';
+import AdminContestsPage from './pages/AdminContestsPage';
 import AdminHomePage from './pages/AdminHomePage';
 import AdminPlaceholderPage from './pages/AdminPlaceholderPage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
@@ -63,7 +65,15 @@ export default function App() {
         path="/admin/contests"
         element={
           <ProtectedRoute roles={['admin']}>
-            <AdminPlaceholderPage title="Contests" />
+            <AdminContestsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/contests/contest"
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <AdminContestResultsPage />
           </ProtectedRoute>
         }
       />

@@ -346,7 +346,6 @@ CREATE INDEX IF NOT EXISTS fk_up_user_id ON user_preference (user_id);
 -- Seed data
 
 INSERT INTO country_lu VALUES ('1', 'AF', 'Afghanistan', 'Islamic Republic of Afghanistan', 'AFG', '004', 'yes', '93', '.af', TRUE);
-INSERT INTO country_lu VALUES ('2', 'AX', 'Aland Islands', '&Aring;land Islands', 'ALA', '248', 'no', '358', '.ax', TRUE);
 INSERT INTO country_lu VALUES ('3', 'AL', 'Albania', 'Republic of Albania', 'ALB', '008', 'yes', '355', '.al', TRUE);
 INSERT INTO country_lu VALUES ('4', 'DZ', 'Algeria', 'People''s Democratic Republic of Algeria', 'DZA', '012', 'yes', '213', '.dz', TRUE);
 INSERT INTO country_lu VALUES ('5', 'AS', 'American Samoa', 'American Samoa', 'ASM', '016', 'no', '1+684', '.as', TRUE);

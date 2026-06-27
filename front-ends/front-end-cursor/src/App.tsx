@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
+import AccountPage from './pages/AccountPage';
 import AdminCompetitorsPage from './pages/AdminCompetitorsPage';
 import AdminHomePage from './pages/AdminHomePage';
 import AdminPlaceholderPage from './pages/AdminPlaceholderPage';
@@ -17,6 +18,7 @@ export default function App() {
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/home" element={<HomePage />} />
+      <Route path="/account" element={<AccountPage />} />
       <Route path="/adminhome" element={<AdminHomePage />} />
       <Route path="/admin/event-details" element={<AdminPlaceholderPage title="Event Details" />} />
       <Route path="/admin/contests" element={<AdminPlaceholderPage title="Contests" />} />

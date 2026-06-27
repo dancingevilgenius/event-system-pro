@@ -65,3 +65,5 @@ WHERE NOT EXISTS (
 SELECT user_id, username, email, name_json, addresses_json, phone_numbers_json
 FROM public."user"
 WHERE username = 'dancingevilgenius';
+
+-- Then run database/seeds/007_dancingevilgenius_app_roles.sql for all app roles.

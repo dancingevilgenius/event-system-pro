@@ -13,6 +13,7 @@ import { login } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
 import { centeredContentStackSx } from '../constants/layout';
 import { useMessages } from '../hooks/useMessages';
+import { saveSession } from '../lib/session';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -39,6 +40,13 @@ export default function LoginPage() {
       if (!result.ok) {
         showProblem(result.message);
         return;
+      }
+      if (result.user_id && result.username && result.email) {
+        saveSession({
+          user_id: result.user_id,
+          username: result.username,
+          email: result.email,
+        });
       }
       showSuccess(result.message);
       navigate('/home');

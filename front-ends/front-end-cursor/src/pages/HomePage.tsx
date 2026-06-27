@@ -33,6 +33,9 @@ export default function HomePage() {
           <Button variant="contained" size="large" fullWidth onClick={() => navigate('/adminhome')}>
             Admin
           </Button>
+          <Button variant="contained" size="large" fullWidth onClick={() => navigate('/account')}>
+            Account
+          </Button>
         </Stack>
 
         <Stack spacing={2} sx={{ mb: 3, alignItems: 'center', width: '100%' }}>

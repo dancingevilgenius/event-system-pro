@@ -347,6 +347,18 @@ export function forgotPasswordComplete(
   });
 }
 
+export function changePassword(
+  userId: number,
+  oldPassword: string,
+  newPassword: string,
+) {
+  return callRpc<ForgotPasswordSimpleResult>('change_password', {
+    p_user_id: userId,
+    p_old_password: oldPassword,
+    p_new_password: newPassword,
+  });
+}
+
 export function hashPasswordRecoveryAnswers(
   answers: Array<{ secret_question_id: number; answer: string }>,
 ) {

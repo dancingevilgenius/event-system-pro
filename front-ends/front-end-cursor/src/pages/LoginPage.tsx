@@ -7,7 +7,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { type FormEvent, useEffect, useState } from 'react';
+import { type FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
@@ -19,14 +19,10 @@ import type { AppRole } from '../lib/session';
 export default function LoginPage() {
   const navigate = useNavigate();
   const { setSession } = useAuth();
-  const { clearMessages, showProblem, showSuccess } = useMessages();
+  const { showProblem, showSuccess } = useMessages();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
-
-  useEffect(() => {
-    clearMessages();
-  }, [clearMessages]);
 
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

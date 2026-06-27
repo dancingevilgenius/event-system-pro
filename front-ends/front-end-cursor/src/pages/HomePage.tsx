@@ -1,12 +1,40 @@
 import { Button, Container, Paper, Stack } from '@mui/material';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { logout as logoutApi } from '../api/postgrest';
 import ThemeSwitcher from '../components/ThemeSwitcher';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
+import { useMessages } from '../hooks/useMessages';
+import { setFlashSuccess } from '../lib/authMessages';
 
 export default function HomePage() {
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const { showProblem } = useMessages();
+  const [busy, setBusy] = useState(false);
+
+  const handleLogOff = async () => {
+    setBusy(true);
+    try {
+      const result = await logoutApi();
+      logout();
+      if (!result.ok) {
+        showProblem(result.message);
+        navigate('/');
+        return;
+      }
+      setFlashSuccess(result.message);
+      logout();
+      navigate('/', { replace: true });
+    } catch (error) {
+      logout();
+      showProblem(error instanceof Error ? error.message : 'Sign out failed.');
+      navigate('/');
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <Container maxWidth="md" sx={{ py: 6 }}>
@@ -36,15 +64,8 @@ export default function HomePage() {
         </Stack>
 
         <Stack spacing={2} sx={centeredContentStackSx}>
-          <Button
-            variant="outlined"
-            fullWidth
-            onClick={() => {
-              logout();
-              navigate('/');
-            }}
-          >
-            Back to Login
+          <Button variant="outlined" fullWidth disabled={busy} onClick={handleLogOff}>
+            Log Off
           </Button>
         </Stack>
       </Paper>

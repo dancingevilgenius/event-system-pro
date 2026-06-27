@@ -71,6 +71,26 @@ export type LoginResult = {
   token?: string | null;
 };
 
+export type LogoutResult = {
+  ok: boolean;
+  message: string;
+};
+
+export type SessionStatusResult = {
+  ok: boolean;
+  active: boolean;
+  message?: string;
+  'last-activity'?: string;
+  activity_expires_at?: string;
+};
+
+export type TouchActivityResult = {
+  ok: boolean;
+  active: boolean;
+  message?: string;
+  'last-activity'?: string;
+};
+
 export type SecretQuestion = {
   secret_question_id: number;
   question: string;
@@ -339,6 +359,18 @@ export function login(identifier: string, password: string) {
     p_identifier: identifier,
     p_password: password,
   });
+}
+
+export function logout() {
+  return callRpc<LogoutResult>('logout', {});
+}
+
+export function touchLastActivity() {
+  return callRpc<TouchActivityResult>('touch_last_activity', {});
+}
+
+export function sessionStatus() {
+  return callRpc<SessionStatusResult>('session_status', {});
 }
 
 export function forgotPasswordRequest(identifier: string) {

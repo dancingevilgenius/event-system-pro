@@ -1,4 +1,7 @@
 const SESSION_KEY = 'esp_session';
+const ACTIVITY_EXPIRES_AT_KEY = 'esp_activity_expires_at';
+
+export const INACTIVITY_TIMEOUT_MS = 10 * 60 * 1000;
 
 export type AppRole =
   | 'admin'
@@ -43,6 +46,44 @@ export function saveSession(session: UserSession): void {
   sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
 }
 
+export function getActivityExpiresAt(): number | null {
+  const raw = sessionStorage.getItem(ACTIVITY_EXPIRES_AT_KEY);
+  if (!raw) {
+    return null;
+  }
+
+  const expiresAt = Number(raw);
+  return Number.isFinite(expiresAt) ? expiresAt : null;
+}
+
+export function setActivityExpiresAt(expiresAtMs: number): void {
+  sessionStorage.setItem(ACTIVITY_EXPIRES_AT_KEY, String(expiresAtMs));
+}
+
+export function bumpActivityExpiry(): number {
+  const expiresAt = Date.now() + INACTIVITY_TIMEOUT_MS;
+  setActivityExpiresAt(expiresAt);
+  return expiresAt;
+}
+
+export function clearActivityExpiry(): void {
+  sessionStorage.removeItem(ACTIVITY_EXPIRES_AT_KEY);
+}
+
+export function isActivityExpired(): boolean {
+  const expiresAt = getActivityExpiresAt();
+  return expiresAt !== null && Date.now() >= expiresAt;
+}
+
+export function ensureActivityExpiry(): number {
+  const existing = getActivityExpiresAt();
+  if (existing !== null) {
+    return existing;
+  }
+
+  return bumpActivityExpiry();
+}
+
 export function loadSession(): UserSession | null {
   const raw = sessionStorage.getItem(SESSION_KEY);
   if (!raw) {
@@ -73,6 +114,7 @@ export function loadSession(): UserSession | null {
 
 export function clearSession(): void {
   sessionStorage.removeItem(SESSION_KEY);
+  clearActivityExpiry();
 }
 
 export function sessionHasAnyRole(session: UserSession, requiredRoles: AppRole[]): boolean {

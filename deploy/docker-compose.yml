@@ -117,6 +117,7 @@ services:
       TZ: ${TZ:-America/Chicago}
     volumes:
       - ./scripts/nightly-cleanup.sh:/nightly-cleanup.sh:ro
+      - ./scripts/inactivity-logout.sh:/inactivity-logout.sh:ro
     depends_on:
       postgres:
         condition: service_healthy
@@ -127,8 +128,9 @@ services:
       - -c
       - |
         tr -d '\r' < /nightly-cleanup.sh > /tmp/nightly-cleanup.sh
-        chmod +x /tmp/nightly-cleanup.sh
-        echo "0 0 * * * /tmp/nightly-cleanup.sh" | crontab -
+        tr -d '\r' < /inactivity-logout.sh > /tmp/inactivity-logout.sh
+        chmod +x /tmp/nightly-cleanup.sh /tmp/inactivity-logout.sh
+        printf '%s\n' '*/5 * * * * /tmp/inactivity-logout.sh' '0 0 * * * /tmp/nightly-cleanup.sh' | crontab -
         crond -f -l 2
 
 volumes:

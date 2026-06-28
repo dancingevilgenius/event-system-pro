@@ -2,6 +2,7 @@ import { Button, Container, Paper, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { centeredContentStackSx } from '../constants/layout';
 import { useMessages } from '../hooks/useMessages';
+import { usePocCounter } from '../hooks/usePocCounter';
 
 const ADMIN_BUTTONS = [
   { label: 'Event Details', path: '/admin/event-details' },
@@ -14,6 +15,7 @@ const ADMIN_BUTTONS = [
 export default function AdminHomePage() {
   const navigate = useNavigate();
   const { showSuccess, showWarning, showProblem, clearMessages } = useMessages();
+  const { counter, error: counterError } = usePocCounter();
 
   const handleTestMessages = () => {
     clearMessages();
@@ -27,6 +29,15 @@ export default function AdminHomePage() {
       <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Admin
+        </Typography>
+
+        <Typography variant="body1" sx={{ mb: 2 }}>
+          counter:{' '}
+          {counterError
+            ? 'unavailable'
+            : counter === null
+              ? '…'
+              : counter}
         </Typography>
 
         <Stack spacing={2} sx={{ my: 3, ...centeredContentStackSx }}>

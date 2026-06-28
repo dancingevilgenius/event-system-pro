@@ -1,9 +1,9 @@
 /**
- * Relative Placement (Skating System) for a single dance final.
+ * Relative Placement (Competition System) for a single dance final.
  * Judges rank all couples; majority rules determine each final place.
  */
 
-function skatingMajority(judgeCount: number): number {
+function competitionMajority(judgeCount: number): number {
   return Math.floor(judgeCount / 2) + 1;
 }
 
@@ -76,7 +76,7 @@ function compareTiedCandidates(a: CandidateStats, b: CandidateStats, majority: n
   return compareHeadToHead(a.placements, b.placements);
 }
 
-function pickSkatingWinner(
+function pickCompetitionWinner(
   candidates: readonly number[],
   placementByBib: ReadonlyMap<number, readonly number[]>,
   positionUnderReview: number,
@@ -125,13 +125,13 @@ export function computeRelativePlacementOrder(
   }
 
   const judgeCount = placementByBib.get(bibs[0])?.length ?? 0;
-  const majority = skatingMajority(judgeCount);
+  const majority = competitionMajority(judgeCount);
   const remaining = new Set(bibs);
   const order: number[] = [];
 
   while (remaining.size > 0) {
     const positionUnderReview = order.length + 1;
-    const winner = pickSkatingWinner(
+    const winner = pickCompetitionWinner(
       [...remaining],
       placementByBib,
       positionUnderReview,

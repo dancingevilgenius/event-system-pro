@@ -57,6 +57,18 @@ services:
       migrate:
         condition: service_completed_successfully
 
+  realtime:
+    build:
+      context: ../back-ends/realtime
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://realtime:${REALTIME_DB_PASSWORD:?Set REALTIME_DB_PASSWORD}@postgres:5432/${POSTGRES_DB:-event_system_pro}
+      COUNTER_INTERVAL_MS: "5000"
+      POC_COUNTER_LABEL: poc_counter
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
   web:
     build:
       context: ..
@@ -64,9 +76,11 @@ services:
       args:
         VITE_POSTGREST_URL: ${VITE_POSTGREST_URL:-https://eventsystem.pro/api}
         VITE_MAILER_URL: ${VITE_MAILER_URL:-https://eventsystem.pro/mailer}
+        VITE_REALTIME_WS_URL: ${VITE_REALTIME_WS_URL:-wss://eventsystem.pro/realtime/ws}
     restart: unless-stopped
     depends_on:
       - postgrest
+      - realtime
 
   proxy:
     image: caddy:2-alpine
@@ -79,6 +93,7 @@ services:
     depends_on:
       - web
       - postgrest
+      - realtime
 
 volumes:
   pgdata:

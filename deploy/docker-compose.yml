@@ -81,6 +81,18 @@ services:
       mailpit:
         condition: service_started
 
+  realtime:
+    build:
+      context: ../back-ends/realtime
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgres://realtime:${REALTIME_DB_PASSWORD:-realtime_dev_password}@postgres:5432/${POSTGRES_DB:-event_system_pro}
+      COUNTER_INTERVAL_MS: "5000"
+      POC_COUNTER_LABEL: poc_counter
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
   web:
     build:
       context: ..
@@ -88,10 +100,12 @@ services:
       args:
         VITE_POSTGREST_URL: ${VITE_POSTGREST_URL:-http://localhost:8090/api}
         VITE_MAILER_URL: ${VITE_MAILER_URL:-http://localhost:8090/mailer}
+        VITE_REALTIME_WS_URL: ${VITE_REALTIME_WS_URL:-ws://localhost:8090/realtime/ws}
     restart: unless-stopped
     depends_on:
       - postgrest
       - mailer
+      - realtime
 
   proxy:
     image: caddy:2-alpine
@@ -105,6 +119,7 @@ services:
       - web
       - postgrest
       - mailer
+      - realtime
 
   scheduler:
     image: postgres:18-alpine

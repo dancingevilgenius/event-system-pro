@@ -90,3 +90,5 @@ The older compose file under `back-ends/postgrest/` exposes PostgREST, mailer, a
 ## Dokploy production (eventsystem.pro)
 
 See [DOKPLOY.md](./DOKPLOY.md) for full-stack deploy on Dokploy with `deploy/docker-compose.dokploy.yml` and root `Dockerfile`.
+
+**Downloadable checklist:** [DOKPLOY-CHECKLIST.md](./DOKPLOY-CHECKLIST.md)

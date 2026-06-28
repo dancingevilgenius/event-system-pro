@@ -1,5 +1,6 @@
 ﻿__pycache__/
 *.pyc
+node_modules/
 
 # Local environment (never commit secrets)
 .env

@@ -19,6 +19,8 @@ The root `Dockerfile` builds the production React app (nginx). Compose orchestra
 
 ## Dokploy setup checklist
 
+**Downloadable checklist:** [DOKPLOY-CHECKLIST.md](./DOKPLOY-CHECKLIST.md)
+
 1. **New application** → type **Docker Compose**
 2. Connect GitHub repo `event-system-pro`, branch `main`
 3. **Compose path:** `deploy/docker-compose.dokploy.yml`

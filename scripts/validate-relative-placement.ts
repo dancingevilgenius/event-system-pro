@@ -35,6 +35,18 @@ function bibMap(dataset: RelativePlacementBenchmark): {
 
 function compareDataset(dataset: RelativePlacementBenchmark) {
   const validation = dataset.validations.at(-1);
+
+  if (dataset.requiresViolationHandling) {
+    return {
+      dataset,
+      validation,
+      ourOrder: [] as string[],
+      mismatches: [] as string[],
+      ties: [] as string[],
+      skipped: true,
+    };
+  }
+
   const { bibs, placementByBib, labels } = bibMap(dataset);
   const ourOrder = computeRelativePlacementOrder(bibs, placementByBib);
   const ourRows = buildRelativePlacementRows(bibs, placementByBib);
@@ -88,6 +100,7 @@ function compareDataset(dataset: RelativePlacementBenchmark) {
     ourOrder: ourOrder.map((bib) => labels.get(bib) ?? String(bib)),
     mismatches,
     ties,
+    skipped: false,
   };
 }
 
@@ -107,29 +120,64 @@ for (const dataset of relativePlacementBenchmarks.datasets) {
     console.log(`Notes:        ${validation.notes}`);
   }
   console.log('');
-  console.log('Judge placements (1 = best):');
-  for (const entry of dataset.entries) {
-    console.log(`  ${entry.label.padEnd(8)} ${entry.judgePlacements.join('  ')}`);
+  if (dataset.requiresViolationHandling) {
+    console.log('Judge marks (raw, with violation annotations):');
+    for (const entry of dataset.entries) {
+      const marks =
+        entry.judgeMarks?.map((mark) => mark.raw).join('  ') ??
+        entry.judgePlacements.join('  ');
+      const sorted = entry.marksSorted ? `  [sorted: ${entry.marksSorted}]` : '';
+      console.log(`  ${entry.label.padEnd(42)} ${marks}${sorted}`);
+    }
+  } else {
+    console.log('Judge placements (1 = best):');
+    for (const entry of dataset.entries) {
+      console.log(`  ${entry.label.padEnd(8)} ${entry.judgePlacements.join('  ')}`);
+    }
   }
   console.log('');
   console.log(`Official order: ${validation?.officialOrder.join(' → ') ?? '—'}`);
-  console.log(`Our order:      ${result.ourOrder.join(' → ')}`);
-  console.log('');
 
-  if (result.mismatches.length === 0 && result.ties.length === 0) {
-    console.log('Live check: EXACT MATCH');
+  if (result.skipped) {
+    console.log('Our order:      (skipped — requires violation handling)');
+    console.log('');
+    console.log('Live check: SKIPPED (pending violation rules)');
   } else {
-    if (result.mismatches.length > 0) {
-      console.log('Live mismatches:');
-      for (const line of result.mismatches) {
-        console.log(`  - ${line}`);
+    console.log(`Our order:      ${result.ourOrder.join(' → ')}`);
+    console.log('');
+
+    if (result.mismatches.length === 0 && result.ties.length === 0) {
+      console.log('Live check: EXACT MATCH');
+    } else {
+      if (result.mismatches.length > 0) {
+        console.log('Live mismatches:');
+        for (const line of result.mismatches) {
+          console.log(`  - ${line}`);
+        }
+      }
+      if (result.ties.length > 0) {
+        console.log('Live tie notes:');
+        for (const line of result.ties) {
+          console.log(`  - ${line}`);
+        }
       }
     }
-    if (result.ties.length > 0) {
-      console.log('Live tie notes:');
-      for (const line of result.ties) {
-        console.log(`  - ${line}`);
-      }
+  }
+  console.log('');
+}
+
+const todos = relativePlacementBenchmarks.implementationTodos ?? [];
+if (todos.length > 0) {
+  console.log('='.repeat(72));
+  console.log('Implementation todos');
+  for (const todo of todos) {
+    console.log('');
+    console.log(`[${todo.status}] ${todo.title} (${todo.id})`);
+    if (todo.relatedDatasetIds?.length) {
+      console.log(`  Datasets: ${todo.relatedDatasetIds.join(', ')}`);
+    }
+    for (const item of todo.items) {
+      console.log(`  - ${item}`);
     }
   }
   console.log('');

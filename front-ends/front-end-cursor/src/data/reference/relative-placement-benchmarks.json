@@ -116,6 +116,341 @@
           "notes": "First six placements match exactly. Published results declare KELLY and LAURYN tied for 7th (both total ordinals 34). Our algorithm breaks the tie via head-to-head judge comparison and assigns KELLY 7th and LAURYN 8th."
         }
       ]
+    },
+    {
+      "id": "us-open-2018-showcase-finals",
+      "sport": "West Coast Swing (US Open Showcase)",
+      "judges": 7,
+      "competitors": 16,
+      "match": "pending — requires SVW / SV-1 / SV-3 violation handling",
+      "sourceUrl": "https://eepro.com/results/theopen2018/showcase.html",
+      "event": "The Open Swing Dance Championships 2018 — Showcase (NASDE) Finals",
+      "scoringSystem": "WSDC relative placement with swing-content violation annotations (SVW, SV-1, SV-3)",
+      "judgeLabels": ["Barry", "Bill", "Dawn", "Doug", "John", "Laureen", "Maxime"],
+      "placementMeaning": "Each judgeMark.raw is the published cell (ordinal plus optional violation suffix). judgePlacements holds the nominal ordinal before violation adjustment.",
+      "requiresViolationHandling": true,
+      "swingContentRules": "Below 60% swing content: judge may issue SVW (no drop) or SV-1 (drop 1 placement). Below 50% swing content: judge issues SV-3 (drop 10 placements).",
+      "violationDefinitions": [
+        {
+          "code": "SVW",
+          "label": "Swing Violation Warning",
+          "placementAdjustment": 0,
+          "description": "Swing content 55–59%. Warning only; no change to placement for that judge's mark."
+        },
+        {
+          "code": "SV-1",
+          "label": "Swing Violation −1 placement",
+          "placementAdjustment": 1,
+          "description": "Swing content 50–54%, or judge discretion below 60%. Drop one placement for that judge's mark."
+        },
+        {
+          "code": "SV-3",
+          "label": "Swing Violation −10 placements",
+          "placementAdjustment": 10,
+          "description": "Swing content 49% or under. Drop ten placements for that judge's mark."
+        }
+      ],
+      "officialResults": [
+        { "label": "Benji Schwimmer & Nicole Clonch", "place": 1 },
+        { "label": "Myles Munroe & Tessa Cunningham Munroe", "place": 2 },
+        { "label": "Glenn Ball & Florencia Diaz", "place": 3 },
+        { "label": "Gregory Scott & Lemery Rollins", "place": 4 },
+        { "label": "Kadu Pires & Larissa Thayane", "place": 5 },
+        { "label": "Igor Pitangui & Rayane Calixto", "place": 6 },
+        { "label": "Philippe Berne & Flore Merlier-Berne", "place": 7 },
+        { "label": "Dillon Luther & Chantelle Pianetta", "place": 8 },
+        { "label": "Austin Scharnhorst & Kali Casas", "place": 9 },
+        { "label": "Jerome Subey & Bonnie Subey", "place": 10 },
+        { "label": "Scott Campbell & Patty Vo", "place": 11 },
+        { "label": "Nicholas King & Yenni Setiawan", "place": 12 },
+        { "label": "Ibirocay Regueira & Matilda Tuomela", "place": 13 },
+        { "label": "Rob Glover & Alyssa Gillespie", "place": 14 },
+        { "label": "Mike Carringer & Hannah Meyer", "place": 15 },
+        { "label": "Didier Sellam & Emilie Renard", "place": 16 }
+      ],
+      "entries": [
+        {
+          "label": "Benji Schwimmer & Nicole Clonch",
+          "officialPlace": 1,
+          "marksSorted": "1-1-1-1-1-1-1",
+          "judgePlacements": [1, 1, 1, 1, 1, 1, 1],
+          "judgeMarks": [
+            { "raw": "1", "placement": 1 },
+            { "raw": "1", "placement": 1 },
+            { "raw": "1", "placement": 1 },
+            { "raw": "1", "placement": 1 },
+            { "raw": "1", "placement": 1 },
+            { "raw": "1", "placement": 1 },
+            { "raw": "1", "placement": 1 }
+          ]
+        },
+        {
+          "label": "Myles Munroe & Tessa Cunningham Munroe",
+          "officialPlace": 2,
+          "marksSorted": "2-2-2-2-3-3-8",
+          "judgePlacements": [2, 2, 8, 2, 3, 2, 3],
+          "judgeMarks": [
+            { "raw": "2", "placement": 2 },
+            { "raw": "2", "placement": 2 },
+            { "raw": "8", "placement": 8 },
+            { "raw": "2", "placement": 2 },
+            { "raw": "3", "placement": 3 },
+            { "raw": "2", "placement": 2 },
+            { "raw": "3", "placement": 3 }
+          ]
+        },
+        {
+          "label": "Glenn Ball & Florencia Diaz",
+          "officialPlace": 3,
+          "marksSorted": "2-2-3-3-3-4-5",
+          "judgePlacements": [3, 5, 4, 3, 2, 3, 2],
+          "judgeMarks": [
+            { "raw": "3", "placement": 3 },
+            { "raw": "5-SV-1", "placement": 5, "violation": "SV-1" },
+            { "raw": "4", "placement": 4 },
+            { "raw": "3", "placement": 3 },
+            { "raw": "2", "placement": 2 },
+            { "raw": "3", "placement": 3 },
+            { "raw": "2", "placement": 2 }
+          ]
+        },
+        {
+          "label": "Gregory Scott & Lemery Rollins",
+          "officialPlace": 4,
+          "marksSorted": "2-3-4-5-6-7-8",
+          "judgePlacements": [4, 3, 2, 7, 6, 5, 8],
+          "judgeMarks": [
+            { "raw": "4", "placement": 4 },
+            { "raw": "3", "placement": 3 },
+            { "raw": "2", "placement": 2 },
+            { "raw": "7", "placement": 7 },
+            { "raw": "6", "placement": 6 },
+            { "raw": "5", "placement": 5 },
+            { "raw": "8", "placement": 8 }
+          ]
+        },
+        {
+          "label": "Kadu Pires & Larissa Thayane",
+          "officialPlace": 5,
+          "marksSorted": "4-5-5-6-6-7-7",
+          "judgePlacements": [5, 6, 5, 6, 4, 7, 7],
+          "judgeMarks": [
+            { "raw": "5", "placement": 5 },
+            { "raw": "6-SVW", "placement": 6, "violation": "SVW" },
+            { "raw": "5", "placement": 5 },
+            { "raw": "6-SVW", "placement": 6, "violation": "SVW" },
+            { "raw": "4", "placement": 4 },
+            { "raw": "7", "placement": 7 },
+            { "raw": "7-SVW", "placement": 7, "violation": "SVW" }
+          ]
+        },
+        {
+          "label": "Igor Pitangui & Rayane Calixto",
+          "officialPlace": 6,
+          "marksSorted": "4-5-6-6-7-8-16",
+          "judgePlacements": [6, 4, 7, 16, 5, 8, 6],
+          "judgeMarks": [
+            { "raw": "6-SVW", "placement": 6, "violation": "SVW" },
+            { "raw": "4-SV-1", "placement": 4, "violation": "SV-1" },
+            { "raw": "7", "placement": 7 },
+            { "raw": "16-SV-3", "placement": 16, "violation": "SV-3" },
+            { "raw": "5", "placement": 5 },
+            { "raw": "8-SVW", "placement": 8, "violation": "SVW" },
+            { "raw": "6-SVW", "placement": 6, "violation": "SVW" }
+          ]
+        },
+        {
+          "label": "Philippe Berne & Flore Merlier-Berne",
+          "officialPlace": 7,
+          "marksSorted": "4-5-6-7-7-8-11",
+          "judgePlacements": [8, 7, 6, 5, 7, 4, 11],
+          "judgeMarks": [
+            { "raw": "8-SVW", "placement": 8, "violation": "SVW" },
+            { "raw": "7", "placement": 7 },
+            { "raw": "6", "placement": 6 },
+            { "raw": "5", "placement": 5 },
+            { "raw": "7", "placement": 7 },
+            { "raw": "4", "placement": 4 },
+            { "raw": "11", "placement": 11 }
+          ]
+        },
+        {
+          "label": "Dillon Luther & Chantelle Pianetta",
+          "officialPlace": 8,
+          "marksSorted": "3-4-4-7-9-9-12",
+          "judgePlacements": [7, 9, 3, 4, 12, 9, 4],
+          "judgeMarks": [
+            { "raw": "7", "placement": 7 },
+            { "raw": "9-SVW", "placement": 9, "violation": "SVW" },
+            { "raw": "3", "placement": 3 },
+            { "raw": "4", "placement": 4 },
+            { "raw": "12", "placement": 12 },
+            { "raw": "9-SVW", "placement": 9, "violation": "SVW" },
+            { "raw": "4", "placement": 4 }
+          ]
+        },
+        {
+          "label": "Austin Scharnhorst & Kali Casas",
+          "officialPlace": 9,
+          "marksSorted": "6-8-8-8-9-10-10",
+          "judgePlacements": [10, 8, 9, 8, 8, 6, 10],
+          "judgeMarks": [
+            { "raw": "10", "placement": 10 },
+            { "raw": "8", "placement": 8 },
+            { "raw": "9", "placement": 9 },
+            { "raw": "8", "placement": 8 },
+            { "raw": "8", "placement": 8 },
+            { "raw": "6", "placement": 6 },
+            { "raw": "10", "placement": 10 }
+          ]
+        },
+        {
+          "label": "Jerome Subey & Bonnie Subey",
+          "officialPlace": 10,
+          "marksSorted": "10-10-11-11-12-15-15",
+          "judgePlacements": [11, 12, 15, 10, 11, 10, 15],
+          "judgeMarks": [
+            { "raw": "11", "placement": 11 },
+            { "raw": "12", "placement": 12 },
+            { "raw": "15", "placement": 15 },
+            { "raw": "10", "placement": 10 },
+            { "raw": "11", "placement": 11 },
+            { "raw": "10", "placement": 10 },
+            { "raw": "15", "placement": 15 }
+          ]
+        },
+        {
+          "label": "Scott Campbell & Patty Vo",
+          "officialPlace": 11,
+          "marksSorted": "5-10-11-12-13-15-16",
+          "judgePlacements": [13, 16, 10, 12, 15, 11, 5],
+          "judgeMarks": [
+            { "raw": "13", "placement": 13 },
+            { "raw": "16", "placement": 16 },
+            { "raw": "10", "placement": 10 },
+            { "raw": "12", "placement": 12 },
+            { "raw": "15", "placement": 15 },
+            { "raw": "11", "placement": 11 },
+            { "raw": "5", "placement": 5 }
+          ]
+        },
+        {
+          "label": "Nicholas King & Yenni Setiawan",
+          "officialPlace": 12,
+          "marksSorted": "9-9-9-13-13-13-15",
+          "judgePlacements": [9, 13, 13, 9, 13, 15, 9],
+          "judgeMarks": [
+            { "raw": "9", "placement": 9 },
+            { "raw": "13", "placement": 13 },
+            { "raw": "13", "placement": 13 },
+            { "raw": "9", "placement": 9 },
+            { "raw": "13", "placement": 13 },
+            { "raw": "15", "placement": 15 },
+            { "raw": "9", "placement": 9 }
+          ]
+        },
+        {
+          "label": "Ibirocay Regueira & Matilda Tuomela",
+          "officialPlace": 13,
+          "marksSorted": "10-11-11-13-14-14-15",
+          "judgePlacements": [15, 11, 11, 13, 10, 14, 14],
+          "judgeMarks": [
+            { "raw": "15", "placement": 15 },
+            { "raw": "11", "placement": 11 },
+            { "raw": "11", "placement": 11 },
+            { "raw": "13", "placement": 13 },
+            { "raw": "10", "placement": 10 },
+            { "raw": "14", "placement": 14 },
+            { "raw": "14", "placement": 14 }
+          ]
+        },
+        {
+          "label": "Rob Glover & Alyssa Gillespie",
+          "officialPlace": 14,
+          "marksSorted": "10-12-12-13-14-14-15",
+          "judgePlacements": [12, 10, 14, 15, 14, 12, 13],
+          "judgeMarks": [
+            { "raw": "12", "placement": 12 },
+            { "raw": "10", "placement": 10 },
+            { "raw": "14", "placement": 14 },
+            { "raw": "15", "placement": 15 },
+            { "raw": "14", "placement": 14 },
+            { "raw": "12", "placement": 12 },
+            { "raw": "13", "placement": 13 }
+          ]
+        },
+        {
+          "label": "Mike Carringer & Hannah Meyer",
+          "officialPlace": 15,
+          "marksSorted": "9-11-12-14-15-16-16",
+          "judgePlacements": [14, 15, 12, 11, 9, 16, 16],
+          "judgeMarks": [
+            { "raw": "14", "placement": 14 },
+            { "raw": "15", "placement": 15 },
+            { "raw": "12", "placement": 12 },
+            { "raw": "11", "placement": 11 },
+            { "raw": "9", "placement": 9 },
+            { "raw": "16", "placement": 16 },
+            { "raw": "16", "placement": 16 }
+          ]
+        },
+        {
+          "label": "Didier Sellam & Emilie Renard",
+          "officialPlace": 16,
+          "marksSorted": "12-13-14-14-16-16-16",
+          "judgePlacements": [16, 14, 16, 14, 16, 13, 12],
+          "judgeMarks": [
+            { "raw": "16-SV-3", "placement": 16, "violation": "SV-3" },
+            { "raw": "14", "placement": 14 },
+            { "raw": "16", "placement": 16 },
+            { "raw": "14", "placement": 14 },
+            { "raw": "16", "placement": 16 },
+            { "raw": "13", "placement": 13 },
+            { "raw": "12-SVW", "placement": 12, "violation": "SVW" }
+          ]
+        }
+      ],
+      "validations": [
+        {
+          "validatedOn": "2026-06-28",
+          "algorithm": "computeRelativePlacementOrder (front-ends/front-end-cursor/src/utils/relativePlacement.ts)",
+          "officialOrder": [
+            "Benji Schwimmer & Nicole Clonch",
+            "Myles Munroe & Tessa Cunningham Munroe",
+            "Glenn Ball & Florencia Diaz",
+            "Gregory Scott & Lemery Rollins",
+            "Kadu Pires & Larissa Thayane",
+            "Igor Pitangui & Rayane Calixto",
+            "Philippe Berne & Flore Merlier-Berne",
+            "Dillon Luther & Chantelle Pianetta",
+            "Austin Scharnhorst & Kali Casas",
+            "Jerome Subey & Bonnie Subey",
+            "Scott Campbell & Patty Vo",
+            "Nicholas King & Yenni Setiawan",
+            "Ibirocay Regueira & Matilda Tuomela",
+            "Rob Glover & Alyssa Gillespie",
+            "Mike Carringer & Hannah Meyer",
+            "Didier Sellam & Emilie Renard"
+          ],
+          "skipped": true,
+          "notes": "Reference data stored with raw judge marks and violation annotations. Algorithm comparison deferred until SVW / SV-1 / SV-3 adjustments are implemented."
+        }
+      ]
+    }
+  ],
+  "implementationTodos": [
+    {
+      "id": "judge-competitor-violations",
+      "status": "pending",
+      "title": "Judge / competitor violation handling in relative placement",
+      "relatedDatasetIds": ["us-open-2018-showcase-finals"],
+      "items": [
+        "Parse raw judge marks (placement + optional SVW, SV-1, SV-3 suffix) into effective ordinals per judge.",
+        "Apply placementAdjustment from violationDefinitions before relative-placement tabulation.",
+        "Support swing-content thresholds (SVW/SV-1 below 60%, SV-3 below 50%) when judges issue discretionary penalties.",
+        "Re-run validate-relative-placement.ts against us-open-2018-showcase-finals and compare to published marksSorted / official order.",
+        "Decide whether competitor-level violations (e.g. routine disqualification) need a separate model from per-judge swing violations."
+      ]
     }
   ]
 }

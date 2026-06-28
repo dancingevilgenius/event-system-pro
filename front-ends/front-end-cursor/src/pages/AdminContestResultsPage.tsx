@@ -15,11 +15,6 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { buildMockContestResults } from '../data/mockContestResults';
 import { formatCompetitorPairNames } from '../data/legionNames';
-import { scoreToDigits, formatScoreDisplay } from '../types/judgingScore';
-
-function formatRawScore(value: number): string {
-  return formatScoreDisplay(scoreToDigits(value));
-}
 
 export default function AdminContestResultsPage() {
   const navigate = useNavigate();
@@ -82,7 +77,7 @@ export default function AdminContestResultsPage() {
                     </TableCell>
                     {judgeSheets.map((sheet) => (
                       <TableCell key={sheet.label} align="center" sx={{ whiteSpace: 'nowrap' }}>
-                        {formatRawScore(sheet.scores[row.bib])}
+                        {sheet.placements[row.bib]}
                       </TableCell>
                     ))}
                   </TableRow>

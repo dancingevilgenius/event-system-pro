@@ -14,8 +14,10 @@ COPY front-ends/front-end-cursor/ ./
 
 ARG VITE_POSTGREST_URL=https://eventsystem.pro/api
 ARG VITE_MAILER_URL=https://eventsystem.pro/mailer
+ARG VITE_REALTIME_WS_URL=wss://eventsystem.pro/realtime/ws
 ENV VITE_POSTGREST_URL=$VITE_POSTGREST_URL
 ENV VITE_MAILER_URL=$VITE_MAILER_URL
+ENV VITE_REALTIME_WS_URL=$VITE_REALTIME_WS_URL
 
 RUN npm run build
 

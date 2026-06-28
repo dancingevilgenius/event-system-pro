@@ -3,6 +3,7 @@
 #
 #   /      -> web (React SPA)
 #   /api/* -> postgrest:3000
+#   /realtime/* -> realtime:3002
 
 {
   auto_https off
@@ -11,6 +12,10 @@
 :80 {
   handle_path /api/* {
     reverse_proxy postgrest:3000
+  }
+
+  handle_path /realtime/* {
+    reverse_proxy realtime:3002
   }
 
   handle {

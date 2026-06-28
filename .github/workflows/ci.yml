@@ -38,6 +38,7 @@ jobs:
         env:
           VITE_POSTGREST_URL: http://localhost:8090/api
           VITE_MAILER_URL: http://localhost:8090/mailer
+          VITE_REALTIME_WS_URL: ws://localhost:8090/realtime/ws
 
   docker:
     name: Docker images and compose config
@@ -53,11 +54,15 @@ jobs:
             -f deploy/Dockerfile.web \
             --build-arg VITE_POSTGREST_URL=http://localhost:8090/api \
             --build-arg VITE_MAILER_URL=http://localhost:8090/mailer \
+            --build-arg VITE_REALTIME_WS_URL=ws://localhost:8090/realtime/ws \
             -t event-system-pro-web \
             .
 
       - name: Build mailer image
         run: docker build -t event-system-pro-mailer back-ends/mailer
+
+      - name: Build realtime image
+        run: docker build -t event-system-pro-realtime back-ends/realtime
 
       - name: Validate compose file
         run: docker compose -f deploy/docker-compose.yml config --quiet
@@ -81,7 +86,8 @@ jobs:
           for i in $(seq 1 90); do
             if curl -sf http://localhost:8090/ >/dev/null \
               && curl -sf http://localhost:8090/api/ >/dev/null \
-              && curl -sf http://localhost:8090/mailer/health >/dev/null; then
+              && curl -sf http://localhost:8090/mailer/health >/dev/null \
+              && curl -sf http://localhost:8090/realtime/health >/dev/null; then
               echo "Stack is healthy"
               exit 0
             fi

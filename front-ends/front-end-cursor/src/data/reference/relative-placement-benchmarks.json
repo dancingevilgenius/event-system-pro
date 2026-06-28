@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 1,
+  "description": "Published relative-placement judge sheets used to benchmark computeRelativePlacementOrder.",
+  "datasets": [
+    {
+      "id": "ballroom-skating-rule-6",
+      "sport": "Ballroom dance (Skating System)",
+      "judges": 7,
+      "competitors": 6,
+      "match": "100% exact",
+      "sourceUrl": "https://www.dancepartner.com/articles/dancesport-skating-system.asp",
+      "event": "Waltz final — Rule 6 worked example (6 couples, 7 judges)",
+      "scoringSystem": "WDSF / British Dance Council Skating System (Rules 2–8, single dance)",
+      "judgeLabels": ["J1", "J2", "J3", "J4", "J5", "J6", "J7"],
+      "placementMeaning": "Each value is a judge's ordinal placement for that couple (1 = best).",
+      "officialResults": [
+        { "label": "#61", "place": 1 },
+        { "label": "#62", "place": 2 },
+        { "label": "#63", "place": 3 },
+        { "label": "#64", "place": 4 },
+        { "label": "#65", "place": 5 },
+        { "label": "#66", "place": 6 }
+      ],
+      "entries": [
+        { "label": "#61", "judgePlacements": [1, 1, 2, 1, 4, 2, 1], "officialPlace": 1 },
+        { "label": "#62", "judgePlacements": [6, 2, 1, 5, 2, 1, 2], "officialPlace": 2 },
+        { "label": "#63", "judgePlacements": [2, 4, 3, 3, 6, 3, 3], "officialPlace": 3 },
+        { "label": "#64", "judgePlacements": [3, 3, 5, 2, 1, 5, 4], "officialPlace": 4 },
+        { "label": "#65", "judgePlacements": [4, 5, 6, 4, 3, 6, 5], "officialPlace": 5 },
+        { "label": "#66", "judgePlacements": [5, 6, 4, 6, 5, 4, 6], "officialPlace": 6 }
+      ],
+      "validations": [
+        {
+          "validatedOn": "2026-06-28",
+          "algorithm": "computeRelativePlacementOrder (front-ends/front-end-cursor/src/utils/relativePlacement.ts)",
+          "officialOrder": ["#61", "#62", "#63", "#64", "#65", "#66"],
+          "ourOrder": ["#61", "#62", "#63", "#64", "#65", "#66"],
+          "notes": "Exact match on all six placements. Published Skating System Rule 6 example (greater-majority tie-break for 3rd/4th) tabulates identically to our implementation."
+        }
+      ]
+    },
+    {
+      "id": "ballroom-skating-rule-7",
+      "sport": "Ballroom dance (Skating System)",
+      "judges": 7,
+      "competitors": 6,
+      "match": "4/6 exact; #74 and #76 swapped (official 4th/6th)",
+      "sourceUrl": "https://www.dancepartner.com/articles/dancesport-skating-system.asp",
+      "event": "Waltz final — Rule 7 worked example (6 couples, 7 judges)",
+      "scoringSystem": "WDSF / British Dance Council Skating System (Rule 7 — Total of Majority tie-break)",
+      "judgeLabels": ["J1", "J2", "J3", "J4", "J5", "J6", "J7"],
+      "placementMeaning": "Each value is a judge's ordinal placement for that couple (1 = best).",
+      "officialResults": [
+        { "label": "#71", "place": 1 },
+        { "label": "#72", "place": 2 },
+        { "label": "#73", "place": 3 },
+        { "label": "#74", "place": 4 },
+        { "label": "#75", "place": 5 },
+        { "label": "#76", "place": 6 }
+      ],
+      "entries": [
+        { "label": "#71", "judgePlacements": [3, 1, 6, 1, 1, 2, 1], "officialPlace": 1 },
+        { "label": "#72", "judgePlacements": [2, 2, 1, 5, 3, 1, 3], "officialPlace": 2 },
+        { "label": "#73", "judgePlacements": [1, 5, 4, 2, 2, 6, 2], "officialPlace": 3 },
+        { "label": "#74", "judgePlacements": [5, 4, 2, 4, 6, 5, 4], "officialPlace": 4 },
+        { "label": "#75", "judgePlacements": [4, 6, 3, 3, 5, 4, 6], "officialPlace": 5 },
+        { "label": "#76", "judgePlacements": [6, 3, 5, 6, 4, 3, 5], "officialPlace": 6 }
+      ],
+      "validations": [
+        {
+          "validatedOn": "2026-06-28",
+          "algorithm": "computeRelativePlacementOrder (front-ends/front-end-cursor/src/utils/relativePlacement.ts)",
+          "officialOrder": ["#71", "#72", "#73", "#74", "#75", "#76"],
+          "ourOrder": ["#71", "#72", "#73", "#76", "#75", "#74"],
+          "notes": "Places 1–3 and 5 match. #74 (official 4th) vs #76 (official 6th) are swapped in our output. Published Rule 7 advances to the next column when Total of Majority ties at '4th and higher'; our tie-break resolves #74/#76 differently at that step."
+        }
+      ]
+    },
+    {
+      "id": "figure-skating-6-0-prejuvenile",
+      "sport": "Figure skating (6.0 ordinals)",
+      "judges": 5,
+      "competitors": 8,
+      "match": "Exact 1st–6th; official 7th-place tie split as KELLY 7th / LAURYN 8th",
+      "sourceUrl": "https://www.sk8stuff.com/f_basic_ref/how_to_interpret_your_scores.pdf",
+      "event": "Pre-Juvenile Freestyle — 8 skaters, 5 judges",
+      "scoringSystem": "U.S. Figure Skating 6.0 majority ordinal system",
+      "judgeLabels": ["J1", "J2", "J3", "J4", "J5"],
+      "placementMeaning": "Each value is a judge's ordinal after ranking skaters by technical + presentation marks (1 = best).",
+      "officialResults": [
+        { "label": "LEAH", "place": 1 },
+        { "label": "NICOLE", "place": 2 },
+        { "label": "DEANNA", "place": 3 },
+        { "label": "ERIN", "place": 4 },
+        { "label": "MICHELLE", "place": 5 },
+        { "label": "AMANDA", "place": 6 },
+        { "label": "KELLY", "place": 7 },
+        { "label": "LAURYN", "place": 7 }
+      ],
+      "entries": [
+        { "label": "LEAH", "judgePlacements": [1, 1, 2, 1, 1], "officialPlace": 1 },
+        { "label": "NICOLE", "judgePlacements": [4, 5, 1, 2, 2], "officialPlace": 2 },
+        { "label": "DEANNA", "judgePlacements": [2, 2, 8, 8, 3], "officialPlace": 3 },
+        { "label": "ERIN", "judgePlacements": [3, 4, 3, 3, 6], "officialPlace": 4 },
+        { "label": "MICHELLE", "judgePlacements": [5, 6, 4, 4, 4], "officialPlace": 5 },
+        { "label": "AMANDA", "judgePlacements": [8, 3, 6, 5, 5], "officialPlace": 6 },
+        { "label": "KELLY", "judgePlacements": [6, 7, 7, 6, 8], "officialPlace": 7 },
+        { "label": "LAURYN", "judgePlacements": [7, 8, 5, 7, 7], "officialPlace": 7 }
+      ],
+      "validations": [
+        {
+          "validatedOn": "2026-06-28",
+          "algorithm": "computeRelativePlacementOrder (front-ends/front-end-cursor/src/utils/relativePlacement.ts)",
+          "officialOrder": ["LEAH", "NICOLE", "DEANNA", "ERIN", "MICHELLE", "AMANDA", "KELLY", "LAURYN"],
+          "ourOrder": ["LEAH", "NICOLE", "DEANNA", "ERIN", "MICHELLE", "AMANDA", "KELLY", "LAURYN"],
+          "notes": "First six placements match exactly. Published results declare KELLY and LAURYN tied for 7th (both total ordinals 34). Our algorithm breaks the tie via head-to-head judge comparison and assigns KELLY 7th and LAURYN 8th."
+        }
+      ]
+    }
+  ]
+}

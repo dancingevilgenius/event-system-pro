@@ -1,13 +1,22 @@
-# Deploy to Dokploy (eventsystem.pro)
+# Deploy to Dokploy (imake.wtf — test)
 
 Full stack: **PostgreSQL + migrations + PostgREST + web + Caddy proxy**.  
 Mailer is **skipped initially** (forgot-password email will not work until mailer/SMTP is added).
 
+## Two repos, two domains
+
+| Domain | Repo | Dokploy type | Purpose |
+|--------|------|--------------|---------|
+| [eventsystem.pro](https://eventsystem.pro) | `dancingevilgenius/EventSystemPro` | Dockerfile (1 container) | **Production** — leave as-is |
+| [imake.wtf](https://imake.wtf) | `dancingevilgenius/event-system-pro` | Docker Compose | **Test** full stack |
+
+Use a **separate Dokploy application** for event-system-pro. Do not repoint the EventSystemPro app.
+
 ## Why Docker Compose in Dokploy (not Dockerfile-only)
 
-EventSystemPro used a **single root `Dockerfile`** because it is one container (Vite dev server).
+EventSystemPro uses a **single root `Dockerfile`** because it is one container (Vite dev server).
 
-This project needs **postgres, migrate, PostgREST, web, and proxy**. In Dokploy:
+event-system-pro needs **postgres, migrate, PostgREST, web, and proxy**. In Dokploy:
 
 | Dokploy setting | Value |
 |-----------------|--------|
@@ -21,21 +30,22 @@ The root `Dockerfile` builds the production React app (nginx). Compose orchestra
 
 **Downloadable checklist:** [DOKPLOY-CHECKLIST.md](./DOKPLOY-CHECKLIST.md)
 
-1. **New application** → type **Docker Compose**
+1. **New application** → type **Docker Compose** (not the EventSystemPro app)
 2. Connect GitHub repo `event-system-pro`, branch `main`
 3. **Compose path:** `deploy/docker-compose.dokploy.yml`
-4. **Environment variables:** copy from `deploy/.env.dokploy.example` and replace all `change-me-*` values
-5. **Domain:** assign `eventsystem.pro` to service **`proxy`**, container port **80**
+4. **Environment variables:** copy from `deploy/.env.dokploy.example` (imake.wtf URLs) and replace all `change-me-*` values
+5. **Domain:** assign `imake.wtf` to service **`proxy`**, container port **80**
 6. Enable **HTTPS** in Dokploy (Let's Encrypt)
-7. Deploy / redeploy on push (same pattern as EventSystemPro)
+7. Deploy / redeploy on push
 
 ## URLs after deploy
 
 | URL | Service |
 |-----|---------|
-| https://eventsystem.pro | React app |
-| https://eventsystem.pro/api/ | PostgREST |
-| https://eventsystem.pro/mailer/ | Reserved (mailer not deployed yet) |
+| https://imake.wtf | React app |
+| https://imake.wtf/api/ | PostgREST |
+| https://imake.wtf/mailer/ | Reserved (mailer not deployed yet) |
+| https://imake.wtf/realtime/health | Realtime POC health |
 
 ## Local smoke test (before Dokploy)
 
@@ -45,7 +55,7 @@ copy deploy\.env.dokploy.example deploy\.env.dokploy
 docker compose -f deploy/docker-compose.dokploy.yml --env-file deploy/.env.dokploy up --build
 ```
 
-Map `eventsystem.pro` to `127.0.0.1` in your hosts file for local HTTPS testing, or use http://localhost with a modified compose port mapping on `proxy`.
+Map `imake.wtf` to `127.0.0.1` in your hosts file for local HTTPS testing, or use http://localhost with a modified compose port mapping on `proxy`.
 
 ## After first deploy
 
@@ -69,7 +79,12 @@ docker compose -f deploy/docker-compose.dokploy.yml exec postgres \
 
 | | EventSystemPro | event-system-pro |
 |---|----------------|------------------|
+| Domain | eventsystem.pro | imake.wtf (test) |
 | Dokploy type | Dockerfile (1 container) | **Docker Compose** (multi-service) |
 | Root Dockerfile | `npm run dev` | **`npm run build` + nginx** |
 | Database | None | PostgreSQL in compose |
 | API | External mock | PostgREST in compose |
+
+## Future production cutover
+
+When imake.wtf is stable, migrating to eventsystem.pro is a deliberate swap: new env URLs, domain binding in Dokploy, and retiring or relocating EventSystemPro. See checklist “Not included yet” section.

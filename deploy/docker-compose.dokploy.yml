@@ -4,7 +4,7 @@
 # Dokploy UI:
 #   Type: Docker Compose
 #   Compose path: deploy/docker-compose.dokploy.yml
-#   Domain: eventsystem.pro -> service "proxy", container port 80
+#   Domain: imake.wtf -> service "proxy", container port 80 (test; eventsystem.pro stays on EventSystemPro)
 #   Env: copy from deploy/.env.dokploy.example
 
 services:
@@ -50,8 +50,8 @@ services:
       PGRST_DB_POOL: "10"
       PGRST_SERVER_HOST: 0.0.0.0
       PGRST_SERVER_PORT: "3000"
-      PGRST_OPENAPI_SERVER_PROXY_URI: ${APP_URL:-https://eventsystem.pro}/api
-      PGRST_SERVER_CORS_ALLOWED_ORIGINS: ${CORS_ORIGINS:-https://eventsystem.pro}
+      PGRST_OPENAPI_SERVER_PROXY_URI: ${APP_URL:-https://imake.wtf}/api
+      PGRST_SERVER_CORS_ALLOWED_ORIGINS: ${CORS_ORIGINS:-https://imake.wtf}
       PGRST_JWT_SECRET: ${PGRST_JWT_SECRET:?Set PGRST_JWT_SECRET in Dokploy}
     depends_on:
       migrate:
@@ -74,9 +74,9 @@ services:
       context: ..
       dockerfile: Dockerfile
       args:
-        VITE_POSTGREST_URL: ${VITE_POSTGREST_URL:-https://eventsystem.pro/api}
-        VITE_MAILER_URL: ${VITE_MAILER_URL:-https://eventsystem.pro/mailer}
-        VITE_REALTIME_WS_URL: ${VITE_REALTIME_WS_URL:-wss://eventsystem.pro/realtime/ws}
+        VITE_POSTGREST_URL: ${VITE_POSTGREST_URL:-https://imake.wtf/api}
+        VITE_MAILER_URL: ${VITE_MAILER_URL:-https://imake.wtf/mailer}
+        VITE_REALTIME_WS_URL: ${VITE_REALTIME_WS_URL:-wss://imake.wtf/realtime/ws}
     restart: unless-stopped
     depends_on:
       - postgrest

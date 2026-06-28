@@ -87,8 +87,8 @@ docker compose -f deploy/docker-compose.yml --env-file deploy/.env up -d
 
 The older compose file under `back-ends/postgrest/` exposes PostgREST, mailer, and Mailpit on separate localhost ports. Do not run both stacks at once on the same ports.
 
-## Dokploy production (eventsystem.pro)
+## Dokploy test deploy (imake.wtf)
 
-See [DOKPLOY.md](./DOKPLOY.md) for full-stack deploy on Dokploy with `deploy/docker-compose.dokploy.yml` and root `Dockerfile`.
+See [DOKPLOY.md](./DOKPLOY.md) for full-stack **test** deploy on Dokploy with `deploy/docker-compose.dokploy.yml` and root `Dockerfile`. Production [eventsystem.pro](https://eventsystem.pro) remains on the separate EventSystemPro repo.
 
 **Downloadable checklist:** [DOKPLOY-CHECKLIST.md](./DOKPLOY-CHECKLIST.md)

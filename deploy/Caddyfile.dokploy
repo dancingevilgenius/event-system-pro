@@ -1,4 +1,4 @@
-# Dokploy entry proxy: single public service for eventsystem.pro
+# Dokploy entry proxy: single public service (domain set in Dokploy, e.g. imake.wtf)
 # Dokploy/Traefik terminates TLS; Caddy routes by path inside the stack.
 #
 #   /      -> web (React SPA)

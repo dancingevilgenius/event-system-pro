@@ -489,7 +489,8 @@ export type EventAttendeeListRow = {
   attendeeId: number;
   firstName: string;
   lastName: string;
-  state: string;
+  phone: string;
+  email: string;
 };
 
 type ApiEventRecord = {
@@ -572,18 +573,52 @@ type ApiAttendeeWithUser = {
   attendee_id: number;
   user: {
     name_json: ApiUserRecord['name_json'];
-    addresses_json: ApiUserRecord['addresses_json'];
+    email: string | null;
+    phone_numbers_json: unknown;
   } | null;
 };
 
-function mapAttendeeToListRow(row: ApiAttendeeWithUser): EventAttendeeListRow {
-  const address = primaryAddress(row.user?.addresses_json ?? null);
+type PhoneNumberJson = {
+  number?: string | null;
+  primary?: boolean;
+};
 
+function formatPhoneNumber(value: string): string {
+  const digits = value.replace(/\D/g, '');
+  if (digits.length === 10) {
+    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+  }
+
+  return value.trim();
+}
+
+function primaryPhone(phoneNumbersJson: unknown): string {
+  if (!Array.isArray(phoneNumbersJson) || phoneNumbersJson.length === 0) {
+    return '';
+  }
+
+  const entries = phoneNumbersJson.filter(
+    (entry): entry is PhoneNumberJson => Boolean(entry) && typeof entry === 'object',
+  );
+  const selected =
+    entries.find((entry) => entry.primary) ??
+    entries.find((entry) => entry.number?.trim()) ??
+    entries[0];
+
+  if (!selected?.number) {
+    return '';
+  }
+
+  return formatPhoneNumber(selected.number);
+}
+
+function mapAttendeeToListRow(row: ApiAttendeeWithUser): EventAttendeeListRow {
   return {
     attendeeId: row.attendee_id,
     firstName: row.user?.name_json?.first?.trim() ?? '',
     lastName: row.user?.name_json?.last?.trim() ?? '',
-    state: address?.state_or_province?.trim() ?? '',
+    phone: primaryPhone(row.user?.phone_numbers_json ?? null),
+    email: row.user?.email?.trim() ?? '',
   };
 }
 
@@ -593,7 +628,7 @@ export async function fetchEventAttendeesPage(
   limit: number,
 ): Promise<{ attendees: EventAttendeeListRow[]; total: number }> {
   const params = new URLSearchParams({
-    select: 'attendee_id,user(name_json,addresses_json)',
+    select: 'attendee_id,user(name_json,email,phone_numbers_json)',
     order: 'attendee_id',
     offset: String(offset),
     limit: String(limit),

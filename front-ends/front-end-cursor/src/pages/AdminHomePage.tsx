@@ -7,7 +7,7 @@ import { useMessages } from '../hooks/useMessages';
 import { usePocCounter } from '../hooks/usePocCounter';
 
 const ADMIN_BUTTONS = [
-  { label: 'Event Details', path: '/admin/event-details' },
+  { label: 'Events', path: '/admin/event-details' },
   { label: 'Contests', path: '/admin/contests' },
   { label: 'Competitors', path: '/admin/competitors' },
   { label: 'Competition Entries', path: '/admin/competition-entries' },

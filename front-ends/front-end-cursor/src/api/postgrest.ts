@@ -410,6 +410,223 @@ export function changePassword(
   });
 }
 
+export type EventGroupListRow = {
+  eventGroupCode: string;
+  fullName: string;
+};
+
+type ApiEventWithAttendees = {
+  event_id: number;
+  event_group_code: string | null;
+  attendee: Array<{ attendee_id: number }>;
+};
+
+type ApiEventGroupRecord = {
+  event_group_code: string;
+  full_name: string;
+};
+
+async function fetchJson<T>(url: string, errorMessage: string): Promise<T> {
+  const response = await fetch(url, {
+    headers: buildAuthHeaders(),
+  });
+
+  if (!response.ok) {
+    throw new Error(`${errorMessage} (${response.status})`);
+  }
+
+  return (await response.json()) as T;
+}
+
+/** Demo event groups that have at least one event with attendee rows. */
+export async function fetchDemoEventGroupsWithAttendees(): Promise<EventGroupListRow[]> {
+  const events = await fetchJson<ApiEventWithAttendees[]>(
+    `${POSTGREST_URL}/event?select=event_id,event_group_code,attendee!inner(attendee_id)`,
+    'Unable to load events with attendees',
+  );
+
+  const eventGroupCodes = [
+    ...new Set(
+      events
+        .map((row) => row.event_group_code?.trim() ?? '')
+        .filter((code) => code !== ''),
+    ),
+  ];
+  if (eventGroupCodes.length === 0) {
+    return [];
+  }
+
+  const params = new URLSearchParams({
+    select: 'event_group_code,full_name',
+    order: 'full_name',
+  });
+  params.append('event_group_code', `in.(${eventGroupCodes.join(',')})`);
+  params.append('more_json->>demo', 'eq.true');
+
+  const eventGroups = await fetchJson<ApiEventGroupRecord[]>(
+    `${POSTGREST_URL}/event_group?${params.toString()}`,
+    'Unable to load event groups',
+  );
+
+  return eventGroups.map((row) => ({
+    eventGroupCode: row.event_group_code,
+    fullName: row.full_name,
+  }));
+}
+
+export type EventListRow = {
+  eventId: number;
+  name: string;
+  startDate: string | null;
+};
+
+export type EventGroupDetail = {
+  eventGroupCode: string;
+  fullName: string;
+};
+
+export type EventAttendeeListRow = {
+  attendeeId: number;
+  firstName: string;
+  lastName: string;
+  state: string;
+};
+
+type ApiEventRecord = {
+  event_id: number;
+  name: string;
+  start_date: string | null;
+  event_group_code: string | null;
+};
+
+export async function fetchEventGroupByCode(
+  eventGroupCode: string,
+): Promise<EventGroupDetail | null> {
+  const params = new URLSearchParams({
+    select: 'event_group_code,full_name',
+  });
+  params.append('event_group_code', `eq.${eventGroupCode}`);
+
+  const rows = await fetchJson<ApiEventGroupRecord[]>(
+    `${POSTGREST_URL}/event_group?${params.toString()}`,
+    'Unable to load event group',
+  );
+
+  const row = rows[0];
+  if (!row) {
+    return null;
+  }
+
+  return {
+    eventGroupCode: row.event_group_code,
+    fullName: row.full_name,
+  };
+}
+
+export async function fetchEventsForEventGroup(eventGroupCode: string): Promise<EventListRow[]> {
+  const params = new URLSearchParams({
+    select: 'event_id,name,start_date',
+    order: 'start_date',
+  });
+  params.append('event_group_code', `eq.${eventGroupCode}`);
+
+  const rows = await fetchJson<ApiEventRecord[]>(
+    `${POSTGREST_URL}/event?${params.toString()}`,
+    'Unable to load events',
+  );
+
+  return rows.map((row) => ({
+    eventId: row.event_id,
+    name: row.name,
+    startDate: row.start_date,
+  }));
+}
+
+export async function fetchEventById(
+  eventId: number,
+): Promise<(EventListRow & { eventGroupCode: string | null }) | null> {
+  const params = new URLSearchParams({
+    select: 'event_id,name,start_date,event_group_code',
+  });
+  params.append('event_id', `eq.${eventId}`);
+
+  const rows = await fetchJson<ApiEventRecord[]>(
+    `${POSTGREST_URL}/event?${params.toString()}`,
+    'Unable to load event',
+  );
+
+  const row = rows[0];
+  if (!row) {
+    return null;
+  }
+
+  return {
+    eventId: row.event_id,
+    name: row.name,
+    startDate: row.start_date,
+    eventGroupCode: row.event_group_code,
+  };
+}
+
+type ApiAttendeeWithUser = {
+  attendee_id: number;
+  user: {
+    name_json: ApiUserRecord['name_json'];
+    addresses_json: ApiUserRecord['addresses_json'];
+  } | null;
+};
+
+function mapAttendeeToListRow(row: ApiAttendeeWithUser): EventAttendeeListRow {
+  const address = primaryAddress(row.user?.addresses_json ?? null);
+
+  return {
+    attendeeId: row.attendee_id,
+    firstName: row.user?.name_json?.first?.trim() ?? '',
+    lastName: row.user?.name_json?.last?.trim() ?? '',
+    state: address?.state_or_province?.trim() ?? '',
+  };
+}
+
+export async function fetchEventAttendeesPage(
+  eventId: number,
+  offset: number,
+  limit: number,
+): Promise<{ attendees: EventAttendeeListRow[]; total: number }> {
+  const params = new URLSearchParams({
+    select: 'attendee_id,user(name_json,addresses_json)',
+    order: 'attendee_id',
+    offset: String(offset),
+    limit: String(limit),
+  });
+  params.append('event_id', `eq.${eventId}`);
+
+  const response = await fetch(`${POSTGREST_URL}/attendee?${params.toString()}`, {
+    headers: buildAuthHeaders({
+      Prefer: 'count=exact',
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Unable to load attendees (${response.status})`);
+  }
+
+  const records = (await response.json()) as ApiAttendeeWithUser[];
+  const total = parseContentRangeTotal(response.headers.get('Content-Range')) ?? records.length;
+
+  return {
+    attendees: records.map(mapAttendeeToListRow),
+    total,
+  };
+}
+
+/** Loads all attendees for an event (demo events cap at 200 rows per event). */
+export async function fetchEventAttendeesForEvent(
+  eventId: number,
+): Promise<EventAttendeeListRow[]> {
+  const result = await fetchEventAttendeesPage(eventId, 0, 1000);
+  return result.attendees;
+}
+
 export type GenerateDemoAttendeesResult = {
   ok: boolean;
   message: string;

@@ -6,6 +6,11 @@ import AccountPage from './pages/AccountPage';
 import AdminCompetitorsPage from './pages/AdminCompetitorsPage';
 import AdminContestResultsPage from './pages/AdminContestResultsPage';
 import AdminContestsPage from './pages/AdminContestsPage';
+import AdminEventAttendeesPage from './pages/AdminEventAttendeesPage';
+import AdminEventGroupPage from './pages/AdminEventGroupPage';
+import AdminEventPage from './pages/AdminEventPage';
+import AdminEventSectionPlaceholderPage from './pages/AdminEventSectionPlaceholderPage';
+import AdminEventsPage from './pages/AdminEventsPage';
 import AdminHomePage from './pages/AdminHomePage';
 import AdminPlaceholderPage from './pages/AdminPlaceholderPage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
@@ -62,7 +67,47 @@ export default function App() {
         path="/admin/event-details"
         element={
           <ProtectedRoute roles={['admin']}>
-            <AdminPlaceholderPage title="Event Details" />
+            <AdminEventsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/event-details/:eventGroupCode/:eventId/attendees"
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <AdminEventAttendeesPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/event-details/:eventGroupCode/:eventId/competitors"
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <AdminEventSectionPlaceholderPage title="Competitors" />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/event-details/:eventGroupCode/:eventId/contests"
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <AdminEventSectionPlaceholderPage title="Contests" />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/event-details/:eventGroupCode/:eventId"
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <AdminEventPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/event-details/:eventGroupCode"
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <AdminEventGroupPage />
           </ProtectedRoute>
         }
       />

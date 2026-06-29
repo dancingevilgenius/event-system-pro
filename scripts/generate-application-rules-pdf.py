@@ -167,24 +167,63 @@ def build_pdf() -> None:
 
     pdf.body_text(
         "Plain-language summary of rules, restrictions, and constraints "
-        "accumulated for the Event System Pro front-end (Judging page and related flows)."
+        "for the Event System Pro front-end and related database/demo-data conventions."
     )
 
     pdf.section_title("General layout and navigation")
     for item in [
         "Main content blocks (messages, buttons, fields, dropdowns) are capped at 360px wide and centered.",
         "Default route is Login (/). Unknown URLs redirect to login.",
+        "Public routes: /, /register, /forgot-password.",
+        "Protected routes require a signed-in session (see Authentication and Roles).",
         "Staff reaches Judging via Staff -> Contest, which goes to /judging.",
         "Judging Submit and Back to Staff both return to /staff.",
-        "Login currently accepts any credentials and goes to /home (no real auth yet).",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Authentication and session")
+    for item in [
+        "Login calls PostgREST RPC api.login with username or email and password.",
+        "Passwords verified with bcrypt on the server.",
+        "On success: session in sessionStorage (esp_session) with user_id, username, email, roles, JWT token.",
+        "Authenticated API calls send Authorization: Bearer <token>.",
+        "Logout clears session and returns to /.",
+        "Sign in again after DB auth or role changes so JWT includes current roles.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Roles and route guards")
+    pdf.body_text(
+        "Seven roles: admin, staff, judge, headjudge, registration, floorcoordinator, competitor."
+    )
+    for item in [
+        "ProtectedRoute: no session -> /; missing role -> /home.",
+        "Admin role passes any role check.",
+        "/home, /account, /changepassword: any signed-in user.",
+        "/staff, /judging: staff or admin.",
+        "/competitor: competitor or admin.",
+        "/adminhome, /admin/*: admin only.",
     ]:
         pdf.bullet(item)
 
     pdf.subsection_title("Home page (/home)")
     for item in [
-        "After login, user lands on Home (Staff / Competitor role selection).",
-        "Staff button navigates to /staff.",
-        "Competitor button navigates to /competitor.",
+        "After login, user lands on Home (role hub).",
+        "Buttons: Staff (/staff), Competitor (/competitor), Admin (/adminhome), Account (/account).",
+        "Skin dropdown (ThemeSwitcher) below navigation buttons.",
+        "Back to Login logs out and returns to /.",
+        "Test Messages is on Admin home, not Home.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("Admin section")
+    for item in [
+        "Admin home: Event Details, Contests, Competitors, Competition Entries, Staff, Generate Attendees.",
+        "Generate Attendees calls api.generate_demo_attendees (admin JWT); regenerates demo attendee_id 1-3000.",
+        "Test Messages on Admin home shows one success, warning, and problem alert.",
+        "Event Details and Competition Entries are placeholders.",
+        "Contests page navigates to /admin/contests/contest (results).",
+        "Admin competitors: paginated user table; 25 rows desktop, 10 mobile.",
     ]:
         pdf.bullet(item)
 
@@ -233,8 +272,8 @@ def build_pdf() -> None:
 
     pdf.subsection_title("Page-specific behavior")
     for item in [
-        "Login and Register call clearMessages() on mount.",
-        "Home has a Test Messages button that clears the stack, then shows one of each type:",
+        "Login, Register, and Forgot password call clearMessages() on mount.",
+        "Admin home has a Test Messages button that clears the stack, then shows one of each type:",
         "  Success: Your change has been saved.",
         "  Warning: Your event starts in less than 15 min.",
         "  Problem: Your sign in time has passed.",
@@ -486,6 +525,149 @@ def build_pdf() -> None:
         "Default inputMode: text (password fields excluded).",
         "Register numeric fields use inputMode: numeric with max lengths on phone/zip fields.",
         "Outlined inputs use 16px font size to reduce unwanted zoom on focus (especially iOS).",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Database audit columns")
+    pdf.body_text("Every public table uses created_date, created_by, modified_date, modified_by.")
+    for item in [
+        "created_date: TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP.",
+        "created_by: varchar(128) NOT NULL.",
+        "modified_date / modified_by: NULL on insert; set on update.",
+        "Do not use epoch placeholder defaults (1970-01-01, etc.).",
+        "Seeds: created_by = c-agent; leave modified_* NULL.",
+        "App users: created_by = username on register; modified_by = username on update.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Demo data and more_json")
+    for item in [
+        "event_group, event, and attendee each have more_json (jsonb).",
+        'Demo flag key is "demo" (boolean), not is_demo.',
+        "event_group: seeded with demo true/false.",
+        "event: demo copied from parent event_group.",
+        "attendee: demo copied from parent event on seed insert.",
+        "charter table renamed to club; event.host_charter_id renamed to host_club_id.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Attendee demo data")
+    for item in [
+        "attendee_id 1-3000 reserved for demo seed data; production rows must be > 3000.",
+        "Seed selects 5 random demo event_group trios (15 events) x 200 attendees = 3000 rows.",
+        "created_date: 1-90 days before event start_date (same calendar year as event).",
+        "Re-run deletes only attendee_id <= 3000; preserves rows above 3000.",
+        "Admin Generate Attendees calls api.generate_demo_attendees (admin JWT required).",
+        "CLI seed: database/seeds/012_attendee_seed.sql calls generate_demo_attendees_core.",
+        "PostgREST needs PGRST_JWT_SECRET matching database app.jwt_secret for authenticated RPCs.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Repository layout")
+    for item in [
+        "front-ends/front-end-cursor: primary React + Vite + MUI app.",
+        "back-ends/postgrest: PostgREST + Swagger + Mailpit + mailer (Docker).",
+        "database/migrations: incremental schema/API; database/seeds: local dev data only.",
+        "scripts/rebuild-local-database.ps1: full local DB rebuild.",
+        "deploy/: Dokploy / production notes.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("App shell and provider order")
+    for item in [
+        "main.tsx order: AppThemeProvider -> MessageProvider -> AuthProvider -> BrowserRouter -> App.",
+        "ActivityMonitor and LoginFlashHandler render above Routes in App.",
+        "Inactivity timeout: 10 minutes; activity on clicks, form keydown, route changes.",
+        "Server sync: touch_last_activity (30s debounce), session_status (every 15s).",
+        "On expiry: warning message, logout, redirect to /.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Page layout shell")
+    for item in [
+        "Container maxWidth md (sm on Login/Register), Paper elevation 3, centered Stack.",
+        "centeredContentStackSx: 360px max width, mx auto.",
+        "Primary buttons: contained fullWidth; back buttons: outlined fullWidth.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Environment variables (front-end)")
+    for item in [
+        "VITE_POSTGREST_URL (default http://localhost:3000).",
+        "VITE_MAILER_URL (default http://localhost:3001).",
+        "VITE_REALTIME_WS_URL (WebSocket POC).",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("PostgREST API architecture")
+    for item in [
+        "HTTP API from PostgreSQL schema api only.",
+        "Roles: anon, authenticated (JWT), authenticator (connection).",
+        "Dev: migration 004 allows anon writes for Swagger.",
+        "Prod: migration 021 revokes anon writes; JWT required for mutations.",
+        "RPCs via POST /rpc/<name>; security definer functions enforce role checks.",
+        "JWT claims: role=authenticated, sub=user_id, username, app_roles array.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Local database development")
+    for item in [
+        "rebuild-local-database.ps1: drop DB, baseline, migrations (skip superseded 005-007, 015, 027, 030), seeds 002-012.",
+        "Migrations run in prod; seeds are local dev only.",
+        "configure-local-postgres-trust.ps1: passwordless psql on localhost (dev only).",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Fictional demo events")
+    for item in [
+        "event_group seeds 008-010 with more_json.demo = true.",
+        "Seed 011 generated by scripts/generate-fictional-event-seed.py.",
+        "Three instances per group: ~2025, ~2026, ~2027 (June anchors).",
+        "3-5 event days; end_date = start_date + days; event.more_json.demo from group.",
+        "Re-run deletes attendees then events for fictional groups before re-insert.",
+        "api.nightly_cleanup shifts demo event dates forward 1 day (scheduled maintenance).",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("JSON vs JSONB")
+    for item in [
+        "Use jsonb for queryable/mergeable columns (more_json, competitors_json, judges_json).",
+        "Use json for legacy blobs (some user columns, location_json).",
+        "Prefer jsonb for new columns that will be queried.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Staff and contest selection")
+    for item in [
+        "StaffPage: ContestSelectionPage title=Staff, contestRoute=/judging.",
+        "CompetitorPage: same layout, no contestRoute (buttons inert).",
+        "Admin contests: three buttons all navigate to /admin/contests/contest.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Lookup tables and owner account")
+    for item in [
+        "_lu tables: created_by = c-agent on seed rows; modified_* NULL.",
+        "dancingevilgenius dev account (seed 004); default password ChangeMeOnFirstLogin!",
+        "Seed 007 grants all seven app roles to dancingevilgenius.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Database migrations")
+    for item in [
+        "Files: database/migrations/NNN_description.sql; sorted by prefix.",
+        "Prefer idempotent DDL; NOTIFY pgrst reload schema after API changes.",
+        "Superseded migrations skipped by rebuild-local-database.ps1 when folded into baseline.",
+        "Agent UPDATE in migrations: modified_by = c-agent, modified_date = CURRENT_TIMESTAMP.",
+        "App RPCs use api.set_audit_actor(username) before UPDATE.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Admin contest results (mock)")
+    for item in [
+        "/admin/contests/contest uses buildMockContestResults() (mock data per page load).",
+        "Wide table layout (Container maxWidth lg); Place, Bib, Couple, judge columns.",
+        "Back to Contests returns to /admin/contests.",
     ]:
         pdf.bullet(item)
 

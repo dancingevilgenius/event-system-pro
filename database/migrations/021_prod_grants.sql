@@ -24,7 +24,8 @@ GRANT INSERT, UPDATE, DELETE ON
   public."event",
   public.contest,
   public.competitor,
-  public.judging_panel
+  public.judging_panel,
+  public.attendee
 TO authenticated;
 
 -- User rows are read via api."user" and mutated only through SECURITY DEFINER RPCs.
@@ -47,7 +48,8 @@ REVOKE INSERT, UPDATE, DELETE ON
   public."event",
   public.contest,
   public.competitor,
-  public.judging_panel
+  public.judging_panel,
+  public.attendee
 FROM anon;
 
 -- ---------------------------------------------------------------------------

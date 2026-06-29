@@ -288,6 +288,8 @@ BEGIN
 END;
 $$;
 
+DROP FUNCTION IF EXISTS api.register_user(text, text, text, json, json, json, json);
+
 CREATE OR REPLACE FUNCTION api.register_user(
   p_username text,
   p_password text,

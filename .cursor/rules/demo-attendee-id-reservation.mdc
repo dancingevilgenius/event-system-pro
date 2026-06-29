@@ -1,0 +1,42 @@
+---
+description: Reserved attendee_id range for demo seed data and production attendee inserts
+alwaysApply: true
+---
+
+# Demo attendee ID reservation
+
+`public.attendee.attendee_id` values **1 through 3000** are reserved for **demo seed data**.
+
+## Rules
+
+- **Never** insert production or real-world attendee rows with `attendee_id <= 3000`.
+- Application code, migrations, and manual SQL must allocate new attendees **above** the reserved range (identity sequence is bumped after the demo seed runs).
+- Demo content in the reserved range may change on each seed run (events, users, dates); the **ID slots** stay fixed.
+
+## Demo seed (`database/seeds/012_attendee_seed.sql`)
+
+- **Safe to re-run** at any time (calls `api.generate_demo_attendees_core()`).
+- **Admin UI:** Admin home **Generate Attendees** button calls `api.generate_demo_attendees()` (requires admin JWT).
+- Deletes only `attendee_id <= 3000`, then inserts exactly **3000** demo rows (`attendee_id` 1–3000).
+- Does **not** truncate the table and does **not** delete rows with `attendee_id > 3000`.
+- After insert, resets the identity sequence to `GREATEST(3000, MAX(attendee_id))` so the next production insert continues above real data.
+
+## Marking demo rows
+
+- `more_json->>'demo' = 'true'` (copied from the parent `event.more_json`)
+- `created_by = 'c-agent'` (seed convention; see `database-audit-columns` rule)
+
+## Example queries
+
+```sql
+-- Demo attendees only (reserved range)
+SELECT * FROM attendee WHERE attendee_id <= 3000;
+
+-- Production attendees only
+SELECT * FROM attendee WHERE attendee_id > 3000;
+
+-- Demo flag (any id)
+SELECT * FROM attendee WHERE (more_json->>'demo')::boolean = true;
+```
+
+When adding features that list or count attendees, treat the reserved range as demo unless explicitly filtering production data.

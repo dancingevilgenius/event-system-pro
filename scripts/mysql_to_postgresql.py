@@ -13,7 +13,7 @@ TABLE_RENAMES = {
 TABLE_ORDER = [
     "competitor_type_lu", "country_lu", "us_state_lu", "secret_question_lu",
     "skill_level_lu", "event_type_lu", "fight_event_group", "fight_event",
-    "charter", "user", "contact", "image", "system_config", "contest",
+    "club", "user", "contact", "image", "system_config", "contest",
     "competitor", "contest_heat", "event_staff_pool", "user_preference",
 ]
 
@@ -204,7 +204,7 @@ DROP TABLE IF EXISTS contest CASCADE;
 DROP TABLE IF EXISTS contact CASCADE;
 DROP TABLE IF EXISTS image CASCADE;
 DROP TABLE IF EXISTS system_config CASCADE;
-DROP TABLE IF EXISTS charter CASCADE;
+DROP TABLE IF EXISTS club CASCADE;
 DROP TABLE IF EXISTS \"user\" CASCADE;
 DROP TABLE IF EXISTS \"event\" CASCADE;
 DROP TABLE IF EXISTS event_group CASCADE;

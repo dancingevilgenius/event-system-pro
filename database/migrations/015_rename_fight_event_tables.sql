@@ -27,7 +27,7 @@ SELECT
   fight_event_group_code,
   name,
   contact_user_id,
-  host_charter_id,
+  host_club_id,
   country_code,
   state_or_province,
   location_json,

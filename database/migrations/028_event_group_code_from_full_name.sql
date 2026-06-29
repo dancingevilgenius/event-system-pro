@@ -71,7 +71,7 @@ FROM (
 ) AS m(old_code, new_code)
 WHERE e.event_group_code = m.old_code;
 
-UPDATE public.fight_event_staff AS s
+UPDATE public.event_staff_pool AS s
 SET event_group_code = m.new_code
 FROM (
   VALUES

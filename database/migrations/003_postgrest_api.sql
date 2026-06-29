@@ -85,10 +85,10 @@ FROM public.event_group;
 CREATE OR REPLACE VIEW api.event AS
 SELECT
   event_id,
-  fight_event_group_code,
+  event_group_code,
   name,
   contact_user_id,
-  host_charter_id,
+  host_club_id,
   country_code,
   state_or_province,
   location_json,
@@ -175,6 +175,23 @@ SELECT
   modified_by,
   modified_date
 FROM public.judging_panel;
+
+CREATE OR REPLACE VIEW api.attendee AS
+SELECT
+  attendee_id,
+  user_id,
+  event_id,
+  contests_json,
+  competitor_id,
+  volunteer_json,
+  staff_json,
+  notes_json,
+  external_accounts_json,
+  created_date,
+  created_by,
+  modified_date,
+  modified_by
+FROM public.attendee;
 
 -- ---------------------------------------------------------------------------
 -- Grants

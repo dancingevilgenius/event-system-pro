@@ -10,7 +10,7 @@ INSERT INTO public.event_group (
   event_group_code,
   full_name,
   short_name,
-  additional_info_json,
+  more_json,
   created_by
 )
 VALUES
@@ -18,38 +18,38 @@ VALUES
     'PORTLAND_PLASMA_PRIX',
     'Portland Plasma Prix',
     'Portland',
-    '{"is_demo": true}'::json,
+    '{"demo": true}'::jsonb,
     'c-agent'
   ),
   (
     'CHICAGO_CHROME_CLASH',
     'Chicago Chrome Clash',
     'Chicago',
-    '{"is_demo": true}'::json,
+    '{"demo": true}'::jsonb,
     'c-agent'
   ),
   (
     'STELLAR_SHOWDOWN',
     'Stellar Showdown',
     'Stellar Showdown',
-    '{"is_demo": true}'::json,
+    '{"demo": true}'::jsonb,
     'c-agent'
   ),
   (
     'NEON_NEXUS',
     'Neon Nexus',
     'Neon Nexus',
-    '{"is_demo": true}'::json,
+    '{"demo": true}'::jsonb,
     'c-agent'
   ),
   (
     'MERIDIAN_MELEE',
     'Meridian Melee',
     'Meridian Melee',
-    '{"is_demo": true}'::json,
+    '{"demo": true}'::jsonb,
     'c-agent'
   )
 ON CONFLICT (event_group_code) DO UPDATE SET
   full_name = EXCLUDED.full_name,
   short_name = EXCLUDED.short_name,
-  additional_info_json = EXCLUDED.additional_info_json;
+  more_json = EXCLUDED.more_json;

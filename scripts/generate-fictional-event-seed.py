@@ -223,11 +223,25 @@ def main() -> None:
         "",
         "\\connect event_system_pro",
         "",
-        "DELETE FROM public.\"event\"",
-        "WHERE event_group_code IN (",
+        "DELETE FROM public.attendee",
+        "WHERE event_id IN (",
+        "  SELECT event_id FROM public.\"event\"",
+        "  WHERE event_group_code IN (",
     ]
 
     codes = [g[0] for g in GROUPS]
+    for index, code in enumerate(codes):
+        suffix = "," if index < len(codes) - 1 else ""
+        lines.append(f"    {sql_str(code)}{suffix}")
+
+    lines.extend([
+        "  )",
+        ");",
+        "",
+        "DELETE FROM public.\"event\"",
+        "WHERE event_group_code IN (",
+    ])
+
     for index, code in enumerate(codes):
         suffix = "," if index < len(codes) - 1 else ""
         lines.append(f"  {sql_str(code)}{suffix}")
@@ -292,6 +306,18 @@ def main() -> None:
             )
 
     lines.append(",\n".join(value_rows) + ";")
+    lines.append("")
+    lines.append("UPDATE public.\"event\" AS e")
+    lines.append("SET more_json = jsonb_build_object(")
+    lines.append("  'demo', COALESCE((g.more_json->>'demo')::boolean, false)")
+    lines.append(")")
+    lines.append("FROM public.event_group AS g")
+    lines.append("WHERE e.event_group_code = g.event_group_code")
+    lines.append("  AND e.event_group_code IN (")
+    for index, code in enumerate(codes):
+        suffix = "," if index < len(codes) - 1 else ""
+        lines.append(f"  {sql_str(code)}{suffix}")
+    lines.append(");")
     lines.append("")
 
     OUT.write_text("\n".join(lines), encoding="utf-8")

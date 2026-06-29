@@ -28,7 +28,7 @@ BEGIN
     end_date = e.end_date + INTERVAL '1 day'
   FROM public.event_group AS g
   WHERE e.event_group_code = g.event_group_code
-    AND COALESCE((g.additional_info_json->>'is_demo')::boolean, false) = true
+    AND COALESCE((g.more_json->>'demo')::boolean, false) = true
     AND e.start_date IS NOT NULL
     AND e.end_date IS NOT NULL;
 

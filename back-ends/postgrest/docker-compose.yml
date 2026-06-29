@@ -7,6 +7,9 @@ services:
       - "${PGRST_SERVER_PORT:-3000}:3000"
     env_file:
       - .env
+    environment:
+      # Default dev secret when .env is missing; must match database app.jwt_secret.
+      PGRST_JWT_SECRET: ${PGRST_JWT_SECRET:-esp-dev-jwt-secret-change-in-production-min-32-chars}
     extra_hosts:
       - "host.docker.internal:host-gateway"
 

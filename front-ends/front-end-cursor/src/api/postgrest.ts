@@ -410,6 +410,19 @@ export function changePassword(
   });
 }
 
+export type GenerateDemoAttendeesResult = {
+  ok: boolean;
+  message: string;
+  inserted?: number;
+  events?: number;
+  preserved_above_3000?: number;
+  event_groups?: string[];
+};
+
+export function generateDemoAttendees() {
+  return callRpc<GenerateDemoAttendeesResult>('generate_demo_attendees', {});
+}
+
 export function hashPasswordRecoveryAnswers(
   answers: Array<{ secret_question_id: number; answer: string }>,
 ) {

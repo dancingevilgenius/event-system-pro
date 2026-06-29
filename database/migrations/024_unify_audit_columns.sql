@@ -35,8 +35,23 @@ BEGIN
 END;
 $$;
 
-SELECT pg_temp.rename_column_if_exists('public.charter'::regclass, 'updated_date', 'modified_date');
-SELECT pg_temp.rename_column_if_exists('public.charter'::regclass, 'updated_by', 'modified_by');
+DO $$
+BEGIN
+  IF to_regclass('public.charter') IS NOT NULL THEN
+    PERFORM pg_temp.rename_column_if_exists('public.charter'::regclass, 'updated_date', 'modified_date');
+    PERFORM pg_temp.rename_column_if_exists('public.charter'::regclass, 'updated_by', 'modified_by');
+  END IF;
+END $$;
+
+DO $$
+BEGIN
+  IF to_regclass('public.charter') IS NOT NULL AND to_regclass('public.club') IS NULL THEN
+    ALTER TABLE public.charter RENAME TO club;
+  END IF;
+END $$;
+
+SELECT pg_temp.rename_column_if_exists('public.club'::regclass, 'updated_date', 'modified_date');
+SELECT pg_temp.rename_column_if_exists('public.club'::regclass, 'updated_by', 'modified_by');
 
 SELECT pg_temp.rename_column_if_exists('public.event'::regclass, 'updated_date', 'modified_date');
 SELECT pg_temp.rename_column_if_exists('public.event'::regclass, 'updated_by', 'modified_by');
@@ -144,14 +159,16 @@ ALTER TABLE public.user_password_reset
 -- DROP required: CREATE OR REPLACE cannot rename view output columns.
 -- ---------------------------------------------------------------------------
 
+SELECT pg_temp.rename_column_if_exists('public.event'::regclass, 'host_charter_id', 'host_club_id');
+
 DROP VIEW IF EXISTS api.event;
 CREATE VIEW api.event AS
 SELECT
   event_id,
-  fight_event_group_code,
+  event_group_code,
   name,
   contact_user_id,
-  host_charter_id,
+  host_club_id,
   country_code,
   state_or_province,
   location_json,

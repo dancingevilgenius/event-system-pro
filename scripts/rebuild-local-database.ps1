@@ -1,47 +1,152 @@
+# Full local rebuild: drop event_system_pro, apply baseline + migrations + dev seeds.
+#
+# Usage (from repo root or scripts folder):
+#   .\scripts\rebuild-local-database.ps1
+#
+# Optional:
+#   .\scripts\rebuild-local-database.ps1 -Database event_system_pro -PostgresUser postgres
+
+[CmdletBinding()]
+param(
+    [string]$Database = 'event_system_pro',
+    [string]$PostgresUser = 'postgres',
+    [string]$PsqlPath
+)
+
 $ErrorActionPreference = 'Stop'
-$psql = 'C:\Program Files\PostgreSQL\18\bin\psql.exe'
-$root = 'd:\Workspaces\VSCode\event-system-pro'
-$db = 'event_system_pro'
+
+$RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+
+function Resolve-PsqlPath {
+    param([string]$ExplicitPath)
+
+    if ($ExplicitPath -and (Test-Path $ExplicitPath)) {
+        return (Resolve-Path $ExplicitPath).Path
+    }
+
+    $fromPath = Get-Command psql -ErrorAction SilentlyContinue
+    if ($fromPath) {
+        return $fromPath.Source
+    }
+
+    $candidates = @(
+        'C:\Program Files\PostgreSQL\18\bin\psql.exe',
+        'C:\Program Files\PostgreSQL\17\bin\psql.exe',
+        'C:\Program Files\PostgreSQL\16\bin\psql.exe'
+    )
+    foreach ($candidate in $candidates) {
+        if (Test-Path $candidate) {
+            return $candidate
+        }
+    }
+
+    throw 'psql not found. Install PostgreSQL or pass -PsqlPath.'
+}
+
+function Test-MigrationSupersededByBaseline {
+    param([string]$FileName)
+    return $FileName -match '^(005|006|007|015|027|030)_'
+}
+
+function Invoke-Psql {
+    param(
+        [string[]]$Arguments
+    )
+
+    & $script:Psql @Arguments
+    if ($LASTEXITCODE -ne 0) {
+        throw "psql failed (exit $LASTEXITCODE): psql $($Arguments -join ' ')"
+    }
+}
+
+$Psql = Resolve-PsqlPath -ExplicitPath $PsqlPath
+
+Write-Host "Repository: $RepoRoot"
+Write-Host "Database:   $Database"
+Write-Host "psql:       $Psql"
 
 Write-Host 'Terminating connections...'
-& $psql -U postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$db' AND pid <> pg_backend_pid();"
+Invoke-Psql @(
+    '-U', $PostgresUser,
+    '-d', 'postgres',
+    '-v', 'ON_ERROR_STOP=1',
+    '-c', "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$Database' AND pid <> pg_backend_pid();"
+)
 
 Write-Host 'Recreating database...'
-& $psql -U postgres -c "DROP DATABASE IF EXISTS $db;"
-& $psql -U postgres -c "CREATE DATABASE $db WITH ENCODING 'UTF8' TEMPLATE template0;"
+Invoke-Psql @('-U', $PostgresUser, '-d', 'postgres', '-v', 'ON_ERROR_STOP=1', '-c', "DROP DATABASE IF EXISTS $Database;")
+Invoke-Psql @(
+    '-U', $PostgresUser,
+    '-d', 'postgres',
+    '-v', 'ON_ERROR_STOP=1',
+    '-c', "CREATE DATABASE $Database WITH ENCODING 'UTF8' TEMPLATE template0;"
+)
 
 Write-Host 'Applying baseline schema...'
-& $psql -U postgres -d $db -f "$root\database\event-system-pro\evp_schema_postgresql.sql"
+$baseline = Join-Path $RepoRoot 'database\event-system-pro\evp_schema_postgresql.sql'
+Invoke-Psql @('-U', $PostgresUser, '-d', $Database, '-v', 'ON_ERROR_STOP=1', '-f', $baseline)
 
 Write-Host 'Applying migrations...'
-Get-ChildItem "$root\database\migrations\*.sql" | Sort-Object Name | ForEach-Object {
-  Write-Host "  $($_.Name)"
-  & $psql -U postgres -d $db -f $_.FullName
-  if ($LASTEXITCODE -ne 0) { throw "Migration failed: $($_.Name)" }
-}
+Get-ChildItem (Join-Path $RepoRoot 'database\migrations\*.sql') |
+    Sort-Object Name |
+    ForEach-Object {
+        if (Test-MigrationSupersededByBaseline -FileName $_.Name) {
+            Write-Host "  skip (superseded by baseline): $($_.Name)" -ForegroundColor DarkYellow
+            return
+        }
+
+        Write-Host "  $($_.Name)"
+        Invoke-Psql @('-U', $PostgresUser, '-d', $Database, '-v', 'ON_ERROR_STOP=1', '-f', $_.FullName)
+    }
 
 Write-Host 'Applying seeds...'
 $seeds = @(
-  '002_event_type_lu_seed.sql',
-  '003_user_dummy.sql',
-  '004_user_carlos.sql',
-  '005_user_superheroes.sql',
-  '005a_update_superhero_addresses.sql',
-  '006_user_superhero_followers.sql',
-  '007_dancingevilgenius_app_roles.sql',
-  '008_event_group_fictional.sql',
-  '009_event_group_robot.sql',
-  '010_event_group_plasma_duel.sql',
-  '011_event_fictional_instances.sql'
+    '002_event_type_lu_seed.sql',
+    '003_user_dummy.sql',
+    '004_user_carlos.sql',
+    '005_user_superheroes.sql',
+    '005a_update_superhero_addresses.sql',
+    '006_user_superhero_followers.sql',
+    '007_dancingevilgenius_app_roles.sql',
+    '008_event_group_fictional.sql',
+    '009_event_group_robot.sql',
+    '010_event_group_plasma_duel.sql',
+    '011_event_fictional_instances.sql',
+    '012_attendee_seed.sql'
 )
-foreach ($s in $seeds) {
-  Write-Host "  $s"
-  & $psql -U postgres -d $db -f "$root\database\seeds\$s"
-  if ($LASTEXITCODE -ne 0) { throw "Seed failed: $s" }
+
+foreach ($seed in $seeds) {
+    Write-Host "  $seed"
+    $seedPath = Join-Path $RepoRoot "database\seeds\$seed"
+    if (-not (Test-Path $seedPath)) {
+        throw "Seed file not found: $seedPath"
+    }
+    Invoke-Psql @('-U', $PostgresUser, '-d', $Database, '-v', 'ON_ERROR_STOP=1', '-f', $seedPath)
 }
 
+Write-Host 'Verifying...'
+Invoke-Psql @(
+    '-U', $PostgresUser,
+    '-d', $Database,
+    '-v', 'ON_ERROR_STOP=1',
+    '-c',
+    @"
+SELECT 'public_tables' AS metric, count(*)::text AS value FROM pg_tables WHERE schemaname = 'public'
+UNION ALL SELECT 'api_views', count(*)::text FROM pg_views WHERE schemaname = 'api'
+UNION ALL SELECT 'users', count(*)::text FROM public."user"
+UNION ALL SELECT 'event_types', count(*)::text FROM public.event_type_lu
+UNION ALL SELECT 'events', count(*)::text FROM public."event"
+ORDER BY 1;
+"@
+)
+
 Write-Host 'Verifying _lu audit actors...'
-& $psql -U postgres -d $db -c @"
+Invoke-Psql @(
+    '-U', $PostgresUser,
+    '-d', $Database,
+    '-v', 'ON_ERROR_STOP=1',
+    '-c',
+    @"
 SELECT 'country_lu' AS tbl, created_by, modified_by, count(*) FROM public.country_lu GROUP BY 1,2,3
 UNION ALL SELECT 'us_state_lu', created_by, modified_by, count(*) FROM public.us_state_lu GROUP BY 1,2,3
 UNION ALL SELECT 'secret_question_lu', created_by, modified_by, count(*) FROM public.secret_question_lu GROUP BY 1,2,3
@@ -50,5 +155,6 @@ UNION ALL SELECT 'competitor_type_lu', created_by, modified_by, count(*) FROM pu
 UNION ALL SELECT 'event_type_lu', created_by, modified_by, count(*) FROM public.event_type_lu GROUP BY 1,2,3
 ORDER BY 1, 2, 3;
 "@
+)
 
-Write-Host 'Done.'
+Write-Host 'Done.' -ForegroundColor Green

@@ -1,7 +1,7 @@
--- Admin RPC: regenerate demo attendees (attendee_id 1–3000).
--- Core logic in generate_demo_attendees_core(); admin wrapper for PostgREST.
+-- Prefer dance demo groups (3 dance + 2 HEMA/plasma); exclude kart/race and robot from attendee generation.
+-- One-time remap: move one kart/race event and one robot event worth of demo attendees to dance events.
 --
--- Run: psql -U postgres -d event_system_pro -f database/migrations/044_generate_demo_attendees.sql
+-- Run: psql -U postgres -d event_system_pro -f database/migrations/045_demo_attendees_prefer_dance.sql
 
 \connect event_system_pro
 
@@ -250,26 +250,139 @@ BEGIN
 END;
 $$;
 
-CREATE OR REPLACE FUNCTION api.generate_demo_attendees()
-RETURNS json
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public, api
-AS $$
+DO $$
+DECLARE
+  kart_event_id BIGINT;
+  robot_event_id BIGINT;
+  dance_target_kart BIGINT;
+  dance_target_robot BIGINT;
+  kart_group_codes CONSTANT TEXT[] := ARRAY[
+    'RIVETON_KART_GRAND_PRIX',
+    'GLIMMERWICK_SPRINT_CUP',
+    'DRAKEWELL_OVAL_CLASSIC',
+    'QUARRYLANE_VELOCITY_200',
+    'FOXMERE_KART_INVITATIONAL'
+  ];
+  robot_group_codes CONSTANT TEXT[] := ARRAY[
+    'ROBOT_RIOT',
+    'SERVO_SLAM',
+    'RIVET_RUMBLE',
+    'CIRCUIT_CARNAGE',
+    'GASKET_GAUNTLET'
+  ];
+  dance_group_codes CONSTANT TEXT[] := ARRAY[
+    'BRINDLEWICK_CLASSIC',
+    'LARKSPUR_OPEN',
+    'MARIGLEN_INVITATIONAL',
+    'SELWICK_CONGRESS',
+    'THORNBAY_COUPLES_CHAMPIONSHIP'
+  ];
 BEGIN
-  IF NOT api.has_app_role('admin') THEN
-    RETURN json_build_object(
-      'ok', false,
-      'message', 'Admin role required.'
-    );
+  IF NOT EXISTS (SELECT 1 FROM public.attendee WHERE attendee_id <= 3000) THEN
+    RETURN;
   END IF;
 
-  RETURN api.generate_demo_attendees_core();
+  SELECT e.event_id
+  INTO kart_event_id
+  FROM public.attendee AS a
+  JOIN public."event" AS e ON e.event_id = a.event_id
+  WHERE a.attendee_id <= 3000
+    AND e.event_group_code = ANY(kart_group_codes)
+  GROUP BY e.event_id
+  ORDER BY e.event_id
+  LIMIT 1;
+
+  SELECT e.event_id
+  INTO robot_event_id
+  FROM public.attendee AS a
+  JOIN public."event" AS e ON e.event_id = a.event_id
+  WHERE a.attendee_id <= 3000
+    AND e.event_group_code = ANY(robot_group_codes)
+  GROUP BY e.event_id
+  ORDER BY e.event_id
+  LIMIT 1;
+
+  IF kart_event_id IS NULL AND robot_event_id IS NULL THEN
+    RETURN;
+  END IF;
+
+  SELECT e.event_id
+  INTO dance_target_kart
+  FROM public."event" AS e
+  WHERE e.event_group_code = ANY(dance_group_codes)
+    AND COALESCE((e.more_json->>'demo')::boolean, false) = true
+    AND e.event_id IS DISTINCT FROM kart_event_id
+    AND e.event_id IS DISTINCT FROM robot_event_id
+    AND NOT EXISTS (
+      SELECT 1
+      FROM public.attendee AS a
+      WHERE a.attendee_id <= 3000
+        AND a.event_id = e.event_id
+    )
+  ORDER BY e.event_id
+  LIMIT 1;
+
+  IF dance_target_kart IS NULL THEN
+    SELECT e.event_id
+    INTO dance_target_kart
+    FROM public."event" AS e
+    WHERE e.event_group_code = ANY(dance_group_codes)
+      AND COALESCE((e.more_json->>'demo')::boolean, false) = true
+    ORDER BY e.event_id
+    LIMIT 1;
+  END IF;
+
+  SELECT e.event_id
+  INTO dance_target_robot
+  FROM public."event" AS e
+  WHERE e.event_group_code = ANY(dance_group_codes)
+    AND COALESCE((e.more_json->>'demo')::boolean, false) = true
+    AND e.event_id IS DISTINCT FROM kart_event_id
+    AND e.event_id IS DISTINCT FROM robot_event_id
+    AND e.event_id IS DISTINCT FROM dance_target_kart
+    AND NOT EXISTS (
+      SELECT 1
+      FROM public.attendee AS a
+      WHERE a.attendee_id <= 3000
+        AND a.event_id = e.event_id
+    )
+  ORDER BY e.event_id
+  LIMIT 1;
+
+  IF dance_target_robot IS NULL THEN
+    SELECT e.event_id
+    INTO dance_target_robot
+    FROM public."event" AS e
+    WHERE e.event_group_code = ANY(dance_group_codes)
+      AND COALESCE((e.more_json->>'demo')::boolean, false) = true
+      AND e.event_id IS DISTINCT FROM dance_target_kart
+    ORDER BY e.event_id
+    OFFSET 1
+    LIMIT 1;
+  END IF;
+
+  IF kart_event_id IS NOT NULL AND dance_target_kart IS NOT NULL THEN
+    UPDATE public.attendee AS a
+    SET
+      event_id = dance_target_kart,
+      more_json = COALESCE(e.more_json, jsonb_build_object('demo', true))
+    FROM public."event" AS e
+    WHERE a.event_id = kart_event_id
+      AND a.attendee_id <= 3000
+      AND e.event_id = dance_target_kart;
+  END IF;
+
+  IF robot_event_id IS NOT NULL AND dance_target_robot IS NOT NULL THEN
+    UPDATE public.attendee AS a
+    SET
+      event_id = dance_target_robot,
+      more_json = COALESCE(e.more_json, jsonb_build_object('demo', true))
+    FROM public."event" AS e
+    WHERE a.event_id = robot_event_id
+      AND a.attendee_id <= 3000
+      AND e.event_id = dance_target_robot;
+  END IF;
 END;
 $$;
-
-REVOKE ALL ON FUNCTION api.generate_demo_attendees_core() FROM PUBLIC;
-REVOKE ALL ON FUNCTION api.generate_demo_attendees() FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION api.generate_demo_attendees() TO authenticated;
 
 NOTIFY pgrst, 'reload schema';

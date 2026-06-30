@@ -1,5 +1,6 @@
 -- Seed static_list lookup rows (dev / demo).
 -- Safe to re-run (upserts by list_code).
+-- min-age / max-age use integer -1 for not applicable (N/A).
 
 \connect event_system_pro
 
@@ -21,17 +22,18 @@ VALUES
     'WSDC',
     'Ability or age levels to further describe a swing contest',
     '[
-      {"key": "NEW", "label": "Newcomer"},
-      {"key": "NOV", "label": "Novice"},
-      {"key": "INT", "label": "Intermediate"},
-      {"key": "ADV", "label": "Advanced"},
-      {"key": "ALL", "label": "All-Star"},
-      {"key": "CHA", "label": "Champion"},
-      {"key": "INV", "label": "Invitational"},
-      {"key": "SOP", "label": "Sophisticated"},
-      {"key": "MAS", "label": "Masters"},
-      {"key": "JUN", "label": "Juniors"},
-      {"key": "YAM", "label": "Young America"}
+      {"key": "NEW", "label": "Newcomer", "min-age": -1, "max-age": -1},
+      {"key": "NOV", "label": "Novice", "min-age": -1, "max-age": -1},
+      {"key": "INT", "label": "Intermediate", "min-age": -1, "max-age": -1},
+      {"key": "ADV", "label": "Advanced", "min-age": -1, "max-age": -1},
+      {"key": "ALL", "label": "All-Star", "min-age": -1, "max-age": -1},
+      {"key": "OPE", "label": "Open", "min-age": -1, "max-age": -1},
+      {"key": "CHA", "label": "Champion", "min-age": -1, "max-age": -1},
+      {"key": "INV", "label": "Invitational", "min-age": -1, "max-age": -1},
+      {"key": "SOP", "label": "Sophisticated", "min-age": 35, "max-age": -1},
+      {"key": "MAS", "label": "Masters", "min-age": 50, "max-age": -1},
+      {"key": "JUN", "label": "Juniors", "min-age": -1, "max-age": 18},
+      {"key": "YAM", "label": "Young America", "min-age": -1, "max-age": 12}
     ]'::json
   )
 ON CONFLICT (list_code) DO UPDATE SET

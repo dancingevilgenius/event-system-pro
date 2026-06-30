@@ -21,6 +21,8 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import JudgingPage from './pages/JudgingPage';
 import StaffPage from './pages/StaffPage';
+import StaticListDetailsPage from './pages/StaticListDetailsPage';
+import StaticListsPage from './pages/StaticListsPage';
 
 export default function App() {
   return (
@@ -52,6 +54,22 @@ export default function App() {
         element={
           <ProtectedRoute>
             <ChangePasswordPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/static-lists"
+        element={
+          <ProtectedRoute>
+            <StaticListsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/static-list-details/:listCode"
+        element={
+          <ProtectedRoute>
+            <StaticListDetailsPage />
           </ProtectedRoute>
         }
       />

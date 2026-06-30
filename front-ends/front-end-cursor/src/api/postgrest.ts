@@ -1,4 +1,5 @@
 import { loadSession, type AppRole } from '../lib/session';
+import { NOT_APPLICABLE_INT } from '../lib/staticList';
 
 const POSTGREST_URL =
   import.meta.env.VITE_POSTGREST_URL ?? 'http://localhost:3000';
@@ -673,6 +674,166 @@ export type GenerateDemoAttendeesResult = {
 
 export function generateDemoAttendees() {
   return callRpc<GenerateDemoAttendeesResult>('generate_demo_attendees', {});
+}
+
+export type StaticListEntry = {
+  key: string;
+  label: string;
+  minAge?: number;
+  maxAge?: number;
+};
+
+export type StaticListListRow = {
+  listCode: string;
+  governingBodyCode: string;
+  shortDesc: string;
+};
+
+export type StaticListRecord = StaticListListRow & {
+  listJson: StaticListEntry[];
+};
+
+type ApiStaticListRecord = {
+  list_code: string;
+  governing_body_code: string;
+  short_desc: string | null;
+  list_json: unknown;
+};
+
+function parseStaticListAge(value: unknown): number {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return Math.trunc(value);
+  }
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim();
+    if (trimmed === '' || trimmed.toUpperCase() === 'N/A') {
+      return NOT_APPLICABLE_INT;
+    }
+
+    const parsed = Number.parseInt(trimmed, 10);
+    if (Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
+
+  return NOT_APPLICABLE_INT;
+}
+
+function parseStaticListJson(value: unknown): StaticListEntry[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .filter((item): item is Record<string, unknown> => Boolean(item) && typeof item === 'object')
+    .map((item) => {
+      const entry: StaticListEntry = {
+        key: typeof item.key === 'string' ? item.key.trim() : String(item.key ?? '').trim(),
+        label:
+          typeof item.label === 'string' ? item.label.trim() : String(item.label ?? '').trim(),
+      };
+
+      if (Object.prototype.hasOwnProperty.call(item, 'min-age')) {
+        entry.minAge = parseStaticListAge(item['min-age']);
+      }
+
+      if (Object.prototype.hasOwnProperty.call(item, 'max-age')) {
+        entry.maxAge = parseStaticListAge(item['max-age']);
+      }
+
+      return entry;
+    })
+    .filter((item) => item.key !== '');
+}
+
+function serializeStaticListEntry(entry: StaticListEntry): Record<string, string | number> {
+  const serialized: Record<string, string | number> = {
+    key: entry.key,
+    label: entry.label,
+  };
+
+  if (entry.minAge !== undefined) {
+    serialized['min-age'] = entry.minAge;
+  }
+
+  if (entry.maxAge !== undefined) {
+    serialized['max-age'] = entry.maxAge;
+  }
+
+  return serialized;
+}
+
+function mapStaticListRecord(row: ApiStaticListRecord): StaticListRecord {
+  return {
+    listCode: row.list_code,
+    governingBodyCode: row.governing_body_code,
+    shortDesc: row.short_desc?.trim() ?? '',
+    listJson: parseStaticListJson(row.list_json),
+  };
+}
+
+export async function fetchStaticLists(): Promise<StaticListListRow[]> {
+  const rows = await fetchJson<ApiStaticListRecord[]>(
+    `${POSTGREST_URL}/static_list?select=list_code,governing_body_code,short_desc&order=list_code`,
+    'Unable to load static lists',
+  );
+
+  return rows.map((row) => ({
+    listCode: row.list_code,
+    governingBodyCode: row.governing_body_code,
+    shortDesc: row.short_desc?.trim() ?? '',
+  }));
+}
+
+export async function fetchStaticListByCode(listCode: string): Promise<StaticListRecord | null> {
+  const params = new URLSearchParams({
+    select: 'list_code,governing_body_code,short_desc,list_json',
+  });
+  params.append('list_code', `eq.${listCode}`);
+
+  const rows = await fetchJson<ApiStaticListRecord[]>(
+    `${POSTGREST_URL}/static_list?${params.toString()}`,
+    'Unable to load static list',
+  );
+
+  const row = rows[0];
+  if (!row) {
+    return null;
+  }
+
+  return mapStaticListRecord(row);
+}
+
+export async function updateStaticListJson(
+  listCode: string,
+  listJson: StaticListEntry[],
+): Promise<StaticListRecord> {
+  const params = new URLSearchParams();
+  params.append('list_code', `eq.${listCode}`);
+
+  const response = await fetch(`${POSTGREST_URL}/static_list?${params.toString()}`, {
+    method: 'PATCH',
+    headers: buildAuthHeaders({
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation',
+    }),
+    body: JSON.stringify({
+      list_json: listJson.map(serializeStaticListEntry),
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Unable to update static list (${response.status})`);
+  }
+
+  const rows = (await response.json()) as ApiStaticListRecord[];
+  const row = rows[0];
+  if (!row) {
+    throw new Error('Static list update returned no rows.');
+  }
+
+  return mapStaticListRecord(row);
 }
 
 export function hashPasswordRecoveryAnswers(

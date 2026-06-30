@@ -26,6 +26,66 @@ export function getRealtimeWsUrl(): string {
   return `${protocol}//${window.location.host}/realtime/ws`;
 }
 
+function getRealtimeHealthUrl(): string {
+  if (import.meta.env.DEV) {
+    return '/realtime/health';
+  }
+
+  const configured = import.meta.env.VITE_REALTIME_WS_URL;
+  if (typeof configured === 'string' && configured.trim() !== '') {
+    const url = new URL(configured.trim());
+    url.pathname = '/health';
+    url.protocol = url.protocol === 'wss:' ? 'https:' : 'http:';
+    return url.toString();
+  }
+
+  const protocol = window.location.protocol;
+  return `${protocol}//${window.location.host}/realtime/health`;
+}
+
+export async function isRealtimeHealthy(): Promise<boolean> {
+  try {
+    const response = await fetch(getRealtimeHealthUrl(), {
+      signal: AbortSignal.timeout(3000),
+    });
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+let ensureRealtimePromise: Promise<boolean> | null = null;
+
+/** Dev-only: verify realtime is up; ask the Vite dev server to start Docker if not. */
+export async function ensureRealtimeService(): Promise<boolean> {
+  if (!import.meta.env.DEV) {
+    return isRealtimeHealthy();
+  }
+
+  if (await isRealtimeHealthy()) {
+    return true;
+  }
+
+  if (!ensureRealtimePromise) {
+    ensureRealtimePromise = (async () => {
+      try {
+        const response = await fetch('/__dev__/realtime/start', {
+          method: 'POST',
+          signal: AbortSignal.timeout(130_000),
+        });
+        const result = (await response.json()) as { ok?: boolean };
+        return response.ok && result.ok === true;
+      } catch {
+        return false;
+      } finally {
+        ensureRealtimePromise = null;
+      }
+    })();
+  }
+
+  return ensureRealtimePromise;
+}
+
 export async function fetchPocCounter(): Promise<number> {
   const params = new URLSearchParams({
     label: `eq.${POC_COUNTER_LABEL}`,

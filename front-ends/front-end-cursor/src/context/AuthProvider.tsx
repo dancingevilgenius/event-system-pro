@@ -1,4 +1,5 @@
-import { type ReactNode, useCallback, useMemo, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { ensureRealtimeService } from '../api/realtime';
 import { INACTIVITY_LOGOUT_MESSAGE, setFlashWarning } from '../lib/authMessages';
 import {
   bumpActivityExpiry,
@@ -42,6 +43,14 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     bumpActivityExpiry();
     setSessionState(nextSession);
   }, []);
+
+  useEffect(() => {
+    if (!session) {
+      return;
+    }
+
+    void ensureRealtimeService();
+  }, [session]);
 
   const logout = useCallback(() => {
     clearSession();

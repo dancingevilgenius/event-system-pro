@@ -1,4 +1,4 @@
-import { Box, Button, Container, Paper, Stack, Typography } from '@mui/material';
+import { Box, Button, Container, Paper, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import {
   DataGrid,
   GridLogicOperator,
@@ -215,8 +215,9 @@ const ATTENDEE_DATA_GRID_SLOT_PROPS = {
 } as const;
 
 type AttendeeGridRow = EventAttendeeListRow & { id: number };
+type MobileContactColumn = 'phone' | 'email';
 
-const ATTENDEE_COLUMNS: GridColDef<AttendeeGridRow>[] = [
+const ATTENDEE_NAME_COLUMNS: GridColDef<AttendeeGridRow>[] = [
   {
     field: 'firstName',
     headerName: 'First Name',
@@ -231,20 +232,29 @@ const ATTENDEE_COLUMNS: GridColDef<AttendeeGridRow>[] = [
     minWidth: 120,
     filterable: true,
   },
-  {
+];
+
+const ATTENDEE_CONTACT_COLUMNS: Record<MobileContactColumn, GridColDef<AttendeeGridRow>> = {
+  phone: {
     field: 'phone',
     headerName: 'Phone',
     flex: 1,
     minWidth: 130,
     filterable: true,
   },
-  {
+  email: {
     field: 'email',
     headerName: 'Email',
     flex: 1.2,
     minWidth: 180,
     filterable: true,
   },
+};
+
+const ATTENDEE_COLUMNS: GridColDef<AttendeeGridRow>[] = [
+  ...ATTENDEE_NAME_COLUMNS,
+  ATTENDEE_CONTACT_COLUMNS.phone,
+  ATTENDEE_CONTACT_COLUMNS.email,
 ];
 
 export default function AdminEventAttendeesPage() {
@@ -264,8 +274,17 @@ export default function AdminEventAttendeesPage() {
   const [error, setError] = useState<string | null>(null);
   const [headerLabel, setHeaderLabel] = useState('');
   const [filterPanelAnchorEl, setFilterPanelAnchorEl] = useState<HTMLElement | null>(null);
+  const [mobileContactColumn, setMobileContactColumn] = useState<MobileContactColumn>('phone');
 
   const eventBasePath = eventDetailPath(decodedGroupCode, parsedEventId);
+
+  const gridColumns = useMemo(() => {
+    if (!isMobile) {
+      return ATTENDEE_COLUMNS;
+    }
+
+    return [...ATTENDEE_NAME_COLUMNS, ATTENDEE_CONTACT_COLUMNS[mobileContactColumn]];
+  }, [isMobile, mobileContactColumn]);
 
   const gridRows = useMemo<AttendeeGridRow[]>(
     () => rows.map((row) => ({ ...row, id: row.attendeeId })),
@@ -375,10 +394,33 @@ export default function AdminEventAttendeesPage() {
           </Typography>
         )}
 
+        {!error && isMobile && (
+          <Stack direction="row" sx={{ mb: 2, justifyContent: 'center' }}>
+            <ToggleButtonGroup
+              exclusive
+              value={mobileContactColumn}
+              onChange={(_, value: MobileContactColumn | null) => {
+                if (value) {
+                  setMobileContactColumn(value);
+                }
+              }}
+              size="small"
+              aria-label="Show phone or email column"
+            >
+              <ToggleButton value="phone" aria-label="Show phone column">
+                Phone
+              </ToggleButton>
+              <ToggleButton value="email" aria-label="Show email column">
+                Email
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Stack>
+        )}
+
         {!error && (
           <DataGrid
             rows={gridRows}
-            columns={ATTENDEE_COLUMNS}
+            columns={gridColumns}
             loading={loading}
             disableRowSelectionOnClick
             slots={{ toolbar: GridToolbar }}

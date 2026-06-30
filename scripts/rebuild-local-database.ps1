@@ -113,7 +113,8 @@ $seeds = @(
     '010_event_group_plasma_duel.sql',
     '011_event_fictional_instances.sql',
     '012_attendee_seed.sql',
-    '013_governing_body_seed.sql'
+    '013_governing_body_seed.sql',
+    '014_static_list_seed.sql'
 )
 
 foreach ($seed in $seeds) {

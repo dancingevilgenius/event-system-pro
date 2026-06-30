@@ -16,6 +16,7 @@ GRANT INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA api TO authenticated;
 GRANT INSERT, UPDATE, DELETE ON
   public.event_type_lu,
   public.governing_body,
+  public.static_list,
   public.country_lu,
   public.us_state_lu,
   public.competitor_type_lu,
@@ -41,6 +42,7 @@ REVOKE INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA api FROM anon;
 REVOKE INSERT, UPDATE, DELETE ON
   public.event_type_lu,
   public.governing_body,
+  public.static_list,
   public.country_lu,
   public.us_state_lu,
   public.competitor_type_lu,

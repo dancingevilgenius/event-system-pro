@@ -51,6 +51,14 @@ SELECT
   modified_by
 FROM public.governing_body;
 
+CREATE OR REPLACE VIEW api.static_list AS
+SELECT
+  list_code,
+  governing_body_code,
+  list_json,
+  short_desc
+FROM public.static_list;
+
 CREATE OR REPLACE VIEW api.country_lu AS
 SELECT
   country_id,

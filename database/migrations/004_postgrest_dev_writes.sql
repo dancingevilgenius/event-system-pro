@@ -16,6 +16,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA api
 GRANT INSERT, UPDATE, DELETE ON
   public.event_type_lu,
   public.governing_body,
+  public.static_list,
   public.country_lu,
   public.us_state_lu,
   public.competitor_type_lu,

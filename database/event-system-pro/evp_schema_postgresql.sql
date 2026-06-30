@@ -25,6 +25,7 @@ DROP TABLE IF EXISTS club CASCADE;
 DROP TABLE IF EXISTS "user" CASCADE;
 DROP TABLE IF EXISTS "event" CASCADE;
 DROP TABLE IF EXISTS event_group CASCADE;
+DROP TABLE IF EXISTS static_list CASCADE;
 DROP TABLE IF EXISTS governing_body CASCADE;
 DROP TABLE IF EXISTS event_type_lu CASCADE;
 DROP TABLE IF EXISTS skill_level_lu CASCADE;
@@ -126,6 +127,17 @@ CREATE TABLE IF NOT EXISTS governing_body (
   modified_by varchar(128) NULL DEFAULT NULL,
 PRIMARY KEY (governing_body_code),
 CONSTRAINT governing_body_code_uq UNIQUE (governing_body_code)
+);
+
+-- Table: static_list
+CREATE TABLE IF NOT EXISTS static_list (
+  list_code varchar(32) NOT NULL,
+  governing_body_code varchar(32) NOT NULL,
+  list_json json DEFAULT NULL,
+  short_desc varchar(256) DEFAULT NULL,
+PRIMARY KEY (list_code),
+CONSTRAINT static_list_code_uq UNIQUE (list_code),
+CONSTRAINT fk_static_list_governing_body FOREIGN KEY (governing_body_code) REFERENCES governing_body (governing_body_code)
 );
 
 -- Table: event_group

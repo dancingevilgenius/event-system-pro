@@ -25,6 +25,7 @@ DROP TABLE IF EXISTS club CASCADE;
 DROP TABLE IF EXISTS "user" CASCADE;
 DROP TABLE IF EXISTS "event" CASCADE;
 DROP TABLE IF EXISTS event_group CASCADE;
+DROP TABLE IF EXISTS governing_body CASCADE;
 DROP TABLE IF EXISTS event_type_lu CASCADE;
 DROP TABLE IF EXISTS skill_level_lu CASCADE;
 DROP TABLE IF EXISTS secret_question_lu CASCADE;
@@ -111,6 +112,20 @@ CREATE TABLE IF NOT EXISTS event_type_lu (
   modified_date TIMESTAMPTZ NULL DEFAULT NULL,
   modified_by varchar(32) NULL DEFAULT NULL,
 PRIMARY KEY (event_type_code)
+);
+
+-- Table: governing_body
+CREATE TABLE IF NOT EXISTS governing_body (
+  governing_body_code varchar(32) NOT NULL,
+  long_name varchar(64) NOT NULL,
+  short_name varchar(43) DEFAULT NULL,
+  more_json json DEFAULT NULL,
+  created_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  created_by varchar(128) NOT NULL DEFAULT 'c-agent',
+  modified_date TIMESTAMPTZ NULL DEFAULT NULL,
+  modified_by varchar(128) NULL DEFAULT NULL,
+PRIMARY KEY (governing_body_code),
+CONSTRAINT governing_body_code_uq UNIQUE (governing_body_code)
 );
 
 -- Table: event_group

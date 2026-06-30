@@ -39,6 +39,18 @@ CREATE OR REPLACE VIEW api.event_type_lu AS
 SELECT event_type_code, description_json, created_date, created_by
 FROM public.event_type_lu;
 
+CREATE OR REPLACE VIEW api.governing_body AS
+SELECT
+  governing_body_code,
+  long_name,
+  short_name,
+  more_json,
+  created_date,
+  created_by,
+  modified_date,
+  modified_by
+FROM public.governing_body;
+
 CREATE OR REPLACE VIEW api.country_lu AS
 SELECT
   country_id,

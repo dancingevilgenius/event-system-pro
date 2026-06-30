@@ -14,6 +14,7 @@ import {
   type EventAttendeeListRow,
 } from '../api/postgrest';
 import { useIsMobileDevice } from '../hooks/useIsMobileDevice';
+import { eventDetailPath } from '../constants/eventRoutes';
 import { formatEventMonthYear } from '../lib/eventDisplay';
 
 const DESKTOP_PAGE_SIZE = 25;
@@ -264,7 +265,7 @@ export default function AdminEventAttendeesPage() {
   const [headerLabel, setHeaderLabel] = useState('');
   const [filterPanelAnchorEl, setFilterPanelAnchorEl] = useState<HTMLElement | null>(null);
 
-  const eventBasePath = `/admin/event-details/${encodeURIComponent(decodedGroupCode)}/${parsedEventId}`;
+  const eventBasePath = eventDetailPath(decodedGroupCode, parsedEventId);
 
   const gridRows = useMemo<AttendeeGridRow[]>(
     () => rows.map((row) => ({ ...row, id: row.attendeeId })),

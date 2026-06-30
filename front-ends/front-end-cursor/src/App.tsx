@@ -15,6 +15,7 @@ import AdminHomePage from './pages/AdminHomePage';
 import AdminPlaceholderPage from './pages/AdminPlaceholderPage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
 import CompetitorPage from './pages/CompetitorPage';
+import EventHomePage from './pages/EventHomePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -23,6 +24,7 @@ import JudgingPage from './pages/JudgingPage';
 import StaffPage from './pages/StaffPage';
 import StaticListDetailsPage from './pages/StaticListDetailsPage';
 import StaticListsPage from './pages/StaticListsPage';
+import { EVENT_HOME_PATH, EVENT_GROUPS_PATH, EVENTS_PATH } from './constants/eventRoutes';
 
 export default function App() {
   return (
@@ -82,7 +84,27 @@ export default function App() {
         }
       />
       <Route
-        path="/admin/event-details"
+        path={EVENT_HOME_PATH}
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <EventHomePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={EVENTS_PATH}
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <AdminPlaceholderPage
+              title="Events"
+              backPath={EVENT_HOME_PATH}
+              backLabel="Back to Event Home"
+            />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={EVENT_GROUPS_PATH}
         element={
           <ProtectedRoute roles={['admin']}>
             <AdminEventsPage />
@@ -90,7 +112,7 @@ export default function App() {
         }
       />
       <Route
-        path="/admin/event-details/:eventGroupCode/:eventId/attendees"
+        path={`${EVENT_GROUPS_PATH}/:eventGroupCode/:eventId/attendees`}
         element={
           <ProtectedRoute roles={['admin']}>
             <AdminEventAttendeesPage />
@@ -98,7 +120,7 @@ export default function App() {
         }
       />
       <Route
-        path="/admin/event-details/:eventGroupCode/:eventId/competitors"
+        path={`${EVENT_GROUPS_PATH}/:eventGroupCode/:eventId/competitors`}
         element={
           <ProtectedRoute roles={['admin']}>
             <AdminEventSectionPlaceholderPage title="Competitors" />
@@ -106,7 +128,7 @@ export default function App() {
         }
       />
       <Route
-        path="/admin/event-details/:eventGroupCode/:eventId/contests"
+        path={`${EVENT_GROUPS_PATH}/:eventGroupCode/:eventId/contests`}
         element={
           <ProtectedRoute roles={['admin']}>
             <AdminEventSectionPlaceholderPage title="Contests" />
@@ -114,7 +136,7 @@ export default function App() {
         }
       />
       <Route
-        path="/admin/event-details/:eventGroupCode/:eventId"
+        path={`${EVENT_GROUPS_PATH}/:eventGroupCode/:eventId`}
         element={
           <ProtectedRoute roles={['admin']}>
             <AdminEventPage />
@@ -122,12 +144,16 @@ export default function App() {
         }
       />
       <Route
-        path="/admin/event-details/:eventGroupCode"
+        path={`${EVENT_GROUPS_PATH}/:eventGroupCode`}
         element={
           <ProtectedRoute roles={['admin']}>
             <AdminEventGroupPage />
           </ProtectedRoute>
         }
+      />
+      <Route
+        path="/admin/event-details"
+        element={<Navigate to={EVENT_GROUPS_PATH} replace />}
       />
       <Route
         path="/admin/contests"

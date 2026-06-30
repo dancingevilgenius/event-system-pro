@@ -1,6 +1,7 @@
 import { Button, Container, Paper, Stack, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import { centeredContentStackSx } from '../constants/layout';
+import { eventDetailPath } from '../constants/eventRoutes';
 
 type AdminEventSectionPlaceholderPageProps = {
   title: string;
@@ -15,7 +16,8 @@ export default function AdminEventSectionPlaceholderPage({
     eventId: string;
   }>();
 
-  const eventBasePath = `/admin/event-details/${eventGroupCode}/${eventId}`;
+  const parsedEventId = Number.parseInt(eventId, 10);
+  const eventBasePath = eventDetailPath(decodeURIComponent(eventGroupCode), parsedEventId);
 
   return (
     <Container maxWidth="md" sx={{ py: 6 }}>

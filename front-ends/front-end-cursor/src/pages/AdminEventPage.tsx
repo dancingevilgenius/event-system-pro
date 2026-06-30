@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchEventById, fetchEventGroupByCode } from '../api/postgrest';
 import { centeredContentStackSx } from '../constants/layout';
+import { eventDetailPath, eventGroupDetailPath } from '../constants/eventRoutes';
 import { formatEventMonthYear } from '../lib/eventDisplay';
 
 const EVENT_SECTION_BUTTONS = [
@@ -25,8 +26,8 @@ export default function AdminEventPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const eventBasePath = `/admin/event-details/${encodeURIComponent(decodedGroupCode)}/${parsedEventId}`;
-  const groupBasePath = `/admin/event-details/${encodeURIComponent(decodedGroupCode)}`;
+  const eventBasePath = eventDetailPath(decodedGroupCode, parsedEventId);
+  const groupBasePath = eventGroupDetailPath(decodedGroupCode);
 
   const loadEvent = useCallback(async () => {
     if (!decodedGroupCode || !Number.isFinite(parsedEventId)) {

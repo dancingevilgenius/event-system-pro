@@ -14,6 +14,7 @@ import {
   type EventListRow,
 } from '../api/postgrest';
 import { centeredContentStackSx } from '../constants/layout';
+import { EVENT_GROUPS_PATH, eventDetailPath } from '../constants/eventRoutes';
 import { formatEventMonthYear } from '../lib/eventDisplay';
 
 export default function AdminEventGroupPage() {
@@ -64,8 +65,6 @@ export default function AdminEventGroupPage() {
     void loadEventGroup();
   }, [loadEventGroup]);
 
-  const groupBasePath = `/admin/event-details/${encodeURIComponent(decodedGroupCode)}`;
-
   return (
     <Container maxWidth="md" sx={{ py: 6 }}>
       <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
@@ -98,7 +97,7 @@ export default function AdminEventGroupPage() {
                   variant="contained"
                   size="large"
                   fullWidth
-                  onClick={() => navigate(`${groupBasePath}/${event.eventId}`)}
+                  onClick={() => navigate(eventDetailPath(decodedGroupCode, event.eventId))}
                 >
                   {formatEventMonthYear(event.startDate)}
                 </Button>
@@ -108,8 +107,8 @@ export default function AdminEventGroupPage() {
         )}
 
         <Stack spacing={2} sx={centeredContentStackSx}>
-          <Button variant="outlined" fullWidth onClick={() => navigate('/admin/event-details')}>
-            Back to Events
+          <Button variant="outlined" fullWidth onClick={() => navigate(EVENT_GROUPS_PATH)}>
+            Back to Event Groups
           </Button>
         </Stack>
       </Paper>

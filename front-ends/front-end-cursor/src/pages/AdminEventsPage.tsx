@@ -15,6 +15,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchDemoEventGroupsWithAttendees, type EventGroupListRow } from '../api/postgrest';
+import { EVENT_HOME_PATH, eventGroupDetailPath } from '../constants/eventRoutes';
 
 function displayValue(value: string): string {
   return value.trim() === '' ? '—' : value;
@@ -49,7 +50,7 @@ export default function AdminEventsPage() {
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Paper elevation={3} sx={{ p: { xs: 2, sm: 4 } }}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
-          Events
+          Event Groups
         </Typography>
         <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 2 }}>
           Demo event groups with attendees ({rows.length})
@@ -94,9 +95,7 @@ export default function AdminEventsPage() {
                           variant="outlined"
                           size="small"
                           onClick={() =>
-                            navigate(
-                              `/admin/event-details/${encodeURIComponent(row.eventGroupCode)}`,
-                            )
+                            navigate(eventGroupDetailPath(row.eventGroupCode))
                           }
                         >
                           View
@@ -111,8 +110,8 @@ export default function AdminEventsPage() {
         )}
 
         <Stack spacing={2} sx={{ mt: 3, alignItems: 'center' }}>
-          <Button variant="outlined" onClick={() => navigate('/adminhome')} sx={{ minWidth: 200 }}>
-            Back to Admin
+          <Button variant="outlined" onClick={() => navigate(EVENT_HOME_PATH)} sx={{ minWidth: 200 }}>
+            Back to Event Home
           </Button>
         </Stack>
       </Paper>

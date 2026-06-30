@@ -6,8 +6,10 @@ import { centeredContentStackSx } from '../constants/layout';
 import { useMessages } from '../hooks/useMessages';
 import { usePocCounter } from '../hooks/usePocCounter';
 
+import { EVENT_HOME_PATH } from '../constants/eventRoutes';
+
 const ADMIN_BUTTONS = [
-  { label: 'Events', path: '/admin/event-details' },
+  { label: 'Events', path: EVENT_HOME_PATH },
   { label: 'Contests', path: '/admin/contests' },
   { label: 'Competitors', path: '/admin/competitors' },
   { label: 'Competition Entries', path: '/admin/competition-entries' },

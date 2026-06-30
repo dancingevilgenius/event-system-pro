@@ -4,9 +4,15 @@ import { centeredContentStackSx } from '../constants/layout';
 
 type AdminPlaceholderPageProps = {
   title: string;
+  backPath?: string;
+  backLabel?: string;
 };
 
-export default function AdminPlaceholderPage({ title }: AdminPlaceholderPageProps) {
+export default function AdminPlaceholderPage({
+  title,
+  backPath = '/adminhome',
+  backLabel = 'Back to Admin',
+}: AdminPlaceholderPageProps) {
   const navigate = useNavigate();
 
   return (
@@ -20,8 +26,8 @@ export default function AdminPlaceholderPage({ title }: AdminPlaceholderPageProp
         </Typography>
 
         <Stack spacing={2} sx={centeredContentStackSx}>
-          <Button variant="outlined" fullWidth onClick={() => navigate('/adminhome')}>
-            Back to Admin
+          <Button variant="outlined" fullWidth onClick={() => navigate(backPath)}>
+            {backLabel}
           </Button>
         </Stack>
       </Paper>

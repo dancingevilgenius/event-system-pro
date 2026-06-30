@@ -91,7 +91,7 @@ FROM (
       'nightwing',
       'Richard',
       'Grayson',
-      'nightwing@superhero.example.com',
+      'nightwing@superhero.com',
       '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "blue"}',
       '[{"label": "home", "line1": "1 Bludhaven Pier", "line2": null, "city": "Bludhaven", "state_or_province": "NJ", "postal_code": "10015", "country_code": "USA"}]'
     ),
@@ -99,7 +99,7 @@ FROM (
       'oracle',
       'Barbara',
       'Rand',
-      'oracle@superhero.example.com',
+      'oracle@superhero.com',
       '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "yellow"}',
       '[{"label": "home", "line1": "142 Hero Lane", "line2": "Gotham City HQ", "city": "Gotham City", "state_or_province": "NJ", "postal_code": "10089", "country_code": "USA"}]'
     ),
@@ -107,7 +107,7 @@ FROM (
       'spectre',
       'Crispus',
       'Allen',
-      'spectre@superhero.example.com',
+      'spectre@superhero.com',
       '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "white", "color2": "green"}',
       '[{"label": "home", "line1": "151 Hero Lane", "line2": null, "city": "Metropolis", "state_or_province": "NY", "postal_code": "10051", "country_code": "USA"}]'
     ),
@@ -115,7 +115,7 @@ FROM (
       'mysterio2',
       'Ludwig',
       'Ravelli',
-      'mysterio2@superhero.example.com',
+      'mysterio2@superhero.com',
       '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "silver", "color2": "green"}',
       '[{"label": "home", "line1": "195 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10195", "country_code": "USA"}]'
     ),
@@ -123,7 +123,7 @@ FROM (
       'silk',
       'Cindy',
       'Moon',
-      'silk@superhero.example.com',
+      'silk@superhero.com',
       '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "black"}',
       '[{"label": "home", "line1": "20 Ingram St", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10205", "country_code": "USA"}]'
     )

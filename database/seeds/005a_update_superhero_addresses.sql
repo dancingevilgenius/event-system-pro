@@ -805,6 +805,6 @@ WHERE username = 'spiderwoman';
 
 SELECT username, addresses_json->0->>'city' AS city, addresses_json->0->>'state_or_province' AS state
 FROM public."user"
-WHERE email LIKE '%@superhero.example.com'
+WHERE email LIKE '%@superhero.com'
 ORDER BY username
 LIMIT 10;

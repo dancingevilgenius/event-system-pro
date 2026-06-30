@@ -94,7 +94,7 @@ def collect_rows(
             "display": display,
         }
         additional_info = build_additional_info(publisher, color1, color2)
-        email = f"{username}@superhero.example.com"
+        email = f"{username}@superhero.com"
         phone = [
             {
                 "type": "mobile",
@@ -193,7 +193,7 @@ def main() -> None:
         [
             "SELECT COUNT(*) AS superhero_follower_seed_users",
             "FROM public.\"user\"",
-            "WHERE email LIKE '%@superhero.example.com'",
+            "WHERE email LIKE '%@superhero.com'",
             "  AND additional_info_json->>'primary-role' = 'follower'",
             "  AND additional_info_json->>'sex' = 'female';",
             "",

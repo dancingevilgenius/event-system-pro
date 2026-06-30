@@ -348,7 +348,7 @@ def main() -> None:
             "display": display,
         }
         additional_info = build_additional_info(publisher, sex, color1, color2)
-        email = f"{username}@superhero.example.com"
+        email = f"{username}@superhero.com"
         phone = [
             {
                 "type": "mobile",
@@ -441,7 +441,7 @@ def main() -> None:
         [
             "SELECT COUNT(*) AS superhero_seed_users",
             "FROM public.\"user\"",
-            "WHERE email LIKE '%@superhero.example.com';",
+            "WHERE email LIKE '%@superhero.com';",
             "",
         ]
     )
@@ -471,7 +471,7 @@ def main() -> None:
         [
             "SELECT username, addresses_json->0->>'city' AS city, addresses_json->0->>'state_or_province' AS state",
             "FROM public.\"user\"",
-            "WHERE email LIKE '%@superhero.example.com'",
+            "WHERE email LIKE '%@superhero.com'",
             "ORDER BY username",
             "LIMIT 10;",
             "",

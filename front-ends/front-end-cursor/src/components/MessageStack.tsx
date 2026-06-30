@@ -1,6 +1,6 @@
 import { Alert, Box } from '@mui/material';
 import { motion } from 'framer-motion';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { AppMessage, MessageType } from '../types/messages';
 import { CONTENT_MAX_WIDTH } from '../constants/layout';
 
@@ -30,14 +30,40 @@ const COLLAPSE_MS = 350;
 
 type MessageItemProps = {
   message: AppMessage;
+  autoDismissMs: number;
   isExiting: boolean;
   exitHeight: number | null;
   onRequestDismiss: (id: string, height: number) => void;
 };
 
-function MessageItem({ message, isExiting, exitHeight, onRequestDismiss }: MessageItemProps) {
+function MessageItem({
+  message,
+  autoDismissMs,
+  isExiting,
+  exitHeight,
+  onRequestDismiss,
+}: MessageItemProps) {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const styles = messageStyles[message.type];
+
+  useEffect(() => {
+    if (autoDismissMs <= 0 || isExiting) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      if (!wrapperRef.current) {
+        return;
+      }
+
+      const height = wrapperRef.current.getBoundingClientRect().height;
+      onRequestDismiss(message.id, height);
+    }, autoDismissMs);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [autoDismissMs, isExiting, message.id, onRequestDismiss]);
 
   const handleClick = () => {
     if (isExiting || !wrapperRef.current) {
@@ -100,10 +126,11 @@ function MessageItem({ message, isExiting, exitHeight, onRequestDismiss }: Messa
 
 type MessageStackProps = {
   messages: AppMessage[];
+  autoDismissMs: number;
   onDismiss: (id: string) => void;
 };
 
-export default function MessageStack({ messages, onDismiss }: MessageStackProps) {
+export default function MessageStack({ messages, autoDismissMs, onDismiss }: MessageStackProps) {
   const [exitingIds, setExitingIds] = useState<Set<string>>(new Set());
   const [exitHeights, setExitHeights] = useState<Record<string, number>>({});
   const timersRef = useRef<Map<string, number>>(new Map());
@@ -173,6 +200,7 @@ export default function MessageStack({ messages, onDismiss }: MessageStackProps)
           <MessageItem
             key={message.id}
             message={message}
+            autoDismissMs={autoDismissMs}
             isExiting={exitingIds.has(message.id)}
             exitHeight={exitHeights[message.id] ?? null}
             onRequestDismiss={handleRequestDismiss}

@@ -3,6 +3,8 @@ import type { AppMessage, MessageType } from '../types/messages';
 
 export type MessageContextValue = {
   messages: AppMessage[];
+  messageAutoDismissMs: number;
+  setMessageAutoDismissMs: (ms: number) => void;
   showMessage: (type: MessageType, text: string) => string;
   showSuccess: (text: string) => string;
   showWarning: (text: string) => string;

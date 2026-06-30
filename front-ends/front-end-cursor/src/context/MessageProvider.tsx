@@ -1,5 +1,10 @@
 import { type ReactNode, useCallback, useMemo, useState } from 'react';
 import MessageStack from '../components/MessageStack';
+import {
+  isMessageAutoDismissMs,
+  readStoredMessageAutoDismissMs,
+  storeMessageAutoDismissMs,
+} from '../lib/messagePreferences';
 import type { AppMessage, MessageType } from '../types/messages';
 import { MessageContext } from './MessageContext';
 
@@ -13,6 +18,16 @@ function createMessageId(): string {
 
 export default function MessageProvider({ children }: MessageProviderProps) {
   const [messages, setMessages] = useState<AppMessage[]>([]);
+  const [messageAutoDismissMs, setMessageAutoDismissMsState] = useState(readStoredMessageAutoDismissMs);
+
+  const setMessageAutoDismissMs = useCallback((ms: number) => {
+    if (!isMessageAutoDismissMs(ms)) {
+      return;
+    }
+
+    setMessageAutoDismissMsState(ms);
+    storeMessageAutoDismissMs(ms);
+  }, []);
 
   const dismissMessage = useCallback((id: string) => {
     setMessages((current) => current.filter((message) => message.id !== id));
@@ -46,6 +61,8 @@ export default function MessageProvider({ children }: MessageProviderProps) {
   const value = useMemo(
     () => ({
       messages,
+      messageAutoDismissMs,
+      setMessageAutoDismissMs,
       showMessage,
       showSuccess,
       showWarning,
@@ -53,13 +70,27 @@ export default function MessageProvider({ children }: MessageProviderProps) {
       dismissMessage,
       clearMessages,
     }),
-    [messages, showMessage, showSuccess, showWarning, showProblem, dismissMessage, clearMessages],
+    [
+      messages,
+      messageAutoDismissMs,
+      setMessageAutoDismissMs,
+      showMessage,
+      showSuccess,
+      showWarning,
+      showProblem,
+      dismissMessage,
+      clearMessages,
+    ],
   );
 
   return (
     <MessageContext.Provider value={value}>
       {children}
-      <MessageStack messages={messages} onDismiss={dismissMessage} />
+      <MessageStack
+        messages={messages}
+        autoDismissMs={messageAutoDismissMs}
+        onDismiss={dismissMessage}
+      />
     </MessageContext.Provider>
   );
 }

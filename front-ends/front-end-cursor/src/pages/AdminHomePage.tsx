@@ -64,7 +64,7 @@ export default function AdminHomePage() {
         </Typography>
 
         <Typography variant="body1" sx={{ mb: 2 }}>
-          counter:{' '}
+          realtime counter:{' '}
           {counterError
             ? 'unavailable'
             : counter === null
@@ -96,7 +96,7 @@ export default function AdminHomePage() {
             {generatingAttendees ? 'Generating Attendees…' : 'Generate Attendees'}
           </Button>
           <Button variant="outlined" fullWidth onClick={handleTestMessages}>
-            Test Messages
+            Test Message Boxes
           </Button>
           <Button variant="outlined" fullWidth onClick={() => navigate('/home')}>
             Back to Home

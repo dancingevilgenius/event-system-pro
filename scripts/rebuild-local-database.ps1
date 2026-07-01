@@ -100,24 +100,15 @@ Get-ChildItem (Join-Path $RepoRoot 'database\migrations\*.sql') |
     }
 
 Write-Host 'Applying seeds...'
-$seeds = @(
-    '002_event_type_lu_seed.sql',
-    '003_user_dummy.sql',
-    '004_user_carlos.sql',
-    '005_user_superheroes.sql',
-    '005a_update_superhero_addresses.sql',
-    '006_user_superhero_followers.sql',
-    '007_dancingevilgenius_app_roles.sql',
-    '008_event_group_fictional.sql',
-    '009_event_group_robot.sql',
-    '010_event_group_plasma_duel.sql',
-    '011_event_fictional_instances.sql',
-    '012_attendee_seed.sql',
-    '013_governing_body_seed.sql',
-    '014_static_list_seed.sql'
-)
+$manifestPath = Join-Path $RepoRoot 'database\seeds\dev.manifest'
+if (-not (Test-Path $manifestPath)) {
+    throw "Seed manifest not found: $manifestPath"
+}
 
-foreach ($seed in $seeds) {
+Get-Content $manifestPath | ForEach-Object {
+    $seed = ($_ -replace '#.*', '').Trim()
+    if ([string]::IsNullOrWhiteSpace($seed)) { return }
+
     Write-Host "  $seed"
     $seedPath = Join-Path $RepoRoot "database\seeds\$seed"
     if (-not (Test-Path $seedPath)) {

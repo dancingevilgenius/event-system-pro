@@ -127,3 +127,13 @@ for file in /sql/migrations/*.sql; do
 done
 
 echo "Database migrations complete."
+
+case "${SEED_DEV_DATA:-}" in
+  1|true|TRUE|yes|YES)
+    echo "SEED_DEV_DATA enabled — applying dev seed bundle ..."
+    /seed-dev-environment.sh
+    ;;
+  *)
+    echo "SEED_DEV_DATA not set — skipping dev seeds (set SEED_DEV_DATA=true for imake.wtf test deploys)."
+    ;;
+esac

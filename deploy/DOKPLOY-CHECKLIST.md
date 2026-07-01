@@ -228,15 +228,43 @@ EventSystemPro auto-deploy (if enabled) is independent on its own Dokploy app.
 
 ---
 
-## 10. Optional — seed test users
+## 10. Dev seed data (automatic on fresh deploy)
 
-Exec into the `postgres` container after first deploy:
+For **imake.wtf**, set in Environment:
 
-```bash
-psql -U postgres -d event_system_pro -f /sql/seeds/005_user_superheroes.sql
+```env
+SEED_DEV_DATA=true
 ```
 
-- [ ] (Optional) Seed users loaded
+On each deploy, the **migrate** container:
+
+1. Applies baseline + migrations (tracked in `schema_migrations`)
+2. Applies `database/seeds/dev.manifest` (tracked in `schema_seeds`)
+
+**Fresh database** (delete `pgdata` volume → Deploy): one step — migrate loads schema + full demo data (users, events, attendees).
+
+**Existing database**: seeds **skip** files already recorded in `schema_seeds`. To re-run all seeds, delete the `pgdata` volume or clear `schema_seeds` in SQL.
+
+Manual re-seed without redeploying migrate:
+
+```bash
+POSTGRES=$(docker ps --format '{{.Names}}' | grep postgres | head -1)
+NETWORK=$(docker inspect "$POSTGRES" --format '{{range $k,$v := .NetworkSettings.Networks}}{{$k}} {{end}}' | awk '{print $1}')
+docker run --rm --entrypoint /seed-dev-environment.sh --network "$NETWORK" \
+  -e PGHOST=postgres -e PGPASSWORD='YOUR_POSTGRES_PASSWORD' \
+  event-system-pro-migrate:latest
+```
+
+### Production (eventsystem.pro)
+
+Set `SEED_DEV_DATA=false` or omit it — migrate applies schema only, no demo users/events.
+
+### Alternative: database snapshot (later)
+
+If dev seeds become too slow, you can `pg_dump` a fully seeded database and use it as a custom baseline for test deploys. Prefer the manifest approach while seeds still change often; snapshots drift from migrations and are harder to review in git.
+
+- [ ] `SEED_DEV_DATA=true` on imake.wtf
+- [ ] Fresh deploy loads demo data without manual SQL
 
 ---
 

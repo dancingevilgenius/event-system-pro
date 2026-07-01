@@ -5,6 +5,8 @@ FROM postgres:18-alpine
 
 COPY database /sql
 COPY deploy/scripts/migrate.sh /migrate.sh
-RUN sed -i 's/\r$//' /migrate.sh && chmod +x /migrate.sh
+COPY deploy/scripts/seed-dev-environment.sh /seed-dev-environment.sh
+RUN sed -i 's/\r$//' /migrate.sh /seed-dev-environment.sh \
+  && chmod +x /migrate.sh /seed-dev-environment.sh
 
 ENTRYPOINT ["/migrate.sh"]

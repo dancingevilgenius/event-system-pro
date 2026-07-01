@@ -49,6 +49,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in Dokploy}
       POSTGRES_DB: ${POSTGRES_DB:-event_system_pro}
+      SEED_DEV_DATA: ${SEED_DEV_DATA:-true}
     depends_on:
       postgres:
         condition: service_healthy

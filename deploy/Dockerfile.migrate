@@ -1,0 +1,10 @@
+# Bakes database SQL into the image so Dokploy redeploys do not rely on
+# bind-mounting ../database from the cloned repo (those mounts can be empty
+# after AutoDeploy re-clones — see Dokploy troubleshooting docs).
+FROM postgres:18-alpine
+
+COPY database /sql
+COPY deploy/scripts/migrate.sh /migrate.sh
+RUN chmod +x /migrate.sh
+
+ENTRYPOINT ["/bin/sh", "-c", "tr -d '\\r' < /migrate.sh | /bin/sh"]

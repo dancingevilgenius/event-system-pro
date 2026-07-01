@@ -255,6 +255,8 @@ psql -U postgres -d event_system_pro -f /sql/seeds/005_user_superheroes.sql
 
 | Problem | Likely fix |
 |---------|------------|
+| `migrate` exit 2 | Open **migrate** container logs — look for `ERROR:` or `psql:` lines. Redeploy **with rebuild** after pushing SQL fixes. |
+| `migrate` logs "baseline SQL not found" | Dokploy emptied a repo bind mount — migrate now uses a built image (`deploy/Dockerfile.migrate`); redeploy with rebuild. |
 | Site doesn't load | DNS A record for imake.wtf → VPS IP; ports 80/443 open |
 | API returns 502 | Check `postgrest` logs; verify `PGRST_AUTHENTICATOR_PASSWORD` |
 | Counter stuck | Check `realtime` logs; verify `REALTIME_DB_PASSWORD`; test `/realtime/health` |

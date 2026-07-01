@@ -17,6 +17,14 @@ fail() {
   exit "$code"
 }
 
+if [ -z "${POSTGRES_PASSWORD:-}" ]; then
+  echo "ERROR: POSTGRES_PASSWORD is empty inside the migrate container."
+  echo "Set it in Dokploy → Environment and Deploy again."
+  exit 2
+fi
+
+echo "POSTGRES_PASSWORD is set (length $(printf '%s' "$POSTGRES_PASSWORD" | wc -c | tr -d ' '))"
+
 psql_cmd() {
   psql -h "$PGHOST" -U "$PGUSER" -d "$PGDATABASE" -v ON_ERROR_STOP=1 "$@"
 }

@@ -277,6 +277,22 @@ Use this when logs mention **authentication failed**, **database does not exist*
 
 After a volume reset, Postgres is recreated with your current `POSTGRES_PASSWORD` from Environment.
 
+### Sync postgres password without deleting data (SSH)
+
+If migrate logs say **Cannot connect to database 'postgres' either**, the password in Dokploy does not match what is stored in the existing `pgdata` volume. You can align them without wiping data:
+
+1. Note the exact `POSTGRES_PASSWORD` value in Dokploy → **Environment**.
+2. SSH to the VPS and run (replace container name and password):
+
+```bash
+docker ps --format '{{.Names}}' | grep postgres
+docker exec -it event-system-pro-dev-fa2q1z-postgres-1 psql -U postgres -c "ALTER USER postgres WITH PASSWORD 'YOUR_DOKPLOY_POSTGRES_PASSWORD';"
+```
+
+3. In Dokploy, **Deploy** again (no volume delete needed).
+
+Inside the postgres container, local `psql -U postgres` works without the old password. After `ALTER USER`, migrate can connect over the network using `POSTGRES_PASSWORD` from Environment.
+
 ### Confirm compose type
 
 In **General**, application type must be **Docker Compose**, not **Stack**. Stack mode ignores `build:` and migrate will not include SQL from `Dockerfile.migrate`.

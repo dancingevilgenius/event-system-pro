@@ -11,6 +11,8 @@ services:
   postgres:
     image: postgres:18-alpine
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in Dokploy}
@@ -30,6 +32,8 @@ services:
       dockerfile: deploy/Dockerfile.migrate
     image: event-system-pro-migrate:latest
     restart: "no"
+    env_file:
+      - .env
     environment:
       PGHOST: postgres
       POSTGRES_USER: ${POSTGRES_USER:-postgres}

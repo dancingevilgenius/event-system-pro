@@ -2,15 +2,23 @@
 # Mailer omitted initially — add later when SMTP is configured.
 #
 # Dokploy UI:
-#   Type: Docker Compose
+#   Type: Docker Compose (not Stack)
 #   Compose path: deploy/docker-compose.dokploy.yml
-#   Domain: imake.wtf -> service "proxy", container port 80 (test; eventsystem.pro stays on EventSystemPro)
+#   Domains tab: imake.wtf -> service "proxy", container port 80
 #   Env: copy from deploy/.env.dokploy.example
+
+networks:
+  default:
+  dokploy-network:
+    external: true
 
 services:
   postgres:
     image: postgres:18-alpine
     restart: unless-stopped
+    networks:
+      - default
+      - dokploy-network
     env_file:
       - .env
     environment:
@@ -19,7 +27,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-event_system_pro}
     volumes:
       - pgdata:/var/lib/postgresql
-      - ../database:/sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-event_system_pro}"]
       interval: 5s
@@ -32,6 +39,9 @@ services:
       dockerfile: deploy/Dockerfile.migrate
     image: event-system-pro-migrate:latest
     restart: "no"
+    networks:
+      - default
+      - dokploy-network
     env_file:
       - .env
     environment:
@@ -46,6 +56,11 @@ services:
   postgrest:
     image: postgrest/postgrest:v12.2.8
     restart: unless-stopped
+    networks:
+      - default
+      - dokploy-network
+    env_file:
+      - .env
     environment:
       PGRST_DB_URI: postgres://authenticator:${PGRST_AUTHENTICATOR_PASSWORD:?Set PGRST_AUTHENTICATOR_PASSWORD}@postgres:5432/${POSTGRES_DB:-event_system_pro}
       PGRST_DB_SCHEMAS: api
@@ -64,6 +79,11 @@ services:
     build:
       context: ../back-ends/realtime
     restart: unless-stopped
+    networks:
+      - default
+      - dokploy-network
+    env_file:
+      - .env
     environment:
       DATABASE_URL: postgres://realtime:${REALTIME_DB_PASSWORD:?Set REALTIME_DB_PASSWORD}@postgres:5432/${POSTGRES_DB:-event_system_pro}
       COUNTER_INTERVAL_MS: "5000"
@@ -81,6 +101,9 @@ services:
         VITE_MAILER_URL: ${VITE_MAILER_URL:-https://imake.wtf/mailer}
         VITE_REALTIME_WS_URL: ${VITE_REALTIME_WS_URL:-wss://imake.wtf/realtime/ws}
     restart: unless-stopped
+    networks:
+      - default
+      - dokploy-network
     depends_on:
       - postgrest
       - realtime
@@ -91,8 +114,13 @@ services:
       dockerfile: deploy/Dockerfile.caddy
     image: event-system-pro-proxy:latest
     restart: unless-stopped
-    ports:
-      - "${APP_PORT:-8090}:80"
+    networks:
+      - default
+      - dokploy-network
+    expose:
+      - "80"
+    labels:
+      - traefik.docker.network=dokploy-network
     volumes:
       - caddy_data:/data
     depends_on:

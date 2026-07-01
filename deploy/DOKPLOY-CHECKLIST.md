@@ -154,11 +154,12 @@ In this **new** application → **Domains**:
 |---------|-------|
 | Domain | `imake.wtf` |
 | Service | **`proxy`** (not `web`) |
-| Container port | `80` |
+| Container port | **`80`** (not 8090) |
 | HTTPS | Enabled (Let's Encrypt) |
 
 - [ ] Domain `imake.wtf` added
 - [ ] Routed to service **`proxy`**, port **80**
+- [ ] **No second domain** entry pointing at service `web` (that causes `/api` 404)
 - [ ] HTTPS / Let's Encrypt enabled
 - [ ] (Optional) `www.imake.wtf` added
 - [ ] **eventsystem.pro** domain binding on EventSystemPro app left unchanged
@@ -302,7 +303,8 @@ In **General**, application type must be **Docker Compose**, not **Stack**. Stac
 | `migrate` exit 2 | **Logs** tab → service **migrate** → read lines starting with `ERROR:` or `Failed during:`. |
 | `migrate` / PostgreSQL authentication failed | `POSTGRES_PASSWORD` in Dokploy no longer matches the existing **pgdata** volume. **Stop** the app, delete the `pgdata` volume, **Deploy** again (fresh DB). |
 | `migrate` logs "baseline SQL not found" | Migrate image was not rebuilt — **Stop** → **Deploy** again. Confirm app type is **Docker Compose** (not Stack). |
-| Site loads but `/api/` or `/realtime/health` is 404 | Domain must target service **`proxy`** port **80**, not **`web`**. Redeploy after pulling latest (proxy image bakes in Caddy routes). |
+| Site loads but `/api/` or `/realtime/health` is 404 | Domain must target **`proxy`** port **80** only — remove any domain on **`web`**. Redeploy. Realtime logs must show no password errors. |
+| Realtime password authentication failed | Set `REALTIME_DB_PASSWORD=realtime_dev_password` (migration default), redeploy. |
 | Site doesn't load | DNS A record for imake.wtf → VPS IP; ports 80/443 open |
 | API returns 502 | Check `postgrest` logs; verify `PGRST_AUTHENTICATOR_PASSWORD` |
 | Counter stuck | Check `realtime` logs; verify `REALTIME_DB_PASSWORD`; test `/realtime/health` |

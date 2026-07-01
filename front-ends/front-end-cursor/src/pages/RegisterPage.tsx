@@ -34,7 +34,6 @@ type RegisterForm = {
   confirmPassword: string;
   firstName: string;
   lastName: string;
-  street: string;
   city: string;
   state: string;
   country: string;
@@ -51,7 +50,6 @@ const initialForm: RegisterForm = {
   confirmPassword: '',
   firstName: '',
   lastName: '',
-  street: '',
   city: '',
   state: '',
   country: '',
@@ -127,20 +125,15 @@ function buildPhoneNumbersJson(phoneArea: string, phonePrefix: string, phoneLine
   ];
 }
 
-function buildAddressesJson(
-  street: string,
-  city: string,
-  state: string,
-  country: string,
-) {
-  if (!street.trim() && !city.trim() && !state.trim() && !country.trim()) {
+function buildAddressesJson(city: string, state: string, country: string) {
+  if (!city.trim() && !state.trim() && !country.trim()) {
     return [];
   }
 
   return [
     {
       label: 'home',
-      line1: street.trim() || null,
+      line1: null,
       line2: null,
       city: city.trim() || null,
       state_or_province: state.trim() || null,
@@ -307,12 +300,7 @@ export default function RegisterPage() {
           form.phonePrefix,
           form.phoneLine,
         ),
-        addressesJson: buildAddressesJson(
-          form.street,
-          form.city,
-          form.state,
-          form.country,
-        ),
+        addressesJson: buildAddressesJson(form.city, form.state, form.country),
         passwordRecoveryJson: form.passwordRecoveryJson,
       });
 
@@ -394,13 +382,6 @@ export default function RegisterPage() {
               fullWidth
               required
               autoComplete="family-name"
-            />
-            <AppTextField
-              label="Street"
-              value={form.street}
-              onChange={updateField('street')}
-              fullWidth
-              autoComplete="street-address"
             />
             <AppTextField
               label="City"

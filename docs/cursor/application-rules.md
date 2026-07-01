@@ -43,6 +43,9 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 | Viewport / page shell | `front-ends/front-end-cursor/index.html` |
 | Demo attendee seed SQL | `database/seeds/012_attendee_seed.sql` |
 | Generate demo attendees RPC | `database/migrations/044_generate_demo_attendees.sql` |
+| Dev seed manifest | `database/seeds/dev.manifest` |
+| Superhero user seed generator | `scripts/generate-superhero-user-seed.py`, `scripts/superhero_roster_synthetic.py` |
+| Find user by username RPC | `database/migrations/049_find_user_by_username_rpc.sql` |
 | Local DB rebuild script | `scripts/rebuild-local-database.ps1` |
 | PostgREST dev config | `back-ends/postgrest/postgrest.conf`, `back-ends/postgrest/.env.example` |
 | Cursor rules (DB audit) | `.cursor/rules/database-audit-columns.mdc` |
@@ -73,6 +76,7 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 - Passwords are verified with **bcrypt** on the server; distinct error messages for unknown account vs incorrect password.
 - On success the app stores a **session** in `sessionStorage` (`esp_session`): `user_id`, `username`, `email`, `roles`, and JWT **`token`**.
 - Authenticated API calls send **`Authorization: Bearer <token>`** (see `postgrest.ts`).
+- **Public** RPCs and lookups (login, register, forgot-password, country/state lists) call PostgREST with **`auth: 'omit'`** so a stale session JWT is not sent on unauthenticated flows.
 - **Logout** clears the session and returns to `/`.
 - Sign in again after database auth or role changes so the JWT includes current roles and username.
 
@@ -147,7 +151,8 @@ Login page links: **Forgot password?** and **Register**.
 
 - **Username**, **email**, and **password** are required (password ≥ 8 characters, must match confirm).
 - **First name** and **last name** are required.
-- Address fields use country/state lookups (`country_lu`, `us_state_lu`); phone uses numeric segments.
+- Optional address: **city**, **state** (`us_state_lu`), and **country** (`country_lu`) only — no street line on this form (`addresses_json.line1` is `null` when an address row is saved).
+- Phone uses three numeric US segments (area, prefix, line).
 - Before submit, user must complete **three secret password-recovery questions** (answers bcrypt-hashed via `api.hash_password_recovery_answers`, stored in `password_recovery_json`).
 - Submit calls **`api.register_user`**; on success navigates to login.
 - **Login** and **Register** call `clearMessages()` on mount.
@@ -169,7 +174,8 @@ Login page links: **Forgot password?** and **Register**.
 
 - Paginated **user** table (not contest entries): first name, last name, city, state, primary role.
 - Page size: **25** desktop, **10** mobile (`useIsMobileDevice`).
-- **Filter / Sort** dialog: filter by first name, last name, city, state, primary role; sort by last name, first name, or city (asc/desc).
+- **Filter / Sort** dialog: filter by first name, last name, city, state, primary role (not username); sort by last name, first name, or city (asc/desc).
+- Data comes from **`GET /user`** with PostgREST `ilike` / `eq` filters on JSON columns (`postgrest.ts`).
 - Empty filter values shown as **—** in the table.
 - **Back to Admin** returns to `/adminhome`.
 
@@ -650,7 +656,7 @@ Implemented in **`api.generate_demo_attendees_core()`** (called by seed `012_att
 | Rule | Value |
 |------|--------|
 | Events selected | **5** random demo `event_group` trios (3 consecutive-year instances each → **15** events) |
-| Attendees per event | **200** random users |
+| Attendees per event | **200** random users (pool needs **≥ 200** active users; dev seed provides **1000** superheroes) |
 | Total demo rows | **3000** (`attendee_id` **1–3000**) |
 | `created_date` | **1–90 days before** that event's `start_date` (America/Chicago calendar math); same **calendar year** as the event |
 | Re-run safety | Deletes only `attendee_id <= 3000`; **does not** delete rows above 3000 |
@@ -741,9 +747,39 @@ PostgREST Docker: see `back-ends/postgrest/.env.example` (`PGRST_DB_URI`, `PGRST
 - **Reads:** `api.*` views grant `SELECT` to `anon` and `authenticated`.
 - **Writes (dev):** migration `004_postgrest_dev_writes.sql` allows open anon writes for Swagger testing.
 - **Writes (prod):** migration `021_prod_grants.sql` revokes anon writes; mutations require **`authenticated`** JWT.
-- **RPCs:** `api.login`, `api.register_user`, `api.change_password`, `api.generate_demo_attendees`, etc. Called via `POST /rpc/<name>` from `postgrest.ts`.
+- **RPCs:** `api.login`, `api.register_user`, `api.change_password`, `api.generate_demo_attendees`, `api.find_user_by_username`, etc. Called via `POST /rpc/<name>` from `postgrest.ts` (or Swagger **Try it out**).
 - **Security definer** RPCs use `SET search_path = public, api` and enforce role checks inside the function.
 - After schema changes: `NOTIFY pgrst, 'reload schema';` in migrations (or restart PostgREST).
+
+### Swagger UI and REST verbs (local dev)
+
+| URL | Purpose |
+|-----|---------|
+| `http://localhost:8080` | **Swagger UI** (`event-system-pro-swagger` in `back-ends/postgrest/docker-compose.yml`) |
+| `http://localhost:3000/` | PostgREST **OpenAPI JSON** (loaded by Swagger) |
+| `http://localhost:3000/rpc/<name>` | RPC endpoints (`POST` + JSON body) |
+
+- **GET** on `api.*` views is read-only; each request runs a single `SELECT` (no data changes).
+- **PATCH** maps to SQL `UPDATE` (partial row update). PostgREST does **not** expose **PUT**.
+- **POST** / **DELETE** on writable views insert or delete rows (dev: anon may write per migration `004`; prod: **`authenticated`** JWT only per `021`).
+- **`api."user"`** is **read-only** over REST (even in dev). User inserts/updates go through RPCs (`register_user`, `change_password`, etc.).
+
+### GET filters vs plain-text RPC lookup
+
+PostgREST query parameters require an **operator prefix**:
+
+| Intent | Example |
+|--------|---------|
+| Exact username | `GET /user?username=eq.batman` |
+| Partial username | `GET /user?username=ilike.*bat*` |
+
+For Swagger-friendly lookup without `eq.`, use **`POST /rpc/find_user_by_username`**:
+
+```json
+{ "p_username": "batman" }
+```
+
+Case-insensitive exact match; returns the same columns as **`api."user"`**. Granted to **`anon`** and **`authenticated`** (migration `049`).
 
 ### JWT claims used by the app
 
@@ -766,8 +802,25 @@ Login JWT payload includes:
 2. `DROP DATABASE` + `CREATE DATABASE`
 3. Apply **`database/event-system-pro/evp_schema_postgresql.sql`** (baseline)
 4. Apply **`database/migrations/*.sql`** in sorted order (skips superseded: `005`, `006`, `007`, `015`, `027`, `030`)
-5. Apply dev **seeds** `002`–`012` (includes fictional events + demo attendees)
+5. Apply dev **seeds** listed in **`database/seeds/dev.manifest`** (order matters; currently `002`–`014`)
 6. Print verification counts (tables, views, users, events)
+
+### Dev seed bundle (`dev.manifest`)
+
+Applied by **`rebuild-local-database.ps1`** locally and by **`deploy/scripts/seed-dev-environment.sh`** when **`SEED_DEV_DATA=true`** (Dokploy / imake.wtf test deploys; tracked in **`public.schema_seeds`**).
+
+| Seed | Purpose |
+|------|---------|
+| `002`–`004` | Lookup types, dummy users, owner account |
+| `005` + `005a` | **1000** superhero/supervillain users (see below) |
+| `007` | App roles for `dancingevilgenius` |
+| `008`–`011` | Fictional demo event groups and instances |
+| `012` | Demo attendees (`api.generate_demo_attendees_core`) |
+| `013`–`014` | Governing body and static list |
+
+Legacy **`006_user_superhero_followers.sql`** is **not** in the manifest (superseded by the 1000-user `005` seed).
+
+Set **`SEED_DEV_DATA=false`** (or omit) on production **`eventsystem.pro`** so migrate applies schema only.
 
 ### Migrations vs seeds
 
@@ -855,6 +908,30 @@ Reference/lookup tables (`country_lu`, `us_state_lu`, `event_type_lu`, `secret_q
 ## Owner dev account
 
 Seed **`004_user_carlos.sql`** creates **`dancingevilgenius`** (project owner). Default password: **`ChangeMeOnFirstLogin!`** (reset via `scripts/reset_dancingevilgenius_password.sql`). Seed **`007`** grants **all seven app roles** to that user.
+
+---
+
+## Superhero user seed (`005`)
+
+Generated by **`scripts/generate-superhero-user-seed.py`** → **`database/seeds/005_user_superheroes.sql`** (+ **`005a_update_superhero_addresses.sql`**).
+
+| Rule | Value |
+|------|--------|
+| Target count | **1000** users |
+| Theme | Marvel / DC heroes and villains (+ synthetic codenames from **`superhero_roster_synthetic.py`**) |
+| Username | Unique; normalized alphanumeric, max 64 chars |
+| Name | **First** and **last** required on every row |
+| Reject | Username must **not** equal normalized **`first + last`** (e.g. reject `batman` / Bat / Man; keep `batman` / Bruce / Wayne) |
+| Credentials | Password = username; email = `{username}@superhero.com` |
+| Re-run | `INSERT … WHERE NOT EXISTS` by username; safe to re-apply |
+
+Regenerate after roster changes:
+
+```bash
+python scripts/generate-superhero-user-seed.py
+```
+
+Example logins: **`superman`** / **`superman`**, **`batman`** / **`batman`**.
 
 ---
 

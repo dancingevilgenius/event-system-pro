@@ -159,6 +159,7 @@ CREATE TABLE IF NOT EXISTS "event" (
   event_group_code varchar(64) DEFAULT NULL,
   name varchar(64) DEFAULT NULL,
   contact_user_id bigint DEFAULT NULL,
+  contests_json json DEFAULT NULL,
   host_club_id bigint DEFAULT NULL,
   country_code varchar(3) NOT NULL,
   state_or_province varchar(255) DEFAULT NULL,

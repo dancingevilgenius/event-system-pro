@@ -28,6 +28,7 @@ services:
     build:
       context: ..
       dockerfile: deploy/Dockerfile.migrate
+    image: event-system-pro-migrate:latest
     restart: "no"
     environment:
       PGHOST: postgres

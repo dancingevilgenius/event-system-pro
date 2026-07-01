@@ -253,10 +253,39 @@ psql -U postgres -d event_system_pro -f /sql/seeds/005_user_superheroes.sql
 
 ## Troubleshooting
 
+### Read migrate logs in Dokploy
+
+1. Open your **event-system-pro** compose app.
+2. Go to **Logs** (`g` then `l`).
+3. Choose service **`migrate`** (not postgres or postgrest).
+4. Scroll to the bottom of the latest run and look for:
+   - `ERROR:` — explains the failure
+   - `Failed during:` — which step broke (e.g. `apply migrations/012_...` or `database connection check`)
+   - `psql:` — SQL error details
+
+Paste those lines when asking for help.
+
+### Reset database volume (fresh start)
+
+Use this when logs mention **authentication failed**, **database does not exist**, or repeated migrate failures after many deploy attempts:
+
+1. In Dokploy, **Stop** the compose app.
+2. Remove the Postgres data volume (name contains **`pgdata`**):
+   - Dokploy **Advanced** → volumes, or
+   - SSH: `docker volume ls | grep pgdata` then `docker volume rm <volume-name>`
+3. **Deploy** again (pulls code, rebuilds migrate image, creates a new empty database).
+
+After a volume reset, Postgres is recreated with your current `POSTGRES_PASSWORD` from Environment.
+
+### Confirm compose type
+
+In **General**, application type must be **Docker Compose**, not **Stack**. Stack mode ignores `build:` and migrate will not include SQL from `Dockerfile.migrate`.
+
 | Problem | Likely fix |
 |---------|------------|
-| `migrate` exit 2 | Open **migrate** container logs — look for `ERROR:` or `psql:` lines. Redeploy **with rebuild** after pushing SQL fixes. |
-| `migrate` logs "baseline SQL not found" | Dokploy emptied a repo bind mount — migrate now uses a built image (`deploy/Dockerfile.migrate`); redeploy with rebuild. |
+| `migrate` exit 2 | **Logs** tab → service **migrate** → read lines starting with `ERROR:` or `Failed during:`. |
+| `migrate` / PostgreSQL authentication failed | `POSTGRES_PASSWORD` in Dokploy no longer matches the existing **pgdata** volume. **Stop** the app, delete the `pgdata` volume, **Deploy** again (fresh DB). |
+| `migrate` logs "baseline SQL not found" | Migrate image was not rebuilt — **Stop** → **Deploy** again. Confirm app type is **Docker Compose** (not Stack). |
 | Site doesn't load | DNS A record for imake.wtf → VPS IP; ports 80/443 open |
 | API returns 502 | Check `postgrest` logs; verify `PGRST_AUTHENTICATOR_PASSWORD` |
 | Counter stuck | Check `realtime` logs; verify `REALTIME_DB_PASSWORD`; test `/realtime/health` |

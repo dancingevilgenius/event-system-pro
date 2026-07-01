@@ -86,12 +86,14 @@ services:
       - realtime
 
   proxy:
-    image: caddy:2-alpine
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.caddy
+    image: event-system-pro-proxy:latest
     restart: unless-stopped
     ports:
       - "${APP_PORT:-8090}:80"
     volumes:
-      - ./Caddyfile.dokploy:/etc/caddy/Caddyfile:ro
       - caddy_data:/data
     depends_on:
       - web

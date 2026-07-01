@@ -1,0 +1,4 @@
+# Baked-in Caddy config for Dokploy (repo bind mounts can be empty after AutoDeploy).
+FROM caddy:2-alpine
+
+COPY deploy/Caddyfile.dokploy /etc/caddy/Caddyfile

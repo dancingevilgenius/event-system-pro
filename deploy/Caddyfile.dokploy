@@ -1,20 +1,24 @@
 # Dokploy entry proxy: single public service (domain set in Dokploy, e.g. imake.wtf)
 # Dokploy/Traefik terminates TLS; Caddy routes by path inside the stack.
 #
-#   /      -> web (React SPA)
-#   /api/* -> postgrest:3000
-#   /realtime/* -> realtime:3002
+# Dokploy domain must point to service "proxy" port 80 — not "web".
+#
+#   /api*      -> postgrest:3000  (/api prefix stripped)
+#   /realtime* -> realtime:3002   (/realtime prefix stripped)
+#   /*         -> web (React SPA)
 
 {
   auto_https off
 }
 
 :80 {
-  handle_path /api/* {
+  handle /api* {
+    uri strip_prefix /api
     reverse_proxy postgrest:3000
   }
 
-  handle_path /realtime/* {
+  handle /realtime* {
+    uri strip_prefix /realtime
     reverse_proxy realtime:3002
   }
 

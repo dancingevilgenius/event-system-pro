@@ -153,7 +153,7 @@ In this **new** application → **Domains**:
 | Setting | Value |
 |---------|-------|
 | Domain | `imake.wtf` |
-| Service | `proxy` |
+| Service | **`proxy`** (not `web`) |
 | Container port | `80` |
 | HTTPS | Enabled (Let's Encrypt) |
 
@@ -302,6 +302,7 @@ In **General**, application type must be **Docker Compose**, not **Stack**. Stac
 | `migrate` exit 2 | **Logs** tab → service **migrate** → read lines starting with `ERROR:` or `Failed during:`. |
 | `migrate` / PostgreSQL authentication failed | `POSTGRES_PASSWORD` in Dokploy no longer matches the existing **pgdata** volume. **Stop** the app, delete the `pgdata` volume, **Deploy** again (fresh DB). |
 | `migrate` logs "baseline SQL not found" | Migrate image was not rebuilt — **Stop** → **Deploy** again. Confirm app type is **Docker Compose** (not Stack). |
+| Site loads but `/api/` or `/realtime/health` is 404 | Domain must target service **`proxy`** port **80**, not **`web`**. Redeploy after pulling latest (proxy image bakes in Caddy routes). |
 | Site doesn't load | DNS A record for imake.wtf → VPS IP; ports 80/443 open |
 | API returns 502 | Check `postgrest` logs; verify `PGRST_AUTHENTICATOR_PASSWORD` |
 | Counter stuck | Check `realtime` logs; verify `REALTIME_DB_PASSWORD`; test `/realtime/health` |

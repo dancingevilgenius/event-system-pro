@@ -146,25 +146,31 @@ REALTIME_DB_PASSWORD=realtime_dev_password
 
 ---
 
-## 6. Domain in Dokploy
+## 6. Domain / HTTPS routing
 
-In this **new** application → **Domains**:
+Traefik labels on service **`proxy`** in `deploy/docker-compose.dokploy.yml` handle HTTP → HTTPS and Let's Encrypt. Set in Environment:
 
-| Setting | Value |
-|---------|-------|
-| Domain | `imake.wtf` |
-| Service | **`proxy`** (not `web`) |
-| Container port | **`80`** (not 8090) |
-| HTTPS | Enabled (Let's Encrypt) |
+```env
+APP_DOMAIN=imake.wtf
+```
 
-- [ ] Domain `imake.wtf` added
-- [ ] Routed to service **`proxy`**, port **80**
-- [ ] **No second domain** entry pointing at service `web` (that causes `/api` 404)
-- [ ] HTTPS / Let's Encrypt enabled
-- [ ] (Optional) `www.imake.wtf` added
+**Important:** In Dokploy → **Domains**, **remove** any `imake.wtf` entry. Duplicate Domains-tab routers often cause **HTTP works, HTTPS 404**.
+
+- [ ] `APP_DOMAIN=imake.wtf` in Environment
+- [ ] **No** domain entries in Domains tab (routing is in compose)
+- [ ] DNS A record for `imake.wtf` → VPS IP; ports 80/443 open
+- [ ] (Optional) `www.imake.wtf` — add a second Host rule in compose if needed later
 - [ ] **eventsystem.pro** domain binding on EventSystemPro app left unchanged
 
 **Do not** expose `postgres` or `postgrest` directly to the internet.
+
+### If you prefer Dokploy Domains tab instead
+
+Use **either** compose labels **or** the Domains tab, not both. If HTTPS fails while HTTP works:
+
+1. Domains → edit `imake.wtf` → Certificate type **Let's Encrypt** (not "None")
+2. **Deploy**, then **Reload Traefik** in Dokploy
+3. SSH: `docker inspect <proxy> --format '{{json .Config.Labels}}' | jq` — confirm a router with `entrypoints=websecure` and `tls.certresolver=letsencrypt`
 
 ---
 
@@ -303,7 +309,8 @@ In **General**, application type must be **Docker Compose**, not **Stack**. Stac
 | `migrate` exit 2 | **Logs** tab → service **migrate** → read lines starting with `ERROR:` or `Failed during:`. |
 | `migrate` / PostgreSQL authentication failed | `POSTGRES_PASSWORD` in Dokploy no longer matches the existing **pgdata** volume. **Stop** the app, delete the `pgdata` volume, **Deploy** again (fresh DB). |
 | `migrate` logs "baseline SQL not found" | Migrate image was not rebuilt — **Stop** → **Deploy** again. Confirm app type is **Docker Compose** (not Stack). |
-| Site loads but `/api/` or `/realtime/health` is 404 | Domain must target **`proxy`** port **80**. Redeploy after pulling latest (proxy uses `handle_path` in Caddy). SSH: `docker exec <proxy> wget -qO- http://127.0.0.1/realtime/health` — if that fails, rebuild proxy; if it works, check Traefik labels on the proxy container. |
+| Site loads but `/api/` or `/realtime/health` is 404 | Domain must target **`proxy`** port **80**. Redeploy after pulling latest (proxy uses `handle_path` in Caddy). SSH: `docker exec <proxy> wget -qO- http://127.0.0.1/realtime/health` — if that works, fix Traefik (see HTTPS row). |
+| HTTP works but HTTPS returns 404 | Traefik **websecure** router missing or broken. Remove Domains-tab entry; use compose Traefik labels + `APP_DOMAIN`; Deploy + Reload Traefik. Or fix certificate type to Let's Encrypt in Domains tab. |
 | Realtime password authentication failed | Set `REALTIME_DB_PASSWORD=realtime_dev_password` (migration default), redeploy. |
 | Site doesn't load | DNS A record for imake.wtf → VPS IP; ports 80/443 open |
 | API returns 502 | Check `postgrest` logs; verify `PGRST_AUTHENTICATOR_PASSWORD` |

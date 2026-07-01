@@ -4,7 +4,7 @@
 # Dokploy UI:
 #   Type: Docker Compose (not Stack)
 #   Compose path: deploy/docker-compose.dokploy.yml
-#   Domains tab: imake.wtf -> service "proxy", container port 80
+#   Domains tab: leave empty — Traefik labels are on service "proxy" in compose
 #   Env: copy from deploy/.env.dokploy.example
 
 networks:
@@ -117,10 +117,26 @@ services:
     networks:
       - default
       - dokploy-network
+    env_file:
+      - .env
     expose:
       - "80"
     labels:
+      - traefik.enable=true
       - traefik.docker.network=dokploy-network
+      # Traefik routing (HTTP + HTTPS). If you use these labels, remove the same
+      # domain from Dokploy Domains tab to avoid duplicate routers.
+      - traefik.http.routers.esp-imake-proxy-secure.rule=Host(`${APP_DOMAIN:-imake.wtf}`)
+      - traefik.http.routers.esp-imake-proxy-secure.entrypoints=websecure
+      - traefik.http.routers.esp-imake-proxy-secure.tls.certresolver=letsencrypt
+      - traefik.http.routers.esp-imake-proxy-secure.service=esp-imake-proxy
+      - traefik.http.routers.esp-imake-proxy-web.rule=Host(`${APP_DOMAIN:-imake.wtf}`)
+      - traefik.http.routers.esp-imake-proxy-web.entrypoints=web
+      - traefik.http.routers.esp-imake-proxy-web.middlewares=esp-imake-proxy-redirect
+      - traefik.http.routers.esp-imake-proxy-web.service=esp-imake-proxy
+      - traefik.http.middlewares.esp-imake-proxy-redirect.redirectscheme.scheme=https
+      - traefik.http.middlewares.esp-imake-proxy-redirect.redirectscheme.permanent=true
+      - traefik.http.services.esp-imake-proxy.loadbalancer.server.port=80
     volumes:
       - caddy_data:/data
     depends_on:

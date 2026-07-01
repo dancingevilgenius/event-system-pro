@@ -7,7 +7,6 @@
 004_user_carlos.sql
 005_user_superheroes.sql
 005a_update_superhero_addresses.sql
-006_user_superhero_followers.sql
 007_dancingevilgenius_app_roles.sql
 008_event_group_fictional.sql
 009_event_group_robot.sql

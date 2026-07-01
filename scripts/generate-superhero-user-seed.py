@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate database/seeds/005_user_superheroes.sql with 200 Marvel/DC seed users."""
+"""Generate database/seeds/005_user_superheroes.sql with 1000 Marvel/DC seed users."""
 
 from __future__ import annotations
 
@@ -10,6 +10,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from superhero_locations import build_address
+from superhero_roster_synthetic import iter_synthetic_heroes
+
+TARGET_COUNT = 1000
 
 # username, first, last, publisher, sex (or None), color1 (or None), color2 (or None)
 HEROES: list[tuple[str, str, str, str, str | None, str | None, str | None]] = [
@@ -297,6 +300,73 @@ def normalize_username(raw: str) -> str:
     return "".join(ch for ch in raw.lower() if ch.isalnum())[:64]
 
 
+def rejects_concat_username(username: str, first: str, last: str) -> bool:
+    """Reject when username equals first+last (e.g. batman / Bat / Man)."""
+    return normalize_username(username) == normalize_username(first + last)
+
+
+def try_add_hero(
+    raw_username: str,
+    first: str,
+    last: str,
+    publisher: str,
+    sex: str | None,
+    color1: str | None,
+    color2: str | None,
+    seen: set[str],
+    seen_names: set[tuple[str, str]],
+    rows: list[tuple[str, str, str, str, str, str, str, str, str]],
+) -> bool:
+    username = normalize_username(raw_username)
+    if not username or username in seen:
+        return False
+
+    name_key = (first.strip().lower(), last.strip().lower())
+    if name_key in seen_names:
+        return False
+    if rejects_concat_username(username, first, last):
+        return False
+
+    seen.add(username)
+    seen_names.add(name_key)
+
+    display = f"{first} {last}".strip()
+    name_json = {
+        "prefix": None,
+        "first": first,
+        "middle": None,
+        "last": last,
+        "suffix": None,
+        "display": display,
+    }
+    additional_info = build_additional_info(publisher, sex, color1, color2)
+    email = f"{username}@superhero.com"
+    phone = [
+        {
+            "type": "mobile",
+            "country_code": "1",
+            "number": f"555{len(rows):07d}"[-10:],
+            "primary": True,
+        }
+    ]
+    address = [build_address(username, publisher, len(rows))]
+
+    rows.append(
+        (
+            username,
+            sql_json(name_json),
+            email,
+            sql_json(phone),
+            sql_json(additional_info),
+            sql_json(address),
+            sql_json({}),
+            sql_json({"interested": False, "roles": [], "availability": None}),
+            sql_json({}),
+        )
+    )
+    return True
+
+
 def build_additional_info(
     publisher: str,
     sex: str | None,
@@ -327,56 +397,24 @@ def main() -> None:
     rows: list[tuple[str, str, str, str, str, str, str, str, str]] = []
 
     for raw_username, first, last, publisher, sex, color1, color2 in HEROES:
-        username = normalize_username(raw_username)
-        if not username or username in seen:
-            continue
-
-        name_key = (first.strip().lower(), last.strip().lower())
-        if name_key in seen_names:
-            continue
-
-        seen.add(username)
-        seen_names.add(name_key)
-
-        display = f"{first} {last}".strip()
-        name_json = {
-            "prefix": None,
-            "first": first,
-            "middle": None,
-            "last": last,
-            "suffix": None,
-            "display": display,
-        }
-        additional_info = build_additional_info(publisher, sex, color1, color2)
-        email = f"{username}@superhero.com"
-        phone = [
-            {
-                "type": "mobile",
-                "country_code": "1",
-                "number": f"555{len(rows):07d}"[-10:],
-                "primary": True,
-            }
-        ]
-        address = [build_address(username, publisher, len(rows))]
-
-        rows.append(
-            (
-                username,
-                sql_json(name_json),
-                email,
-                sql_json(phone),
-                sql_json(additional_info),
-                sql_json(address),
-                sql_json({}),
-                sql_json({"interested": False, "roles": [], "availability": None}),
-                sql_json({}),
-            )
+        try_add_hero(
+            raw_username, first, last, publisher, sex, color1, color2,
+            seen, seen_names, rows,
         )
-        if len(rows) >= 200:
+        if len(rows) >= TARGET_COUNT:
             break
 
-    if len(rows) < 200:
-        raise SystemExit(f"Only collected {len(rows)} unique heroes; need 200.")
+    if len(rows) < TARGET_COUNT:
+        for raw_username, first, last, publisher, sex, color1, color2 in iter_synthetic_heroes():
+            try_add_hero(
+                raw_username, first, last, publisher, sex, color1, color2,
+                seen, seen_names, rows,
+            )
+            if len(rows) >= TARGET_COUNT:
+                break
+
+    if len(rows) < TARGET_COUNT:
+        raise SystemExit(f"Only collected {len(rows)} unique heroes; need {TARGET_COUNT}.")
 
     out = Path(__file__).resolve().parents[1] / "database" / "seeds" / "005_user_superheroes.sql"
     update_out = (
@@ -386,7 +424,7 @@ def main() -> None:
         / "005a_update_superhero_addresses.sql"
     )
     lines = [
-        "-- 200 Marvel and DC superhero seed users for local development.",
+        f"-- {TARGET_COUNT} Marvel and DC superhero seed users for local development.",
         "-- Username and plaintext password are identical; password is bcrypt-hashed on insert.",
         "-- Safe to re-run: skips rows when username already exists.",
         "--",
@@ -414,7 +452,8 @@ def main() -> None:
                 "  addresses_json,",
                 "  active,",
                 "  created_by,",
-                "  updated_by",
+                "  modified_by,",
+                "  modified_date",
                 ")",
                 "SELECT",
                 f"  '{username}',",
@@ -428,8 +467,10 @@ def main() -> None:
                 f"  '{additional_info}'::json,",
                 f"  '{address}'::json,",
                 "  TRUE,",
-                "  'seed',",
-                "  'seed'",
+                "  'c-agent',",
+                "  NULL,",
+                "  NULL",
+                "",
                 "WHERE NOT EXISTS (",
                 f"  SELECT 1 FROM public.\"user\" WHERE username = '{username}'",
                 ");",
@@ -460,8 +501,7 @@ def main() -> None:
         update_lines.extend(
             [
                 "UPDATE public.\"user\"",
-                f"SET addresses_json = '{address}'::json,",
-                "    updated_by = 'seed'",
+                f"SET addresses_json = '{address}'::json",
                 f"WHERE username = '{username}';",
                 "",
             ]

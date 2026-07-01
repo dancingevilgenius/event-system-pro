@@ -10,12 +10,19 @@ type RpcErrorBody = {
   details?: string;
 };
 
-function buildAuthHeaders(extra?: Record<string, string>): Record<string, string> {
-  const headers: Record<string, string> = { ...extra };
-  const token = loadSession()?.token;
+type RequestAuthMode = 'include' | 'omit';
 
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
+function buildAuthHeaders(
+  extra?: Record<string, string>,
+  auth: RequestAuthMode = 'include',
+): Record<string, string> {
+  const headers: Record<string, string> = { ...extra };
+
+  if (auth === 'include') {
+    const token = loadSession()?.token;
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
   }
 
   return headers;
@@ -24,13 +31,17 @@ function buildAuthHeaders(extra?: Record<string, string>): Record<string, string
 async function callRpc<TResponse>(
   functionName: string,
   body: Record<string, unknown>,
+  auth: RequestAuthMode = 'include',
 ): Promise<TResponse> {
   const response = await fetch(`${POSTGREST_URL}/rpc/${functionName}`, {
     method: 'POST',
-    headers: buildAuthHeaders({
-      'Content-Type': 'application/json',
-      Prefer: 'return=representation',
-    }),
+    headers: buildAuthHeaders(
+      {
+        'Content-Type': 'application/json',
+        Prefer: 'return=representation',
+      },
+      auth,
+    ),
     body: JSON.stringify(body),
   });
 
@@ -319,7 +330,7 @@ export async function fetchUsStateCodes(): Promise<string[]> {
 
 export async function fetchUsStates(): Promise<UsState[]> {
   const response = await fetch(`${POSTGREST_URL}/us_state_lu?select=code,name&order=name`, {
-    headers: buildAuthHeaders(),
+    headers: buildAuthHeaders(undefined, 'omit'),
   });
 
   if (!response.ok) {
@@ -332,7 +343,7 @@ export async function fetchUsStates(): Promise<UsState[]> {
 export async function fetchCountries(): Promise<Country[]> {
   const response = await fetch(
     `${POSTGREST_URL}/country_lu?select=iso3,long_name&iso3=not.is.null&order=long_name`,
-    { headers: buildAuthHeaders() },
+    { headers: buildAuthHeaders(undefined, 'omit') },
   );
 
   if (!response.ok) {
@@ -345,7 +356,7 @@ export async function fetchCountries(): Promise<Country[]> {
 export async function fetchSecretQuestions(): Promise<SecretQuestion[]> {
   const response = await fetch(
     `${POSTGREST_URL}/secret_question_lu?order=secret_question_id`,
-    { headers: buildAuthHeaders() },
+    { headers: buildAuthHeaders(undefined, 'omit') },
   );
 
   if (!response.ok) {
@@ -356,10 +367,14 @@ export async function fetchSecretQuestions(): Promise<SecretQuestion[]> {
 }
 
 export function login(identifier: string, password: string) {
-  return callRpc<LoginResult>('login', {
-    p_identifier: identifier,
-    p_password: password,
-  });
+  return callRpc<LoginResult>(
+    'login',
+    {
+      p_identifier: identifier,
+      p_password: password,
+    },
+    'omit',
+  );
 }
 
 export function logout() {
@@ -375,16 +390,22 @@ export function sessionStatus() {
 }
 
 export function forgotPasswordRequest(identifier: string) {
-  return callRpc<ForgotPasswordRequestResult>('forgot_password_request', {
-    identifier,
-  });
+  return callRpc<ForgotPasswordRequestResult>(
+    'forgot_password_request',
+    { identifier },
+    'omit',
+  );
 }
 
 export function forgotPasswordVerify(email: string, code: string) {
-  return callRpc<ForgotPasswordSimpleResult>('forgot_password_verify', {
-    p_email: email,
-    p_code: code,
-  });
+  return callRpc<ForgotPasswordSimpleResult>(
+    'forgot_password_verify',
+    {
+      p_email: email,
+      p_code: code,
+    },
+    'omit',
+  );
 }
 
 export function forgotPasswordComplete(
@@ -392,11 +413,15 @@ export function forgotPasswordComplete(
   code: string,
   newPassword: string,
 ) {
-  return callRpc<ForgotPasswordSimpleResult>('forgot_password_complete', {
-    p_email: email,
-    p_code: code,
-    p_new_password: newPassword,
-  });
+  return callRpc<ForgotPasswordSimpleResult>(
+    'forgot_password_complete',
+    {
+      p_email: email,
+      p_code: code,
+      p_new_password: newPassword,
+    },
+    'omit',
+  );
 }
 
 export function changePassword(
@@ -839,9 +864,11 @@ export async function updateStaticListJson(
 export function hashPasswordRecoveryAnswers(
   answers: Array<{ secret_question_id: number; answer: string }>,
 ) {
-  return callRpc<HashPasswordRecoveryResult>('hash_password_recovery_answers', {
-    p_answers: answers,
-  });
+  return callRpc<HashPasswordRecoveryResult>(
+    'hash_password_recovery_answers',
+    { p_answers: answers },
+    'omit',
+  );
 }
 
 export function registerUser(params: {
@@ -853,13 +880,17 @@ export function registerUser(params: {
   addressesJson: unknown[];
   passwordRecoveryJson: PasswordRecoveryJson;
 }) {
-  return callRpc<RegisterUserResult>('register_user', {
-    p_username: params.username,
-    p_email: params.email,
-    p_password: params.password,
-    p_name_json: params.nameJson,
-    p_phone_numbers_json: params.phoneNumbersJson,
-    p_addresses_json: params.addressesJson,
-    p_password_recovery_json: params.passwordRecoveryJson,
-  });
+  return callRpc<RegisterUserResult>(
+    'register_user',
+    {
+      p_username: params.username,
+      p_email: params.email,
+      p_password: params.password,
+      p_name_json: params.nameJson,
+      p_phone_numbers_json: params.phoneNumbersJson,
+      p_addresses_json: params.addressesJson,
+      p_password_recovery_json: params.passwordRecoveryJson,
+    },
+    'omit',
+  );
 }

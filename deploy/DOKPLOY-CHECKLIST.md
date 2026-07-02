@@ -268,6 +268,75 @@ If dev seeds become too slow, you can `pg_dump` a fully seeded database and use 
 
 ---
 
+## Optional — external Postgres access (dev only)
+
+For pgAdmin, DBeaver, or local tools connecting to the VPS database.
+
+**Security:** Exposes Postgres to the internet. Use only on imake.wtf test deploy, with a strong `POSTGRES_PASSWORD`. Remove before any production cutover.
+
+### 1. Compose port mapping
+
+In Dokploy **Environment**, add:
+
+```env
+POSTGRES_PUBLISH_PORT=5432
+```
+
+Redeploy the compose stack so the `postgres` service publishes host port 5432.
+
+### 2. Hostinger VPS firewall (hPanel)
+
+1. **VPS** → your server → **Security** / **Firewall**
+2. Add rule: **TCP port 5432**, allow inbound
+3. If Hostinger offers **source IP restriction**, limit to your home/office IP (recommended)
+
+### 3. VPS OS firewall (if ufw is enabled)
+
+SSH into the VPS:
+
+```bash
+sudo ufw allow 5432/tcp
+sudo ufw status
+```
+
+### 4. Connection from your PC
+
+| Field | Value |
+|-------|--------|
+| Host | VPS public IP (same as eventsystem.pro / imake.wtf) |
+| Port | `5432` |
+| Database | `event_system_pro` |
+| User | `postgres` |
+| Password | Your `POSTGRES_PASSWORD` from Dokploy Environment |
+
+**Connection string:**
+
+```text
+postgres://postgres:YOUR_PASSWORD@YOUR_VPS_IP:5432/event_system_pro
+```
+
+### 5. Verify
+
+From your PC (with `psql` installed):
+
+```powershell
+psql "postgres://postgres:YOUR_PASSWORD@YOUR_VPS_IP:5432/event_system_pro" -c "SELECT 1"
+```
+
+Or test port reachability:
+
+```powershell
+Test-NetConnection YOUR_VPS_IP -Port 5432
+```
+
+- [ ] `POSTGRES_PUBLISH_PORT=5432` in Dokploy Environment
+- [ ] Compose redeployed
+- [ ] Hostinger firewall allows 5432
+- [ ] ufw allows 5432 (if used)
+- [ ] Client connects successfully
+
+---
+
 ## Redeploy later
 
 | Situation | Action |

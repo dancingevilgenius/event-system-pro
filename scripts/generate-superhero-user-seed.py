@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate database/seeds/005_user_superheroes.sql with 1000 Marvel/DC seed users."""
+"""Generate database/seeds/005_user_superheroes.sql from curated comic characters."""
 
 from __future__ import annotations
 
@@ -9,10 +9,23 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from female_follower_heroes import FEMALE_FOLLOWERS
+from image_comics_heroes import IMAGE_HEROES
 from superhero_locations import build_address
-from superhero_roster_synthetic import iter_synthetic_heroes
 
 TARGET_COUNT = 1000
+BLOCKED_LAST_NAMES = {
+    "ashford",
+    "blackwood",
+    "chambers",
+    "donovan",
+    "caldwell",
+    "holloway",
+    "mercer",
+    "sinclair",
+    "sinclaire",
+    "ellsworth",
+}
 
 # username, first, last, publisher, sex (or None), color1 (or None), color2 (or None)
 HEROES: list[tuple[str, str, str, str, str | None, str | None, str | None]] = [
@@ -296,6 +309,16 @@ HEROES: list[tuple[str, str, str, str, str | None, str | None, str | None]] = [
     ("squirrelgirl2", "Doreen", "Green", "Marvel", "female", "orange", "brown"),
 ]
 
+
+def iter_curated_heroes() -> list[tuple[str, str, str, str, str | None, str | None, str | None]]:
+    rows = list(HEROES)
+    rows.extend(IMAGE_HEROES)
+    rows.extend(
+        (username, first, last, publisher, "female", color1, color2)
+        for username, first, last, publisher, color1, color2 in FEMALE_FOLLOWERS
+    )
+    return rows
+
 def normalize_username(raw: str) -> str:
     return "".join(ch for ch in raw.lower() if ch.isalnum())[:64]
 
@@ -322,6 +345,8 @@ def try_add_hero(
         return False
 
     name_key = (first.strip().lower(), last.strip().lower())
+    if name_key[1] in BLOCKED_LAST_NAMES:
+        return False
     if name_key in seen_names:
         return False
     if rejects_concat_username(username, first, last):
@@ -396,7 +421,7 @@ def main() -> None:
     seen_names: set[tuple[str, str]] = set()
     rows: list[tuple[str, str, str, str, str, str, str, str, str]] = []
 
-    for raw_username, first, last, publisher, sex, color1, color2 in HEROES:
+    for raw_username, first, last, publisher, sex, color1, color2 in iter_curated_heroes():
         try_add_hero(
             raw_username, first, last, publisher, sex, color1, color2,
             seen, seen_names, rows,
@@ -405,16 +430,10 @@ def main() -> None:
             break
 
     if len(rows) < TARGET_COUNT:
-        for raw_username, first, last, publisher, sex, color1, color2 in iter_synthetic_heroes():
-            try_add_hero(
-                raw_username, first, last, publisher, sex, color1, color2,
-                seen, seen_names, rows,
-            )
-            if len(rows) >= TARGET_COUNT:
-                break
-
-    if len(rows) < TARGET_COUNT:
-        raise SystemExit(f"Only collected {len(rows)} unique heroes; need {TARGET_COUNT}.")
+        print(
+            f"Collected {len(rows)} curated users from Marvel/DC/Image lists; "
+            f"target {TARGET_COUNT} not reached without synthetic names."
+        )
 
     out = Path(__file__).resolve().parents[1] / "database" / "seeds" / "005_user_superheroes.sql"
     update_out = (
@@ -424,7 +443,7 @@ def main() -> None:
         / "005a_update_superhero_addresses.sql"
     )
     lines = [
-        f"-- {TARGET_COUNT} Marvel and DC superhero seed users for local development.",
+        f"-- Up to {TARGET_COUNT} Marvel/DC/Image superhero seed users for local development.",
         "-- Username and plaintext password are identical; password is bcrypt-hashed on insert.",
         "-- Safe to re-run: skips rows when username already exists.",
         "--",

@@ -1,4 +1,4 @@
--- 1000 Marvel and DC superhero seed users for local development.
+-- Up to 1000 Marvel/DC/Image superhero seed users for local development.
 -- Username and plaintext password are identical; password is bcrypt-hashed on insert.
 -- Safe to re-run: skips rows when username already exists.
 --
@@ -8737,23 +8737,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'lordpanther',
-  crypt('lordpanther', gen_salt('bf')),
-  '{"prefix": null, "first": "Ethan", "middle": null, "last": "Caldwell", "suffix": null, "display": "Ethan Caldwell"}'::json,
-  'lordpanther@superhero.com',
+  'invincible',
+  crypt('invincible', gen_salt('bf')),
+  '{"prefix": null, "first": "Mark", "middle": null, "last": "Grayson", "suffix": null, "display": "Mark Grayson"}'::json,
+  'invincible@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000242", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "342 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10242", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "yellow", "color2": "blue"}'::json,
+  '[{"label": "home", "line1": "342 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10242", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'lordpanther'
+  SELECT 1 FROM public."user" WHERE username = 'invincible'
 );
 
 INSERT INTO public."user" (
@@ -8773,15 +8773,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'violetkraken',
-  crypt('violetkraken', gen_salt('bf')),
-  '{"prefix": null, "first": "Mia", "middle": null, "last": "Caldwell", "suffix": null, "display": "Mia Caldwell"}'::json,
-  'violetkraken@superhero.com',
+  'atomeve',
+  crypt('atomeve', gen_salt('bf')),
+  '{"prefix": null, "first": "Samantha", "middle": null, "last": "Eve", "suffix": null, "display": "Samantha Eve"}'::json,
+  'atomeve@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000243", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "white"}'::json,
   '[{"label": "home", "line1": "343 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10243", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -8789,7 +8789,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'violetkraken'
+  SELECT 1 FROM public."user" WHERE username = 'atomeve'
 );
 
 INSERT INTO public."user" (
@@ -8809,15 +8809,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'azureflare',
-  crypt('azureflare', gen_salt('bf')),
-  '{"prefix": null, "first": "Noah", "middle": null, "last": "Caldwell", "suffix": null, "display": "Noah Caldwell"}'::json,
-  'azureflare@superhero.com',
+  'omniman',
+  crypt('omniman', gen_salt('bf')),
+  '{"prefix": null, "first": "Nolan", "middle": null, "last": "Grayson", "suffix": null, "display": "Nolan Grayson"}'::json,
+  'omniman@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000244", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "white"}'::json,
   '[{"label": "home", "line1": "344 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10244", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -8825,7 +8825,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'azureflare'
+  SELECT 1 FROM public."user" WHERE username = 'omniman'
 );
 
 INSERT INTO public."user" (
@@ -8845,23 +8845,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'ladyarrow',
-  crypt('ladyarrow', gen_salt('bf')),
-  '{"prefix": null, "first": "Ava", "middle": null, "last": "Caldwell", "suffix": null, "display": "Ava Caldwell"}'::json,
-  'ladyarrow@superhero.com',
+  'robot',
+  crypt('robot', gen_salt('bf')),
+  '{"prefix": null, "first": "Rudolph", "middle": null, "last": "Connors", "suffix": null, "display": "Rudolph Connors"}'::json,
+  'robot@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000245", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "345 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10245", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "gray"}'::json,
+  '[{"label": "home", "line1": "345 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10245", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ladyarrow'
+  SELECT 1 FROM public."user" WHERE username = 'robot'
 );
 
 INSERT INTO public."user" (
@@ -8881,15 +8881,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'steelquake',
-  crypt('steelquake', gen_salt('bf')),
-  '{"prefix": null, "first": "Liam", "middle": null, "last": "Caldwell", "suffix": null, "display": "Liam Caldwell"}'::json,
-  'steelquake@superhero.com',
+  'rexsplode',
+  crypt('rexsplode', gen_salt('bf')),
+  '{"prefix": null, "first": "Rex", "middle": null, "last": "Sloan", "suffix": null, "display": "Rex Sloan"}'::json,
+  'rexsplode@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000246", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "346 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10246", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -8897,7 +8897,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'steelquake'
+  SELECT 1 FROM public."user" WHERE username = 'rexsplode'
 );
 
 INSERT INTO public."user" (
@@ -8917,15 +8917,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'ninjabolt',
-  crypt('ninjabolt', gen_salt('bf')),
-  '{"prefix": null, "first": "Sophia", "middle": null, "last": "Caldwell", "suffix": null, "display": "Sophia Caldwell"}'::json,
-  'ninjabolt@superhero.com',
+  'duplikate',
+  crypt('duplikate', gen_salt('bf')),
+  '{"prefix": null, "first": "Kate", "middle": null, "last": "Cha", "suffix": null, "display": "Kate Cha"}'::json,
+  'duplikate@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000247", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
   '[{"label": "home", "line1": "347 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10247", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -8933,7 +8933,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ninjabolt'
+  SELECT 1 FROM public."user" WHERE username = 'duplikate'
 );
 
 INSERT INTO public."user" (
@@ -8953,23 +8953,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'azuremind',
-  crypt('azuremind', gen_salt('bf')),
-  '{"prefix": null, "first": "Owen", "middle": null, "last": "Caldwell", "suffix": null, "display": "Owen Caldwell"}'::json,
-  'azuremind@superhero.com',
+  'monstergirl',
+  crypt('monstergirl', gen_salt('bf')),
+  '{"prefix": null, "first": "Amanda", "middle": null, "last": "Young", "suffix": null, "display": "Amanda Young"}'::json,
+  'monstergirl@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000248", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "348 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10248", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "black"}'::json,
+  '[{"label": "home", "line1": "348 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10248", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'azuremind'
+  SELECT 1 FROM public."user" WHERE username = 'monstergirl'
 );
 
 INSERT INTO public."user" (
@@ -8989,15 +8989,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'commanderkraken',
-  crypt('commanderkraken', gen_salt('bf')),
-  '{"prefix": null, "first": "Isla", "middle": null, "last": "Caldwell", "suffix": null, "display": "Isla Caldwell"}'::json,
-  'commanderkraken@superhero.com',
+  'immortal',
+  crypt('immortal', gen_salt('bf')),
+  '{"prefix": null, "first": "Abraham", "middle": null, "last": "Lincoln", "suffix": null, "display": "Abraham Lincoln"}'::json,
+  'immortal@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000249", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "yellow"}'::json,
   '[{"label": "home", "line1": "349 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10249", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -9005,7 +9005,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'commanderkraken'
+  SELECT 1 FROM public."user" WHERE username = 'immortal'
 );
 
 INSERT INTO public."user" (
@@ -9025,15 +9025,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'paladinshield',
-  crypt('paladinshield', gen_salt('bf')),
-  '{"prefix": null, "first": "Caleb", "middle": null, "last": "Caldwell", "suffix": null, "display": "Caleb Caldwell"}'::json,
-  'paladinshield@superhero.com',
+  'bulletproof',
+  crypt('bulletproof', gen_salt('bf')),
+  '{"prefix": null, "first": "Zandale", "middle": null, "last": "Randolph", "suffix": null, "display": "Zandale Randolph"}'::json,
+  'bulletproof@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000250", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "yellow", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "350 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10250", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -9041,7 +9041,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'paladinshield'
+  SELECT 1 FROM public."user" WHERE username = 'bulletproof'
 );
 
 INSERT INTO public."user" (
@@ -9061,23 +9061,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'rogueshock',
-  crypt('rogueshock', gen_salt('bf')),
-  '{"prefix": null, "first": "Nora", "middle": null, "last": "Caldwell", "suffix": null, "display": "Nora Caldwell"}'::json,
-  'rogueshock@superhero.com',
+  'blacksamson',
+  crypt('blacksamson', gen_salt('bf')),
+  '{"prefix": null, "first": "Marcus", "middle": null, "last": "Grimshaw", "suffix": null, "display": "Marcus Grimshaw"}'::json,
+  'blacksamson@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000251", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "351 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10251", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "yellow"}'::json,
+  '[{"label": "home", "line1": "351 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10251", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'rogueshock'
+  SELECT 1 FROM public."user" WHERE username = 'blacksamson'
 );
 
 INSERT INTO public."user" (
@@ -9097,15 +9097,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'kingrune',
-  crypt('kingrune', gen_salt('bf')),
-  '{"prefix": null, "first": "Julian", "middle": null, "last": "Caldwell", "suffix": null, "display": "Julian Caldwell"}'::json,
-  'kingrune@superhero.com',
+  'warwoman',
+  crypt('warwoman', gen_salt('bf')),
+  '{"prefix": null, "first": "Holly", "middle": null, "last": "Winters", "suffix": null, "display": "Holly Winters"}'::json,
+  'warwoman@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000252", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "352 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10252", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -9113,7 +9113,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'kingrune'
+  SELECT 1 FROM public."user" WHERE username = 'warwoman'
 );
 
 INSERT INTO public."user" (
@@ -9133,15 +9133,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'spectralbrain',
-  crypt('spectralbrain', gen_salt('bf')),
-  '{"prefix": null, "first": "Elena", "middle": null, "last": "Caldwell", "suffix": null, "display": "Elena Caldwell"}'::json,
-  'spectralbrain@superhero.com',
+  'shrinkray',
+  crypt('shrinkray', gen_salt('bf')),
+  '{"prefix": null, "first": "Rae", "middle": null, "last": "Murphy", "suffix": null, "display": "Rae Murphy"}'::json,
+  'shrinkray@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000253", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "white"}'::json,
   '[{"label": "home", "line1": "353 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10253", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -9149,7 +9149,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'spectralbrain'
+  SELECT 1 FROM public."user" WHERE username = 'shrinkray'
 );
 
 INSERT INTO public."user" (
@@ -9169,23 +9169,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'quantumsage',
-  crypt('quantumsage', gen_salt('bf')),
-  '{"prefix": null, "first": "Miles", "middle": null, "last": "Caldwell", "suffix": null, "display": "Miles Caldwell"}'::json,
-  'quantumsage@superhero.com',
+  'greenghost',
+  crypt('greenghost', gen_salt('bf')),
+  '{"prefix": null, "first": "Alana", "middle": null, "last": "Michaels", "suffix": null, "display": "Alana Michaels"}'::json,
+  'greenghost@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000254", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "354 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10254", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "white"}'::json,
+  '[{"label": "home", "line1": "354 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10254", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'quantumsage'
+  SELECT 1 FROM public."user" WHERE username = 'greenghost'
 );
 
 INSERT INTO public."user" (
@@ -9205,15 +9205,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'gargoyleripper',
-  crypt('gargoyleripper', gen_salt('bf')),
-  '{"prefix": null, "first": "Clara", "middle": null, "last": "Caldwell", "suffix": null, "display": "Clara Caldwell"}'::json,
-  'gargoyleripper@superhero.com',
+  'darkwing',
+  crypt('darkwing', gen_salt('bf')),
+  '{"prefix": null, "first": "Damien", "middle": null, "last": "Darkblood", "suffix": null, "display": "Damien Darkblood"}'::json,
+  'darkwing@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000255", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "gray"}'::json,
   '[{"label": "home", "line1": "355 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10255", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -9221,7 +9221,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'gargoyleripper'
+  SELECT 1 FROM public."user" WHERE username = 'darkwing'
 );
 
 INSERT INTO public."user" (
@@ -9241,15 +9241,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'marshalhavoc',
-  crypt('marshalhavoc', gen_salt('bf')),
-  '{"prefix": null, "first": "Felix", "middle": null, "last": "Caldwell", "suffix": null, "display": "Felix Caldwell"}'::json,
-  'marshalhavoc@superhero.com',
+  'besttiger',
+  crypt('besttiger', gen_salt('bf')),
+  '{"prefix": null, "first": "Theo", "middle": null, "last": "Kane", "suffix": null, "display": "Theo Kane"}'::json,
+  'besttiger@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000256", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "black"}'::json,
   '[{"label": "home", "line1": "356 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10256", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -9257,7 +9257,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'marshalhavoc'
+  SELECT 1 FROM public."user" WHERE username = 'besttiger'
 );
 
 INSERT INTO public."user" (
@@ -9277,23 +9277,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'cosmickeeper',
-  crypt('cosmickeeper', gen_salt('bf')),
-  '{"prefix": null, "first": "Hazel", "middle": null, "last": "Caldwell", "suffix": null, "display": "Hazel Caldwell"}'::json,
-  'cosmickeeper@superhero.com',
+  'brit',
+  crypt('brit', gen_salt('bf')),
+  '{"prefix": null, "first": "Britt", "middle": null, "last": "Reid", "suffix": null, "display": "Britt Reid"}'::json,
+  'brit@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000257", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "357 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10257", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "gray"}'::json,
+  '[{"label": "home", "line1": "357 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10257", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cosmickeeper'
+  SELECT 1 FROM public."user" WHERE username = 'brit'
 );
 
 INSERT INTO public."user" (
@@ -9313,15 +9313,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'ladyshock',
-  crypt('ladyshock', gen_salt('bf')),
-  '{"prefix": null, "first": "Adrian", "middle": null, "last": "Caldwell", "suffix": null, "display": "Adrian Caldwell"}'::json,
-  'ladyshock@superhero.com',
+  'techjacket',
+  crypt('techjacket', gen_salt('bf')),
+  '{"prefix": null, "first": "Zack", "middle": null, "last": "Thompson", "suffix": null, "display": "Zack Thompson"}'::json,
+  'techjacket@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000258", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "silver"}'::json,
   '[{"label": "home", "line1": "358 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10258", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -9329,7 +9329,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ladyshock'
+  SELECT 1 FROM public."user" WHERE username = 'techjacket'
 );
 
 INSERT INTO public."user" (
@@ -9349,15 +9349,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'omegacurse',
-  crypt('omegacurse', gen_salt('bf')),
-  '{"prefix": null, "first": "Iris", "middle": null, "last": "Caldwell", "suffix": null, "display": "Iris Caldwell"}'::json,
-  'omegacurse@superhero.com',
+  'spawn',
+  crypt('spawn', gen_salt('bf')),
+  '{"prefix": null, "first": "Al", "middle": null, "last": "Simmons", "suffix": null, "display": "Al Simmons"}'::json,
+  'spawn@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000259", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "red"}'::json,
   '[{"label": "home", "line1": "359 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10259", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -9365,7 +9365,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'omegacurse'
+  SELECT 1 FROM public."user" WHERE username = 'spawn'
 );
 
 INSERT INTO public."user" (
@@ -9385,23 +9385,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'embersmasher',
-  crypt('embersmasher', gen_salt('bf')),
-  '{"prefix": null, "first": "Simon", "middle": null, "last": "Caldwell", "suffix": null, "display": "Simon Caldwell"}'::json,
-  'embersmasher@superhero.com',
+  'witchblade',
+  crypt('witchblade', gen_salt('bf')),
+  '{"prefix": null, "first": "Sara", "middle": null, "last": "Pezzini", "suffix": null, "display": "Sara Pezzini"}'::json,
+  'witchblade@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000260", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "360 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10260", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "gold", "color2": "black"}'::json,
+  '[{"label": "home", "line1": "360 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10260", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'embersmasher'
+  SELECT 1 FROM public."user" WHERE username = 'witchblade'
 );
 
 INSERT INTO public."user" (
@@ -9421,15 +9421,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'mysticfist',
-  crypt('mysticfist', gen_salt('bf')),
-  '{"prefix": null, "first": "Ruby", "middle": null, "last": "Caldwell", "suffix": null, "display": "Ruby Caldwell"}'::json,
-  'mysticfist@superhero.com',
+  'darkness',
+  crypt('darkness', gen_salt('bf')),
+  '{"prefix": null, "first": "Jackie", "middle": null, "last": "Estacado", "suffix": null, "display": "Jackie Estacado"}'::json,
+  'darkness@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000261", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "361 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10261", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -9437,7 +9437,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'mysticfist'
+  SELECT 1 FROM public."user" WHERE username = 'darkness'
 );
 
 INSERT INTO public."user" (
@@ -9457,15 +9457,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'chaoshydra',
-  crypt('chaoshydra', gen_salt('bf')),
-  '{"prefix": null, "first": "Victor", "middle": null, "last": "Caldwell", "suffix": null, "display": "Victor Caldwell"}'::json,
-  'chaoshydra@superhero.com',
+  'savagedragon',
+  crypt('savagedragon', gen_salt('bf')),
+  '{"prefix": null, "first": "Malcolm", "middle": null, "last": "Dragon", "suffix": null, "display": "Malcolm Dragon"}'::json,
+  'savagedragon@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000262", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "362 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10262", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -9473,7 +9473,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'chaoshydra'
+  SELECT 1 FROM public."user" WHERE username = 'savagedragon'
 );
 
 INSERT INTO public."user" (
@@ -9493,23 +9493,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'onyxmind',
-  crypt('onyxmind', gen_salt('bf')),
-  '{"prefix": null, "first": "Paige", "middle": null, "last": "Caldwell", "suffix": null, "display": "Paige Caldwell"}'::json,
-  'onyxmind@superhero.com',
+  'shadowhawk',
+  crypt('shadowhawk', gen_salt('bf')),
+  '{"prefix": null, "first": "Paul", "middle": null, "last": "Johnstone", "suffix": null, "display": "Paul Johnstone"}'::json,
+  'shadowhawk@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000263", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "363 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10263", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "silver"}'::json,
+  '[{"label": "home", "line1": "363 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10263", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'onyxmind'
+  SELECT 1 FROM public."user" WHERE username = 'shadowhawk'
 );
 
 INSERT INTO public."user" (
@@ -9529,15 +9529,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'kingleviathan',
-  crypt('kingleviathan', gen_salt('bf')),
-  '{"prefix": null, "first": "Grant", "middle": null, "last": "Caldwell", "suffix": null, "display": "Grant Caldwell"}'::json,
-  'kingleviathan@superhero.com',
+  'youngbloodshaft',
+  crypt('youngbloodshaft', gen_salt('bf')),
+  '{"prefix": null, "first": "Richard", "middle": null, "last": "Olmstead", "suffix": null, "display": "Richard Olmstead"}'::json,
+  'youngbloodshaft@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000264", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "white"}'::json,
   '[{"label": "home", "line1": "364 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10264", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -9545,7 +9545,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'kingleviathan'
+  SELECT 1 FROM public."user" WHERE username = 'youngbloodshaft'
 );
 
 INSERT INTO public."user" (
@@ -9565,15 +9565,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'marshaleye',
-  crypt('marshaleye', gen_salt('bf')),
-  '{"prefix": null, "first": "Tessa", "middle": null, "last": "Caldwell", "suffix": null, "display": "Tessa Caldwell"}'::json,
-  'marshaleye@superhero.com',
+  'youngbloodchapel',
+  crypt('youngbloodchapel', gen_salt('bf')),
+  '{"prefix": null, "first": "Bruce", "middle": null, "last": "Stinson", "suffix": null, "display": "Bruce Stinson"}'::json,
+  'youngbloodchapel@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000265", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
   '[{"label": "home", "line1": "365 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10265", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -9581,7 +9581,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'marshaleye'
+  SELECT 1 FROM public."user" WHERE username = 'youngbloodchapel'
 );
 
 INSERT INTO public."user" (
@@ -9601,23 +9601,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'goliatheagle',
-  crypt('goliatheagle', gen_salt('bf')),
-  '{"prefix": null, "first": "Dean", "middle": null, "last": "Caldwell", "suffix": null, "display": "Dean Caldwell"}'::json,
-  'goliatheagle@superhero.com',
+  'youngbloodbadrock',
+  crypt('youngbloodbadrock', gen_salt('bf')),
+  '{"prefix": null, "first": "Thomas", "middle": null, "last": "Jr", "suffix": null, "display": "Thomas Jr"}'::json,
+  'youngbloodbadrock@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000266", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "366 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10266", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "brown", "color2": "gray"}'::json,
+  '[{"label": "home", "line1": "366 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10266", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goliatheagle'
+  SELECT 1 FROM public."user" WHERE username = 'youngbloodbadrock'
 );
 
 INSERT INTO public."user" (
@@ -9637,15 +9637,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'wardeneye',
-  crypt('wardeneye', gen_salt('bf')),
-  '{"prefix": null, "first": "Vera", "middle": null, "last": "Caldwell", "suffix": null, "display": "Vera Caldwell"}'::json,
-  'wardeneye@superhero.com',
+  'youngbloodvogue',
+  crypt('youngbloodvogue', gen_salt('bf')),
+  '{"prefix": null, "first": "Nikki", "middle": null, "last": "Doyle", "suffix": null, "display": "Nikki Doyle"}'::json,
+  'youngbloodvogue@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000267", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
   '[{"label": "home", "line1": "367 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10267", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -9653,7 +9653,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'wardeneye'
+  SELECT 1 FROM public."user" WHERE username = 'youngbloodvogue'
 );
 
 INSERT INTO public."user" (
@@ -9673,15 +9673,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'marshalkraken',
-  crypt('marshalkraken', gen_salt('bf')),
-  '{"prefix": null, "first": "Colin", "middle": null, "last": "Caldwell", "suffix": null, "display": "Colin Caldwell"}'::json,
-  'marshalkraken@superhero.com',
+  'youngblooddiehard',
+  crypt('youngblooddiehard', gen_salt('bf')),
+  '{"prefix": null, "first": "Lyle", "middle": null, "last": "Kane", "suffix": null, "display": "Lyle Kane"}'::json,
+  'youngblooddiehard@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000268", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
   '[{"label": "home", "line1": "368 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10268", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -9689,7 +9689,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'marshalkraken'
+  SELECT 1 FROM public."user" WHERE username = 'youngblooddiehard'
 );
 
 INSERT INTO public."user" (
@@ -9709,23 +9709,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'chaosshield',
-  crypt('chaosshield', gen_salt('bf')),
-  '{"prefix": null, "first": "Jade", "middle": null, "last": "Caldwell", "suffix": null, "display": "Jade Caldwell"}'::json,
-  'chaosshield@superhero.com',
+  'youngbloodcombat',
+  crypt('youngbloodcombat', gen_salt('bf')),
+  '{"prefix": null, "first": "Jamie", "middle": null, "last": "Sanchez", "suffix": null, "display": "Jamie Sanchez"}'::json,
+  'youngbloodcombat@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000269", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "369 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10269", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "black"}'::json,
+  '[{"label": "home", "line1": "369 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10269", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'chaosshield'
+  SELECT 1 FROM public."user" WHERE username = 'youngbloodcombat'
 );
 
 INSERT INTO public."user" (
@@ -9745,15 +9745,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'phantomkraken',
-  crypt('phantomkraken', gen_salt('bf')),
-  '{"prefix": null, "first": "Marcus", "middle": null, "last": "Caldwell", "suffix": null, "display": "Marcus Caldwell"}'::json,
-  'phantomkraken@superhero.com',
+  'youngbloodriptide',
+  crypt('youngbloodriptide', gen_salt('bf')),
+  '{"prefix": null, "first": "Rita", "middle": null, "last": "Delaney", "suffix": null, "display": "Rita Delaney"}'::json,
+  'youngbloodriptide@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000270", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "white"}'::json,
   '[{"label": "home", "line1": "370 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10270", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -9761,7 +9761,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'phantomkraken'
+  SELECT 1 FROM public."user" WHERE username = 'youngbloodriptide'
 );
 
 INSERT INTO public."user" (
@@ -9781,15 +9781,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'ultrashield',
-  crypt('ultrashield', gen_salt('bf')),
-  '{"prefix": null, "first": "Leah", "middle": null, "last": "Caldwell", "suffix": null, "display": "Leah Caldwell"}'::json,
-  'ultrashield@superhero.com',
+  'supreme',
+  crypt('supreme', gen_salt('bf')),
+  '{"prefix": null, "first": "Ethan", "middle": null, "last": "Crane", "suffix": null, "display": "Ethan Crane"}'::json,
+  'supreme@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000271", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "red"}'::json,
   '[{"label": "home", "line1": "371 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10271", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -9797,7 +9797,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ultrashield'
+  SELECT 1 FROM public."user" WHERE username = 'supreme'
 );
 
 INSERT INTO public."user" (
@@ -9817,23 +9817,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'scarlethavoc',
-  crypt('scarlethavoc', gen_salt('bf')),
-  '{"prefix": null, "first": "Nolan", "middle": null, "last": "Caldwell", "suffix": null, "display": "Nolan Caldwell"}'::json,
-  'scarlethavoc@superhero.com',
+  'glory',
+  crypt('glory', gen_salt('bf')),
+  '{"prefix": null, "first": "Gloriana", "middle": null, "last": "Demeter", "suffix": null, "display": "Gloriana Demeter"}'::json,
+  'glory@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000272", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "372 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10272", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "gold", "color2": "red"}'::json,
+  '[{"label": "home", "line1": "372 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10272", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'scarlethavoc'
+  SELECT 1 FROM public."user" WHERE username = 'glory'
 );
 
 INSERT INTO public."user" (
@@ -9853,15 +9853,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'rangerrush',
-  crypt('rangerrush', gen_salt('bf')),
-  '{"prefix": null, "first": "Gwen", "middle": null, "last": "Caldwell", "suffix": null, "display": "Gwen Caldwell"}'::json,
-  'rangerrush@superhero.com',
+  'bloodstrikefourplay',
+  crypt('bloodstrikefourplay', gen_salt('bf')),
+  '{"prefix": null, "first": "Avril", "middle": null, "last": "Graham", "suffix": null, "display": "Avril Graham"}'::json,
+  'bloodstrikefourplay@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000273", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "black"}'::json,
   '[{"label": "home", "line1": "373 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10273", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -9869,7 +9869,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'rangerrush'
+  SELECT 1 FROM public."user" WHERE username = 'bloodstrikefourplay'
 );
 
 INSERT INTO public."user" (
@@ -9889,15 +9889,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'atomicwing',
-  crypt('atomicwing', gen_salt('bf')),
-  '{"prefix": null, "first": "Tristan", "middle": null, "last": "Caldwell", "suffix": null, "display": "Tristan Caldwell"}'::json,
-  'atomicwing@superhero.com',
+  'bloodstrikecabot',
+  crypt('bloodstrikecabot', gen_salt('bf')),
+  '{"prefix": null, "first": "Cabbot", "middle": null, "last": "Stone", "suffix": null, "display": "Cabbot Stone"}'::json,
+  'bloodstrikecabot@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000274", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "gray", "color2": "black"}'::json,
   '[{"label": "home", "line1": "374 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10274", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -9905,7 +9905,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'atomicwing'
+  SELECT 1 FROM public."user" WHERE username = 'bloodstrikecabot'
 );
 
 INSERT INTO public."user" (
@@ -9925,23 +9925,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'majorghost',
-  crypt('majorghost', gen_salt('bf')),
-  '{"prefix": null, "first": "Selene", "middle": null, "last": "Caldwell", "suffix": null, "display": "Selene Caldwell"}'::json,
-  'majorghost@superhero.com',
+  'prophet',
+  crypt('prophet', gen_salt('bf')),
+  '{"prefix": null, "first": "John", "middle": null, "last": "Prophet", "suffix": null, "display": "John Prophet"}'::json,
+  'prophet@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000275", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "375 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10275", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "brown", "color2": "green"}'::json,
+  '[{"label": "home", "line1": "375 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10275", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'majorghost'
+  SELECT 1 FROM public."user" WHERE username = 'prophet'
 );
 
 INSERT INTO public."user" (
@@ -9961,15 +9961,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'primaltempest',
-  crypt('primaltempest', gen_salt('bf')),
-  '{"prefix": null, "first": "Derek", "middle": null, "last": "Caldwell", "suffix": null, "display": "Derek Caldwell"}'::json,
-  'primaltempest@superhero.com',
+  'brigadebattlestone',
+  crypt('brigadebattlestone', gen_salt('bf')),
+  '{"prefix": null, "first": "Stony", "middle": null, "last": "Briggs", "suffix": null, "display": "Stony Briggs"}'::json,
+  'brigadebattlestone@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000276", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "gray"}'::json,
   '[{"label": "home", "line1": "376 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10276", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -9977,7 +9977,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'primaltempest'
+  SELECT 1 FROM public."user" WHERE username = 'brigadebattlestone'
 );
 
 INSERT INTO public."user" (
@@ -9997,15 +9997,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'feralspark',
-  crypt('feralspark', gen_salt('bf')),
-  '{"prefix": null, "first": "Alina", "middle": null, "last": "Caldwell", "suffix": null, "display": "Alina Caldwell"}'::json,
-  'feralspark@superhero.com',
+  'brigadeseahawk',
+  crypt('brigadeseahawk', gen_salt('bf')),
+  '{"prefix": null, "first": "Kayo", "middle": null, "last": "Tanaka", "suffix": null, "display": "Kayo Tanaka"}'::json,
+  'brigadeseahawk@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000277", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "377 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10277", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -10013,7 +10013,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'feralspark'
+  SELECT 1 FROM public."user" WHERE username = 'brigadeseahawk'
 );
 
 INSERT INTO public."user" (
@@ -10033,23 +10033,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'valkyrieshade',
-  crypt('valkyrieshade', gen_salt('bf')),
-  '{"prefix": null, "first": "Rafael", "middle": null, "last": "Caldwell", "suffix": null, "display": "Rafael Caldwell"}'::json,
-  'valkyrieshade@superhero.com',
+  'firebreather',
+  crypt('firebreather', gen_salt('bf')),
+  '{"prefix": null, "first": "Duncan", "middle": null, "last": "Rosenblatt", "suffix": null, "display": "Duncan Rosenblatt"}'::json,
+  'firebreather@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000278", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "378 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10278", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "orange"}'::json,
+  '[{"label": "home", "line1": "378 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10278", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'valkyrieshade'
+  SELECT 1 FROM public."user" WHERE username = 'firebreather'
 );
 
 INSERT INTO public."user" (
@@ -10069,15 +10069,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'colossuswing',
-  crypt('colossuswing', gen_salt('bf')),
-  '{"prefix": null, "first": "Bianca", "middle": null, "last": "Caldwell", "suffix": null, "display": "Bianca Caldwell"}'::json,
-  'colossuswing@superhero.com',
+  'noblecausesdocnoble',
+  crypt('noblecausesdocnoble', gen_salt('bf')),
+  '{"prefix": null, "first": "Doc", "middle": null, "last": "Noble", "suffix": null, "display": "Doc Noble"}'::json,
+  'noblecausesdocnoble@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000279", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "white"}'::json,
   '[{"label": "home", "line1": "379 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10279", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -10085,7 +10085,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'colossuswing'
+  SELECT 1 FROM public."user" WHERE username = 'noblecausesdocnoble'
 );
 
 INSERT INTO public."user" (
@@ -10105,15 +10105,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'savagehydra',
-  crypt('savagehydra', gen_salt('bf')),
-  '{"prefix": null, "first": "Harper", "middle": null, "last": "Caldwell", "suffix": null, "display": "Harper Caldwell"}'::json,
-  'savagehydra@superhero.com',
+  'noblecausesrace',
+  crypt('noblecausesrace', gen_salt('bf')),
+  '{"prefix": null, "first": "Race", "middle": null, "last": "Noble", "suffix": null, "display": "Race Noble"}'::json,
+  'noblecausesrace@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000280", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "white"}'::json,
   '[{"label": "home", "line1": "380 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10280", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -10121,7 +10121,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'savagehydra'
+  SELECT 1 FROM public."user" WHERE username = 'noblecausesrace'
 );
 
 INSERT INTO public."user" (
@@ -10141,23 +10141,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'turbofury',
-  crypt('turbofury', gen_salt('bf')),
-  '{"prefix": null, "first": "Jonah", "middle": null, "last": "Caldwell", "suffix": null, "display": "Jonah Caldwell"}'::json,
-  'turbofury@superhero.com',
+  'noblecauseszephyr',
+  crypt('noblecauseszephyr', gen_salt('bf')),
+  '{"prefix": null, "first": "Zephyr", "middle": null, "last": "Noble", "suffix": null, "display": "Zephyr Noble"}'::json,
+  'noblecauseszephyr@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000281", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "381 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10281", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "blue"}'::json,
+  '[{"label": "home", "line1": "381 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10281", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'turbofury'
+  SELECT 1 FROM public."user" WHERE username = 'noblecauseszephyr'
 );
 
 INSERT INTO public."user" (
@@ -10177,15 +10177,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'baronripper',
-  crypt('baronripper', gen_salt('bf')),
-  '{"prefix": null, "first": "Mira", "middle": null, "last": "Caldwell", "suffix": null, "display": "Mira Caldwell"}'::json,
-  'baronripper@superhero.com',
+  'noblecausesfrost',
+  crypt('noblecausesfrost', gen_salt('bf')),
+  '{"prefix": null, "first": "Frost", "middle": null, "last": "Noble", "suffix": null, "display": "Frost Noble"}'::json,
+  'noblecausesfrost@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000282", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "cyan", "color2": "white"}'::json,
   '[{"label": "home", "line1": "382 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10282", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -10193,7 +10193,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'baronripper'
+  SELECT 1 FROM public."user" WHERE username = 'noblecausesfrost'
 );
 
 INSERT INTO public."user" (
@@ -10213,15 +10213,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'mysticstrike',
-  crypt('mysticstrike', gen_salt('bf')),
-  '{"prefix": null, "first": "Cedric", "middle": null, "last": "Caldwell", "suffix": null, "display": "Cedric Caldwell"}'::json,
-  'mysticstrike@superhero.com',
+  'noblecausesgaia',
+  crypt('noblecausesgaia', gen_salt('bf')),
+  '{"prefix": null, "first": "Gaia", "middle": null, "last": "Noble", "suffix": null, "display": "Gaia Noble"}'::json,
+  'noblecausesgaia@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000283", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "383 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10283", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -10229,7 +10229,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'mysticstrike'
+  SELECT 1 FROM public."user" WHERE username = 'noblecausesgaia'
 );
 
 INSERT INTO public."user" (
@@ -10249,23 +10249,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'wardensoul',
-  crypt('wardensoul', gen_salt('bf')),
-  '{"prefix": null, "first": "Lena", "middle": null, "last": "Caldwell", "suffix": null, "display": "Lena Caldwell"}'::json,
-  'wardensoul@superhero.com',
+  'noblecausesrusty',
+  crypt('noblecausesrusty', gen_salt('bf')),
+  '{"prefix": null, "first": "Rusty", "middle": null, "last": "Noble", "suffix": null, "display": "Rusty Noble"}'::json,
+  'noblecausesrusty@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000284", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "384 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10284", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "brown", "color2": "orange"}'::json,
+  '[{"label": "home", "line1": "384 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10284", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'wardensoul'
+  SELECT 1 FROM public."user" WHERE username = 'noblecausesrusty'
 );
 
 INSERT INTO public."user" (
@@ -10285,15 +10285,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'stormkraken',
-  crypt('stormkraken', gen_salt('bf')),
-  '{"prefix": null, "first": "Andre", "middle": null, "last": "Caldwell", "suffix": null, "display": "Andre Caldwell"}'::json,
-  'stormkraken@superhero.com',
+  'radiantblack',
+  crypt('radiantblack', gen_salt('bf')),
+  '{"prefix": null, "first": "Nathan", "middle": null, "last": "Burnett", "suffix": null, "display": "Nathan Burnett"}'::json,
+  'radiantblack@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000285", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "pink"}'::json,
   '[{"label": "home", "line1": "385 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10285", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -10301,7 +10301,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stormkraken'
+  SELECT 1 FROM public."user" WHERE username = 'radiantblack'
 );
 
 INSERT INTO public."user" (
@@ -10321,15 +10321,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'lightningsurge',
-  crypt('lightningsurge', gen_salt('bf')),
-  '{"prefix": null, "first": "Sasha", "middle": null, "last": "Caldwell", "suffix": null, "display": "Sasha Caldwell"}'::json,
-  'lightningsurge@superhero.com',
+  'radiantred',
+  crypt('radiantred', gen_salt('bf')),
+  '{"prefix": null, "first": "Satomi", "middle": null, "last": "Sone", "suffix": null, "display": "Satomi Sone"}'::json,
+  'radiantred@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000286", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "black"}'::json,
   '[{"label": "home", "line1": "386 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10286", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -10337,7 +10337,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'lightningsurge'
+  SELECT 1 FROM public."user" WHERE username = 'radiantred'
 );
 
 INSERT INTO public."user" (
@@ -10357,23 +10357,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'hypercyclone',
-  crypt('hypercyclone', gen_salt('bf')),
-  '{"prefix": null, "first": "Malik", "middle": null, "last": "Caldwell", "suffix": null, "display": "Malik Caldwell"}'::json,
-  'hypercyclone@superhero.com',
+  'radiantpink',
+  crypt('radiantpink', gen_salt('bf')),
+  '{"prefix": null, "first": "Eva", "middle": null, "last": "Reyes", "suffix": null, "display": "Eva Reyes"}'::json,
+  'radiantpink@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000287", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "387 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10287", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "white"}'::json,
+  '[{"label": "home", "line1": "387 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10287", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'hypercyclone'
+  SELECT 1 FROM public."user" WHERE username = 'radiantpink'
 );
 
 INSERT INTO public."user" (
@@ -10393,15 +10393,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'emeraldbreaker',
-  crypt('emeraldbreaker', gen_salt('bf')),
-  '{"prefix": null, "first": "Priya", "middle": null, "last": "Caldwell", "suffix": null, "display": "Priya Caldwell"}'::json,
-  'emeraldbreaker@superhero.com',
+  'radiantyellow',
+  crypt('radiantyellow', gen_salt('bf')),
+  '{"prefix": null, "first": "Wendell", "middle": null, "last": "Walters", "suffix": null, "display": "Wendell Walters"}'::json,
+  'radiantyellow@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000288", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "yellow", "color2": "black"}'::json,
   '[{"label": "home", "line1": "388 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10288", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -10409,7 +10409,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'emeraldbreaker'
+  SELECT 1 FROM public."user" WHERE username = 'radiantyellow'
 );
 
 INSERT INTO public."user" (
@@ -10429,15 +10429,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'solargolem',
-  crypt('solargolem', gen_salt('bf')),
-  '{"prefix": null, "first": "Kenji", "middle": null, "last": "Caldwell", "suffix": null, "display": "Kenji Caldwell"}'::json,
-  'solargolem@superhero.com',
+  'roguesun',
+  crypt('roguesun', gen_salt('bf')),
+  '{"prefix": null, "first": "Dylan", "middle": null, "last": "Siegel", "suffix": null, "display": "Dylan Siegel"}'::json,
+  'roguesun@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000289", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "red"}'::json,
   '[{"label": "home", "line1": "389 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10289", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -10445,7 +10445,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'solargolem'
+  SELECT 1 FROM public."user" WHERE username = 'roguesun'
 );
 
 INSERT INTO public."user" (
@@ -10465,23 +10465,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'gravestrike',
-  crypt('gravestrike', gen_salt('bf')),
-  '{"prefix": null, "first": "Yara", "middle": null, "last": "Caldwell", "suffix": null, "display": "Yara Caldwell"}'::json,
-  'gravestrike@superhero.com',
+  'infernogirlred',
+  crypt('infernogirlred', gen_salt('bf')),
+  '{"prefix": null, "first": "Cami", "middle": null, "last": "Ridge", "suffix": null, "display": "Cami Ridge"}'::json,
+  'infernogirlred@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000290", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "390 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10290", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "white"}'::json,
+  '[{"label": "home", "line1": "390 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10290", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'gravestrike'
+  SELECT 1 FROM public."user" WHERE username = 'infernogirlred'
 );
 
 INSERT INTO public."user" (
@@ -10501,15 +10501,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'doomcurse',
-  crypt('doomcurse', gen_salt('bf')),
-  '{"prefix": null, "first": "Rosa", "middle": null, "last": "Caldwell", "suffix": null, "display": "Rosa Caldwell"}'::json,
-  'doomcurse@superhero.com',
+  'deadlucky',
+  crypt('deadlucky', gen_salt('bf')),
+  '{"prefix": null, "first": "Bibi", "middle": null, "last": "Lopez", "suffix": null, "display": "Bibi Lopez"}'::json,
+  'deadlucky@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000291", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "black"}'::json,
   '[{"label": "home", "line1": "391 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10291", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -10517,7 +10517,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'doomcurse'
+  SELECT 1 FROM public."user" WHERE username = 'deadlucky'
 );
 
 INSERT INTO public."user" (
@@ -10537,15 +10537,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'colossushammer',
-  crypt('colossushammer', gen_salt('bf')),
-  '{"prefix": null, "first": "Hugo", "middle": null, "last": "Caldwell", "suffix": null, "display": "Hugo Caldwell"}'::json,
-  'colossushammer@superhero.com',
+  'supermassive',
+  crypt('supermassive', gen_salt('bf')),
+  '{"prefix": null, "first": "Maya", "middle": null, "last": "King", "suffix": null, "display": "Maya King"}'::json,
+  'supermassive@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000292", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "392 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10292", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -10553,7 +10553,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'colossushammer'
+  SELECT 1 FROM public."user" WHERE username = 'supermassive'
 );
 
 INSERT INTO public."user" (
@@ -10573,23 +10573,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'tidalraven',
-  crypt('tidalraven', gen_salt('bf')),
-  '{"prefix": null, "first": "Ingrid", "middle": null, "last": "Caldwell", "suffix": null, "display": "Ingrid Caldwell"}'::json,
-  'tidalraven@superhero.com',
+  'geiger',
+  crypt('geiger', gen_salt('bf')),
+  '{"prefix": null, "first": "Tariq", "middle": null, "last": "Geiger", "suffix": null, "display": "Tariq Geiger"}'::json,
+  'geiger@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000293", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "393 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10293", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "yellow"}'::json,
+  '[{"label": "home", "line1": "393 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10293", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'tidalraven'
+  SELECT 1 FROM public."user" WHERE username = 'geiger'
 );
 
 INSERT INTO public."user" (
@@ -10609,15 +10609,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'roninshield',
-  crypt('roninshield', gen_salt('bf')),
-  '{"prefix": null, "first": "Pascal", "middle": null, "last": "Caldwell", "suffix": null, "display": "Pascal Caldwell"}'::json,
-  'roninshield@superhero.com',
+  'junkyardjoe',
+  crypt('junkyardjoe', gen_salt('bf')),
+  '{"prefix": null, "first": "Joseph", "middle": null, "last": "Mason", "suffix": null, "display": "Joseph Mason"}'::json,
+  'junkyardjoe@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000294", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "gray", "color2": "green"}'::json,
   '[{"label": "home", "line1": "394 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10294", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -10625,7 +10625,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'roninshield'
+  SELECT 1 FROM public."user" WHERE username = 'junkyardjoe'
 );
 
 INSERT INTO public."user" (
@@ -10645,15 +10645,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'hyperblade',
-  crypt('hyperblade', gen_salt('bf')),
-  '{"prefix": null, "first": "Freya", "middle": null, "last": "Caldwell", "suffix": null, "display": "Freya Caldwell"}'::json,
-  'hyperblade@superhero.com',
+  'redcoat',
+  crypt('redcoat', gen_salt('bf')),
+  '{"prefix": null, "first": "Simon", "middle": null, "last": "Pure", "suffix": null, "display": "Simon Pure"}'::json,
+  'redcoat@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000295", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "white"}'::json,
   '[{"label": "home", "line1": "395 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10295", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -10661,7 +10661,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'hyperblade'
+  SELECT 1 FROM public."user" WHERE username = 'redcoat'
 );
 
 INSERT INTO public."user" (
@@ -10681,23 +10681,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'hyperprophet',
-  crypt('hyperprophet', gen_salt('bf')),
-  '{"prefix": null, "first": "Dante", "middle": null, "last": "Caldwell", "suffix": null, "display": "Dante Caldwell"}'::json,
-  'hyperprophet@superhero.com',
+  'voidrivalk',
+  crypt('voidrivalk', gen_salt('bf')),
+  '{"prefix": null, "first": "Tara", "middle": null, "last": "Rivalk", "suffix": null, "display": "Tara Rivalk"}'::json,
+  'voidrivalk@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000296", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "396 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10296", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "violet"}'::json,
+  '[{"label": "home", "line1": "396 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10296", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'hyperprophet'
+  SELECT 1 FROM public."user" WHERE username = 'voidrivalk'
 );
 
 INSERT INTO public."user" (
@@ -10717,15 +10717,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'chaosavenger',
-  crypt('chaosavenger', gen_salt('bf')),
-  '{"prefix": null, "first": "Keiko", "middle": null, "last": "Caldwell", "suffix": null, "display": "Keiko Caldwell"}'::json,
-  'chaosavenger@superhero.com',
+  'wolfman',
+  crypt('wolfman', gen_salt('bf')),
+  '{"prefix": null, "first": "Gary", "middle": null, "last": "Hampton", "suffix": null, "display": "Gary Hampton"}'::json,
+  'wolfman@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000297", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "brown", "color2": "black"}'::json,
   '[{"label": "home", "line1": "397 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10297", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -10733,7 +10733,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'chaosavenger'
+  SELECT 1 FROM public."user" WHERE username = 'wolfman'
 );
 
 INSERT INTO public."user" (
@@ -10753,15 +10753,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'majorspark',
-  crypt('majorspark', gen_salt('bf')),
-  '{"prefix": null, "first": "Amir", "middle": null, "last": "Caldwell", "suffix": null, "display": "Amir Caldwell"}'::json,
-  'majorspark@superhero.com',
+  'guardinglobe',
+  crypt('guardinglobe', gen_salt('bf')),
+  '{"prefix": null, "first": "Britney", "middle": null, "last": "Cho", "suffix": null, "display": "Britney Cho"}'::json,
+  'guardinglobe@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000298", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "398 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10298", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -10769,7 +10769,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'majorspark'
+  SELECT 1 FROM public."user" WHERE username = 'guardinglobe'
 );
 
 INSERT INTO public."user" (
@@ -10789,23 +10789,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'ironbreaker',
-  crypt('ironbreaker', gen_salt('bf')),
-  '{"prefix": null, "first": "Lucia", "middle": null, "last": "Caldwell", "suffix": null, "display": "Lucia Caldwell"}'::json,
-  'ironbreaker@superhero.com',
+  'velocity',
+  crypt('velocity', gen_salt('bf')),
+  '{"prefix": null, "first": "Carin", "middle": null, "last": "Taylor", "suffix": null, "display": "Carin Taylor"}'::json,
+  'velocity@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000299", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "399 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10299", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "white"}'::json,
+  '[{"label": "home", "line1": "399 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10299", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ironbreaker'
+  SELECT 1 FROM public."user" WHERE username = 'velocity'
 );
 
 INSERT INTO public."user" (
@@ -10825,15 +10825,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'razorrush',
-  crypt('razorrush', gen_salt('bf')),
-  '{"prefix": null, "first": "Tobias", "middle": null, "last": "Caldwell", "suffix": null, "display": "Tobias Caldwell"}'::json,
-  'razorrush@superhero.com',
+  'cyblade',
+  crypt('cyblade', gen_salt('bf')),
+  '{"prefix": null, "first": "Stryk", "middle": null, "last": "Velocity", "suffix": null, "display": "Stryk Velocity"}'::json,
+  'cyblade@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000300", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "silver"}'::json,
   '[{"label": "home", "line1": "400 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10300", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -10841,7 +10841,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'razorrush'
+  SELECT 1 FROM public."user" WHERE username = 'cyblade'
 );
 
 INSERT INTO public."user" (
@@ -10861,15 +10861,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'colossuspanther',
-  crypt('colossuspanther', gen_salt('bf')),
-  '{"prefix": null, "first": "Anika", "middle": null, "last": "Caldwell", "suffix": null, "display": "Anika Caldwell"}'::json,
-  'colossuspanther@superhero.com',
+  'ripclaw',
+  crypt('ripclaw', gen_salt('bf')),
+  '{"prefix": null, "first": "William", "middle": null, "last": "Talbot", "suffix": null, "display": "William Talbot"}'::json,
+  'ripclaw@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000301", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "red"}'::json,
   '[{"label": "home", "line1": "401 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10301", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -10877,7 +10877,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'colossuspanther'
+  SELECT 1 FROM public."user" WHERE username = 'ripclaw'
 );
 
 INSERT INTO public."user" (
@@ -10897,23 +10897,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'arcanedefender',
-  crypt('arcanedefender', gen_salt('bf')),
-  '{"prefix": null, "first": "Reid", "middle": null, "last": "Caldwell", "suffix": null, "display": "Reid Caldwell"}'::json,
-  'arcanedefender@superhero.com',
+  'grifter',
+  crypt('grifter', gen_salt('bf')),
+  '{"prefix": null, "first": "Cole", "middle": null, "last": "Cash", "suffix": null, "display": "Cole Cash"}'::json,
+  'grifter@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000302", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "402 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10302", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
+  '[{"label": "home", "line1": "402 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10302", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'arcanedefender'
+  SELECT 1 FROM public."user" WHERE username = 'grifter'
 );
 
 INSERT INTO public."user" (
@@ -10933,15 +10933,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'nightbolt',
-  crypt('nightbolt', gen_salt('bf')),
-  '{"prefix": null, "first": "Carmen", "middle": null, "last": "Caldwell", "suffix": null, "display": "Carmen Caldwell"}'::json,
-  'nightbolt@superhero.com',
+  'zealot',
+  crypt('zealot', gen_salt('bf')),
+  '{"prefix": null, "first": "Lady", "middle": null, "last": "Zannah", "suffix": null, "display": "Lady Zannah"}'::json,
+  'zealot@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000303", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
   '[{"label": "home", "line1": "403 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10303", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -10949,7 +10949,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'nightbolt'
+  SELECT 1 FROM public."user" WHERE username = 'zealot'
 );
 
 INSERT INTO public."user" (
@@ -10969,15 +10969,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'sergeantfist',
-  crypt('sergeantfist', gen_salt('bf')),
-  '{"prefix": null, "first": "Elliot", "middle": null, "last": "Caldwell", "suffix": null, "display": "Elliot Caldwell"}'::json,
-  'sergeantfist@superhero.com',
+  'voodoo',
+  crypt('voodoo', gen_salt('bf')),
+  '{"prefix": null, "first": "Priscilla", "middle": null, "last": "Kitaen", "suffix": null, "display": "Priscilla Kitaen"}'::json,
+  'voodoo@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000304", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
   '[{"label": "home", "line1": "404 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10304", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -10985,7 +10985,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'sergeantfist'
+  SELECT 1 FROM public."user" WHERE username = 'voodoo'
 );
 
 INSERT INTO public."user" (
@@ -11005,23 +11005,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'outlawmind',
-  crypt('outlawmind', gen_salt('bf')),
-  '{"prefix": null, "first": "Naomi", "middle": null, "last": "Caldwell", "suffix": null, "display": "Naomi Caldwell"}'::json,
-  'outlawmind@superhero.com',
+  'maul',
+  crypt('maul', gen_salt('bf')),
+  '{"prefix": null, "first": "Jeremy", "middle": null, "last": "Stone", "suffix": null, "display": "Jeremy Stone"}'::json,
+  'maul@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000305", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "405 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10305", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "gray"}'::json,
+  '[{"label": "home", "line1": "405 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10305", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'outlawmind'
+  SELECT 1 FROM public."user" WHERE username = 'maul'
 );
 
 INSERT INTO public."user" (
@@ -11041,15 +11041,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'steelsurge',
-  crypt('steelsurge', gen_salt('bf')),
-  '{"prefix": null, "first": "Sterling", "middle": null, "last": "Caldwell", "suffix": null, "display": "Sterling Caldwell"}'::json,
-  'steelsurge@superhero.com',
+  'spartan',
+  crypt('spartan', gen_salt('bf')),
+  '{"prefix": null, "first": "Yohn", "middle": null, "last": "Kall", "suffix": null, "display": "Yohn Kall"}'::json,
+  'spartan@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000306", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "silver"}'::json,
   '[{"label": "home", "line1": "406 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10306", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -11057,7 +11057,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'steelsurge'
+  SELECT 1 FROM public."user" WHERE username = 'spartan'
 );
 
 INSERT INTO public."user" (
@@ -11077,15 +11077,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'colossusraven',
-  crypt('colossusraven', gen_salt('bf')),
-  '{"prefix": null, "first": "Zara", "middle": null, "last": "Caldwell", "suffix": null, "display": "Zara Caldwell"}'::json,
-  'colossusraven@superhero.com',
+  'warblade',
+  crypt('warblade', gen_salt('bf')),
+  '{"prefix": null, "first": "Michael", "middle": null, "last": "Cray", "suffix": null, "display": "Michael Cray"}'::json,
+  'warblade@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000307", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "silver"}'::json,
   '[{"label": "home", "line1": "407 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10307", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -11093,7 +11093,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'colossusraven'
+  SELECT 1 FROM public."user" WHERE username = 'warblade'
 );
 
 INSERT INTO public."user" (
@@ -11113,23 +11113,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'turbobane',
-  crypt('turbobane', gen_salt('bf')),
-  '{"prefix": null, "first": "Gideon", "middle": null, "last": "Caldwell", "suffix": null, "display": "Gideon Caldwell"}'::json,
-  'turbobane@superhero.com',
+  'fairchild',
+  crypt('fairchild', gen_salt('bf')),
+  '{"prefix": null, "first": "Caitlin", "middle": null, "last": "Fairchild", "suffix": null, "display": "Caitlin Fairchild"}'::json,
+  'fairchild@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000308", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "408 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10308", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "blue"}'::json,
+  '[{"label": "home", "line1": "408 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10308", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'turbobane'
+  SELECT 1 FROM public."user" WHERE username = 'fairchild'
 );
 
 INSERT INTO public."user" (
@@ -11149,15 +11149,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'emeraldhydra',
-  crypt('emeraldhydra', gen_salt('bf')),
-  '{"prefix": null, "first": "Helena", "middle": null, "last": "Caldwell", "suffix": null, "display": "Helena Caldwell"}'::json,
-  'emeraldhydra@superhero.com',
+  'burnout',
+  crypt('burnout', gen_salt('bf')),
+  '{"prefix": null, "first": "Bobby", "middle": null, "last": "Lane", "suffix": null, "display": "Bobby Lane"}'::json,
+  'burnout@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000309", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "red"}'::json,
   '[{"label": "home", "line1": "409 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10309", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -11165,7 +11165,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'emeraldhydra'
+  SELECT 1 FROM public."user" WHERE username = 'burnout'
 );
 
 INSERT INTO public."user" (
@@ -11185,15 +11185,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'sentinelshock',
-  crypt('sentinelshock', gen_salt('bf')),
-  '{"prefix": null, "first": "Roman", "middle": null, "last": "Caldwell", "suffix": null, "display": "Roman Caldwell"}'::json,
-  'sentinelshock@superhero.com',
+  'rainmaker',
+  crypt('rainmaker', gen_salt('bf')),
+  '{"prefix": null, "first": "Sarah", "middle": null, "last": "Rainmaker", "suffix": null, "display": "Sarah Rainmaker"}'::json,
+  'rainmaker@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000310", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "green"}'::json,
   '[{"label": "home", "line1": "410 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10310", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -11201,7 +11201,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'sentinelshock'
+  SELECT 1 FROM public."user" WHERE username = 'rainmaker'
 );
 
 INSERT INTO public."user" (
@@ -11221,23 +11221,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'commandermask',
-  crypt('commandermask', gen_salt('bf')),
-  '{"prefix": null, "first": "Vivian", "middle": null, "last": "Caldwell", "suffix": null, "display": "Vivian Caldwell"}'::json,
-  'commandermask@superhero.com',
+  'freefall',
+  crypt('freefall', gen_salt('bf')),
+  '{"prefix": null, "first": "Roxy", "middle": null, "last": "Spaulding", "suffix": null, "display": "Roxy Spaulding"}'::json,
+  'freefall@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000311", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "411 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10311", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "pink"}'::json,
+  '[{"label": "home", "line1": "411 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10311", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'commandermask'
+  SELECT 1 FROM public."user" WHERE username = 'freefall'
 );
 
 INSERT INTO public."user" (
@@ -11257,15 +11257,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'ancientcobra',
-  crypt('ancientcobra', gen_salt('bf')),
-  '{"prefix": null, "first": "Quinn", "middle": null, "last": "Caldwell", "suffix": null, "display": "Quinn Caldwell"}'::json,
-  'ancientcobra@superhero.com',
+  'boon',
+  crypt('boon', gen_salt('bf')),
+  '{"prefix": null, "first": "Jeremy", "middle": null, "last": "Boon", "suffix": null, "display": "Jeremy Boon"}'::json,
+  'boon@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000312", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "silver"}'::json,
   '[{"label": "home", "line1": "412 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10312", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -11273,7 +11273,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ancientcobra'
+  SELECT 1 FROM public."user" WHERE username = 'boon'
 );
 
 INSERT INTO public."user" (
@@ -11293,15 +11293,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'doomstomper',
-  crypt('doomstomper', gen_salt('bf')),
-  '{"prefix": null, "first": "Marcel", "middle": null, "last": "Caldwell", "suffix": null, "display": "Marcel Caldwell"}'::json,
-  'doomstomper@superhero.com',
+  'newmen',
+  crypt('newmen', gen_salt('bf')),
+  '{"prefix": null, "first": "Nicholas", "middle": null, "last": "Neman", "suffix": null, "display": "Nicholas Neman"}'::json,
+  'newmen@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000313", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "gray"}'::json,
   '[{"label": "home", "line1": "413 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10313", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -11309,7 +11309,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'doomstomper'
+  SELECT 1 FROM public."user" WHERE username = 'newmen'
 );
 
 INSERT INTO public."user" (
@@ -11329,23 +11329,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'razorblade',
-  crypt('razorblade', gen_salt('bf')),
-  '{"prefix": null, "first": "Talia", "middle": null, "last": "Caldwell", "suffix": null, "display": "Talia Caldwell"}'::json,
-  'razorblade@superhero.com',
+  'kickass',
+  crypt('kickass', gen_salt('bf')),
+  '{"prefix": null, "first": "Dave", "middle": null, "last": "Lizewski", "suffix": null, "display": "Dave Lizewski"}'::json,
+  'kickass@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000314", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "414 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10314", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "yellow"}'::json,
+  '[{"label": "home", "line1": "414 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10314", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'razorblade'
+  SELECT 1 FROM public."user" WHERE username = 'kickass'
 );
 
 INSERT INTO public."user" (
@@ -11365,15 +11365,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'ironbone',
-  crypt('ironbone', gen_salt('bf')),
-  '{"prefix": null, "first": "Desmond", "middle": null, "last": "Caldwell", "suffix": null, "display": "Desmond Caldwell"}'::json,
-  'ironbone@superhero.com',
+  'hitgirl',
+  crypt('hitgirl', gen_salt('bf')),
+  '{"prefix": null, "first": "Mindy", "middle": null, "last": "Macready", "suffix": null, "display": "Mindy Macready"}'::json,
+  'hitgirl@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000315", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
   '[{"label": "home", "line1": "415 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10315", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -11381,7 +11381,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ironbone'
+  SELECT 1 FROM public."user" WHERE username = 'hitgirl'
 );
 
 INSERT INTO public."user" (
@@ -11401,15 +11401,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'onyxrender',
-  crypt('onyxrender', gen_salt('bf')),
-  '{"prefix": null, "first": "Ariana", "middle": null, "last": "Caldwell", "suffix": null, "display": "Ariana Caldwell"}'::json,
-  'onyxrender@superhero.com',
+  'nemesis',
+  crypt('nemesis', gen_salt('bf')),
+  '{"prefix": null, "first": "Matt", "middle": null, "last": "Anderson", "suffix": null, "display": "Matt Anderson"}'::json,
+  'nemesis@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000316", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "white", "color2": "black"}'::json,
   '[{"label": "home", "line1": "416 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10316", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -11417,7 +11417,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'onyxrender'
+  SELECT 1 FROM public."user" WHERE username = 'nemesis'
 );
 
 INSERT INTO public."user" (
@@ -11437,23 +11437,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'bulletcyclone',
-  crypt('bulletcyclone', gen_salt('bf')),
-  '{"prefix": null, "first": "Brock", "middle": null, "last": "Caldwell", "suffix": null, "display": "Brock Caldwell"}'::json,
-  'bulletcyclone@superhero.com',
+  'kingsman',
+  crypt('kingsman', gen_salt('bf')),
+  '{"prefix": null, "first": "Gary", "middle": null, "last": "Unwin", "suffix": null, "display": "Gary Unwin"}'::json,
+  'kingsman@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000317", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "417 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10317", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "black"}'::json,
+  '[{"label": "home", "line1": "417 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10317", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'bulletcyclone'
+  SELECT 1 FROM public."user" WHERE username = 'kingsman'
 );
 
 INSERT INTO public."user" (
@@ -11473,15 +11473,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'frosthand',
-  crypt('frosthand', gen_salt('bf')),
-  '{"prefix": null, "first": "Celeste", "middle": null, "last": "Caldwell", "suffix": null, "display": "Celeste Caldwell"}'::json,
-  'frosthand@superhero.com',
+  'chrononaut',
+  crypt('chrononaut', gen_salt('bf')),
+  '{"prefix": null, "first": "Corbin", "middle": null, "last": "Quinn", "suffix": null, "display": "Corbin Quinn"}'::json,
+  'chrononaut@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000318", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "blue", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "418 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10318", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -11489,7 +11489,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'frosthand'
+  SELECT 1 FROM public."user" WHERE username = 'chrononaut'
 );
 
 INSERT INTO public."user" (
@@ -11509,15 +11509,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'chaosraven',
-  crypt('chaosraven', gen_salt('bf')),
-  '{"prefix": null, "first": "Warren", "middle": null, "last": "Caldwell", "suffix": null, "display": "Warren Caldwell"}'::json,
-  'chaosraven@superhero.com',
+  'reborn',
+  crypt('reborn', gen_salt('bf')),
+  '{"prefix": null, "first": "Bonnie", "middle": null, "last": "Black", "suffix": null, "display": "Bonnie Black"}'::json,
+  'reborn@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000319", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "419 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10319", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -11525,7 +11525,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'chaosraven'
+  SELECT 1 FROM public."user" WHERE username = 'reborn'
 );
 
 INSERT INTO public."user" (
@@ -11545,23 +11545,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'ancienthavoc',
-  crypt('ancienthavoc', gen_salt('bf')),
-  '{"prefix": null, "first": "Delilah", "middle": null, "last": "Caldwell", "suffix": null, "display": "Delilah Caldwell"}'::json,
-  'ancienthavoc@superhero.com',
+  'skyboundrogue',
+  crypt('skyboundrogue', gen_salt('bf')),
+  '{"prefix": null, "first": "Tyler", "middle": null, "last": "Wells", "suffix": null, "display": "Tyler Wells"}'::json,
+  'skyboundrogue@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000320", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "420 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10320", "country_code": "USA"}]'::json,
+  '{"notes": "Image superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "teal", "color2": "black"}'::json,
+  '[{"label": "home", "line1": "420 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10320", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ancienthavoc'
+  SELECT 1 FROM public."user" WHERE username = 'skyboundrogue'
 );
 
 INSERT INTO public."user" (
@@ -11581,15 +11581,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'solarcyclone',
-  crypt('solarcyclone', gen_salt('bf')),
-  '{"prefix": null, "first": "Spencer", "middle": null, "last": "Caldwell", "suffix": null, "display": "Spencer Caldwell"}'::json,
-  'solarcyclone@superhero.com',
+  'talialghul',
+  crypt('talialghul', gen_salt('bf')),
+  '{"prefix": null, "first": "Talia", "middle": null, "last": "al Ghul", "suffix": null, "display": "Talia al Ghul"}'::json,
+  'talialghul@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000321", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "421 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10321", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -11597,7 +11597,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'solarcyclone'
+  SELECT 1 FROM public."user" WHERE username = 'talialghul'
 );
 
 INSERT INTO public."user" (
@@ -11617,15 +11617,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'paladinsigil',
-  crypt('paladinsigil', gen_salt('bf')),
-  '{"prefix": null, "first": "Monroe", "middle": null, "last": "Caldwell", "suffix": null, "display": "Monroe Caldwell"}'::json,
-  'paladinsigil@superhero.com',
+  'nyssalghul',
+  crypt('nyssalghul', gen_salt('bf')),
+  '{"prefix": null, "first": "Nyssa", "middle": null, "last": "al Ghul", "suffix": null, "display": "Nyssa al Ghul"}'::json,
+  'nyssalghul@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000322", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "green"}'::json,
   '[{"label": "home", "line1": "422 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10322", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -11633,7 +11633,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'paladinsigil'
+  SELECT 1 FROM public."user" WHERE username = 'nyssalghul'
 );
 
 INSERT INTO public."user" (
@@ -11653,23 +11653,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'baronstomper',
-  crypt('baronstomper', gen_salt('bf')),
-  '{"prefix": null, "first": "Beckett", "middle": null, "last": "Caldwell", "suffix": null, "display": "Beckett Caldwell"}'::json,
-  'baronstomper@superhero.com',
+  'cheetah',
+  crypt('cheetah', gen_salt('bf')),
+  '{"prefix": null, "first": "Barbara", "middle": null, "last": "Minerva", "suffix": null, "display": "Barbara Minerva"}'::json,
+  'cheetah@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000323", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "423 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10323", "country_code": "USA"}]'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "brown"}'::json,
+  '[{"label": "home", "line1": "423 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10323", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'baronstomper'
+  SELECT 1 FROM public."user" WHERE username = 'cheetah'
 );
 
 INSERT INTO public."user" (
@@ -11689,15 +11689,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'steelleviathan',
-  crypt('steelleviathan', gen_salt('bf')),
-  '{"prefix": null, "first": "Soraya", "middle": null, "last": "Caldwell", "suffix": null, "display": "Soraya Caldwell"}'::json,
-  'steelleviathan@superhero.com',
+  'silverbanshee',
+  crypt('silverbanshee', gen_salt('bf')),
+  '{"prefix": null, "first": "Siobhan", "middle": null, "last": "McDougal", "suffix": null, "display": "Siobhan McDougal"}'::json,
+  'silverbanshee@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000324", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "silver", "color2": "green"}'::json,
   '[{"label": "home", "line1": "424 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10324", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -11705,7 +11705,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'steelleviathan'
+  SELECT 1 FROM public."user" WHERE username = 'silverbanshee'
 );
 
 INSERT INTO public."user" (
@@ -11725,15 +11725,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'tidalecho',
-  crypt('tidalecho', gen_salt('bf')),
-  '{"prefix": null, "first": "Landon", "middle": null, "last": "Caldwell", "suffix": null, "display": "Landon Caldwell"}'::json,
-  'tidalecho@superhero.com',
+  'livewire',
+  crypt('livewire', gen_salt('bf')),
+  '{"prefix": null, "first": "Leslie", "middle": null, "last": "Willis", "suffix": null, "display": "Leslie Willis"}'::json,
+  'livewire@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000325", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "white"}'::json,
   '[{"label": "home", "line1": "425 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10325", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -11741,7 +11741,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'tidalecho'
+  SELECT 1 FROM public."user" WHERE username = 'livewire'
 );
 
 INSERT INTO public."user" (
@@ -11761,23 +11761,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'sentinelshade',
-  crypt('sentinelshade', gen_salt('bf')),
-  '{"prefix": null, "first": "Petra", "middle": null, "last": "Caldwell", "suffix": null, "display": "Petra Caldwell"}'::json,
-  'sentinelshade@superhero.com',
+  'giganta',
+  crypt('giganta', gen_salt('bf')),
+  '{"prefix": null, "first": "Doris", "middle": null, "last": "Zeul", "suffix": null, "display": "Doris Zeul"}'::json,
+  'giganta@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000326", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "426 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10326", "country_code": "USA"}]'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "purple"}'::json,
+  '[{"label": "home", "line1": "426 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10326", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'sentinelshade'
+  SELECT 1 FROM public."user" WHERE username = 'giganta'
 );
 
 INSERT INTO public."user" (
@@ -11797,15 +11797,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'baronsoul',
-  crypt('baronsoul', gen_salt('bf')),
-  '{"prefix": null, "first": "Cassius", "middle": null, "last": "Caldwell", "suffix": null, "display": "Cassius Caldwell"}'::json,
-  'baronsoul@superhero.com',
+  'maxima',
+  crypt('maxima', gen_salt('bf')),
+  '{"prefix": null, "first": "Maxima", "middle": null, "last": "Almerac", "suffix": null, "display": "Maxima Almerac"}'::json,
+  'maxima@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000327", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "427 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10327", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -11813,7 +11813,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'baronsoul'
+  SELECT 1 FROM public."user" WHERE username = 'maxima'
 );
 
 INSERT INTO public."user" (
@@ -11833,15 +11833,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'stalkergolem',
-  crypt('stalkergolem', gen_salt('bf')),
-  '{"prefix": null, "first": "Rowan", "middle": null, "last": "Caldwell", "suffix": null, "display": "Rowan Caldwell"}'::json,
-  'stalkergolem@superhero.com',
+  'thunder',
+  crypt('thunder', gen_salt('bf')),
+  '{"prefix": null, "first": "Anissa", "middle": null, "last": "Pierce", "suffix": null, "display": "Anissa Pierce"}'::json,
+  'thunder@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000328", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "yellow"}'::json,
   '[{"label": "home", "line1": "428 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10328", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -11849,7 +11849,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stalkergolem'
+  SELECT 1 FROM public."user" WHERE username = 'thunder'
 );
 
 INSERT INTO public."user" (
@@ -11869,23 +11869,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'novaquake',
-  crypt('novaquake', gen_salt('bf')),
-  '{"prefix": null, "first": "Ethan", "middle": null, "last": "Mercer", "suffix": null, "display": "Ethan Mercer"}'::json,
-  'novaquake@superhero.com',
+  'lightning',
+  crypt('lightning', gen_salt('bf')),
+  '{"prefix": null, "first": "Jennifer", "middle": null, "last": "Pierce", "suffix": null, "display": "Jennifer Pierce"}'::json,
+  'lightning@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000329", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "429 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10329", "country_code": "USA"}]'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "white"}'::json,
+  '[{"label": "home", "line1": "429 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10329", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'novaquake'
+  SELECT 1 FROM public."user" WHERE username = 'lightning'
 );
 
 INSERT INTO public."user" (
@@ -11905,15 +11905,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'atomichowl',
-  crypt('atomichowl', gen_salt('bf')),
-  '{"prefix": null, "first": "Mia", "middle": null, "last": "Mercer", "suffix": null, "display": "Mia Mercer"}'::json,
-  'atomichowl@superhero.com',
+  'mera',
+  crypt('mera', gen_salt('bf')),
+  '{"prefix": null, "first": "Mera", "middle": null, "last": "Curry", "suffix": null, "display": "Mera Curry"}'::json,
+  'mera@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000330", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "430 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10330", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -11921,7 +11921,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'atomichowl'
+  SELECT 1 FROM public."user" WHERE username = 'mera'
 );
 
 INSERT INTO public."user" (
@@ -11941,15 +11941,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'reapergolem',
-  crypt('reapergolem', gen_salt('bf')),
-  '{"prefix": null, "first": "Noah", "middle": null, "last": "Mercer", "suffix": null, "display": "Noah Mercer"}'::json,
-  'reapergolem@superhero.com',
+  'ravager',
+  crypt('ravager', gen_salt('bf')),
+  '{"prefix": null, "first": "Rose", "middle": null, "last": "Wilson", "suffix": null, "display": "Rose Wilson"}'::json,
+  'ravager@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000331", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "black"}'::json,
   '[{"label": "home", "line1": "431 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10331", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -11957,7 +11957,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'reapergolem'
+  SELECT 1 FROM public."user" WHERE username = 'ravager'
 );
 
 INSERT INTO public."user" (
@@ -11977,23 +11977,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'phantomspell',
-  crypt('phantomspell', gen_salt('bf')),
-  '{"prefix": null, "first": "Ava", "middle": null, "last": "Mercer", "suffix": null, "display": "Ava Mercer"}'::json,
-  'phantomspell@superhero.com',
+  'cheshire',
+  crypt('cheshire', gen_salt('bf')),
+  '{"prefix": null, "first": "Jade", "middle": null, "last": "Nguyen", "suffix": null, "display": "Jade Nguyen"}'::json,
+  'cheshire@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000332", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "432 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10332", "country_code": "USA"}]'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "black"}'::json,
+  '[{"label": "home", "line1": "432 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10332", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'phantomspell'
+  SELECT 1 FROM public."user" WHERE username = 'cheshire'
 );
 
 INSERT INTO public."user" (
@@ -12013,15 +12013,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'phantomsmasher',
-  crypt('phantomsmasher', gen_salt('bf')),
-  '{"prefix": null, "first": "Liam", "middle": null, "last": "Mercer", "suffix": null, "display": "Liam Mercer"}'::json,
-  'phantomsmasher@superhero.com',
+  'tarantula',
+  crypt('tarantula', gen_salt('bf')),
+  '{"prefix": null, "first": "Catalina", "middle": null, "last": "Flores", "suffix": null, "display": "Catalina Flores"}'::json,
+  'tarantula@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000333", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "brown", "color2": "black"}'::json,
   '[{"label": "home", "line1": "433 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10333", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -12029,7 +12029,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'phantomsmasher'
+  SELECT 1 FROM public."user" WHERE username = 'tarantula'
 );
 
 INSERT INTO public."user" (
@@ -12049,15 +12049,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'deltadragon',
-  crypt('deltadragon', gen_salt('bf')),
-  '{"prefix": null, "first": "Sophia", "middle": null, "last": "Mercer", "suffix": null, "display": "Sophia Mercer"}'::json,
-  'deltadragon@superhero.com',
+  'circe',
+  crypt('circe', gen_salt('bf')),
+  '{"prefix": null, "first": "Circe", "middle": null, "last": "Aeaea", "suffix": null, "display": "Circe Aeaea"}'::json,
+  'circe@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000334", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "434 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10334", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -12065,7 +12065,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'deltadragon'
+  SELECT 1 FROM public."user" WHERE username = 'circe'
 );
 
 INSERT INTO public."user" (
@@ -12085,23 +12085,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'ultrashock',
-  crypt('ultrashock', gen_salt('bf')),
-  '{"prefix": null, "first": "Owen", "middle": null, "last": "Mercer", "suffix": null, "display": "Owen Mercer"}'::json,
-  'ultrashock@superhero.com',
+  'blackalice',
+  crypt('blackalice', gen_salt('bf')),
+  '{"prefix": null, "first": "Lori", "middle": null, "last": "Zechlin", "suffix": null, "display": "Lori Zechlin"}'::json,
+  'blackalice@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000335", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "435 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10335", "country_code": "USA"}]'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "purple"}'::json,
+  '[{"label": "home", "line1": "435 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10335", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ultrashock'
+  SELECT 1 FROM public."user" WHERE username = 'blackalice'
 );
 
 INSERT INTO public."user" (
@@ -12121,15 +12121,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'ironmind',
-  crypt('ironmind', gen_salt('bf')),
-  '{"prefix": null, "first": "Isla", "middle": null, "last": "Mercer", "suffix": null, "display": "Isla Mercer"}'::json,
-  'ironmind@superhero.com',
+  'amethyst',
+  crypt('amethyst', gen_salt('bf')),
+  '{"prefix": null, "first": "Amy", "middle": null, "last": "Winston", "suffix": null, "display": "Amy Winston"}'::json,
+  'amethyst@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000336", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "436 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10336", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -12137,7 +12137,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ironmind'
+  SELECT 1 FROM public."user" WHERE username = 'amethyst'
 );
 
 INSERT INTO public."user" (
@@ -12157,15 +12157,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'spectralwhisper',
-  crypt('spectralwhisper', gen_salt('bf')),
-  '{"prefix": null, "first": "Caleb", "middle": null, "last": "Mercer", "suffix": null, "display": "Caleb Mercer"}'::json,
-  'spectralwhisper@superhero.com',
+  'nubia',
+  crypt('nubia', gen_salt('bf')),
+  '{"prefix": null, "first": "Nubia", "middle": null, "last": "Themyscira", "suffix": null, "display": "Nubia Themyscira"}'::json,
+  'nubia@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000337", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "437 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10337", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -12173,7 +12173,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'spectralwhisper'
+  SELECT 1 FROM public."user" WHERE username = 'nubia'
 );
 
 INSERT INTO public."user" (
@@ -12193,23 +12193,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'quantumshade',
-  crypt('quantumshade', gen_salt('bf')),
-  '{"prefix": null, "first": "Nora", "middle": null, "last": "Mercer", "suffix": null, "display": "Nora Mercer"}'::json,
-  'quantumshade@superhero.com',
+  'katana',
+  crypt('katana', gen_salt('bf')),
+  '{"prefix": null, "first": "Tatsu", "middle": null, "last": "Yamashiro", "suffix": null, "display": "Tatsu Yamashiro"}'::json,
+  'katana@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000338", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "438 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10338", "country_code": "USA"}]'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "black"}'::json,
+  '[{"label": "home", "line1": "438 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10338", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'quantumshade'
+  SELECT 1 FROM public."user" WHERE username = 'katana'
 );
 
 INSERT INTO public."user" (
@@ -12229,15 +12229,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'ioniccyclone',
-  crypt('ioniccyclone', gen_salt('bf')),
-  '{"prefix": null, "first": "Julian", "middle": null, "last": "Mercer", "suffix": null, "display": "Julian Mercer"}'::json,
-  'ioniccyclone@superhero.com',
+  'ladyshiva',
+  crypt('ladyshiva', gen_salt('bf')),
+  '{"prefix": null, "first": "Sandra", "middle": null, "last": "Wu-San", "suffix": null, "display": "Sandra Wu-San"}'::json,
+  'ladyshiva@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000339", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "red"}'::json,
   '[{"label": "home", "line1": "439 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10339", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -12245,7 +12245,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ioniccyclone'
+  SELECT 1 FROM public."user" WHERE username = 'ladyshiva'
 );
 
 INSERT INTO public."user" (
@@ -12265,15 +12265,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'venomghost',
-  crypt('venomghost', gen_salt('bf')),
-  '{"prefix": null, "first": "Elena", "middle": null, "last": "Mercer", "suffix": null, "display": "Elena Mercer"}'::json,
-  'venomghost@superhero.com',
+  'jade',
+  crypt('jade', gen_salt('bf')),
+  '{"prefix": null, "first": "Jennifer", "middle": null, "last": "Hayden", "suffix": null, "display": "Jennifer Hayden"}'::json,
+  'jade@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000340", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "440 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10340", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -12281,7 +12281,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'venomghost'
+  SELECT 1 FROM public."user" WHERE username = 'jade'
 );
 
 INSERT INTO public."user" (
@@ -12301,23 +12301,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'frostfreeze',
-  crypt('frostfreeze', gen_salt('bf')),
-  '{"prefix": null, "first": "Miles", "middle": null, "last": "Mercer", "suffix": null, "display": "Miles Mercer"}'::json,
-  'frostfreeze@superhero.com',
+  'hawkwoman',
+  crypt('hawkwoman', gen_salt('bf')),
+  '{"prefix": null, "first": "Shiera", "middle": null, "last": "Hall", "suffix": null, "display": "Shiera Hall"}'::json,
+  'hawkwoman@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000341", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "441 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10341", "country_code": "USA"}]'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "brown", "color2": "gold"}'::json,
+  '[{"label": "home", "line1": "441 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10341", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'frostfreeze'
+  SELECT 1 FROM public."user" WHERE username = 'hawkwoman'
 );
 
 INSERT INTO public."user" (
@@ -12337,15 +12337,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'blizzardeagle',
-  crypt('blizzardeagle', gen_salt('bf')),
-  '{"prefix": null, "first": "Clara", "middle": null, "last": "Mercer", "suffix": null, "display": "Clara Mercer"}'::json,
-  'blizzardeagle@superhero.com',
+  'goldenglider',
+  crypt('goldenglider', gen_salt('bf')),
+  '{"prefix": null, "first": "Lisa", "middle": null, "last": "Snart", "suffix": null, "display": "Lisa Snart"}'::json,
+  'goldenglider@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000342", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "gold", "color2": "white"}'::json,
   '[{"label": "home", "line1": "442 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10342", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -12353,7 +12353,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'blizzardeagle'
+  SELECT 1 FROM public."user" WHERE username = 'goldenglider'
 );
 
 INSERT INTO public."user" (
@@ -12373,15 +12373,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'ironfang',
-  crypt('ironfang', gen_salt('bf')),
-  '{"prefix": null, "first": "Felix", "middle": null, "last": "Mercer", "suffix": null, "display": "Felix Mercer"}'::json,
-  'ironfang@superhero.com',
+  'empress',
+  crypt('empress', gen_salt('bf')),
+  '{"prefix": null, "first": "Anita", "middle": null, "last": "Fite", "suffix": null, "display": "Anita Fite"}'::json,
+  'empress@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000343", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "443 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10343", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -12389,7 +12389,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ironfang'
+  SELECT 1 FROM public."user" WHERE username = 'empress'
 );
 
 INSERT INTO public."user" (
@@ -12409,23 +12409,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'solargriffin',
-  crypt('solargriffin', gen_salt('bf')),
-  '{"prefix": null, "first": "Hazel", "middle": null, "last": "Mercer", "suffix": null, "display": "Hazel Mercer"}'::json,
-  'solargriffin@superhero.com',
+  'gypsy',
+  crypt('gypsy', gen_salt('bf')),
+  '{"prefix": null, "first": "Cindy", "middle": null, "last": "Reynolds", "suffix": null, "display": "Cindy Reynolds"}'::json,
+  'gypsy@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000344", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "444 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10344", "country_code": "USA"}]'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "gold"}'::json,
+  '[{"label": "home", "line1": "444 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10344", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'solargriffin'
+  SELECT 1 FROM public."user" WHERE username = 'gypsy'
 );
 
 INSERT INTO public."user" (
@@ -12445,15 +12445,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'violetwolf',
-  crypt('violetwolf', gen_salt('bf')),
-  '{"prefix": null, "first": "Adrian", "middle": null, "last": "Mercer", "suffix": null, "display": "Adrian Mercer"}'::json,
-  'violetwolf@superhero.com',
+  'dawnstar',
+  crypt('dawnstar', gen_salt('bf')),
+  '{"prefix": null, "first": "Dawnstar", "middle": null, "last": "Rimbor", "suffix": null, "display": "Dawnstar Rimbor"}'::json,
+  'dawnstar@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000345", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "445 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10345", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -12461,7 +12461,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'violetwolf'
+  SELECT 1 FROM public."user" WHERE username = 'dawnstar'
 );
 
 INSERT INTO public."user" (
@@ -12481,15 +12481,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'valkyrieskull',
-  crypt('valkyrieskull', gen_salt('bf')),
-  '{"prefix": null, "first": "Iris", "middle": null, "last": "Mercer", "suffix": null, "display": "Iris Mercer"}'::json,
-  'valkyrieskull@superhero.com',
+  'tinya',
+  crypt('tinya', gen_salt('bf')),
+  '{"prefix": null, "first": "Tinya", "middle": null, "last": "Wazzo", "suffix": null, "display": "Tinya Wazzo"}'::json,
+  'tinya@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000346", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "white"}'::json,
   '[{"label": "home", "line1": "446 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10346", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -12497,7 +12497,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'valkyrieskull'
+  SELECT 1 FROM public."user" WHERE username = 'tinya'
 );
 
 INSERT INTO public."user" (
@@ -12517,23 +12517,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'quantumslayer',
-  crypt('quantumslayer', gen_salt('bf')),
-  '{"prefix": null, "first": "Simon", "middle": null, "last": "Mercer", "suffix": null, "display": "Simon Mercer"}'::json,
-  'quantumslayer@superhero.com',
+  'luornu',
+  crypt('luornu', gen_salt('bf')),
+  '{"prefix": null, "first": "Luornu", "middle": null, "last": "Durgo", "suffix": null, "display": "Luornu Durgo"}'::json,
+  'luornu@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000347", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "447 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10347", "country_code": "USA"}]'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "orange", "color2": "purple"}'::json,
+  '[{"label": "home", "line1": "447 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10347", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'quantumslayer'
+  SELECT 1 FROM public."user" WHERE username = 'luornu'
 );
 
 INSERT INTO public."user" (
@@ -12553,15 +12553,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'mysticphoenix',
-  crypt('mysticphoenix', gen_salt('bf')),
-  '{"prefix": null, "first": "Ruby", "middle": null, "last": "Mercer", "suffix": null, "display": "Ruby Mercer"}'::json,
-  'mysticphoenix@superhero.com',
+  'blackfire',
+  crypt('blackfire', gen_salt('bf')),
+  '{"prefix": null, "first": "Komand''r", "middle": null, "last": "Tamaran", "suffix": null, "display": "Komand''r Tamaran"}'::json,
+  'blackfire@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000348", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
   '[{"label": "home", "line1": "448 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10348", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -12569,7 +12569,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'mysticphoenix'
+  SELECT 1 FROM public."user" WHERE username = 'blackfire'
 );
 
 INSERT INTO public."user" (
@@ -12589,15 +12589,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'emeraldfist',
-  crypt('emeraldfist', gen_salt('bf')),
-  '{"prefix": null, "first": "Victor", "middle": null, "last": "Mercer", "suffix": null, "display": "Victor Mercer"}'::json,
-  'emeraldfist@superhero.com',
+  'missmartian',
+  crypt('missmartian', gen_salt('bf')),
+  '{"prefix": null, "first": "M''gann", "middle": null, "last": "M''orzz", "suffix": null, "display": "M''gann M''orzz"}'::json,
+  'missmartian@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000349", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "white"}'::json,
   '[{"label": "home", "line1": "449 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10349", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -12605,7 +12605,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'emeraldfist'
+  SELECT 1 FROM public."user" WHERE username = 'missmartian'
 );
 
 INSERT INTO public."user" (
@@ -12625,23 +12625,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'paladinspark',
-  crypt('paladinspark', gen_salt('bf')),
-  '{"prefix": null, "first": "Paige", "middle": null, "last": "Mercer", "suffix": null, "display": "Paige Mercer"}'::json,
-  'paladinspark@superhero.com',
+  'wondergirl',
+  crypt('wondergirl', gen_salt('bf')),
+  '{"prefix": null, "first": "Cassie", "middle": null, "last": "Sandsmark", "suffix": null, "display": "Cassie Sandsmark"}'::json,
+  'wondergirl@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000350", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "450 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10350", "country_code": "USA"}]'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "gold"}'::json,
+  '[{"label": "home", "line1": "450 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10350", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'paladinspark'
+  SELECT 1 FROM public."user" WHERE username = 'wondergirl'
 );
 
 INSERT INTO public."user" (
@@ -12661,15 +12661,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'alphaoracle',
-  crypt('alphaoracle', gen_salt('bf')),
-  '{"prefix": null, "first": "Grant", "middle": null, "last": "Mercer", "suffix": null, "display": "Grant Mercer"}'::json,
-  'alphaoracle@superhero.com',
+  'jinx',
+  crypt('jinx', gen_salt('bf')),
+  '{"prefix": null, "first": "Jinx", "middle": null, "last": "LeBlanc", "suffix": null, "display": "Jinx LeBlanc"}'::json,
+  'jinx@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000351", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
   '[{"label": "home", "line1": "451 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10351", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -12677,7 +12677,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'alphaoracle'
+  SELECT 1 FROM public."user" WHERE username = 'jinx'
 );
 
 INSERT INTO public."user" (
@@ -12697,15 +12697,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'onyxdragon',
-  crypt('onyxdragon', gen_salt('bf')),
-  '{"prefix": null, "first": "Tessa", "middle": null, "last": "Mercer", "suffix": null, "display": "Tessa Mercer"}'::json,
-  'onyxdragon@superhero.com',
+  'arella',
+  crypt('arella', gen_salt('bf')),
+  '{"prefix": null, "first": "Angela", "middle": null, "last": "Roth", "suffix": null, "display": "Angela Roth"}'::json,
+  'arella@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000352", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "indigo", "color2": "black"}'::json,
   '[{"label": "home", "line1": "452 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10352", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -12713,7 +12713,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'onyxdragon'
+  SELECT 1 FROM public."user" WHERE username = 'arella'
 );
 
 INSERT INTO public."user" (
@@ -12733,23 +12733,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'hyperknight',
-  crypt('hyperknight', gen_salt('bf')),
-  '{"prefix": null, "first": "Dean", "middle": null, "last": "Mercer", "suffix": null, "display": "Dean Mercer"}'::json,
-  'hyperknight@superhero.com',
+  'mazikeen',
+  crypt('mazikeen', gen_salt('bf')),
+  '{"prefix": null, "first": "Mazikeen", "middle": null, "last": "Hell", "suffix": null, "display": "Mazikeen Hell"}'::json,
+  'mazikeen@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000353", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "453 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10353", "country_code": "USA"}]'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "red"}'::json,
+  '[{"label": "home", "line1": "453 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10353", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'hyperknight'
+  SELECT 1 FROM public."user" WHERE username = 'mazikeen'
 );
 
 INSERT INTO public."user" (
@@ -12769,15 +12769,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'frostrush',
-  crypt('frostrush', gen_salt('bf')),
-  '{"prefix": null, "first": "Vera", "middle": null, "last": "Mercer", "suffix": null, "display": "Vera Mercer"}'::json,
-  'frostrush@superhero.com',
+  'knockout',
+  crypt('knockout', gen_salt('bf')),
+  '{"prefix": null, "first": "Knockout", "middle": null, "last": "Apokolips", "suffix": null, "display": "Knockout Apokolips"}'::json,
+  'knockout@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000354", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "black"}'::json,
   '[{"label": "home", "line1": "454 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10354", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -12785,7 +12785,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'frostrush'
+  SELECT 1 FROM public."user" WHERE username = 'knockout'
 );
 
 INSERT INTO public."user" (
@@ -12805,15 +12805,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'reaperdefender',
-  crypt('reaperdefender', gen_salt('bf')),
-  '{"prefix": null, "first": "Colin", "middle": null, "last": "Mercer", "suffix": null, "display": "Colin Mercer"}'::json,
-  'reaperdefender@superhero.com',
+  'fury',
+  crypt('fury', gen_salt('bf')),
+  '{"prefix": null, "first": "Helena", "middle": null, "last": "Kosmatos", "suffix": null, "display": "Helena Kosmatos"}'::json,
+  'fury@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000355", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "gold", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "455 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10355", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -12821,7 +12821,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'reaperdefender'
+  SELECT 1 FROM public."user" WHERE username = 'fury'
 );
 
 INSERT INTO public."user" (
@@ -12841,23 +12841,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'marshalwrath',
-  crypt('marshalwrath', gen_salt('bf')),
-  '{"prefix": null, "first": "Jade", "middle": null, "last": "Mercer", "suffix": null, "display": "Jade Mercer"}'::json,
-  'marshalwrath@superhero.com',
+  'cyclone',
+  crypt('cyclone', gen_salt('bf')),
+  '{"prefix": null, "first": "Maxine", "middle": null, "last": "Hunkel", "suffix": null, "display": "Maxine Hunkel"}'::json,
+  'cyclone@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000356", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "456 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10356", "country_code": "USA"}]'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "yellow"}'::json,
+  '[{"label": "home", "line1": "456 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10356", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'marshalwrath'
+  SELECT 1 FROM public."user" WHERE username = 'cyclone'
 );
 
 INSERT INTO public."user" (
@@ -12877,15 +12877,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'doctordragon',
-  crypt('doctordragon', gen_salt('bf')),
-  '{"prefix": null, "first": "Marcus", "middle": null, "last": "Mercer", "suffix": null, "display": "Marcus Mercer"}'::json,
-  'doctordragon@superhero.com',
+  'phantomlady',
+  crypt('phantomlady', gen_salt('bf')),
+  '{"prefix": null, "first": "Jennifer", "middle": null, "last": "Knight", "suffix": null, "display": "Jennifer Knight"}'::json,
+  'phantomlady@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000357", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "yellow"}'::json,
   '[{"label": "home", "line1": "457 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10357", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -12893,7 +12893,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'doctordragon'
+  SELECT 1 FROM public."user" WHERE username = 'phantomlady'
 );
 
 INSERT INTO public."user" (
@@ -12913,15 +12913,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'cybershade',
-  crypt('cybershade', gen_salt('bf')),
-  '{"prefix": null, "first": "Leah", "middle": null, "last": "Mercer", "suffix": null, "display": "Leah Mercer"}'::json,
-  'cybershade@superhero.com',
+  'terra',
+  crypt('terra', gen_salt('bf')),
+  '{"prefix": null, "first": "Tara", "middle": null, "last": "Markov", "suffix": null, "display": "Tara Markov"}'::json,
+  'terra@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000358", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "brown", "color2": "green"}'::json,
   '[{"label": "home", "line1": "458 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10358", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -12929,7 +12929,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cybershade'
+  SELECT 1 FROM public."user" WHERE username = 'terra'
 );
 
 INSERT INTO public."user" (
@@ -12949,23 +12949,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'cosmicdoom',
-  crypt('cosmicdoom', gen_salt('bf')),
-  '{"prefix": null, "first": "Nolan", "middle": null, "last": "Mercer", "suffix": null, "display": "Nolan Mercer"}'::json,
-  'cosmicdoom@superhero.com',
+  'artemis',
+  crypt('artemis', gen_salt('bf')),
+  '{"prefix": null, "first": "Artemis", "middle": null, "last": "Crock", "suffix": null, "display": "Artemis Crock"}'::json,
+  'artemis@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000359", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "459 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10359", "country_code": "USA"}]'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "black"}'::json,
+  '[{"label": "home", "line1": "459 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10359", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cosmicdoom'
+  SELECT 1 FROM public."user" WHERE username = 'artemis'
 );
 
 INSERT INTO public."user" (
@@ -12985,15 +12985,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'stormstomper',
-  crypt('stormstomper', gen_salt('bf')),
-  '{"prefix": null, "first": "Gwen", "middle": null, "last": "Mercer", "suffix": null, "display": "Gwen Mercer"}'::json,
-  'stormstomper@superhero.com',
+  'spitfire',
+  crypt('spitfire', gen_salt('bf')),
+  '{"prefix": null, "first": "Jacqueline", "middle": null, "last": "Falsworth", "suffix": null, "display": "Jacqueline Falsworth"}'::json,
+  'spitfire@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000360", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "460 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10360", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -13001,7 +13001,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stormstomper'
+  SELECT 1 FROM public."user" WHERE username = 'spitfire'
 );
 
 INSERT INTO public."user" (
@@ -13021,23 +13021,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'cyberstrike',
-  crypt('cyberstrike', gen_salt('bf')),
-  '{"prefix": null, "first": "Tristan", "middle": null, "last": "Mercer", "suffix": null, "display": "Tristan Mercer"}'::json,
-  'cyberstrike@superhero.com',
+  'maryjane',
+  crypt('maryjane', gen_salt('bf')),
+  '{"prefix": null, "first": "Mary", "middle": null, "last": "Watson", "suffix": null, "display": "Mary Watson"}'::json,
+  'maryjane@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000361", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "461 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10361", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "white"}'::json,
+  '[{"label": "home", "line1": "461 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10361", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cyberstrike'
+  SELECT 1 FROM public."user" WHERE username = 'maryjane'
 );
 
 INSERT INTO public."user" (
@@ -13057,15 +13057,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'rangercyclone',
-  crypt('rangercyclone', gen_salt('bf')),
-  '{"prefix": null, "first": "Selene", "middle": null, "last": "Mercer", "suffix": null, "display": "Selene Mercer"}'::json,
-  'rangercyclone@superhero.com',
+  'gwenpool',
+  crypt('gwenpool', gen_salt('bf')),
+  '{"prefix": null, "first": "Gwen", "middle": null, "last": "Poole", "suffix": null, "display": "Gwen Poole"}'::json,
+  'gwenpool@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000362", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "white"}'::json,
   '[{"label": "home", "line1": "462 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10362", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -13073,7 +13073,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'rangercyclone'
+  SELECT 1 FROM public."user" WHERE username = 'gwenpool'
 );
 
 INSERT INTO public."user" (
@@ -13093,23 +13093,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'thundershield',
-  crypt('thundershield', gen_salt('bf')),
-  '{"prefix": null, "first": "Derek", "middle": null, "last": "Mercer", "suffix": null, "display": "Derek Mercer"}'::json,
-  'thundershield@superhero.com',
+  'elektra',
+  crypt('elektra', gen_salt('bf')),
+  '{"prefix": null, "first": "Elektra", "middle": null, "last": "Natchios", "suffix": null, "display": "Elektra Natchios"}'::json,
+  'elektra@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000363", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "463 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10363", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "black"}'::json,
+  '[{"label": "home", "line1": "463 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10363", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'thundershield'
+  SELECT 1 FROM public."user" WHERE username = 'elektra'
 );
 
 INSERT INTO public."user" (
@@ -13129,23 +13129,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'ancientarrow',
-  crypt('ancientarrow', gen_salt('bf')),
-  '{"prefix": null, "first": "Alina", "middle": null, "last": "Mercer", "suffix": null, "display": "Alina Mercer"}'::json,
-  'ancientarrow@superhero.com',
+  'medusa',
+  crypt('medusa', gen_salt('bf')),
+  '{"prefix": null, "first": "Medusalith", "middle": null, "last": "Amaquelin", "suffix": null, "display": "Medusalith Amaquelin"}'::json,
+  'medusa@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000364", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "464 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10364", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "orange"}'::json,
+  '[{"label": "home", "line1": "464 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10364", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ancientarrow'
+  SELECT 1 FROM public."user" WHERE username = 'medusa'
 );
 
 INSERT INTO public."user" (
@@ -13165,15 +13165,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'wraithrage',
-  crypt('wraithrage', gen_salt('bf')),
-  '{"prefix": null, "first": "Rafael", "middle": null, "last": "Mercer", "suffix": null, "display": "Rafael Mercer"}'::json,
-  'wraithrage@superhero.com',
+  'crystal',
+  crypt('crystal', gen_salt('bf')),
+  '{"prefix": null, "first": "Crystal", "middle": null, "last": "Amaquelin", "suffix": null, "display": "Crystal Amaquelin"}'::json,
+  'crystal@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000365", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "yellow"}'::json,
   '[{"label": "home", "line1": "465 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10365", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -13181,7 +13181,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'wraithrage'
+  SELECT 1 FROM public."user" WHERE username = 'crystal'
 );
 
 INSERT INTO public."user" (
@@ -13201,23 +13201,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'colossuskeeper',
-  crypt('colossuskeeper', gen_salt('bf')),
-  '{"prefix": null, "first": "Bianca", "middle": null, "last": "Mercer", "suffix": null, "display": "Bianca Mercer"}'::json,
-  'colossuskeeper@superhero.com',
+  'sif',
+  crypt('sif', gen_salt('bf')),
+  '{"prefix": null, "first": "Sif", "middle": null, "last": "Asgard", "suffix": null, "display": "Sif Asgard"}'::json,
+  'sif@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000366", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "466 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10366", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "gold", "color2": "silver"}'::json,
+  '[{"label": "home", "line1": "466 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10366", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'colossuskeeper'
+  SELECT 1 FROM public."user" WHERE username = 'sif'
 );
 
 INSERT INTO public."user" (
@@ -13237,23 +13237,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'stellarrush',
-  crypt('stellarrush', gen_salt('bf')),
-  '{"prefix": null, "first": "Harper", "middle": null, "last": "Mercer", "suffix": null, "display": "Harper Mercer"}'::json,
-  'stellarrush@superhero.com',
+  'amora',
+  crypt('amora', gen_salt('bf')),
+  '{"prefix": null, "first": "Amora", "middle": null, "last": "Enchantress", "suffix": null, "display": "Amora Enchantress"}'::json,
+  'amora@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000367", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "467 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10367", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "gold"}'::json,
+  '[{"label": "home", "line1": "467 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10367", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stellarrush'
+  SELECT 1 FROM public."user" WHERE username = 'amora'
 );
 
 INSERT INTO public."user" (
@@ -13273,15 +13273,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'savagecobra',
-  crypt('savagecobra', gen_salt('bf')),
-  '{"prefix": null, "first": "Jonah", "middle": null, "last": "Mercer", "suffix": null, "display": "Jonah Mercer"}'::json,
-  'savagecobra@superhero.com',
+  'lorelei',
+  crypt('lorelei', gen_salt('bf')),
+  '{"prefix": null, "first": "Lorelei", "middle": null, "last": "Asgard", "suffix": null, "display": "Lorelei Asgard"}'::json,
+  'lorelei@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000368", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "gold", "color2": "green"}'::json,
   '[{"label": "home", "line1": "468 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10368", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -13289,7 +13289,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'savagecobra'
+  SELECT 1 FROM public."user" WHERE username = 'lorelei'
 );
 
 INSERT INTO public."user" (
@@ -13309,23 +13309,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'chaosburn',
-  crypt('chaosburn', gen_salt('bf')),
-  '{"prefix": null, "first": "Mira", "middle": null, "last": "Mercer", "suffix": null, "display": "Mira Mercer"}'::json,
-  'chaosburn@superhero.com',
+  'namora',
+  crypt('namora', gen_salt('bf')),
+  '{"prefix": null, "first": "Namora", "middle": null, "last": "McKenzie", "suffix": null, "display": "Namora McKenzie"}'::json,
+  'namora@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000369", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "469 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10369", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "gold"}'::json,
+  '[{"label": "home", "line1": "469 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10369", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'chaosburn'
+  SELECT 1 FROM public."user" WHERE username = 'namora'
 );
 
 INSERT INTO public."user" (
@@ -13345,23 +13345,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'savageprophet',
-  crypt('savageprophet', gen_salt('bf')),
-  '{"prefix": null, "first": "Cedric", "middle": null, "last": "Mercer", "suffix": null, "display": "Cedric Mercer"}'::json,
-  'savageprophet@superhero.com',
+  'namorita',
+  crypt('namorita', gen_salt('bf')),
+  '{"prefix": null, "first": "Namorita", "middle": null, "last": "Prentiss", "suffix": null, "display": "Namorita Prentiss"}'::json,
+  'namorita@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000370", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "470 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10370", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "green"}'::json,
+  '[{"label": "home", "line1": "470 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10370", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'savageprophet'
+  SELECT 1 FROM public."user" WHERE username = 'namorita'
 );
 
 INSERT INTO public."user" (
@@ -13381,15 +13381,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'mysticburn',
-  crypt('mysticburn', gen_salt('bf')),
-  '{"prefix": null, "first": "Lena", "middle": null, "last": "Mercer", "suffix": null, "display": "Lena Mercer"}'::json,
-  'mysticburn@superhero.com',
+  'singularity',
+  crypt('singularity', gen_salt('bf')),
+  '{"prefix": null, "first": "Singularity", "middle": null, "last": "Cosmos", "suffix": null, "display": "Singularity Cosmos"}'::json,
+  'singularity@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000371", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "white"}'::json,
   '[{"label": "home", "line1": "471 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10371", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -13397,7 +13397,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'mysticburn'
+  SELECT 1 FROM public."user" WHERE username = 'singularity'
 );
 
 INSERT INTO public."user" (
@@ -13417,23 +13417,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'chaosstrike',
-  crypt('chaosstrike', gen_salt('bf')),
-  '{"prefix": null, "first": "Andre", "middle": null, "last": "Mercer", "suffix": null, "display": "Andre Mercer"}'::json,
-  'chaosstrike@superhero.com',
+  'gertyorkes',
+  crypt('gertyorkes', gen_salt('bf')),
+  '{"prefix": null, "first": "Gertrude", "middle": null, "last": "Yorkes", "suffix": null, "display": "Gertrude Yorkes"}'::json,
+  'gertyorkes@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000372", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "472 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10372", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
+  '[{"label": "home", "line1": "472 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10372", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'chaosstrike'
+  SELECT 1 FROM public."user" WHERE username = 'gertyorkes'
 );
 
 INSERT INTO public."user" (
@@ -13453,23 +13453,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'feralbeam',
-  crypt('feralbeam', gen_salt('bf')),
-  '{"prefix": null, "first": "Sasha", "middle": null, "last": "Mercer", "suffix": null, "display": "Sasha Mercer"}'::json,
-  'feralbeam@superhero.com',
+  'pixie',
+  crypt('pixie', gen_salt('bf')),
+  '{"prefix": null, "first": "Megan", "middle": null, "last": "Gwynn", "suffix": null, "display": "Megan Gwynn"}'::json,
+  'pixie@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000373", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "473 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10373", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "purple"}'::json,
+  '[{"label": "home", "line1": "473 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10373", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'feralbeam'
+  SELECT 1 FROM public."user" WHERE username = 'pixie'
 );
 
 INSERT INTO public."user" (
@@ -13489,15 +13489,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'agentgriffin',
-  crypt('agentgriffin', gen_salt('bf')),
-  '{"prefix": null, "first": "Malik", "middle": null, "last": "Mercer", "suffix": null, "display": "Malik Mercer"}'::json,
-  'agentgriffin@superhero.com',
+  'armor',
+  crypt('armor', gen_salt('bf')),
+  '{"prefix": null, "first": "Hisako", "middle": null, "last": "Ichiki", "suffix": null, "display": "Hisako Ichiki"}'::json,
+  'armor@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000374", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "474 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10374", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -13505,7 +13505,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'agentgriffin'
+  SELECT 1 FROM public."user" WHERE username = 'armor'
 );
 
 INSERT INTO public."user" (
@@ -13525,23 +13525,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'dukeblade',
-  crypt('dukeblade', gen_salt('bf')),
-  '{"prefix": null, "first": "Priya", "middle": null, "last": "Mercer", "suffix": null, "display": "Priya Mercer"}'::json,
-  'dukeblade@superhero.com',
+  'blink',
+  crypt('blink', gen_salt('bf')),
+  '{"prefix": null, "first": "Clarice", "middle": null, "last": "Ferguson", "suffix": null, "display": "Clarice Ferguson"}'::json,
+  'blink@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000375", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "475 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10375", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "pink"}'::json,
+  '[{"label": "home", "line1": "475 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10375", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'dukeblade'
+  SELECT 1 FROM public."user" WHERE username = 'blink'
 );
 
 INSERT INTO public."user" (
@@ -13561,23 +13561,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'gargoylekeeper',
-  crypt('gargoylekeeper', gen_salt('bf')),
-  '{"prefix": null, "first": "Kenji", "middle": null, "last": "Mercer", "suffix": null, "display": "Kenji Mercer"}'::json,
-  'gargoylekeeper@superhero.com',
+  'polaris',
+  crypt('polaris', gen_salt('bf')),
+  '{"prefix": null, "first": "Lorna", "middle": null, "last": "Dane", "suffix": null, "display": "Lorna Dane"}'::json,
+  'polaris@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000376", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "476 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10376", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "white"}'::json,
+  '[{"label": "home", "line1": "476 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10376", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'gargoylekeeper'
+  SELECT 1 FROM public."user" WHERE username = 'polaris'
 );
 
 INSERT INTO public."user" (
@@ -13597,15 +13597,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'agentcrusher',
-  crypt('agentcrusher', gen_salt('bf')),
-  '{"prefix": null, "first": "Yara", "middle": null, "last": "Mercer", "suffix": null, "display": "Yara Mercer"}'::json,
-  'agentcrusher@superhero.com',
+  'boomboom',
+  crypt('boomboom', gen_salt('bf')),
+  '{"prefix": null, "first": "Tabitha", "middle": null, "last": "Smith", "suffix": null, "display": "Tabitha Smith"}'::json,
+  'boomboom@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000377", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "black"}'::json,
   '[{"label": "home", "line1": "477 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10377", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -13613,7 +13613,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'agentcrusher'
+  SELECT 1 FROM public."user" WHERE username = 'boomboom'
 );
 
 INSERT INTO public."user" (
@@ -13633,23 +13633,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'captainkraken',
-  crypt('captainkraken', gen_salt('bf')),
-  '{"prefix": null, "first": "Rosa", "middle": null, "last": "Mercer", "suffix": null, "display": "Rosa Mercer"}'::json,
-  'captainkraken@superhero.com',
+  'siryn',
+  crypt('siryn', gen_salt('bf')),
+  '{"prefix": null, "first": "Theresa", "middle": null, "last": "Cassidy", "suffix": null, "display": "Theresa Cassidy"}'::json,
+  'siryn@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000378", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "478 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10378", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "yellow"}'::json,
+  '[{"label": "home", "line1": "478 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10378", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'captainkraken'
+  SELECT 1 FROM public."user" WHERE username = 'siryn'
 );
 
 INSERT INTO public."user" (
@@ -13669,23 +13669,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'reaperpulse',
-  crypt('reaperpulse', gen_salt('bf')),
-  '{"prefix": null, "first": "Hugo", "middle": null, "last": "Mercer", "suffix": null, "display": "Hugo Mercer"}'::json,
-  'reaperpulse@superhero.com',
+  'moira',
+  crypt('moira', gen_salt('bf')),
+  '{"prefix": null, "first": "Moira", "middle": null, "last": "MacTaggert", "suffix": null, "display": "Moira MacTaggert"}'::json,
+  'moira@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000379", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "479 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10379", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "white"}'::json,
+  '[{"label": "home", "line1": "479 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10379", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'reaperpulse'
+  SELECT 1 FROM public."user" WHERE username = 'moira'
 );
 
 INSERT INTO public."user" (
@@ -13705,15 +13705,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'ninjasmasher',
-  crypt('ninjasmasher', gen_salt('bf')),
-  '{"prefix": null, "first": "Ingrid", "middle": null, "last": "Mercer", "suffix": null, "display": "Ingrid Mercer"}'::json,
-  'ninjasmasher@superhero.com',
+  'marrow',
+  crypt('marrow', gen_salt('bf')),
+  '{"prefix": null, "first": "Sarah", "middle": null, "last": "Rushman", "suffix": null, "display": "Sarah Rushman"}'::json,
+  'marrow@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000380", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
   '[{"label": "home", "line1": "480 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10380", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -13721,7 +13721,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ninjasmasher'
+  SELECT 1 FROM public."user" WHERE username = 'marrow'
 );
 
 INSERT INTO public."user" (
@@ -13741,23 +13741,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'rangerhex',
-  crypt('rangerhex', gen_salt('bf')),
-  '{"prefix": null, "first": "Pascal", "middle": null, "last": "Mercer", "suffix": null, "display": "Pascal Mercer"}'::json,
-  'rangerhex@superhero.com',
+  'husk',
+  crypt('husk', gen_salt('bf')),
+  '{"prefix": null, "first": "Paige", "middle": null, "last": "Guthrie", "suffix": null, "display": "Paige Guthrie"}'::json,
+  'husk@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000381", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "481 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10381", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "brown"}'::json,
+  '[{"label": "home", "line1": "481 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10381", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'rangerhex'
+  SELECT 1 FROM public."user" WHERE username = 'husk'
 );
 
 INSERT INTO public."user" (
@@ -13777,23 +13777,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'goliathrage',
-  crypt('goliathrage', gen_salt('bf')),
-  '{"prefix": null, "first": "Freya", "middle": null, "last": "Mercer", "suffix": null, "display": "Freya Mercer"}'::json,
-  'goliathrage@superhero.com',
+  'surge',
+  crypt('surge', gen_salt('bf')),
+  '{"prefix": null, "first": "Noriko", "middle": null, "last": "Ashida", "suffix": null, "display": "Noriko Ashida"}'::json,
+  'surge@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000382", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "482 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10382", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "yellow"}'::json,
+  '[{"label": "home", "line1": "482 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10382", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goliathrage'
+  SELECT 1 FROM public."user" WHERE username = 'surge'
 );
 
 INSERT INTO public."user" (
@@ -13813,15 +13813,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'ladywarden',
-  crypt('ladywarden', gen_salt('bf')),
-  '{"prefix": null, "first": "Dante", "middle": null, "last": "Mercer", "suffix": null, "display": "Dante Mercer"}'::json,
-  'ladywarden@superhero.com',
+  'winddancer',
+  crypt('winddancer', gen_salt('bf')),
+  '{"prefix": null, "first": "Sofia", "middle": null, "last": "Mantega", "suffix": null, "display": "Sofia Mantega"}'::json,
+  'winddancer@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000383", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "483 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10383", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -13829,7 +13829,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ladywarden'
+  SELECT 1 FROM public."user" WHERE username = 'winddancer'
 );
 
 INSERT INTO public."user" (
@@ -13849,23 +13849,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'marshalcobra',
-  crypt('marshalcobra', gen_salt('bf')),
-  '{"prefix": null, "first": "Keiko", "middle": null, "last": "Mercer", "suffix": null, "display": "Keiko Mercer"}'::json,
-  'marshalcobra@superhero.com',
+  'honeybadger',
+  crypt('honeybadger', gen_salt('bf')),
+  '{"prefix": null, "first": "Gabrielle", "middle": null, "last": "Kinney", "suffix": null, "display": "Gabrielle Kinney"}'::json,
+  'honeybadger@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000384", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "484 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10384", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
+  '[{"label": "home", "line1": "484 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10384", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'marshalcobra'
+  SELECT 1 FROM public."user" WHERE username = 'honeybadger'
 );
 
 INSERT INTO public."user" (
@@ -13885,23 +13885,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'graveripper',
-  crypt('graveripper', gen_salt('bf')),
-  '{"prefix": null, "first": "Amir", "middle": null, "last": "Mercer", "suffix": null, "display": "Amir Mercer"}'::json,
-  'graveripper@superhero.com',
+  'mania',
+  crypt('mania', gen_salt('bf')),
+  '{"prefix": null, "first": "Andi", "middle": null, "last": "Benton", "suffix": null, "display": "Andi Benton"}'::json,
+  'mania@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000385", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "485 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10385", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "red"}'::json,
+  '[{"label": "home", "line1": "485 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10385", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'graveripper'
+  SELECT 1 FROM public."user" WHERE username = 'mania'
 );
 
 INSERT INTO public."user" (
@@ -13921,15 +13921,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'dukeprophet',
-  crypt('dukeprophet', gen_salt('bf')),
-  '{"prefix": null, "first": "Lucia", "middle": null, "last": "Mercer", "suffix": null, "display": "Lucia Mercer"}'::json,
-  'dukeprophet@superhero.com',
+  'silversable',
+  crypt('silversable', gen_salt('bf')),
+  '{"prefix": null, "first": "Silvija", "middle": null, "last": "Sablinova", "suffix": null, "display": "Silvija Sablinova"}'::json,
+  'silversable@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000386", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "silver", "color2": "black"}'::json,
   '[{"label": "home", "line1": "486 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10386", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -13937,7 +13937,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'dukeprophet'
+  SELECT 1 FROM public."user" WHERE username = 'silversable'
 );
 
 INSERT INTO public."user" (
@@ -13957,23 +13957,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'hyperspell',
-  crypt('hyperspell', gen_salt('bf')),
-  '{"prefix": null, "first": "Tobias", "middle": null, "last": "Mercer", "suffix": null, "display": "Tobias Mercer"}'::json,
-  'hyperspell@superhero.com',
+  'blackcat',
+  crypt('blackcat', gen_salt('bf')),
+  '{"prefix": null, "first": "Felicia", "middle": null, "last": "Hardy", "suffix": null, "display": "Felicia Hardy"}'::json,
+  'blackcat@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000387", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "487 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10387", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "white"}'::json,
+  '[{"label": "home", "line1": "487 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10387", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'hyperspell'
+  SELECT 1 FROM public."user" WHERE username = 'blackcat'
 );
 
 INSERT INTO public."user" (
@@ -13993,23 +13993,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'eldritchwave',
-  crypt('eldritchwave', gen_salt('bf')),
-  '{"prefix": null, "first": "Anika", "middle": null, "last": "Mercer", "suffix": null, "display": "Anika Mercer"}'::json,
-  'eldritchwave@superhero.com',
+  'typhoidmary',
+  crypt('typhoidmary', gen_salt('bf')),
+  '{"prefix": null, "first": "Mary", "middle": null, "last": "Walker", "suffix": null, "display": "Mary Walker"}'::json,
+  'typhoidmary@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000388", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "488 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10388", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "black"}'::json,
+  '[{"label": "home", "line1": "488 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10388", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'eldritchwave'
+  SELECT 1 FROM public."user" WHERE username = 'typhoidmary'
 );
 
 INSERT INTO public."user" (
@@ -14029,15 +14029,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'stormpulse',
-  crypt('stormpulse', gen_salt('bf')),
-  '{"prefix": null, "first": "Reid", "middle": null, "last": "Mercer", "suffix": null, "display": "Reid Mercer"}'::json,
-  'stormpulse@superhero.com',
+  'sersi',
+  crypt('sersi', gen_salt('bf')),
+  '{"prefix": null, "first": "Sersi", "middle": null, "last": "Eternal", "suffix": null, "display": "Sersi Eternal"}'::json,
+  'sersi@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000389", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "gold", "color2": "red"}'::json,
   '[{"label": "home", "line1": "489 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10389", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -14045,7 +14045,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stormpulse'
+  SELECT 1 FROM public."user" WHERE username = 'sersi'
 );
 
 INSERT INTO public."user" (
@@ -14065,23 +14065,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'infernobone',
-  crypt('infernobone', gen_salt('bf')),
-  '{"prefix": null, "first": "Carmen", "middle": null, "last": "Mercer", "suffix": null, "display": "Carmen Mercer"}'::json,
-  'infernobone@superhero.com',
+  'thena',
+  crypt('thena', gen_salt('bf')),
+  '{"prefix": null, "first": "Thena", "middle": null, "last": "Eternal", "suffix": null, "display": "Thena Eternal"}'::json,
+  'thena@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000390", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "490 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10390", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "gold", "color2": "white"}'::json,
+  '[{"label": "home", "line1": "490 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10390", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'infernobone'
+  SELECT 1 FROM public."user" WHERE username = 'thena'
 );
 
 INSERT INTO public."user" (
@@ -14101,23 +14101,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'cosmicsmasher',
-  crypt('cosmicsmasher', gen_salt('bf')),
-  '{"prefix": null, "first": "Elliot", "middle": null, "last": "Mercer", "suffix": null, "display": "Elliot Mercer"}'::json,
-  'cosmicsmasher@superhero.com',
+  'sprite',
+  crypt('sprite', gen_salt('bf')),
+  '{"prefix": null, "first": "Sprite", "middle": null, "last": "Eternal", "suffix": null, "display": "Sprite Eternal"}'::json,
+  'sprite@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000391", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "491 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10391", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "gold"}'::json,
+  '[{"label": "home", "line1": "491 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10391", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cosmicsmasher'
+  SELECT 1 FROM public."user" WHERE username = 'sprite'
 );
 
 INSERT INTO public."user" (
@@ -14137,15 +14137,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'sergeantrune',
-  crypt('sergeantrune', gen_salt('bf')),
-  '{"prefix": null, "first": "Naomi", "middle": null, "last": "Mercer", "suffix": null, "display": "Naomi Mercer"}'::json,
-  'sergeantrune@superhero.com',
+  'diamondback',
+  crypt('diamondback', gen_salt('bf')),
+  '{"prefix": null, "first": "Rachel", "middle": null, "last": "Leighton", "suffix": null, "display": "Rachel Leighton"}'::json,
+  'diamondback@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000392", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "black"}'::json,
   '[{"label": "home", "line1": "492 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10392", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -14153,7 +14153,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'sergeantrune'
+  SELECT 1 FROM public."user" WHERE username = 'diamondback'
 );
 
 INSERT INTO public."user" (
@@ -14173,23 +14173,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'gargoylecurse',
-  crypt('gargoylecurse', gen_salt('bf')),
-  '{"prefix": null, "first": "Sterling", "middle": null, "last": "Mercer", "suffix": null, "display": "Sterling Mercer"}'::json,
-  'gargoylecurse@superhero.com',
+  'songbird',
+  crypt('songbird', gen_salt('bf')),
+  '{"prefix": null, "first": "Melissa", "middle": null, "last": "Gold", "suffix": null, "display": "Melissa Gold"}'::json,
+  'songbird@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000393", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "493 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10393", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "red"}'::json,
+  '[{"label": "home", "line1": "493 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10393", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'gargoylecurse'
+  SELECT 1 FROM public."user" WHERE username = 'songbird'
 );
 
 INSERT INTO public."user" (
@@ -14209,23 +14209,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'stellarhydra',
-  crypt('stellarhydra', gen_salt('bf')),
-  '{"prefix": null, "first": "Zara", "middle": null, "last": "Mercer", "suffix": null, "display": "Zara Mercer"}'::json,
-  'stellarhydra@superhero.com',
+  'moonstone',
+  crypt('moonstone', gen_salt('bf')),
+  '{"prefix": null, "first": "Karla", "middle": null, "last": "Sofen", "suffix": null, "display": "Karla Sofen"}'::json,
+  'moonstone@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000394", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "494 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10394", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "white"}'::json,
+  '[{"label": "home", "line1": "494 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10394", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stellarhydra'
+  SELECT 1 FROM public."user" WHERE username = 'moonstone'
 );
 
 INSERT INTO public."user" (
@@ -14245,15 +14245,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'blizzardarrow',
-  crypt('blizzardarrow', gen_salt('bf')),
-  '{"prefix": null, "first": "Gideon", "middle": null, "last": "Mercer", "suffix": null, "display": "Gideon Mercer"}'::json,
-  'blizzardarrow@superhero.com',
+  'copycat',
+  crypt('copycat', gen_salt('bf')),
+  '{"prefix": null, "first": "Vanessa", "middle": null, "last": "Carlysle", "suffix": null, "display": "Vanessa Carlysle"}'::json,
+  'copycat@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000395", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "white"}'::json,
   '[{"label": "home", "line1": "495 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10395", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -14261,7 +14261,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'blizzardarrow'
+  SELECT 1 FROM public."user" WHERE username = 'copycat'
 );
 
 INSERT INTO public."user" (
@@ -14281,23 +14281,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'rangerseer',
-  crypt('rangerseer', gen_salt('bf')),
-  '{"prefix": null, "first": "Helena", "middle": null, "last": "Mercer", "suffix": null, "display": "Helena Mercer"}'::json,
-  'rangerseer@superhero.com',
+  'feral',
+  crypt('feral', gen_salt('bf')),
+  '{"prefix": null, "first": "Maria", "middle": null, "last": "Callasantos", "suffix": null, "display": "Maria Callasantos"}'::json,
+  'feral@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000396", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "496 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10396", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "brown", "color2": "yellow"}'::json,
+  '[{"label": "home", "line1": "496 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10396", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'rangerseer'
+  SELECT 1 FROM public."user" WHERE username = 'feral'
 );
 
 INSERT INTO public."user" (
@@ -14317,23 +14317,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'eldritchavenger',
-  crypt('eldritchavenger', gen_salt('bf')),
-  '{"prefix": null, "first": "Roman", "middle": null, "last": "Mercer", "suffix": null, "display": "Roman Mercer"}'::json,
-  'eldritchavenger@superhero.com',
+  'callisto',
+  crypt('callisto', gen_salt('bf')),
+  '{"prefix": null, "first": "Callisto", "middle": null, "last": "Morlock", "suffix": null, "display": "Callisto Morlock"}'::json,
+  'callisto@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000397", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "497 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10397", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "purple"}'::json,
+  '[{"label": "home", "line1": "497 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10397", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'eldritchavenger'
+  SELECT 1 FROM public."user" WHERE username = 'callisto'
 );
 
 INSERT INTO public."user" (
@@ -14353,15 +14353,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'emeraldheart',
-  crypt('emeraldheart', gen_salt('bf')),
-  '{"prefix": null, "first": "Vivian", "middle": null, "last": "Mercer", "suffix": null, "display": "Vivian Mercer"}'::json,
-  'emeraldheart@superhero.com',
+  'lifeguard',
+  crypt('lifeguard', gen_salt('bf')),
+  '{"prefix": null, "first": "Heather", "middle": null, "last": "Cameron", "suffix": null, "display": "Heather Cameron"}'::json,
+  'lifeguard@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000398", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "gold", "color2": "red"}'::json,
   '[{"label": "home", "line1": "498 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10398", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -14369,7 +14369,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'emeraldheart'
+  SELECT 1 FROM public."user" WHERE username = 'lifeguard'
 );
 
 INSERT INTO public."user" (
@@ -14389,23 +14389,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'bulletfang',
-  crypt('bulletfang', gen_salt('bf')),
-  '{"prefix": null, "first": "Quinn", "middle": null, "last": "Mercer", "suffix": null, "display": "Quinn Mercer"}'::json,
-  'bulletfang@superhero.com',
+  'sage',
+  crypt('sage', gen_salt('bf')),
+  '{"prefix": null, "first": "Tessa", "middle": null, "last": "Neal", "suffix": null, "display": "Tessa Neal"}'::json,
+  'sage@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000399", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "499 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10399", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "yellow"}'::json,
+  '[{"label": "home", "line1": "499 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10399", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'bulletfang'
+  SELECT 1 FROM public."user" WHERE username = 'sage'
 );
 
 INSERT INTO public."user" (
@@ -14425,23 +14425,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'ionictempest',
-  crypt('ionictempest', gen_salt('bf')),
-  '{"prefix": null, "first": "Marcel", "middle": null, "last": "Mercer", "suffix": null, "display": "Marcel Mercer"}'::json,
-  'ionictempest@superhero.com',
+  'yukio',
+  crypt('yukio', gen_salt('bf')),
+  '{"prefix": null, "first": "Yukio", "middle": null, "last": "Ashida", "suffix": null, "display": "Yukio Ashida"}'::json,
+  'yukio@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000400", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "500 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10400", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "red"}'::json,
+  '[{"label": "home", "line1": "500 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10400", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ionictempest'
+  SELECT 1 FROM public."user" WHERE username = 'yukio'
 );
 
 INSERT INTO public."user" (
@@ -14461,15 +14461,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'savageshade',
-  crypt('savageshade', gen_salt('bf')),
-  '{"prefix": null, "first": "Talia", "middle": null, "last": "Mercer", "suffix": null, "display": "Talia Mercer"}'::json,
-  'savageshade@superhero.com',
+  'kwannon',
+  crypt('kwannon', gen_salt('bf')),
+  '{"prefix": null, "first": "Kwannon", "middle": null, "last": "Yashida", "suffix": null, "display": "Kwannon Yashida"}'::json,
+  'kwannon@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000401", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "501 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10401", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -14477,7 +14477,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'savageshade'
+  SELECT 1 FROM public."user" WHERE username = 'kwannon'
 );
 
 INSERT INTO public."user" (
@@ -14497,23 +14497,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'frostwarden',
-  crypt('frostwarden', gen_salt('bf')),
-  '{"prefix": null, "first": "Desmond", "middle": null, "last": "Mercer", "suffix": null, "display": "Desmond Mercer"}'::json,
-  'frostwarden@superhero.com',
+  'karma',
+  crypt('karma', gen_salt('bf')),
+  '{"prefix": null, "first": "Xi''an", "middle": null, "last": "Coy Manh", "suffix": null, "display": "Xi''an Coy Manh"}'::json,
+  'karma@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000402", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "502 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10402", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "green"}'::json,
+  '[{"label": "home", "line1": "502 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10402", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'frostwarden'
+  SELECT 1 FROM public."user" WHERE username = 'karma'
 );
 
 INSERT INTO public."user" (
@@ -14533,23 +14533,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'lorddoom',
-  crypt('lorddoom', gen_salt('bf')),
-  '{"prefix": null, "first": "Ariana", "middle": null, "last": "Mercer", "suffix": null, "display": "Ariana Mercer"}'::json,
-  'lorddoom@superhero.com',
+  'thundra',
+  crypt('thundra', gen_salt('bf')),
+  '{"prefix": null, "first": "Thundra", "middle": null, "last": "Bride", "suffix": null, "display": "Thundra Bride"}'::json,
+  'thundra@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000403", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "503 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10403", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "white"}'::json,
+  '[{"label": "home", "line1": "503 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10403", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'lorddoom'
+  SELECT 1 FROM public."user" WHERE username = 'thundra'
 );
 
 INSERT INTO public."user" (
@@ -14569,15 +14569,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'colossusrush',
-  crypt('colossusrush', gen_salt('bf')),
-  '{"prefix": null, "first": "Brock", "middle": null, "last": "Mercer", "suffix": null, "display": "Brock Mercer"}'::json,
-  'colossusrush@superhero.com',
+  'lyra',
+  crypt('lyra', gen_salt('bf')),
+  '{"prefix": null, "first": "Lyra", "middle": null, "last": "Walters", "suffix": null, "display": "Lyra Walters"}'::json,
+  'lyra@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000404", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "purple"}'::json,
   '[{"label": "home", "line1": "504 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10404", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -14585,7 +14585,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'colossusrush'
+  SELECT 1 FROM public."user" WHERE username = 'lyra'
 );
 
 INSERT INTO public."user" (
@@ -14605,23 +14605,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'colossuseagle',
-  crypt('colossuseagle', gen_salt('bf')),
-  '{"prefix": null, "first": "Celeste", "middle": null, "last": "Mercer", "suffix": null, "display": "Celeste Mercer"}'::json,
-  'colossuseagle@superhero.com',
+  'titania',
+  crypt('titania', gen_salt('bf')),
+  '{"prefix": null, "first": "Mary", "middle": null, "last": "MacPherran", "suffix": null, "display": "Mary MacPherran"}'::json,
+  'titania@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000405", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "505 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10405", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "purple"}'::json,
+  '[{"label": "home", "line1": "505 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10405", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'colossuseagle'
+  SELECT 1 FROM public."user" WHERE username = 'titania'
 );
 
 INSERT INTO public."user" (
@@ -14641,23 +14641,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'goliathskull',
-  crypt('goliathskull', gen_salt('bf')),
-  '{"prefix": null, "first": "Warren", "middle": null, "last": "Mercer", "suffix": null, "display": "Warren Mercer"}'::json,
-  'goliathskull@superhero.com',
+  'firestar',
+  crypt('firestar', gen_salt('bf')),
+  '{"prefix": null, "first": "Angelica", "middle": null, "last": "Jones", "suffix": null, "display": "Angelica Jones"}'::json,
+  'firestar@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000406", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "506 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10406", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "yellow"}'::json,
+  '[{"label": "home", "line1": "506 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10406", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goliathskull'
+  SELECT 1 FROM public."user" WHERE username = 'firestar'
 );
 
 INSERT INTO public."user" (
@@ -14677,15 +14677,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'cyberdragon',
-  crypt('cyberdragon', gen_salt('bf')),
-  '{"prefix": null, "first": "Delilah", "middle": null, "last": "Mercer", "suffix": null, "display": "Delilah Mercer"}'::json,
-  'cyberdragon@superhero.com',
+  'cloud9',
+  crypt('cloud9', gen_salt('bf')),
+  '{"prefix": null, "first": "Abigail", "middle": null, "last": "Boyd", "suffix": null, "display": "Abigail Boyd"}'::json,
+  'cloud9@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000407", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "white"}'::json,
   '[{"label": "home", "line1": "507 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10407", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -14693,7 +14693,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cyberdragon'
+  SELECT 1 FROM public."user" WHERE username = 'cloud9'
 );
 
 INSERT INTO public."user" (
@@ -14713,23 +14713,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'primalspark',
-  crypt('primalspark', gen_salt('bf')),
-  '{"prefix": null, "first": "Spencer", "middle": null, "last": "Mercer", "suffix": null, "display": "Spencer Mercer"}'::json,
-  'primalspark@superhero.com',
+  'meggan',
+  crypt('meggan', gen_salt('bf')),
+  '{"prefix": null, "first": "Meggan", "middle": null, "last": "Braddock", "suffix": null, "display": "Meggan Braddock"}'::json,
+  'meggan@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000408", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "508 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10408", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "green"}'::json,
+  '[{"label": "home", "line1": "508 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10408", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'primalspark'
+  SELECT 1 FROM public."user" WHERE username = 'meggan'
 );
 
 INSERT INTO public."user" (
@@ -14749,23 +14749,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'valkyriespark',
-  crypt('valkyriespark', gen_salt('bf')),
-  '{"prefix": null, "first": "Monroe", "middle": null, "last": "Mercer", "suffix": null, "display": "Monroe Mercer"}'::json,
-  'valkyriespark@superhero.com',
+  'nocturne',
+  crypt('nocturne', gen_salt('bf')),
+  '{"prefix": null, "first": "Talia", "middle": null, "last": "Wagner", "suffix": null, "display": "Talia Wagner"}'::json,
+  'nocturne@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000409", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "509 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10409", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "yellow"}'::json,
+  '[{"label": "home", "line1": "509 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10409", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'valkyriespark'
+  SELECT 1 FROM public."user" WHERE username = 'nocturne'
 );
 
 INSERT INTO public."user" (
@@ -14785,15 +14785,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'emeraldblade',
-  crypt('emeraldblade', gen_salt('bf')),
-  '{"prefix": null, "first": "Beckett", "middle": null, "last": "Mercer", "suffix": null, "display": "Beckett Mercer"}'::json,
-  'emeraldblade@superhero.com',
+  'bobbi',
+  crypt('bobbi', gen_salt('bf')),
+  '{"prefix": null, "first": "Bobbi", "middle": null, "last": "Morse", "suffix": null, "display": "Bobbi Morse"}'::json,
+  'bobbi@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000410", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "510 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10410", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -14801,7 +14801,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'emeraldblade'
+  SELECT 1 FROM public."user" WHERE username = 'bobbi'
 );
 
 INSERT INTO public."user" (
@@ -14821,23 +14821,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'infernoecho',
-  crypt('infernoecho', gen_salt('bf')),
-  '{"prefix": null, "first": "Soraya", "middle": null, "last": "Mercer", "suffix": null, "display": "Soraya Mercer"}'::json,
-  'infernoecho@superhero.com',
+  'nadiapym',
+  crypt('nadiapym', gen_salt('bf')),
+  '{"prefix": null, "first": "Nadia", "middle": null, "last": "van Dyne", "suffix": null, "display": "Nadia van Dyne"}'::json,
+  'nadiapym@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000411", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "511 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10411", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "black"}'::json,
+  '[{"label": "home", "line1": "511 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10411", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'infernoecho'
+  SELECT 1 FROM public."user" WHERE username = 'nadiapym'
 );
 
 INSERT INTO public."user" (
@@ -14857,23 +14857,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'doctorrush',
-  crypt('doctorrush', gen_salt('bf')),
-  '{"prefix": null, "first": "Landon", "middle": null, "last": "Mercer", "suffix": null, "display": "Landon Mercer"}'::json,
-  'doctorrush@superhero.com',
+  'tigra',
+  crypt('tigra', gen_salt('bf')),
+  '{"prefix": null, "first": "Greer", "middle": null, "last": "Grant", "suffix": null, "display": "Greer Grant"}'::json,
+  'tigra@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000412", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "512 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10412", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "orange", "color2": "black"}'::json,
+  '[{"label": "home", "line1": "512 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10412", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'doctorrush'
+  SELECT 1 FROM public."user" WHERE username = 'tigra'
 );
 
 INSERT INTO public."user" (
@@ -14893,15 +14893,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'ironbolt',
-  crypt('ironbolt', gen_salt('bf')),
-  '{"prefix": null, "first": "Petra", "middle": null, "last": "Mercer", "suffix": null, "display": "Petra Mercer"}'::json,
-  'ironbolt@superhero.com',
+  'jocasta',
+  crypt('jocasta', gen_salt('bf')),
+  '{"prefix": null, "first": "Jocasta", "middle": null, "last": "Pym", "suffix": null, "display": "Jocasta Pym"}'::json,
+  'jocasta@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000413", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "gold", "color2": "red"}'::json,
   '[{"label": "home", "line1": "513 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10413", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -14909,7 +14909,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ironbolt'
+  SELECT 1 FROM public."user" WHERE username = 'jocasta'
 );
 
 INSERT INTO public."user" (
@@ -14929,23 +14929,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'gravegolem',
-  crypt('gravegolem', gen_salt('bf')),
-  '{"prefix": null, "first": "Cassius", "middle": null, "last": "Mercer", "suffix": null, "display": "Cassius Mercer"}'::json,
-  'gravegolem@superhero.com',
+  'madameweb',
+  crypt('madameweb', gen_salt('bf')),
+  '{"prefix": null, "first": "Cassandra", "middle": null, "last": "Webb", "suffix": null, "display": "Cassandra Webb"}'::json,
+  'madameweb@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000414", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "514 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10414", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "red"}'::json,
+  '[{"label": "home", "line1": "514 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10414", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'gravegolem'
+  SELECT 1 FROM public."user" WHERE username = 'madameweb'
 );
 
 INSERT INTO public."user" (
@@ -14965,23 +14965,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'spectralhawk',
-  crypt('spectralhawk', gen_salt('bf')),
-  '{"prefix": null, "first": "Rowan", "middle": null, "last": "Mercer", "suffix": null, "display": "Rowan Mercer"}'::json,
-  'spectralhawk@superhero.com',
+  'spidergirl',
+  crypt('spidergirl', gen_salt('bf')),
+  '{"prefix": null, "first": "Anya", "middle": null, "last": "Corazon", "suffix": null, "display": "Anya Corazon"}'::json,
+  'spidergirl@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000415", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "515 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10415", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "blue"}'::json,
+  '[{"label": "home", "line1": "515 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10415", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'spectralhawk'
+  SELECT 1 FROM public."user" WHERE username = 'spidergirl'
 );
 
 INSERT INTO public."user" (
@@ -15001,15 +15001,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'turboshade',
-  crypt('turboshade', gen_salt('bf')),
-  '{"prefix": null, "first": "Ethan", "middle": null, "last": "Holloway", "suffix": null, "display": "Ethan Holloway"}'::json,
-  'turboshade@superhero.com',
+  'viper',
+  crypt('viper', gen_salt('bf')),
+  '{"prefix": null, "first": "Ophelia", "middle": null, "last": "Sarkissian", "suffix": null, "display": "Ophelia Sarkissian"}'::json,
+  'viper@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000416", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "black"}'::json,
   '[{"label": "home", "line1": "516 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10416", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -15017,7 +15017,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'turboshade'
+  SELECT 1 FROM public."user" WHERE username = 'viper'
 );
 
 INSERT INTO public."user" (
@@ -15037,23 +15037,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'ancientphoenix',
-  crypt('ancientphoenix', gen_salt('bf')),
-  '{"prefix": null, "first": "Mia", "middle": null, "last": "Holloway", "suffix": null, "display": "Mia Holloway"}'::json,
-  'ancientphoenix@superhero.com',
+  'sin',
+  crypt('sin', gen_salt('bf')),
+  '{"prefix": null, "first": "Samantha", "middle": null, "last": "Lewicki", "suffix": null, "display": "Samantha Lewicki"}'::json,
+  'sin@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000417", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "517 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10417", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "black"}'::json,
+  '[{"label": "home", "line1": "517 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10417", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ancientphoenix'
+  SELECT 1 FROM public."user" WHERE username = 'sin'
 );
 
 INSERT INTO public."user" (
@@ -15073,23 +15073,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'eldritchghost',
-  crypt('eldritchghost', gen_salt('bf')),
-  '{"prefix": null, "first": "Noah", "middle": null, "last": "Holloway", "suffix": null, "display": "Noah Holloway"}'::json,
-  'eldritchghost@superhero.com',
+  'danimoonstar',
+  crypt('danimoonstar', gen_salt('bf')),
+  '{"prefix": null, "first": "Danielle", "middle": null, "last": "Moonstar", "suffix": null, "display": "Danielle Moonstar"}'::json,
+  'danimoonstar@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000418", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "518 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10418", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "brown", "color2": "white"}'::json,
+  '[{"label": "home", "line1": "518 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10418", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'eldritchghost'
+  SELECT 1 FROM public."user" WHERE username = 'danimoonstar'
 );
 
 INSERT INTO public."user" (
@@ -15109,15 +15109,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'gargoylebrain',
-  crypt('gargoylebrain', gen_salt('bf')),
-  '{"prefix": null, "first": "Ava", "middle": null, "last": "Holloway", "suffix": null, "display": "Ava Holloway"}'::json,
-  'gargoylebrain@superhero.com',
+  'magdalene',
+  crypt('magdalene', gen_salt('bf')),
+  '{"prefix": null, "first": "Magdalene", "middle": null, "last": "Szardos", "suffix": null, "display": "Magdalene Szardos"}'::json,
+  'magdalene@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000419", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
   '[{"label": "home", "line1": "519 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10419", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -15125,7 +15125,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'gargoylebrain'
+  SELECT 1 FROM public."user" WHERE username = 'magdalene'
 );
 
 INSERT INTO public."user" (
@@ -15145,23 +15145,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'blizzarddoom',
-  crypt('blizzarddoom', gen_salt('bf')),
-  '{"prefix": null, "first": "Liam", "middle": null, "last": "Holloway", "suffix": null, "display": "Liam Holloway"}'::json,
-  'blizzarddoom@superhero.com',
+  'riptide',
+  crypt('riptide', gen_salt('bf')),
+  '{"prefix": null, "first": "Janice", "middle": null, "last": "Yanizeski", "suffix": null, "display": "Janice Yanizeski"}'::json,
+  'riptide@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000420", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "520 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10420", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "white"}'::json,
+  '[{"label": "home", "line1": "520 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10420", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'blizzarddoom'
+  SELECT 1 FROM public."user" WHERE username = 'riptide'
 );
 
 INSERT INTO public."user" (
@@ -15181,23 +15181,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'lightningfury',
-  crypt('lightningfury', gen_salt('bf')),
-  '{"prefix": null, "first": "Sophia", "middle": null, "last": "Holloway", "suffix": null, "display": "Sophia Holloway"}'::json,
-  'lightningfury@superhero.com',
+  'stardust',
+  crypt('stardust', gen_salt('bf')),
+  '{"prefix": null, "first": "Kayla", "middle": null, "last": "Ballantine", "suffix": null, "display": "Kayla Ballantine"}'::json,
+  'stardust@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000421", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "521 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10421", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "gold", "color2": "white"}'::json,
+  '[{"label": "home", "line1": "521 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10421", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'lightningfury'
+  SELECT 1 FROM public."user" WHERE username = 'stardust'
 );
 
 INSERT INTO public."user" (
@@ -15217,15 +15217,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'queeneye',
-  crypt('queeneye', gen_salt('bf')),
-  '{"prefix": null, "first": "Owen", "middle": null, "last": "Holloway", "suffix": null, "display": "Owen Holloway"}'::json,
-  'queeneye@superhero.com',
+  'smasher',
+  crypt('smasher', gen_salt('bf')),
+  '{"prefix": null, "first": "Izzy", "middle": null, "last": "Kane", "suffix": null, "display": "Izzy Kane"}'::json,
+  'smasher@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000422", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "522 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10422", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -15233,7 +15233,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'queeneye'
+  SELECT 1 FROM public."user" WHERE username = 'smasher'
 );
 
 INSERT INTO public."user" (
@@ -15253,23 +15253,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'hypersage',
-  crypt('hypersage', gen_salt('bf')),
-  '{"prefix": null, "first": "Isla", "middle": null, "last": "Holloway", "suffix": null, "display": "Isla Holloway"}'::json,
-  'hypersage@superhero.com',
+  'catseye',
+  crypt('catseye', gen_salt('bf')),
+  '{"prefix": null, "first": "Sharon", "middle": null, "last": "Smith", "suffix": null, "display": "Sharon Smith"}'::json,
+  'catseye@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000423", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "523 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10423", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "brown"}'::json,
+  '[{"label": "home", "line1": "523 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10423", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'hypersage'
+  SELECT 1 FROM public."user" WHERE username = 'catseye'
 );
 
 INSERT INTO public."user" (
@@ -15289,23 +15289,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'goldengriffin',
-  crypt('goldengriffin', gen_salt('bf')),
-  '{"prefix": null, "first": "Caleb", "middle": null, "last": "Holloway", "suffix": null, "display": "Caleb Holloway"}'::json,
-  'goldengriffin@superhero.com',
+  'tarot',
+  crypt('tarot', gen_salt('bf')),
+  '{"prefix": null, "first": "Marie-Ange", "middle": null, "last": "Colbert", "suffix": null, "display": "Marie-Ange Colbert"}'::json,
+  'tarot@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000424", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "524 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10424", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "gold"}'::json,
+  '[{"label": "home", "line1": "524 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10424", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goldengriffin'
+  SELECT 1 FROM public."user" WHERE username = 'tarot'
 );
 
 INSERT INTO public."user" (
@@ -15325,15 +15325,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'goliathkraken',
-  crypt('goliathkraken', gen_salt('bf')),
-  '{"prefix": null, "first": "Nora", "middle": null, "last": "Holloway", "suffix": null, "display": "Nora Holloway"}'::json,
-  'goliathkraken@superhero.com',
+  'firebird',
+  crypt('firebird', gen_salt('bf')),
+  '{"prefix": null, "first": "Bonita", "middle": null, "last": "Juarez", "suffix": null, "display": "Bonita Juarez"}'::json,
+  'firebird@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000425", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "525 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10425", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -15341,7 +15341,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goliathkraken'
+  SELECT 1 FROM public."user" WHERE username = 'firebird'
 );
 
 INSERT INTO public."user" (
@@ -15361,23 +15361,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'ultraarrow',
-  crypt('ultraarrow', gen_salt('bf')),
-  '{"prefix": null, "first": "Julian", "middle": null, "last": "Holloway", "suffix": null, "display": "Julian Holloway"}'::json,
-  'ultraarrow@superhero.com',
+  'turbo',
+  crypt('turbo', gen_salt('bf')),
+  '{"prefix": null, "first": "Michiko", "middle": null, "last": "Musashi", "suffix": null, "display": "Michiko Musashi"}'::json,
+  'turbo@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000426", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "526 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10426", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "white"}'::json,
+  '[{"label": "home", "line1": "526 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10426", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ultraarrow'
+  SELECT 1 FROM public."user" WHERE username = 'turbo'
 );
 
 INSERT INTO public."user" (
@@ -15397,23 +15397,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'quantumskull',
-  crypt('quantumskull', gen_salt('bf')),
-  '{"prefix": null, "first": "Elena", "middle": null, "last": "Holloway", "suffix": null, "display": "Elena Holloway"}'::json,
-  'quantumskull@superhero.com',
+  'lightspeed',
+  crypt('lightspeed', gen_salt('bf')),
+  '{"prefix": null, "first": "Julie", "middle": null, "last": "Power", "suffix": null, "display": "Julie Power"}'::json,
+  'lightspeed@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000427", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "527 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10427", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "white"}'::json,
+  '[{"label": "home", "line1": "527 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10427", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'quantumskull'
+  SELECT 1 FROM public."user" WHERE username = 'lightspeed'
 );
 
 INSERT INTO public."user" (
@@ -15433,15 +15433,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'generalknight',
-  crypt('generalknight', gen_salt('bf')),
-  '{"prefix": null, "first": "Miles", "middle": null, "last": "Holloway", "suffix": null, "display": "Miles Holloway"}'::json,
-  'generalknight@superhero.com',
+  'freespirit',
+  crypt('freespirit', gen_salt('bf')),
+  '{"prefix": null, "first": "Mary", "middle": null, "last": "Roth", "suffix": null, "display": "Mary Roth"}'::json,
+  'freespirit@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000428", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "white"}'::json,
   '[{"label": "home", "line1": "528 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10428", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -15449,7 +15449,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'generalknight'
+  SELECT 1 FROM public."user" WHERE username = 'freespirit'
 );
 
 INSERT INTO public."user" (
@@ -15469,23 +15469,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'marshalprophet',
-  crypt('marshalprophet', gen_salt('bf')),
-  '{"prefix": null, "first": "Clara", "middle": null, "last": "Holloway", "suffix": null, "display": "Clara Holloway"}'::json,
-  'marshalprophet@superhero.com',
+  'jolt',
+  crypt('jolt', gen_salt('bf')),
+  '{"prefix": null, "first": "Hallie", "middle": null, "last": "Takahashi", "suffix": null, "display": "Hallie Takahashi"}'::json,
+  'jolt@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000429", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "529 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10429", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "yellow"}'::json,
+  '[{"label": "home", "line1": "529 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10429", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'marshalprophet'
+  SELECT 1 FROM public."user" WHERE username = 'jolt'
 );
 
 INSERT INTO public."user" (
@@ -15505,23 +15505,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'emberhawk',
-  crypt('emberhawk', gen_salt('bf')),
-  '{"prefix": null, "first": "Felix", "middle": null, "last": "Holloway", "suffix": null, "display": "Felix Holloway"}'::json,
-  'emberhawk@superhero.com',
+  'veranke',
+  crypt('veranke', gen_salt('bf')),
+  '{"prefix": null, "first": "Veranke", "middle": null, "last": "Skrull", "suffix": null, "display": "Veranke Skrull"}'::json,
+  'veranke@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000430", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "530 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10430", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "purple"}'::json,
+  '[{"label": "home", "line1": "530 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10430", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'emberhawk'
+  SELECT 1 FROM public."user" WHERE username = 'veranke'
 );
 
 INSERT INTO public."user" (
@@ -15541,15 +15541,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'ladyclaw',
-  crypt('ladyclaw', gen_salt('bf')),
-  '{"prefix": null, "first": "Hazel", "middle": null, "last": "Holloway", "suffix": null, "display": "Hazel Holloway"}'::json,
-  'ladyclaw@superhero.com',
+  'lyja',
+  crypt('lyja', gen_salt('bf')),
+  '{"prefix": null, "first": "Lyja", "middle": null, "last": "Storm", "suffix": null, "display": "Lyja Storm"}'::json,
+  'lyja@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000431", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "orange", "color2": "green"}'::json,
   '[{"label": "home", "line1": "531 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10431", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -15557,7 +15557,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ladyclaw'
+  SELECT 1 FROM public."user" WHERE username = 'lyja'
 );
 
 INSERT INTO public."user" (
@@ -15577,23 +15577,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'renegadeblade',
-  crypt('renegadeblade', gen_salt('bf')),
-  '{"prefix": null, "first": "Adrian", "middle": null, "last": "Holloway", "suffix": null, "display": "Adrian Holloway"}'::json,
-  'renegadeblade@superhero.com',
+  'andromeda',
+  crypt('andromeda', gen_salt('bf')),
+  '{"prefix": null, "first": "Andromeda", "middle": null, "last": "Attumasen", "suffix": null, "display": "Andromeda Attumasen"}'::json,
+  'andromeda@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000432", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "532 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10432", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "green"}'::json,
+  '[{"label": "home", "line1": "532 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10432", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'renegadeblade'
+  SELECT 1 FROM public."user" WHERE username = 'andromeda'
 );
 
 INSERT INTO public."user" (
@@ -15613,23 +15613,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'lightningmask',
-  crypt('lightningmask', gen_salt('bf')),
-  '{"prefix": null, "first": "Iris", "middle": null, "last": "Holloway", "suffix": null, "display": "Iris Holloway"}'::json,
-  'lightningmask@superhero.com',
+  'marrina',
+  crypt('marrina', gen_salt('bf')),
+  '{"prefix": null, "first": "Marrina", "middle": null, "last": "Smallwood", "suffix": null, "display": "Marrina Smallwood"}'::json,
+  'marrina@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000433", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "533 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10433", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "blue"}'::json,
+  '[{"label": "home", "line1": "533 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10433", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'lightningmask'
+  SELECT 1 FROM public."user" WHERE username = 'marrina'
 );
 
 INSERT INTO public."user" (
@@ -15649,15 +15649,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'roninhowl',
-  crypt('roninhowl', gen_salt('bf')),
-  '{"prefix": null, "first": "Simon", "middle": null, "last": "Holloway", "suffix": null, "display": "Simon Holloway"}'::json,
-  'roninhowl@superhero.com',
+  'snowbird',
+  crypt('snowbird', gen_salt('bf')),
+  '{"prefix": null, "first": "Narya", "middle": null, "last": "Inua", "suffix": null, "display": "Narya Inua"}'::json,
+  'snowbird@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000434", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "534 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10434", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -15665,7 +15665,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'roninhowl'
+  SELECT 1 FROM public."user" WHERE username = 'snowbird'
 );
 
 INSERT INTO public."user" (
@@ -15685,23 +15685,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'primalguardian',
-  crypt('primalguardian', gen_salt('bf')),
-  '{"prefix": null, "first": "Ruby", "middle": null, "last": "Holloway", "suffix": null, "display": "Ruby Holloway"}'::json,
-  'primalguardian@superhero.com',
+  'talisman',
+  crypt('talisman', gen_salt('bf')),
+  '{"prefix": null, "first": "Elizabeth", "middle": null, "last": "Twoyoungmen", "suffix": null, "display": "Elizabeth Twoyoungmen"}'::json,
+  'talisman@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000435", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "535 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10435", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "gold"}'::json,
+  '[{"label": "home", "line1": "535 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10435", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'primalguardian'
+  SELECT 1 FROM public."user" WHERE username = 'talisman'
 );
 
 INSERT INTO public."user" (
@@ -15721,23 +15721,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'scarletguardian',
-  crypt('scarletguardian', gen_salt('bf')),
-  '{"prefix": null, "first": "Victor", "middle": null, "last": "Holloway", "suffix": null, "display": "Victor Holloway"}'::json,
-  'scarletguardian@superhero.com',
+  'pinkpearl',
+  crypt('pinkpearl', gen_salt('bf')),
+  '{"prefix": null, "first": "Aubrey", "middle": null, "last": "Dolan", "suffix": null, "display": "Aubrey Dolan"}'::json,
+  'pinkpearl@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000436", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "536 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10436", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "white"}'::json,
+  '[{"label": "home", "line1": "536 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10436", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'scarletguardian'
+  SELECT 1 FROM public."user" WHERE username = 'pinkpearl'
 );
 
 INSERT INTO public."user" (
@@ -15757,15 +15757,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'silvershade',
-  crypt('silvershade', gen_salt('bf')),
-  '{"prefix": null, "first": "Paige", "middle": null, "last": "Holloway", "suffix": null, "display": "Paige Holloway"}'::json,
-  'silvershade@superhero.com',
+  'valeria',
+  crypt('valeria', gen_salt('bf')),
+  '{"prefix": null, "first": "Valeria", "middle": null, "last": "Richards", "suffix": null, "display": "Valeria Richards"}'::json,
+  'valeria@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000437", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "white"}'::json,
   '[{"label": "home", "line1": "537 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10437", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -15773,7 +15773,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'silvershade'
+  SELECT 1 FROM public."user" WHERE username = 'valeria'
 );
 
 INSERT INTO public."user" (
@@ -15793,23 +15793,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'mysticmind',
-  crypt('mysticmind', gen_salt('bf')),
-  '{"prefix": null, "first": "Grant", "middle": null, "last": "Holloway", "suffix": null, "display": "Grant Holloway"}'::json,
-  'mysticmind@superhero.com',
+  'luna',
+  crypt('luna', gen_salt('bf')),
+  '{"prefix": null, "first": "Luna", "middle": null, "last": "Maximoff", "suffix": null, "display": "Luna Maximoff"}'::json,
+  'luna@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000438", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "538 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10438", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "silver"}'::json,
+  '[{"label": "home", "line1": "538 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10438", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'mysticmind'
+  SELECT 1 FROM public."user" WHERE username = 'luna'
 );
 
 INSERT INTO public."user" (
@@ -15829,23 +15829,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'neontempest',
-  crypt('neontempest', gen_salt('bf')),
-  '{"prefix": null, "first": "Tessa", "middle": null, "last": "Holloway", "suffix": null, "display": "Tessa Holloway"}'::json,
-  'neontempest@superhero.com',
+  'magda',
+  crypt('magda', gen_salt('bf')),
+  '{"prefix": null, "first": "Magda", "middle": null, "last": "Lensherr", "suffix": null, "display": "Magda Lensherr"}'::json,
+  'magda@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000439", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "539 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10439", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "gray", "color2": "blue"}'::json,
+  '[{"label": "home", "line1": "539 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10439", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'neontempest'
+  SELECT 1 FROM public."user" WHERE username = 'magda'
 );
 
 INSERT INTO public."user" (
@@ -15865,15 +15865,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'crimsonknight',
-  crypt('crimsonknight', gen_salt('bf')),
-  '{"prefix": null, "first": "Dean", "middle": null, "last": "Holloway", "suffix": null, "display": "Dean Holloway"}'::json,
-  'crimsonknight@superhero.com',
+  'destiny',
+  crypt('destiny', gen_salt('bf')),
+  '{"prefix": null, "first": "Irene", "middle": null, "last": "Adler", "suffix": null, "display": "Irene Adler"}'::json,
+  'destiny@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000440", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "540 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10440", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -15881,7 +15881,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'crimsonknight'
+  SELECT 1 FROM public."user" WHERE username = 'destiny'
 );
 
 INSERT INTO public."user" (
@@ -15901,23 +15901,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'tidalrush',
-  crypt('tidalrush', gen_salt('bf')),
-  '{"prefix": null, "first": "Vera", "middle": null, "last": "Holloway", "suffix": null, "display": "Vera Holloway"}'::json,
-  'tidalrush@superhero.com',
+  'roulette',
+  crypt('roulette', gen_salt('bf')),
+  '{"prefix": null, "first": "Jennifer", "middle": null, "last": "Stavros", "suffix": null, "display": "Jennifer Stavros"}'::json,
+  'roulette@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000441", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "541 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10441", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "black"}'::json,
+  '[{"label": "home", "line1": "541 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10441", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'tidalrush'
+  SELECT 1 FROM public."user" WHERE username = 'roulette'
 );
 
 INSERT INTO public."user" (
@@ -15937,23 +15937,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'turbochampion',
-  crypt('turbochampion', gen_salt('bf')),
-  '{"prefix": null, "first": "Colin", "middle": null, "last": "Holloway", "suffix": null, "display": "Colin Holloway"}'::json,
-  'turbochampion@superhero.com',
+  'skids',
+  crypt('skids', gen_salt('bf')),
+  '{"prefix": null, "first": "Sally", "middle": null, "last": "Blevins", "suffix": null, "display": "Sally Blevins"}'::json,
+  'skids@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000442", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "542 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10442", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "brown"}'::json,
+  '[{"label": "home", "line1": "542 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10442", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'turbochampion'
+  SELECT 1 FROM public."user" WHERE username = 'skids'
 );
 
 INSERT INTO public."user" (
@@ -15973,15 +15973,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'deltaghost',
-  crypt('deltaghost', gen_salt('bf')),
-  '{"prefix": null, "first": "Jade", "middle": null, "last": "Holloway", "suffix": null, "display": "Jade Holloway"}'::json,
-  'deltaghost@superhero.com',
+  'mercury',
+  crypt('mercury', gen_salt('bf')),
+  '{"prefix": null, "first": "Cessily", "middle": null, "last": "Kincaid", "suffix": null, "display": "Cessily Kincaid"}'::json,
+  'mercury@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000443", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "silver", "color2": "gray"}'::json,
   '[{"label": "home", "line1": "543 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10443", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -15989,7 +15989,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'deltaghost'
+  SELECT 1 FROM public."user" WHERE username = 'mercury'
 );
 
 INSERT INTO public."user" (
@@ -16009,15 +16009,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'rogueeagle',
-  crypt('rogueeagle', gen_salt('bf')),
-  '{"prefix": null, "first": "Marcus", "middle": null, "last": "Holloway", "suffix": null, "display": "Marcus Holloway"}'::json,
-  'rogueeagle@superhero.com',
+  'motherpanic',
+  crypt('motherpanic', gen_salt('bf')),
+  '{"prefix": null, "first": "Violet", "middle": null, "last": "Paige", "suffix": null, "display": "Violet Paige"}'::json,
+  'motherpanic@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000444", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
   '[{"label": "home", "line1": "544 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10444", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -16025,7 +16025,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'rogueeagle'
+  SELECT 1 FROM public."user" WHERE username = 'motherpanic'
 );
 
 INSERT INTO public."user" (
@@ -16045,15 +16045,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'valkyrieraven',
-  crypt('valkyrieraven', gen_salt('bf')),
-  '{"prefix": null, "first": "Leah", "middle": null, "last": "Holloway", "suffix": null, "display": "Leah Holloway"}'::json,
-  'valkyrieraven@superhero.com',
+  'dreamgirl',
+  crypt('dreamgirl', gen_salt('bf')),
+  '{"prefix": null, "first": "Imra", "middle": null, "last": "Ardeen", "suffix": null, "display": "Imra Ardeen"}'::json,
+  'dreamgirl@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000445", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "white"}'::json,
   '[{"label": "home", "line1": "545 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10445", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -16061,7 +16061,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'valkyrieraven'
+  SELECT 1 FROM public."user" WHERE username = 'dreamgirl'
 );
 
 INSERT INTO public."user" (
@@ -16081,23 +16081,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'queensurge',
-  crypt('queensurge', gen_salt('bf')),
-  '{"prefix": null, "first": "Nolan", "middle": null, "last": "Holloway", "suffix": null, "display": "Nolan Holloway"}'::json,
-  'queensurge@superhero.com',
+  'lightninglass',
+  crypt('lightninglass', gen_salt('bf')),
+  '{"prefix": null, "first": "Ayla", "middle": null, "last": "Ranzz", "suffix": null, "display": "Ayla Ranzz"}'::json,
+  'lightninglass@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000446", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "546 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10446", "country_code": "USA"}]'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "blue"}'::json,
+  '[{"label": "home", "line1": "546 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10446", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'queensurge'
+  SELECT 1 FROM public."user" WHERE username = 'lightninglass'
 );
 
 INSERT INTO public."user" (
@@ -16117,15 +16117,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'agentchampion',
-  crypt('agentchampion', gen_salt('bf')),
-  '{"prefix": null, "first": "Gwen", "middle": null, "last": "Holloway", "suffix": null, "display": "Gwen Holloway"}'::json,
-  'agentchampion@superhero.com',
+  'ultragirl',
+  crypt('ultragirl', gen_salt('bf')),
+  '{"prefix": null, "first": "Tasmia", "middle": null, "last": "Mallor", "suffix": null, "display": "Tasmia Mallor"}'::json,
+  'ultragirl@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000447", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "547 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10447", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -16133,7 +16133,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'agentchampion'
+  SELECT 1 FROM public."user" WHERE username = 'ultragirl'
 );
 
 INSERT INTO public."user" (
@@ -16153,15 +16153,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'generalwrath',
-  crypt('generalwrath', gen_salt('bf')),
-  '{"prefix": null, "first": "Tristan", "middle": null, "last": "Holloway", "suffix": null, "display": "Tristan Holloway"}'::json,
-  'generalwrath@superhero.com',
+  'jayna',
+  crypt('jayna', gen_salt('bf')),
+  '{"prefix": null, "first": "Jayna", "middle": null, "last": "Zook", "suffix": null, "display": "Jayna Zook"}'::json,
+  'jayna@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000448", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "orange"}'::json,
   '[{"label": "home", "line1": "548 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10448", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -16169,7 +16169,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'generalwrath'
+  SELECT 1 FROM public."user" WHERE username = 'jayna'
 );
 
 INSERT INTO public."user" (
@@ -16189,23 +16189,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'generalhex',
-  crypt('generalhex', gen_salt('bf')),
-  '{"prefix": null, "first": "Selene", "middle": null, "last": "Holloway", "suffix": null, "display": "Selene Holloway"}'::json,
-  'generalhex@superhero.com',
+  'witchfire',
+  crypt('witchfire', gen_salt('bf')),
+  '{"prefix": null, "first": "Laura", "middle": null, "last": "Nelson", "suffix": null, "display": "Laura Nelson"}'::json,
+  'witchfire@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000449", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "549 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10449", "country_code": "USA"}]'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "orange"}'::json,
+  '[{"label": "home", "line1": "549 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10449", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'generalhex'
+  SELECT 1 FROM public."user" WHERE username = 'witchfire'
 );
 
 INSERT INTO public."user" (
@@ -16225,15 +16225,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'ninjaeye',
-  crypt('ninjaeye', gen_salt('bf')),
-  '{"prefix": null, "first": "Derek", "middle": null, "last": "Holloway", "suffix": null, "display": "Derek Holloway"}'::json,
-  'ninjaeye@superhero.com',
+  'harlequin',
+  crypt('harlequin', gen_salt('bf')),
+  '{"prefix": null, "first": "Marcie", "middle": null, "last": "Cooper", "suffix": null, "display": "Marcie Cooper"}'::json,
+  'harlequin@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000450", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "green"}'::json,
   '[{"label": "home", "line1": "550 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10450", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -16241,7 +16241,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ninjaeye'
+  SELECT 1 FROM public."user" WHERE username = 'harlequin'
 );
 
 INSERT INTO public."user" (
@@ -16261,15 +16261,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'infernooracle',
-  crypt('infernooracle', gen_salt('bf')),
-  '{"prefix": null, "first": "Alina", "middle": null, "last": "Holloway", "suffix": null, "display": "Alina Holloway"}'::json,
-  'infernooracle@superhero.com',
+  'powerhouse',
+  crypt('powerhouse', gen_salt('bf')),
+  '{"prefix": null, "first": "Judy", "middle": null, "last": "Jensen", "suffix": null, "display": "Judy Jensen"}'::json,
+  'powerhouse@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000451", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "red"}'::json,
   '[{"label": "home", "line1": "551 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10451", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -16277,7 +16277,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'infernooracle'
+  SELECT 1 FROM public."user" WHERE username = 'powerhouse'
 );
 
 INSERT INTO public."user" (
@@ -16297,15 +16297,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'azuresage',
-  crypt('azuresage', gen_salt('bf')),
-  '{"prefix": null, "first": "Rafael", "middle": null, "last": "Holloway", "suffix": null, "display": "Rafael Holloway"}'::json,
-  'azuresage@superhero.com',
+  'silhouette',
+  crypt('silhouette', gen_salt('bf')),
+  '{"prefix": null, "first": "Silhouette", "middle": null, "last": "Chord", "suffix": null, "display": "Silhouette Chord"}'::json,
+  'silhouette@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000452", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
   '[{"label": "home", "line1": "552 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10452", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -16313,7 +16313,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'azuresage'
+  SELECT 1 FROM public."user" WHERE username = 'silhouette'
 );
 
 INSERT INTO public."user" (
@@ -16333,23 +16333,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'roninhex',
-  crypt('roninhex', gen_salt('bf')),
-  '{"prefix": null, "first": "Bianca", "middle": null, "last": "Holloway", "suffix": null, "display": "Bianca Holloway"}'::json,
-  'roninhex@superhero.com',
+  'beakgirl',
+  crypt('beakgirl', gen_salt('bf')),
+  '{"prefix": null, "first": "Angel", "middle": null, "last": "Salvadore", "suffix": null, "display": "Angel Salvadore"}'::json,
+  'beakgirl@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000453", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "553 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10453", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "brown"}'::json,
+  '[{"label": "home", "line1": "553 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10453", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'roninhex'
+  SELECT 1 FROM public."user" WHERE username = 'beakgirl'
 );
 
 INSERT INTO public."user" (
@@ -16369,23 +16369,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'goblinkeeper',
-  crypt('goblinkeeper', gen_salt('bf')),
-  '{"prefix": null, "first": "Harper", "middle": null, "last": "Holloway", "suffix": null, "display": "Harper Holloway"}'::json,
-  'goblinkeeper@superhero.com',
+  'wallflower',
+  crypt('wallflower', gen_salt('bf')),
+  '{"prefix": null, "first": "Laurie", "middle": null, "last": "Collins", "suffix": null, "display": "Laurie Collins"}'::json,
+  'wallflower@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000454", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "554 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10454", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "yellow"}'::json,
+  '[{"label": "home", "line1": "554 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10454", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goblinkeeper'
+  SELECT 1 FROM public."user" WHERE username = 'wallflower'
 );
 
 INSERT INTO public."user" (
@@ -16405,15 +16405,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'dukebane',
-  crypt('dukebane', gen_salt('bf')),
-  '{"prefix": null, "first": "Jonah", "middle": null, "last": "Holloway", "suffix": null, "display": "Jonah Holloway"}'::json,
-  'dukebane@superhero.com',
+  'winddancer2',
+  crypt('winddancer2', gen_salt('bf')),
+  '{"prefix": null, "first": "Sofia", "middle": null, "last": "Mantegazza", "suffix": null, "display": "Sofia Mantegazza"}'::json,
+  'winddancer2@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000455", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "blue"}'::json,
   '[{"label": "home", "line1": "555 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10455", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -16421,7 +16421,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'dukebane'
+  SELECT 1 FROM public."user" WHERE username = 'winddancer2'
 );
 
 INSERT INTO public."user" (
@@ -16441,23 +16441,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'samuraislayer',
-  crypt('samuraislayer', gen_salt('bf')),
-  '{"prefix": null, "first": "Mira", "middle": null, "last": "Holloway", "suffix": null, "display": "Mira Holloway"}'::json,
-  'samuraislayer@superhero.com',
+  'echo',
+  crypt('echo', gen_salt('bf')),
+  '{"prefix": null, "first": "Maya", "middle": null, "last": "Lopez", "suffix": null, "display": "Maya Lopez"}'::json,
+  'echo@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000456", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "556 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10456", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "blue"}'::json,
+  '[{"label": "home", "line1": "556 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10456", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'samuraislayer'
+  SELECT 1 FROM public."user" WHERE username = 'echo'
 );
 
 INSERT INTO public."user" (
@@ -16477,23 +16477,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'ancientprophet',
-  crypt('ancientprophet', gen_salt('bf')),
-  '{"prefix": null, "first": "Cedric", "middle": null, "last": "Holloway", "suffix": null, "display": "Cedric Holloway"}'::json,
-  'ancientprophet@superhero.com',
+  'dagger',
+  crypt('dagger', gen_salt('bf')),
+  '{"prefix": null, "first": "Tandy", "middle": null, "last": "Bowen", "suffix": null, "display": "Tandy Bowen"}'::json,
+  'dagger@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000457", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "557 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10457", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "white"}'::json,
+  '[{"label": "home", "line1": "557 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10457", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ancientprophet'
+  SELECT 1 FROM public."user" WHERE username = 'dagger'
 );
 
 INSERT INTO public."user" (
@@ -16513,15 +16513,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'emberrune',
-  crypt('emberrune', gen_salt('bf')),
-  '{"prefix": null, "first": "Lena", "middle": null, "last": "Holloway", "suffix": null, "display": "Lena Holloway"}'::json,
-  'emberrune@superhero.com',
+  'madelyne',
+  crypt('madelyne', gen_salt('bf')),
+  '{"prefix": null, "first": "Madelyne", "middle": null, "last": "Pryor", "suffix": null, "display": "Madelyne Pryor"}'::json,
+  'madelyne@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000458", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "black"}'::json,
   '[{"label": "home", "line1": "558 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10458", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -16529,7 +16529,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'emberrune'
+  SELECT 1 FROM public."user" WHERE username = 'madelyne'
 );
 
 INSERT INTO public."user" (
@@ -16549,23 +16549,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'thunderraven',
-  crypt('thunderraven', gen_salt('bf')),
-  '{"prefix": null, "first": "Andre", "middle": null, "last": "Holloway", "suffix": null, "display": "Andre Holloway"}'::json,
-  'thunderraven@superhero.com',
+  'selene',
+  crypt('selene', gen_salt('bf')),
+  '{"prefix": null, "first": "Selene", "middle": null, "last": "Gallio", "suffix": null, "display": "Selene Gallio"}'::json,
+  'selene@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000459", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "559 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10459", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "red"}'::json,
+  '[{"label": "home", "line1": "559 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10459", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'thunderraven'
+  SELECT 1 FROM public."user" WHERE username = 'selene'
 );
 
 INSERT INTO public."user" (
@@ -16585,23 +16585,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'wardenraven',
-  crypt('wardenraven', gen_salt('bf')),
-  '{"prefix": null, "first": "Sasha", "middle": null, "last": "Holloway", "suffix": null, "display": "Sasha Holloway"}'::json,
-  'wardenraven@superhero.com',
+  'moondragon',
+  crypt('moondragon', gen_salt('bf')),
+  '{"prefix": null, "first": "Heather", "middle": null, "last": "Douglas", "suffix": null, "display": "Heather Douglas"}'::json,
+  'moondragon@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000460", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "560 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10460", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "gold"}'::json,
+  '[{"label": "home", "line1": "560 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10460", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'wardenraven'
+  SELECT 1 FROM public."user" WHERE username = 'moondragon'
 );
 
 INSERT INTO public."user" (
@@ -16621,15 +16621,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'tidalripper',
-  crypt('tidalripper', gen_salt('bf')),
-  '{"prefix": null, "first": "Malik", "middle": null, "last": "Holloway", "suffix": null, "display": "Malik Holloway"}'::json,
-  'tidalripper@superhero.com',
+  'lilandra',
+  crypt('lilandra', gen_salt('bf')),
+  '{"prefix": null, "first": "Lilandra", "middle": null, "last": "Neramani", "suffix": null, "display": "Lilandra Neramani"}'::json,
+  'lilandra@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000461", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "gold"}'::json,
   '[{"label": "home", "line1": "561 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10461", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -16637,7 +16637,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'tidalripper'
+  SELECT 1 FROM public."user" WHERE username = 'lilandra'
 );
 
 INSERT INTO public."user" (
@@ -16657,23 +16657,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'lunarwrath',
-  crypt('lunarwrath', gen_salt('bf')),
-  '{"prefix": null, "first": "Priya", "middle": null, "last": "Holloway", "suffix": null, "display": "Priya Holloway"}'::json,
-  'lunarwrath@superhero.com',
+  'deathbird',
+  crypt('deathbird', gen_salt('bf')),
+  '{"prefix": null, "first": "Cal''syee", "middle": null, "last": "Neramani", "suffix": null, "display": "Cal''syee Neramani"}'::json,
+  'deathbird@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000462", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "562 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10462", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
+  '[{"label": "home", "line1": "562 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10462", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'lunarwrath'
+  SELECT 1 FROM public."user" WHERE username = 'deathbird'
 );
 
 INSERT INTO public."user" (
@@ -16693,23 +16693,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'crimsonbreaker',
-  crypt('crimsonbreaker', gen_salt('bf')),
-  '{"prefix": null, "first": "Kenji", "middle": null, "last": "Holloway", "suffix": null, "display": "Kenji Holloway"}'::json,
-  'crimsonbreaker@superhero.com',
+  'angela',
+  crypt('angela', gen_salt('bf')),
+  '{"prefix": null, "first": "Aldrif", "middle": null, "last": "Odinsdottir", "suffix": null, "display": "Aldrif Odinsdottir"}'::json,
+  'angela@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000463", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "563 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10463", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "gold"}'::json,
+  '[{"label": "home", "line1": "563 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10463", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'crimsonbreaker'
+  SELECT 1 FROM public."user" WHERE username = 'angela'
 );
 
 INSERT INTO public."user" (
@@ -16729,15 +16729,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'crimsonskull',
-  crypt('crimsonskull', gen_salt('bf')),
-  '{"prefix": null, "first": "Yara", "middle": null, "last": "Holloway", "suffix": null, "display": "Yara Holloway"}'::json,
-  'crimsonskull@superhero.com',
+  'hepzibah',
+  crypt('hepzibah', gen_salt('bf')),
+  '{"prefix": null, "first": "Hepzibah", "middle": null, "last": "Tigra", "suffix": null, "display": "Hepzibah Tigra"}'::json,
+  'hepzibah@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000464", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "brown"}'::json,
   '[{"label": "home", "line1": "564 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10464", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -16745,7 +16745,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'crimsonskull'
+  SELECT 1 FROM public."user" WHERE username = 'hepzibah'
 );
 
 INSERT INTO public."user" (
@@ -16765,23 +16765,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'savageshock',
-  crypt('savageshock', gen_salt('bf')),
-  '{"prefix": null, "first": "Rosa", "middle": null, "last": "Holloway", "suffix": null, "display": "Rosa Holloway"}'::json,
-  'savageshock@superhero.com',
+  'shriek',
+  crypt('shriek', gen_salt('bf')),
+  '{"prefix": null, "first": "Frances", "middle": null, "last": "Barrison", "suffix": null, "display": "Frances Barrison"}'::json,
+  'shriek@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000465", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "565 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10465", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "red"}'::json,
+  '[{"label": "home", "line1": "565 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10465", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'savageshock'
+  SELECT 1 FROM public."user" WHERE username = 'shriek'
 );
 
 INSERT INTO public."user" (
@@ -16801,23 +16801,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'queensmasher',
-  crypt('queensmasher', gen_salt('bf')),
-  '{"prefix": null, "first": "Hugo", "middle": null, "last": "Holloway", "suffix": null, "display": "Hugo Holloway"}'::json,
-  'queensmasher@superhero.com',
+  'laynia',
+  crypt('laynia', gen_salt('bf')),
+  '{"prefix": null, "first": "Laynia", "middle": null, "last": "Petrovna", "suffix": null, "display": "Laynia Petrovna"}'::json,
+  'laynia@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000466", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "566 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10466", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "purple"}'::json,
+  '[{"label": "home", "line1": "566 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10466", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'queensmasher'
+  SELECT 1 FROM public."user" WHERE username = 'laynia'
 );
 
 INSERT INTO public."user" (
@@ -16837,15 +16837,15 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'lunarleviathan',
-  crypt('lunarleviathan', gen_salt('bf')),
-  '{"prefix": null, "first": "Ingrid", "middle": null, "last": "Holloway", "suffix": null, "display": "Ingrid Holloway"}'::json,
-  'lunarleviathan@superhero.com',
+  'darkstar',
+  crypt('darkstar', gen_salt('bf')),
+  '{"prefix": null, "first": "Sasha", "middle": null, "last": "Roerich", "suffix": null, "display": "Sasha Roerich"}'::json,
+  'darkstar@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000467", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "black", "color2": "red"}'::json,
   '[{"label": "home", "line1": "567 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10467", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
@@ -16853,7 +16853,7 @@ SELECT
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'lunarleviathan'
+  SELECT 1 FROM public."user" WHERE username = 'darkstar'
 );
 
 INSERT INTO public."user" (
@@ -16873,23 +16873,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'blizzardghost',
-  crypt('blizzardghost', gen_salt('bf')),
-  '{"prefix": null, "first": "Pascal", "middle": null, "last": "Holloway", "suffix": null, "display": "Pascal Holloway"}'::json,
-  'blizzardghost@superhero.com',
+  'princesspython',
+  crypt('princesspython', gen_salt('bf')),
+  '{"prefix": null, "first": "Zelda", "middle": null, "last": "DuBois", "suffix": null, "display": "Zelda DuBois"}'::json,
+  'princesspython@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000468", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "568 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10468", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "green", "color2": "yellow"}'::json,
+  '[{"label": "home", "line1": "568 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10468", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'blizzardghost'
+  SELECT 1 FROM public."user" WHERE username = 'princesspython'
 );
 
 INSERT INTO public."user" (
@@ -16909,23 +16909,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'arcaneeye',
-  crypt('arcaneeye', gen_salt('bf')),
-  '{"prefix": null, "first": "Freya", "middle": null, "last": "Holloway", "suffix": null, "display": "Freya Holloway"}'::json,
-  'arcaneeye@superhero.com',
+  'scream',
+  crypt('scream', gen_salt('bf')),
+  '{"prefix": null, "first": "Donna", "middle": null, "last": "Diego", "suffix": null, "display": "Donna Diego"}'::json,
+  'scream@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000469", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "569 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10469", "country_code": "USA"}]'::json,
+  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "black"}'::json,
+  '[{"label": "home", "line1": "569 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10469", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'arcaneeye'
+  SELECT 1 FROM public."user" WHERE username = 'scream'
 );
 
 INSERT INTO public."user" (
@@ -16945,19067 +16945,23 @@ INSERT INTO public."user" (
   modified_date
 )
 SELECT
-  'gargoylewave',
-  crypt('gargoylewave', gen_salt('bf')),
-  '{"prefix": null, "first": "Dante", "middle": null, "last": "Holloway", "suffix": null, "display": "Dante Holloway"}'::json,
-  'gargoylewave@superhero.com',
+  'judomaster',
+  crypt('judomaster', gen_salt('bf')),
+  '{"prefix": null, "first": "Sonia", "middle": null, "last": "Sato", "suffix": null, "display": "Sonia Sato"}'::json,
+  'judomaster@superhero.com',
   '[{"type": "mobile", "country_code": "1", "number": "5550000470", "primary": true}]'::json,
   '{}'::json,
   '{"interested": false, "roles": [], "availability": null}'::json,
   '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "570 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10470", "country_code": "USA"}]'::json,
+  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "red", "color2": "gold"}'::json,
+  '[{"label": "home", "line1": "570 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10470", "country_code": "USA"}]'::json,
   TRUE,
   'c-agent',
   NULL,
   NULL
 
 WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'gargoylewave'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ancientstorm',
-  crypt('ancientstorm', gen_salt('bf')),
-  '{"prefix": null, "first": "Keiko", "middle": null, "last": "Holloway", "suffix": null, "display": "Keiko Holloway"}'::json,
-  'ancientstorm@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000471", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "571 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10471", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ancientstorm'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'spectralquake',
-  crypt('spectralquake', gen_salt('bf')),
-  '{"prefix": null, "first": "Amir", "middle": null, "last": "Holloway", "suffix": null, "display": "Amir Holloway"}'::json,
-  'spectralquake@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000472", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "572 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10472", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'spectralquake'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'dukewing',
-  crypt('dukewing', gen_salt('bf')),
-  '{"prefix": null, "first": "Lucia", "middle": null, "last": "Holloway", "suffix": null, "display": "Lucia Holloway"}'::json,
-  'dukewing@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000473", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "573 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10473", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'dukewing'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'azureleviathan',
-  crypt('azureleviathan', gen_salt('bf')),
-  '{"prefix": null, "first": "Tobias", "middle": null, "last": "Holloway", "suffix": null, "display": "Tobias Holloway"}'::json,
-  'azureleviathan@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000474", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "574 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10474", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'azureleviathan'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ladystorm',
-  crypt('ladystorm', gen_salt('bf')),
-  '{"prefix": null, "first": "Anika", "middle": null, "last": "Holloway", "suffix": null, "display": "Anika Holloway"}'::json,
-  'ladystorm@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000475", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "575 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10475", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ladystorm'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'valkyriefang',
-  crypt('valkyriefang', gen_salt('bf')),
-  '{"prefix": null, "first": "Reid", "middle": null, "last": "Holloway", "suffix": null, "display": "Reid Holloway"}'::json,
-  'valkyriefang@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000476", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "576 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10476", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'valkyriefang'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'stalkertempest',
-  crypt('stalkertempest', gen_salt('bf')),
-  '{"prefix": null, "first": "Carmen", "middle": null, "last": "Holloway", "suffix": null, "display": "Carmen Holloway"}'::json,
-  'stalkertempest@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000477", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "577 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10477", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stalkertempest'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ninjablade',
-  crypt('ninjablade', gen_salt('bf')),
-  '{"prefix": null, "first": "Elliot", "middle": null, "last": "Holloway", "suffix": null, "display": "Elliot Holloway"}'::json,
-  'ninjablade@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000478", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "578 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10478", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ninjablade'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'gargoyleflare',
-  crypt('gargoyleflare', gen_salt('bf')),
-  '{"prefix": null, "first": "Naomi", "middle": null, "last": "Holloway", "suffix": null, "display": "Naomi Holloway"}'::json,
-  'gargoyleflare@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000479", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "579 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10479", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'gargoyleflare'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'queenshade',
-  crypt('queenshade', gen_salt('bf')),
-  '{"prefix": null, "first": "Sterling", "middle": null, "last": "Holloway", "suffix": null, "display": "Sterling Holloway"}'::json,
-  'queenshade@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000480", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "580 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10480", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'queenshade'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'solarbone',
-  crypt('solarbone', gen_salt('bf')),
-  '{"prefix": null, "first": "Zara", "middle": null, "last": "Holloway", "suffix": null, "display": "Zara Holloway"}'::json,
-  'solarbone@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000481", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "581 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10481", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'solarbone'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'valkyriesurge',
-  crypt('valkyriesurge', gen_salt('bf')),
-  '{"prefix": null, "first": "Gideon", "middle": null, "last": "Holloway", "suffix": null, "display": "Gideon Holloway"}'::json,
-  'valkyriesurge@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000482", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "582 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10482", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'valkyriesurge'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'alphabeam',
-  crypt('alphabeam', gen_salt('bf')),
-  '{"prefix": null, "first": "Helena", "middle": null, "last": "Holloway", "suffix": null, "display": "Helena Holloway"}'::json,
-  'alphabeam@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000483", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "583 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10483", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'alphabeam'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'turboslayer',
-  crypt('turboslayer', gen_salt('bf')),
-  '{"prefix": null, "first": "Roman", "middle": null, "last": "Holloway", "suffix": null, "display": "Roman Holloway"}'::json,
-  'turboslayer@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000484", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "584 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10484", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'turboslayer'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'infernoeagle',
-  crypt('infernoeagle', gen_salt('bf')),
-  '{"prefix": null, "first": "Vivian", "middle": null, "last": "Holloway", "suffix": null, "display": "Vivian Holloway"}'::json,
-  'infernoeagle@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000485", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "585 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10485", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'infernoeagle'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'doomcyclone',
-  crypt('doomcyclone', gen_salt('bf')),
-  '{"prefix": null, "first": "Quinn", "middle": null, "last": "Holloway", "suffix": null, "display": "Quinn Holloway"}'::json,
-  'doomcyclone@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000486", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "586 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10486", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'doomcyclone'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'scarlethowl',
-  crypt('scarlethowl', gen_salt('bf')),
-  '{"prefix": null, "first": "Marcel", "middle": null, "last": "Holloway", "suffix": null, "display": "Marcel Holloway"}'::json,
-  'scarlethowl@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000487", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "587 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10487", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'scarlethowl'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'stellarkraken',
-  crypt('stellarkraken', gen_salt('bf')),
-  '{"prefix": null, "first": "Talia", "middle": null, "last": "Holloway", "suffix": null, "display": "Talia Holloway"}'::json,
-  'stellarkraken@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000488", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "588 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10488", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stellarkraken'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'roninheart',
-  crypt('roninheart', gen_salt('bf')),
-  '{"prefix": null, "first": "Desmond", "middle": null, "last": "Holloway", "suffix": null, "display": "Desmond Holloway"}'::json,
-  'roninheart@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000489", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "589 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10489", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'roninheart'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'blizzardbolt',
-  crypt('blizzardbolt', gen_salt('bf')),
-  '{"prefix": null, "first": "Ariana", "middle": null, "last": "Holloway", "suffix": null, "display": "Ariana Holloway"}'::json,
-  'blizzardbolt@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000490", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "590 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10490", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'blizzardbolt'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'neonsoul',
-  crypt('neonsoul', gen_salt('bf')),
-  '{"prefix": null, "first": "Brock", "middle": null, "last": "Holloway", "suffix": null, "display": "Brock Holloway"}'::json,
-  'neonsoul@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000491", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "591 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10491", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'neonsoul'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'roguecrusher',
-  crypt('roguecrusher', gen_salt('bf')),
-  '{"prefix": null, "first": "Celeste", "middle": null, "last": "Holloway", "suffix": null, "display": "Celeste Holloway"}'::json,
-  'roguecrusher@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000492", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "592 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10492", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'roguecrusher'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'quantumwhisper',
-  crypt('quantumwhisper', gen_salt('bf')),
-  '{"prefix": null, "first": "Warren", "middle": null, "last": "Holloway", "suffix": null, "display": "Warren Holloway"}'::json,
-  'quantumwhisper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000493", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "593 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10493", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'quantumwhisper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'stalkerblade',
-  crypt('stalkerblade', gen_salt('bf')),
-  '{"prefix": null, "first": "Delilah", "middle": null, "last": "Holloway", "suffix": null, "display": "Delilah Holloway"}'::json,
-  'stalkerblade@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000494", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "594 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10494", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stalkerblade'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'deltamind',
-  crypt('deltamind', gen_salt('bf')),
-  '{"prefix": null, "first": "Spencer", "middle": null, "last": "Holloway", "suffix": null, "display": "Spencer Holloway"}'::json,
-  'deltamind@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000495", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "595 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10495", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'deltamind'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'goliathsigil',
-  crypt('goliathsigil', gen_salt('bf')),
-  '{"prefix": null, "first": "Monroe", "middle": null, "last": "Holloway", "suffix": null, "display": "Monroe Holloway"}'::json,
-  'goliathsigil@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000496", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "596 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10496", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goliathsigil'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'phantomdragon',
-  crypt('phantomdragon', gen_salt('bf')),
-  '{"prefix": null, "first": "Beckett", "middle": null, "last": "Holloway", "suffix": null, "display": "Beckett Holloway"}'::json,
-  'phantomdragon@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000497", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "597 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10497", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'phantomdragon'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'onyxguardian',
-  crypt('onyxguardian', gen_salt('bf')),
-  '{"prefix": null, "first": "Soraya", "middle": null, "last": "Holloway", "suffix": null, "display": "Soraya Holloway"}'::json,
-  'onyxguardian@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000498", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "598 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10498", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'onyxguardian'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'crimsonhavoc',
-  crypt('crimsonhavoc', gen_salt('bf')),
-  '{"prefix": null, "first": "Landon", "middle": null, "last": "Holloway", "suffix": null, "display": "Landon Holloway"}'::json,
-  'crimsonhavoc@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000499", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "599 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10499", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'crimsonhavoc'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'goblinshock',
-  crypt('goblinshock', gen_salt('bf')),
-  '{"prefix": null, "first": "Petra", "middle": null, "last": "Holloway", "suffix": null, "display": "Petra Holloway"}'::json,
-  'goblinshock@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000500", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "600 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10500", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goblinshock'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'roguerage',
-  crypt('roguerage', gen_salt('bf')),
-  '{"prefix": null, "first": "Cassius", "middle": null, "last": "Holloway", "suffix": null, "display": "Cassius Holloway"}'::json,
-  'roguerage@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000501", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "601 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10501", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'roguerage'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'roguerush',
-  crypt('roguerush', gen_salt('bf')),
-  '{"prefix": null, "first": "Rowan", "middle": null, "last": "Holloway", "suffix": null, "display": "Rowan Holloway"}'::json,
-  'roguerush@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000502", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "602 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10502", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'roguerush'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'captaincurse',
-  crypt('captaincurse', gen_salt('bf')),
-  '{"prefix": null, "first": "Ethan", "middle": null, "last": "Sinclair", "suffix": null, "display": "Ethan Sinclair"}'::json,
-  'captaincurse@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000503", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "603 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10503", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'captaincurse'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'neonarrow',
-  crypt('neonarrow', gen_salt('bf')),
-  '{"prefix": null, "first": "Mia", "middle": null, "last": "Sinclair", "suffix": null, "display": "Mia Sinclair"}'::json,
-  'neonarrow@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000504", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "604 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10504", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'neonarrow'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'blizzardbeam',
-  crypt('blizzardbeam', gen_salt('bf')),
-  '{"prefix": null, "first": "Noah", "middle": null, "last": "Sinclair", "suffix": null, "display": "Noah Sinclair"}'::json,
-  'blizzardbeam@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000505", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "605 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10505", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'blizzardbeam'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'paladinslayer',
-  crypt('paladinslayer', gen_salt('bf')),
-  '{"prefix": null, "first": "Ava", "middle": null, "last": "Sinclair", "suffix": null, "display": "Ava Sinclair"}'::json,
-  'paladinslayer@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000506", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "606 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10506", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'paladinslayer'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'samuraibeam',
-  crypt('samuraibeam', gen_salt('bf')),
-  '{"prefix": null, "first": "Liam", "middle": null, "last": "Sinclair", "suffix": null, "display": "Liam Sinclair"}'::json,
-  'samuraibeam@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000507", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "607 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10507", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'samuraibeam'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'violetstorm',
-  crypt('violetstorm', gen_salt('bf')),
-  '{"prefix": null, "first": "Sophia", "middle": null, "last": "Sinclair", "suffix": null, "display": "Sophia Sinclair"}'::json,
-  'violetstorm@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000508", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "608 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10508", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'violetstorm'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'eldritchquake',
-  crypt('eldritchquake', gen_salt('bf')),
-  '{"prefix": null, "first": "Owen", "middle": null, "last": "Sinclair", "suffix": null, "display": "Owen Sinclair"}'::json,
-  'eldritchquake@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000509", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "609 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10509", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'eldritchquake'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'nightbeam',
-  crypt('nightbeam', gen_salt('bf')),
-  '{"prefix": null, "first": "Isla", "middle": null, "last": "Sinclair", "suffix": null, "display": "Isla Sinclair"}'::json,
-  'nightbeam@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000510", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "610 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10510", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'nightbeam'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'doctorghost',
-  crypt('doctorghost', gen_salt('bf')),
-  '{"prefix": null, "first": "Caleb", "middle": null, "last": "Sinclair", "suffix": null, "display": "Caleb Sinclair"}'::json,
-  'doctorghost@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000511", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "611 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10511", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'doctorghost'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'deltaoracle',
-  crypt('deltaoracle', gen_salt('bf')),
-  '{"prefix": null, "first": "Nora", "middle": null, "last": "Sinclair", "suffix": null, "display": "Nora Sinclair"}'::json,
-  'deltaoracle@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000512", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "612 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10512", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'deltaoracle'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'steeldoom',
-  crypt('steeldoom', gen_salt('bf')),
-  '{"prefix": null, "first": "Julian", "middle": null, "last": "Sinclair", "suffix": null, "display": "Julian Sinclair"}'::json,
-  'steeldoom@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000513", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "613 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10513", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'steeldoom'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'marshalripper',
-  crypt('marshalripper', gen_salt('bf')),
-  '{"prefix": null, "first": "Elena", "middle": null, "last": "Sinclair", "suffix": null, "display": "Elena Sinclair"}'::json,
-  'marshalripper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000514", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "614 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10514", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'marshalripper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'bansheedoom',
-  crypt('bansheedoom', gen_salt('bf')),
-  '{"prefix": null, "first": "Miles", "middle": null, "last": "Sinclair", "suffix": null, "display": "Miles Sinclair"}'::json,
-  'bansheedoom@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000515", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "615 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10515", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'bansheedoom'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'thunderpanther',
-  crypt('thunderpanther', gen_salt('bf')),
-  '{"prefix": null, "first": "Clara", "middle": null, "last": "Sinclair", "suffix": null, "display": "Clara Sinclair"}'::json,
-  'thunderpanther@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000516", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "616 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10516", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'thunderpanther'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'bansheeheart',
-  crypt('bansheeheart', gen_salt('bf')),
-  '{"prefix": null, "first": "Felix", "middle": null, "last": "Sinclair", "suffix": null, "display": "Felix Sinclair"}'::json,
-  'bansheeheart@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000517", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "617 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10517", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'bansheeheart'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'samuraifang',
-  crypt('samuraifang', gen_salt('bf')),
-  '{"prefix": null, "first": "Hazel", "middle": null, "last": "Sinclair", "suffix": null, "display": "Hazel Sinclair"}'::json,
-  'samuraifang@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000518", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "618 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10518", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'samuraifang'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'savagehowl',
-  crypt('savagehowl', gen_salt('bf')),
-  '{"prefix": null, "first": "Adrian", "middle": null, "last": "Sinclair", "suffix": null, "display": "Adrian Sinclair"}'::json,
-  'savagehowl@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000519", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "619 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10519", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'savagehowl'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'lordhand',
-  crypt('lordhand', gen_salt('bf')),
-  '{"prefix": null, "first": "Iris", "middle": null, "last": "Sinclair", "suffix": null, "display": "Iris Sinclair"}'::json,
-  'lordhand@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000520", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "620 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10520", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'lordhand'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'silvershield',
-  crypt('silvershield', gen_salt('bf')),
-  '{"prefix": null, "first": "Simon", "middle": null, "last": "Sinclair", "suffix": null, "display": "Simon Sinclair"}'::json,
-  'silvershield@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000521", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "621 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10521", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'silvershield'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'paladinknight',
-  crypt('paladinknight', gen_salt('bf')),
-  '{"prefix": null, "first": "Ruby", "middle": null, "last": "Sinclair", "suffix": null, "display": "Ruby Sinclair"}'::json,
-  'paladinknight@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000522", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "622 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10522", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'paladinknight'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'solarseer',
-  crypt('solarseer', gen_salt('bf')),
-  '{"prefix": null, "first": "Victor", "middle": null, "last": "Sinclair", "suffix": null, "display": "Victor Sinclair"}'::json,
-  'solarseer@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000523", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "623 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10523", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'solarseer'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'quantumknight',
-  crypt('quantumknight', gen_salt('bf')),
-  '{"prefix": null, "first": "Paige", "middle": null, "last": "Sinclair", "suffix": null, "display": "Paige Sinclair"}'::json,
-  'quantumknight@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000524", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "624 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10524", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'quantumknight'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'reaperhavoc',
-  crypt('reaperhavoc', gen_salt('bf')),
-  '{"prefix": null, "first": "Grant", "middle": null, "last": "Sinclair", "suffix": null, "display": "Grant Sinclair"}'::json,
-  'reaperhavoc@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000525", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "625 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10525", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'reaperhavoc'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'reaperknight',
-  crypt('reaperknight', gen_salt('bf')),
-  '{"prefix": null, "first": "Tessa", "middle": null, "last": "Sinclair", "suffix": null, "display": "Tessa Sinclair"}'::json,
-  'reaperknight@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000526", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "626 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10526", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'reaperknight'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'marshalpanther',
-  crypt('marshalpanther', gen_salt('bf')),
-  '{"prefix": null, "first": "Dean", "middle": null, "last": "Sinclair", "suffix": null, "display": "Dean Sinclair"}'::json,
-  'marshalpanther@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000527", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "627 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10527", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'marshalpanther'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'neonsmasher',
-  crypt('neonsmasher', gen_salt('bf')),
-  '{"prefix": null, "first": "Vera", "middle": null, "last": "Sinclair", "suffix": null, "display": "Vera Sinclair"}'::json,
-  'neonsmasher@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000528", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "628 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10528", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'neonsmasher'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'agentkraken',
-  crypt('agentkraken', gen_salt('bf')),
-  '{"prefix": null, "first": "Colin", "middle": null, "last": "Sinclair", "suffix": null, "display": "Colin Sinclair"}'::json,
-  'agentkraken@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000529", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "629 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10529", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'agentkraken'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'kingshade',
-  crypt('kingshade', gen_salt('bf')),
-  '{"prefix": null, "first": "Jade", "middle": null, "last": "Sinclair", "suffix": null, "display": "Jade Sinclair"}'::json,
-  'kingshade@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000530", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "630 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10530", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'kingshade'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'dukeruin',
-  crypt('dukeruin', gen_salt('bf')),
-  '{"prefix": null, "first": "Marcus", "middle": null, "last": "Sinclair", "suffix": null, "display": "Marcus Sinclair"}'::json,
-  'dukeruin@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000531", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "631 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10531", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'dukeruin'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'doomripper',
-  crypt('doomripper', gen_salt('bf')),
-  '{"prefix": null, "first": "Leah", "middle": null, "last": "Sinclair", "suffix": null, "display": "Leah Sinclair"}'::json,
-  'doomripper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000532", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "632 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10532", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'doomripper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'novasurge',
-  crypt('novasurge', gen_salt('bf')),
-  '{"prefix": null, "first": "Nolan", "middle": null, "last": "Sinclair", "suffix": null, "display": "Nolan Sinclair"}'::json,
-  'novasurge@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000533", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "633 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10533", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'novasurge'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'baroneagle',
-  crypt('baroneagle', gen_salt('bf')),
-  '{"prefix": null, "first": "Gwen", "middle": null, "last": "Sinclair", "suffix": null, "display": "Gwen Sinclair"}'::json,
-  'baroneagle@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000534", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "634 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10534", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'baroneagle'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ionicgolem',
-  crypt('ionicgolem', gen_salt('bf')),
-  '{"prefix": null, "first": "Tristan", "middle": null, "last": "Sinclair", "suffix": null, "display": "Tristan Sinclair"}'::json,
-  'ionicgolem@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000535", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "635 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10535", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ionicgolem'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'dukeoracle',
-  crypt('dukeoracle', gen_salt('bf')),
-  '{"prefix": null, "first": "Selene", "middle": null, "last": "Sinclair", "suffix": null, "display": "Selene Sinclair"}'::json,
-  'dukeoracle@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000536", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "636 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10536", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'dukeoracle'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'omegakraken',
-  crypt('omegakraken', gen_salt('bf')),
-  '{"prefix": null, "first": "Derek", "middle": null, "last": "Sinclair", "suffix": null, "display": "Derek Sinclair"}'::json,
-  'omegakraken@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000537", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "637 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10537", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'omegakraken'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'rangerrage',
-  crypt('rangerrage', gen_salt('bf')),
-  '{"prefix": null, "first": "Alina", "middle": null, "last": "Sinclair", "suffix": null, "display": "Alina Sinclair"}'::json,
-  'rangerrage@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000538", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "638 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10538", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'rangerrage'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'azurerender',
-  crypt('azurerender', gen_salt('bf')),
-  '{"prefix": null, "first": "Rafael", "middle": null, "last": "Sinclair", "suffix": null, "display": "Rafael Sinclair"}'::json,
-  'azurerender@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000539", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "639 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10539", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'azurerender'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'solarheart',
-  crypt('solarheart', gen_salt('bf')),
-  '{"prefix": null, "first": "Bianca", "middle": null, "last": "Sinclair", "suffix": null, "display": "Bianca Sinclair"}'::json,
-  'solarheart@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000540", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "640 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10540", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'solarheart'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'rangerhydra',
-  crypt('rangerhydra', gen_salt('bf')),
-  '{"prefix": null, "first": "Harper", "middle": null, "last": "Sinclair", "suffix": null, "display": "Harper Sinclair"}'::json,
-  'rangerhydra@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000541", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "641 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10541", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'rangerhydra'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'embershield',
-  crypt('embershield', gen_salt('bf')),
-  '{"prefix": null, "first": "Jonah", "middle": null, "last": "Sinclair", "suffix": null, "display": "Jonah Sinclair"}'::json,
-  'embershield@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000542", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "642 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10542", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'embershield'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'captainoracle',
-  crypt('captainoracle', gen_salt('bf')),
-  '{"prefix": null, "first": "Mira", "middle": null, "last": "Sinclair", "suffix": null, "display": "Mira Sinclair"}'::json,
-  'captainoracle@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000543", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "643 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10543", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'captainoracle'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ironhammer',
-  crypt('ironhammer', gen_salt('bf')),
-  '{"prefix": null, "first": "Cedric", "middle": null, "last": "Sinclair", "suffix": null, "display": "Cedric Sinclair"}'::json,
-  'ironhammer@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000544", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "644 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10544", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ironhammer'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'eldritchbolt',
-  crypt('eldritchbolt', gen_salt('bf')),
-  '{"prefix": null, "first": "Lena", "middle": null, "last": "Sinclair", "suffix": null, "display": "Lena Sinclair"}'::json,
-  'eldritchbolt@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000545", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "645 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10545", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'eldritchbolt'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'kingsmasher',
-  crypt('kingsmasher', gen_salt('bf')),
-  '{"prefix": null, "first": "Andre", "middle": null, "last": "Sinclair", "suffix": null, "display": "Andre Sinclair"}'::json,
-  'kingsmasher@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000546", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "646 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10546", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'kingsmasher'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'goliathrune',
-  crypt('goliathrune', gen_salt('bf')),
-  '{"prefix": null, "first": "Sasha", "middle": null, "last": "Sinclair", "suffix": null, "display": "Sasha Sinclair"}'::json,
-  'goliathrune@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000547", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "647 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10547", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goliathrune'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'sergeantbone',
-  crypt('sergeantbone', gen_salt('bf')),
-  '{"prefix": null, "first": "Malik", "middle": null, "last": "Sinclair", "suffix": null, "display": "Malik Sinclair"}'::json,
-  'sergeantbone@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000548", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "648 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10548", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'sergeantbone'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'phantomfist',
-  crypt('phantomfist', gen_salt('bf')),
-  '{"prefix": null, "first": "Priya", "middle": null, "last": "Sinclair", "suffix": null, "display": "Priya Sinclair"}'::json,
-  'phantomfist@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000549", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "649 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10549", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'phantomfist'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'rogueoracle',
-  crypt('rogueoracle', gen_salt('bf')),
-  '{"prefix": null, "first": "Kenji", "middle": null, "last": "Sinclair", "suffix": null, "display": "Kenji Sinclair"}'::json,
-  'rogueoracle@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000550", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "650 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10550", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'rogueoracle'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ancientpulse',
-  crypt('ancientpulse', gen_salt('bf')),
-  '{"prefix": null, "first": "Yara", "middle": null, "last": "Sinclair", "suffix": null, "display": "Yara Sinclair"}'::json,
-  'ancientpulse@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000551", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "651 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10551", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ancientpulse'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'dukeslayer',
-  crypt('dukeslayer', gen_salt('bf')),
-  '{"prefix": null, "first": "Rosa", "middle": null, "last": "Sinclair", "suffix": null, "display": "Rosa Sinclair"}'::json,
-  'dukeslayer@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000552", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "652 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10552", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'dukeslayer'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'thunderhex',
-  crypt('thunderhex', gen_salt('bf')),
-  '{"prefix": null, "first": "Hugo", "middle": null, "last": "Sinclair", "suffix": null, "display": "Hugo Sinclair"}'::json,
-  'thunderhex@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000553", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "653 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10553", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'thunderhex'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'razorbrain',
-  crypt('razorbrain', gen_salt('bf')),
-  '{"prefix": null, "first": "Ingrid", "middle": null, "last": "Sinclair", "suffix": null, "display": "Ingrid Sinclair"}'::json,
-  'razorbrain@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000554", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "654 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10554", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'razorbrain'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'solarsurge',
-  crypt('solarsurge', gen_salt('bf')),
-  '{"prefix": null, "first": "Pascal", "middle": null, "last": "Sinclair", "suffix": null, "display": "Pascal Sinclair"}'::json,
-  'solarsurge@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000555", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "655 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10555", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'solarsurge'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'titanmind',
-  crypt('titanmind', gen_salt('bf')),
-  '{"prefix": null, "first": "Freya", "middle": null, "last": "Sinclair", "suffix": null, "display": "Freya Sinclair"}'::json,
-  'titanmind@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000556", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "656 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10556", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'titanmind'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'gravewarden',
-  crypt('gravewarden', gen_salt('bf')),
-  '{"prefix": null, "first": "Dante", "middle": null, "last": "Sinclair", "suffix": null, "display": "Dante Sinclair"}'::json,
-  'gravewarden@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000557", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "657 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10557", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'gravewarden'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'cyberbreaker',
-  crypt('cyberbreaker', gen_salt('bf')),
-  '{"prefix": null, "first": "Keiko", "middle": null, "last": "Sinclair", "suffix": null, "display": "Keiko Sinclair"}'::json,
-  'cyberbreaker@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000558", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "658 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10558", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cyberbreaker'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'hyperbrain',
-  crypt('hyperbrain', gen_salt('bf')),
-  '{"prefix": null, "first": "Amir", "middle": null, "last": "Sinclair", "suffix": null, "display": "Amir Sinclair"}'::json,
-  'hyperbrain@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000559", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "659 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10559", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'hyperbrain'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'solarstomper',
-  crypt('solarstomper', gen_salt('bf')),
-  '{"prefix": null, "first": "Lucia", "middle": null, "last": "Sinclair", "suffix": null, "display": "Lucia Sinclair"}'::json,
-  'solarstomper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000560", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "660 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10560", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'solarstomper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'sentineldragon',
-  crypt('sentineldragon', gen_salt('bf')),
-  '{"prefix": null, "first": "Tobias", "middle": null, "last": "Sinclair", "suffix": null, "display": "Tobias Sinclair"}'::json,
-  'sentineldragon@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000561", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "661 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10561", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'sentineldragon'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'agentbone',
-  crypt('agentbone', gen_salt('bf')),
-  '{"prefix": null, "first": "Anika", "middle": null, "last": "Sinclair", "suffix": null, "display": "Anika Sinclair"}'::json,
-  'agentbone@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000562", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "662 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10562", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'agentbone'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'colossusbreaker',
-  crypt('colossusbreaker', gen_salt('bf')),
-  '{"prefix": null, "first": "Reid", "middle": null, "last": "Sinclair", "suffix": null, "display": "Reid Sinclair"}'::json,
-  'colossusbreaker@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000563", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "663 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10563", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'colossusbreaker'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'deltafreeze',
-  crypt('deltafreeze', gen_salt('bf')),
-  '{"prefix": null, "first": "Carmen", "middle": null, "last": "Sinclair", "suffix": null, "display": "Carmen Sinclair"}'::json,
-  'deltafreeze@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000564", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "664 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10564", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'deltafreeze'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'tidalbane',
-  crypt('tidalbane', gen_salt('bf')),
-  '{"prefix": null, "first": "Elliot", "middle": null, "last": "Sinclair", "suffix": null, "display": "Elliot Sinclair"}'::json,
-  'tidalbane@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000565", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "665 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10565", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'tidalbane'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'turbomask',
-  crypt('turbomask', gen_salt('bf')),
-  '{"prefix": null, "first": "Naomi", "middle": null, "last": "Sinclair", "suffix": null, "display": "Naomi Sinclair"}'::json,
-  'turbomask@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000566", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "666 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10566", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'turbomask'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'agenthex',
-  crypt('agenthex', gen_salt('bf')),
-  '{"prefix": null, "first": "Sterling", "middle": null, "last": "Sinclair", "suffix": null, "display": "Sterling Sinclair"}'::json,
-  'agenthex@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000567", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "667 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10567", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'agenthex'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ninjabrain',
-  crypt('ninjabrain', gen_salt('bf')),
-  '{"prefix": null, "first": "Zara", "middle": null, "last": "Sinclair", "suffix": null, "display": "Zara Sinclair"}'::json,
-  'ninjabrain@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000568", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "668 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10568", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ninjabrain'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'baronsage',
-  crypt('baronsage', gen_salt('bf')),
-  '{"prefix": null, "first": "Gideon", "middle": null, "last": "Sinclair", "suffix": null, "display": "Gideon Sinclair"}'::json,
-  'baronsage@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000569", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "669 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10569", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'baronsage'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'frostarrow',
-  crypt('frostarrow', gen_salt('bf')),
-  '{"prefix": null, "first": "Helena", "middle": null, "last": "Sinclair", "suffix": null, "display": "Helena Sinclair"}'::json,
-  'frostarrow@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000570", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "670 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10570", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'frostarrow'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'omegaavenger',
-  crypt('omegaavenger', gen_salt('bf')),
-  '{"prefix": null, "first": "Roman", "middle": null, "last": "Sinclair", "suffix": null, "display": "Roman Sinclair"}'::json,
-  'omegaavenger@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000571", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "671 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10571", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'omegaavenger'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'omegasigil',
-  crypt('omegasigil', gen_salt('bf')),
-  '{"prefix": null, "first": "Vivian", "middle": null, "last": "Sinclair", "suffix": null, "display": "Vivian Sinclair"}'::json,
-  'omegasigil@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000572", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "672 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10572", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'omegasigil'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ionicavenger',
-  crypt('ionicavenger', gen_salt('bf')),
-  '{"prefix": null, "first": "Quinn", "middle": null, "last": "Sinclair", "suffix": null, "display": "Quinn Sinclair"}'::json,
-  'ionicavenger@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000573", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "673 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10573", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ionicavenger'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'steelbone',
-  crypt('steelbone', gen_salt('bf')),
-  '{"prefix": null, "first": "Marcel", "middle": null, "last": "Sinclair", "suffix": null, "display": "Marcel Sinclair"}'::json,
-  'steelbone@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000574", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "674 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10574", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'steelbone'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'lunarruin',
-  crypt('lunarruin', gen_salt('bf')),
-  '{"prefix": null, "first": "Talia", "middle": null, "last": "Sinclair", "suffix": null, "display": "Talia Sinclair"}'::json,
-  'lunarruin@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000575", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "675 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10575", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'lunarruin'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'violethand',
-  crypt('violethand', gen_salt('bf')),
-  '{"prefix": null, "first": "Desmond", "middle": null, "last": "Sinclair", "suffix": null, "display": "Desmond Sinclair"}'::json,
-  'violethand@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000576", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "676 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10576", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'violethand'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'nightflare',
-  crypt('nightflare', gen_salt('bf')),
-  '{"prefix": null, "first": "Ariana", "middle": null, "last": "Sinclair", "suffix": null, "display": "Ariana Sinclair"}'::json,
-  'nightflare@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000577", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "677 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10577", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'nightflare'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'mysticwave',
-  crypt('mysticwave', gen_salt('bf')),
-  '{"prefix": null, "first": "Brock", "middle": null, "last": "Sinclair", "suffix": null, "display": "Brock Sinclair"}'::json,
-  'mysticwave@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000578", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "678 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10578", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'mysticwave'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'mysticrush',
-  crypt('mysticrush', gen_salt('bf')),
-  '{"prefix": null, "first": "Celeste", "middle": null, "last": "Sinclair", "suffix": null, "display": "Celeste Sinclair"}'::json,
-  'mysticrush@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000579", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "679 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10579", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'mysticrush'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ladyfury',
-  crypt('ladyfury', gen_salt('bf')),
-  '{"prefix": null, "first": "Warren", "middle": null, "last": "Sinclair", "suffix": null, "display": "Warren Sinclair"}'::json,
-  'ladyfury@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000580", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "680 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10580", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ladyfury'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'kingslayer',
-  crypt('kingslayer', gen_salt('bf')),
-  '{"prefix": null, "first": "Delilah", "middle": null, "last": "Sinclair", "suffix": null, "display": "Delilah Sinclair"}'::json,
-  'kingslayer@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000581", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "681 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10581", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'kingslayer'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'marshalclaw',
-  crypt('marshalclaw', gen_salt('bf')),
-  '{"prefix": null, "first": "Spencer", "middle": null, "last": "Sinclair", "suffix": null, "display": "Spencer Sinclair"}'::json,
-  'marshalclaw@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000582", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "682 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10582", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'marshalclaw'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'razorspark',
-  crypt('razorspark', gen_salt('bf')),
-  '{"prefix": null, "first": "Monroe", "middle": null, "last": "Sinclair", "suffix": null, "display": "Monroe Sinclair"}'::json,
-  'razorspark@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000583", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "683 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10583", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'razorspark'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'tidalwhisper',
-  crypt('tidalwhisper', gen_salt('bf')),
-  '{"prefix": null, "first": "Beckett", "middle": null, "last": "Sinclair", "suffix": null, "display": "Beckett Sinclair"}'::json,
-  'tidalwhisper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000584", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "684 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10584", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'tidalwhisper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'turbobolt',
-  crypt('turbobolt', gen_salt('bf')),
-  '{"prefix": null, "first": "Soraya", "middle": null, "last": "Sinclair", "suffix": null, "display": "Soraya Sinclair"}'::json,
-  'turbobolt@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000585", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "685 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10585", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'turbobolt'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'emeraldbolt',
-  crypt('emeraldbolt', gen_salt('bf')),
-  '{"prefix": null, "first": "Landon", "middle": null, "last": "Sinclair", "suffix": null, "display": "Landon Sinclair"}'::json,
-  'emeraldbolt@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000586", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "686 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10586", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'emeraldbolt'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'alphastrike',
-  crypt('alphastrike', gen_salt('bf')),
-  '{"prefix": null, "first": "Petra", "middle": null, "last": "Sinclair", "suffix": null, "display": "Petra Sinclair"}'::json,
-  'alphastrike@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000587", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "687 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10587", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'alphastrike'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'phantomseer',
-  crypt('phantomseer', gen_salt('bf')),
-  '{"prefix": null, "first": "Cassius", "middle": null, "last": "Sinclair", "suffix": null, "display": "Cassius Sinclair"}'::json,
-  'phantomseer@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000588", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "688 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10588", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'phantomseer'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'roninpanther',
-  crypt('roninpanther', gen_salt('bf')),
-  '{"prefix": null, "first": "Rowan", "middle": null, "last": "Sinclair", "suffix": null, "display": "Rowan Sinclair"}'::json,
-  'roninpanther@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000589", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "689 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10589", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'roninpanther'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'outlawstomper',
-  crypt('outlawstomper', gen_salt('bf')),
-  '{"prefix": null, "first": "Ethan", "middle": null, "last": "Ashford", "suffix": null, "display": "Ethan Ashford"}'::json,
-  'outlawstomper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000590", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "690 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10590", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'outlawstomper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'scarletpulse',
-  crypt('scarletpulse', gen_salt('bf')),
-  '{"prefix": null, "first": "Mia", "middle": null, "last": "Ashford", "suffix": null, "display": "Mia Ashford"}'::json,
-  'scarletpulse@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000591", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "691 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10591", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'scarletpulse'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'thundereagle',
-  crypt('thundereagle', gen_salt('bf')),
-  '{"prefix": null, "first": "Noah", "middle": null, "last": "Ashford", "suffix": null, "display": "Noah Ashford"}'::json,
-  'thundereagle@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000592", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "692 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10592", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'thundereagle'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'omegabeam',
-  crypt('omegabeam', gen_salt('bf')),
-  '{"prefix": null, "first": "Ava", "middle": null, "last": "Ashford", "suffix": null, "display": "Ava Ashford"}'::json,
-  'omegabeam@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000593", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "693 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10593", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'omegabeam'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'roningriffin',
-  crypt('roningriffin', gen_salt('bf')),
-  '{"prefix": null, "first": "Liam", "middle": null, "last": "Ashford", "suffix": null, "display": "Liam Ashford"}'::json,
-  'roningriffin@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000594", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "694 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10594", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'roningriffin'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ninjapulse',
-  crypt('ninjapulse', gen_salt('bf')),
-  '{"prefix": null, "first": "Sophia", "middle": null, "last": "Ashford", "suffix": null, "display": "Sophia Ashford"}'::json,
-  'ninjapulse@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000595", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "695 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10595", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ninjapulse'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'onyxhowl',
-  crypt('onyxhowl', gen_salt('bf')),
-  '{"prefix": null, "first": "Owen", "middle": null, "last": "Ashford", "suffix": null, "display": "Owen Ashford"}'::json,
-  'onyxhowl@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000596", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "696 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10596", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'onyxhowl'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'queendefender',
-  crypt('queendefender', gen_salt('bf')),
-  '{"prefix": null, "first": "Isla", "middle": null, "last": "Ashford", "suffix": null, "display": "Isla Ashford"}'::json,
-  'queendefender@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000597", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "697 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10597", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'queendefender'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'stalkerkeeper',
-  crypt('stalkerkeeper', gen_salt('bf')),
-  '{"prefix": null, "first": "Caleb", "middle": null, "last": "Ashford", "suffix": null, "display": "Caleb Ashford"}'::json,
-  'stalkerkeeper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000598", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "698 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10598", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stalkerkeeper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'stellaravenger',
-  crypt('stellaravenger', gen_salt('bf')),
-  '{"prefix": null, "first": "Nora", "middle": null, "last": "Ashford", "suffix": null, "display": "Nora Ashford"}'::json,
-  'stellaravenger@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000599", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "699 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10599", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stellaravenger'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'neonfury',
-  crypt('neonfury', gen_salt('bf')),
-  '{"prefix": null, "first": "Julian", "middle": null, "last": "Ashford", "suffix": null, "display": "Julian Ashford"}'::json,
-  'neonfury@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000600", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "700 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10600", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'neonfury'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'blizzardripper',
-  crypt('blizzardripper', gen_salt('bf')),
-  '{"prefix": null, "first": "Elena", "middle": null, "last": "Ashford", "suffix": null, "display": "Elena Ashford"}'::json,
-  'blizzardripper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000601", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "701 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10601", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'blizzardripper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'infernoshield',
-  crypt('infernoshield', gen_salt('bf')),
-  '{"prefix": null, "first": "Miles", "middle": null, "last": "Ashford", "suffix": null, "display": "Miles Ashford"}'::json,
-  'infernoshield@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000602", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "702 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10602", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'infernoshield'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ironkeeper',
-  crypt('ironkeeper', gen_salt('bf')),
-  '{"prefix": null, "first": "Clara", "middle": null, "last": "Ashford", "suffix": null, "display": "Clara Ashford"}'::json,
-  'ironkeeper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000603", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "703 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10603", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ironkeeper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'valkyriephoenix',
-  crypt('valkyriephoenix', gen_salt('bf')),
-  '{"prefix": null, "first": "Felix", "middle": null, "last": "Ashford", "suffix": null, "display": "Felix Ashford"}'::json,
-  'valkyriephoenix@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000604", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "704 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10604", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'valkyriephoenix'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'violetslayer',
-  crypt('violetslayer', gen_salt('bf')),
-  '{"prefix": null, "first": "Hazel", "middle": null, "last": "Ashford", "suffix": null, "display": "Hazel Ashford"}'::json,
-  'violetslayer@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000605", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "705 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10605", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'violetslayer'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'sentinelpulse',
-  crypt('sentinelpulse', gen_salt('bf')),
-  '{"prefix": null, "first": "Adrian", "middle": null, "last": "Ashford", "suffix": null, "display": "Adrian Ashford"}'::json,
-  'sentinelpulse@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000606", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "706 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10606", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'sentinelpulse'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'spectralmask',
-  crypt('spectralmask', gen_salt('bf')),
-  '{"prefix": null, "first": "Iris", "middle": null, "last": "Ashford", "suffix": null, "display": "Iris Ashford"}'::json,
-  'spectralmask@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000607", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "707 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10607", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'spectralmask'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'bansheerune',
-  crypt('bansheerune', gen_salt('bf')),
-  '{"prefix": null, "first": "Simon", "middle": null, "last": "Ashford", "suffix": null, "display": "Simon Ashford"}'::json,
-  'bansheerune@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000608", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "708 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10608", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'bansheerune'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'kingfury',
-  crypt('kingfury', gen_salt('bf')),
-  '{"prefix": null, "first": "Ruby", "middle": null, "last": "Ashford", "suffix": null, "display": "Ruby Ashford"}'::json,
-  'kingfury@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000609", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "709 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10609", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'kingfury'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'violetknight',
-  crypt('violetknight', gen_salt('bf')),
-  '{"prefix": null, "first": "Victor", "middle": null, "last": "Ashford", "suffix": null, "display": "Victor Ashford"}'::json,
-  'violetknight@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000610", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "710 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10610", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'violetknight'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'cannonhydra',
-  crypt('cannonhydra', gen_salt('bf')),
-  '{"prefix": null, "first": "Paige", "middle": null, "last": "Ashford", "suffix": null, "display": "Paige Ashford"}'::json,
-  'cannonhydra@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000611", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "711 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10611", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cannonhydra'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'doomsoul',
-  crypt('doomsoul', gen_salt('bf')),
-  '{"prefix": null, "first": "Grant", "middle": null, "last": "Ashford", "suffix": null, "display": "Grant Ashford"}'::json,
-  'doomsoul@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000612", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "712 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10612", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'doomsoul'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'arcaneavenger',
-  crypt('arcaneavenger', gen_salt('bf')),
-  '{"prefix": null, "first": "Tessa", "middle": null, "last": "Ashford", "suffix": null, "display": "Tessa Ashford"}'::json,
-  'arcaneavenger@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000613", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "713 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10613", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'arcaneavenger'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'lordburn',
-  crypt('lordburn', gen_salt('bf')),
-  '{"prefix": null, "first": "Dean", "middle": null, "last": "Ashford", "suffix": null, "display": "Dean Ashford"}'::json,
-  'lordburn@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000614", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "714 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10614", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'lordburn'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'silverkraken',
-  crypt('silverkraken', gen_salt('bf')),
-  '{"prefix": null, "first": "Vera", "middle": null, "last": "Ashford", "suffix": null, "display": "Vera Ashford"}'::json,
-  'silverkraken@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000615", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "715 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10615", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'silverkraken'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ninjawarden',
-  crypt('ninjawarden', gen_salt('bf')),
-  '{"prefix": null, "first": "Colin", "middle": null, "last": "Ashford", "suffix": null, "display": "Colin Ashford"}'::json,
-  'ninjawarden@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000616", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "716 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10616", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ninjawarden'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'novaleviathan',
-  crypt('novaleviathan', gen_salt('bf')),
-  '{"prefix": null, "first": "Jade", "middle": null, "last": "Ashford", "suffix": null, "display": "Jade Ashford"}'::json,
-  'novaleviathan@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000617", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "717 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10617", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'novaleviathan'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'azureknight',
-  crypt('azureknight', gen_salt('bf')),
-  '{"prefix": null, "first": "Marcus", "middle": null, "last": "Ashford", "suffix": null, "display": "Marcus Ashford"}'::json,
-  'azureknight@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000618", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "718 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10618", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'azureknight'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'alphafist',
-  crypt('alphafist', gen_salt('bf')),
-  '{"prefix": null, "first": "Leah", "middle": null, "last": "Ashford", "suffix": null, "display": "Leah Ashford"}'::json,
-  'alphafist@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000619", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "719 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10619", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'alphafist'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'stellarghost',
-  crypt('stellarghost', gen_salt('bf')),
-  '{"prefix": null, "first": "Nolan", "middle": null, "last": "Ashford", "suffix": null, "display": "Nolan Ashford"}'::json,
-  'stellarghost@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000620", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "720 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10620", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stellarghost'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'stalkerrender',
-  crypt('stalkerrender', gen_salt('bf')),
-  '{"prefix": null, "first": "Gwen", "middle": null, "last": "Ashford", "suffix": null, "display": "Gwen Ashford"}'::json,
-  'stalkerrender@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000621", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "721 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10621", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stalkerrender'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'cannonwarden',
-  crypt('cannonwarden', gen_salt('bf')),
-  '{"prefix": null, "first": "Tristan", "middle": null, "last": "Ashford", "suffix": null, "display": "Tristan Ashford"}'::json,
-  'cannonwarden@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000622", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "722 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10622", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cannonwarden'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'steelblade',
-  crypt('steelblade', gen_salt('bf')),
-  '{"prefix": null, "first": "Selene", "middle": null, "last": "Ashford", "suffix": null, "display": "Selene Ashford"}'::json,
-  'steelblade@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000623", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "723 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10623", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'steelblade'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'stormhand',
-  crypt('stormhand', gen_salt('bf')),
-  '{"prefix": null, "first": "Derek", "middle": null, "last": "Ashford", "suffix": null, "display": "Derek Ashford"}'::json,
-  'stormhand@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000624", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "724 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10624", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stormhand'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'gargoyleraven',
-  crypt('gargoyleraven', gen_salt('bf')),
-  '{"prefix": null, "first": "Alina", "middle": null, "last": "Ashford", "suffix": null, "display": "Alina Ashford"}'::json,
-  'gargoyleraven@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000625", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "725 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10625", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'gargoyleraven'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'tidalstrike',
-  crypt('tidalstrike', gen_salt('bf')),
-  '{"prefix": null, "first": "Rafael", "middle": null, "last": "Ashford", "suffix": null, "display": "Rafael Ashford"}'::json,
-  'tidalstrike@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000626", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "726 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10626", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'tidalstrike'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'razorspirit',
-  crypt('razorspirit', gen_salt('bf')),
-  '{"prefix": null, "first": "Bianca", "middle": null, "last": "Ashford", "suffix": null, "display": "Bianca Ashford"}'::json,
-  'razorspirit@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000627", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "727 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10627", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'razorspirit'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'reapereye',
-  crypt('reapereye', gen_salt('bf')),
-  '{"prefix": null, "first": "Harper", "middle": null, "last": "Ashford", "suffix": null, "display": "Harper Ashford"}'::json,
-  'reapereye@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000628", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "728 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10628", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'reapereye'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'novafang',
-  crypt('novafang', gen_salt('bf')),
-  '{"prefix": null, "first": "Jonah", "middle": null, "last": "Ashford", "suffix": null, "display": "Jonah Ashford"}'::json,
-  'novafang@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000629", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "729 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10629", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'novafang'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'hunterquake',
-  crypt('hunterquake', gen_salt('bf')),
-  '{"prefix": null, "first": "Mira", "middle": null, "last": "Ashford", "suffix": null, "display": "Mira Ashford"}'::json,
-  'hunterquake@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000630", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "730 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10630", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'hunterquake'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'queencurse',
-  crypt('queencurse', gen_salt('bf')),
-  '{"prefix": null, "first": "Cedric", "middle": null, "last": "Ashford", "suffix": null, "display": "Cedric Ashford"}'::json,
-  'queencurse@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000631", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "731 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10631", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'queencurse'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ninjatempest',
-  crypt('ninjatempest', gen_salt('bf')),
-  '{"prefix": null, "first": "Lena", "middle": null, "last": "Ashford", "suffix": null, "display": "Lena Ashford"}'::json,
-  'ninjatempest@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000632", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "732 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10632", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ninjatempest'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'cannonspell',
-  crypt('cannonspell', gen_salt('bf')),
-  '{"prefix": null, "first": "Andre", "middle": null, "last": "Ashford", "suffix": null, "display": "Andre Ashford"}'::json,
-  'cannonspell@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000633", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "733 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10633", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cannonspell'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'paladinquake',
-  crypt('paladinquake', gen_salt('bf')),
-  '{"prefix": null, "first": "Sasha", "middle": null, "last": "Ashford", "suffix": null, "display": "Sasha Ashford"}'::json,
-  'paladinquake@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000634", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "734 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10634", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'paladinquake'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'commandershade',
-  crypt('commandershade', gen_salt('bf')),
-  '{"prefix": null, "first": "Malik", "middle": null, "last": "Ashford", "suffix": null, "display": "Malik Ashford"}'::json,
-  'commandershade@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000635", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "735 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10635", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'commandershade'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'eldritchprophet',
-  crypt('eldritchprophet', gen_salt('bf')),
-  '{"prefix": null, "first": "Priya", "middle": null, "last": "Ashford", "suffix": null, "display": "Priya Ashford"}'::json,
-  'eldritchprophet@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000636", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "736 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10636", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'eldritchprophet'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'novasigil',
-  crypt('novasigil', gen_salt('bf')),
-  '{"prefix": null, "first": "Kenji", "middle": null, "last": "Ashford", "suffix": null, "display": "Kenji Ashford"}'::json,
-  'novasigil@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000637", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "737 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10637", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'novasigil'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'queenprophet',
-  crypt('queenprophet', gen_salt('bf')),
-  '{"prefix": null, "first": "Yara", "middle": null, "last": "Ashford", "suffix": null, "display": "Yara Ashford"}'::json,
-  'queenprophet@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000638", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "738 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10638", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'queenprophet'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'goliathoracle',
-  crypt('goliathoracle', gen_salt('bf')),
-  '{"prefix": null, "first": "Rosa", "middle": null, "last": "Ashford", "suffix": null, "display": "Rosa Ashford"}'::json,
-  'goliathoracle@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000639", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "739 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10639", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goliathoracle'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'gargoyleoracle',
-  crypt('gargoyleoracle', gen_salt('bf')),
-  '{"prefix": null, "first": "Hugo", "middle": null, "last": "Ashford", "suffix": null, "display": "Hugo Ashford"}'::json,
-  'gargoyleoracle@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000640", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "740 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10640", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'gargoyleoracle'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'novakeeper',
-  crypt('novakeeper', gen_salt('bf')),
-  '{"prefix": null, "first": "Ingrid", "middle": null, "last": "Ashford", "suffix": null, "display": "Ingrid Ashford"}'::json,
-  'novakeeper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000641", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "741 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10641", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'novakeeper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'infernocurse',
-  crypt('infernocurse', gen_salt('bf')),
-  '{"prefix": null, "first": "Pascal", "middle": null, "last": "Ashford", "suffix": null, "display": "Pascal Ashford"}'::json,
-  'infernocurse@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000642", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "742 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10642", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'infernocurse'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'rangersmasher',
-  crypt('rangersmasher', gen_salt('bf')),
-  '{"prefix": null, "first": "Freya", "middle": null, "last": "Ashford", "suffix": null, "display": "Freya Ashford"}'::json,
-  'rangersmasher@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000643", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "743 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10643", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'rangersmasher'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'reaperruin',
-  crypt('reaperruin', gen_salt('bf')),
-  '{"prefix": null, "first": "Dante", "middle": null, "last": "Ashford", "suffix": null, "display": "Dante Ashford"}'::json,
-  'reaperruin@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000644", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "744 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10644", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'reaperruin'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'razorstomper',
-  crypt('razorstomper', gen_salt('bf')),
-  '{"prefix": null, "first": "Keiko", "middle": null, "last": "Ashford", "suffix": null, "display": "Keiko Ashford"}'::json,
-  'razorstomper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000645", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "745 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10645", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'razorstomper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'gargoyledragon',
-  crypt('gargoyledragon', gen_salt('bf')),
-  '{"prefix": null, "first": "Amir", "middle": null, "last": "Ashford", "suffix": null, "display": "Amir Ashford"}'::json,
-  'gargoyledragon@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000646", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "746 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10646", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'gargoyledragon'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'doomtempest',
-  crypt('doomtempest', gen_salt('bf')),
-  '{"prefix": null, "first": "Lucia", "middle": null, "last": "Ashford", "suffix": null, "display": "Lucia Ashford"}'::json,
-  'doomtempest@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000647", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "747 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10647", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'doomtempest'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'sergeanteye',
-  crypt('sergeanteye', gen_salt('bf')),
-  '{"prefix": null, "first": "Tobias", "middle": null, "last": "Ashford", "suffix": null, "display": "Tobias Ashford"}'::json,
-  'sergeanteye@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000648", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "748 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10648", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'sergeanteye'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'lordphoenix',
-  crypt('lordphoenix', gen_salt('bf')),
-  '{"prefix": null, "first": "Anika", "middle": null, "last": "Ashford", "suffix": null, "display": "Anika Ashford"}'::json,
-  'lordphoenix@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000649", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "749 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10649", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'lordphoenix'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'frostflare',
-  crypt('frostflare', gen_salt('bf')),
-  '{"prefix": null, "first": "Reid", "middle": null, "last": "Ashford", "suffix": null, "display": "Reid Ashford"}'::json,
-  'frostflare@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000650", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "750 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10650", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'frostflare'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'graveguardian',
-  crypt('graveguardian', gen_salt('bf')),
-  '{"prefix": null, "first": "Carmen", "middle": null, "last": "Ashford", "suffix": null, "display": "Carmen Ashford"}'::json,
-  'graveguardian@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000651", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "751 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10651", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'graveguardian'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'omegafist',
-  crypt('omegafist', gen_salt('bf')),
-  '{"prefix": null, "first": "Elliot", "middle": null, "last": "Ashford", "suffix": null, "display": "Elliot Ashford"}'::json,
-  'omegafist@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000652", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "752 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10652", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'omegafist'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ninjasigil',
-  crypt('ninjasigil', gen_salt('bf')),
-  '{"prefix": null, "first": "Naomi", "middle": null, "last": "Ashford", "suffix": null, "display": "Naomi Ashford"}'::json,
-  'ninjasigil@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000653", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "753 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10653", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ninjasigil'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'lightningbrain',
-  crypt('lightningbrain', gen_salt('bf')),
-  '{"prefix": null, "first": "Sterling", "middle": null, "last": "Ashford", "suffix": null, "display": "Sterling Ashford"}'::json,
-  'lightningbrain@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000654", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "754 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10654", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'lightningbrain'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'alphakeeper',
-  crypt('alphakeeper', gen_salt('bf')),
-  '{"prefix": null, "first": "Zara", "middle": null, "last": "Ashford", "suffix": null, "display": "Zara Ashford"}'::json,
-  'alphakeeper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000655", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "755 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10655", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'alphakeeper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'queenraven',
-  crypt('queenraven', gen_salt('bf')),
-  '{"prefix": null, "first": "Gideon", "middle": null, "last": "Ashford", "suffix": null, "display": "Gideon Ashford"}'::json,
-  'queenraven@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000656", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "756 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10656", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'queenraven'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'frostrage',
-  crypt('frostrage', gen_salt('bf')),
-  '{"prefix": null, "first": "Helena", "middle": null, "last": "Ashford", "suffix": null, "display": "Helena Ashford"}'::json,
-  'frostrage@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000657", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "757 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10657", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'frostrage'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'neonknight',
-  crypt('neonknight', gen_salt('bf')),
-  '{"prefix": null, "first": "Roman", "middle": null, "last": "Ashford", "suffix": null, "display": "Roman Ashford"}'::json,
-  'neonknight@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000658", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "758 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10658", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'neonknight'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'scarletmind',
-  crypt('scarletmind', gen_salt('bf')),
-  '{"prefix": null, "first": "Vivian", "middle": null, "last": "Ashford", "suffix": null, "display": "Vivian Ashford"}'::json,
-  'scarletmind@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000659", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "759 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10659", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'scarletmind'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'doomchampion',
-  crypt('doomchampion', gen_salt('bf')),
-  '{"prefix": null, "first": "Quinn", "middle": null, "last": "Ashford", "suffix": null, "display": "Quinn Ashford"}'::json,
-  'doomchampion@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000660", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "760 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10660", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'doomchampion'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'cannoncurse',
-  crypt('cannoncurse', gen_salt('bf')),
-  '{"prefix": null, "first": "Marcel", "middle": null, "last": "Ashford", "suffix": null, "display": "Marcel Ashford"}'::json,
-  'cannoncurse@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000661", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "761 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10661", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cannoncurse'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'titanchampion',
-  crypt('titanchampion', gen_salt('bf')),
-  '{"prefix": null, "first": "Talia", "middle": null, "last": "Ashford", "suffix": null, "display": "Talia Ashford"}'::json,
-  'titanchampion@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000662", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "762 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10662", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'titanchampion'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'quantumrender',
-  crypt('quantumrender', gen_salt('bf')),
-  '{"prefix": null, "first": "Desmond", "middle": null, "last": "Ashford", "suffix": null, "display": "Desmond Ashford"}'::json,
-  'quantumrender@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000663", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "763 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10663", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'quantumrender'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'dukespark',
-  crypt('dukespark', gen_salt('bf')),
-  '{"prefix": null, "first": "Ariana", "middle": null, "last": "Ashford", "suffix": null, "display": "Ariana Ashford"}'::json,
-  'dukespark@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000664", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "764 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10664", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'dukespark'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'solarshade',
-  crypt('solarshade', gen_salt('bf')),
-  '{"prefix": null, "first": "Brock", "middle": null, "last": "Ashford", "suffix": null, "display": "Brock Ashford"}'::json,
-  'solarshade@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000665", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "765 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10665", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'solarshade'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'stellarskull',
-  crypt('stellarskull', gen_salt('bf')),
-  '{"prefix": null, "first": "Celeste", "middle": null, "last": "Ashford", "suffix": null, "display": "Celeste Ashford"}'::json,
-  'stellarskull@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000666", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "766 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10666", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stellarskull'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'commandersmasher',
-  crypt('commandersmasher', gen_salt('bf')),
-  '{"prefix": null, "first": "Warren", "middle": null, "last": "Ashford", "suffix": null, "display": "Warren Ashford"}'::json,
-  'commandersmasher@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000667", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "767 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10667", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'commandersmasher'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'toxicgolem',
-  crypt('toxicgolem', gen_salt('bf')),
-  '{"prefix": null, "first": "Delilah", "middle": null, "last": "Ashford", "suffix": null, "display": "Delilah Ashford"}'::json,
-  'toxicgolem@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000668", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "768 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10668", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'toxicgolem'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'neonwhisper',
-  crypt('neonwhisper', gen_salt('bf')),
-  '{"prefix": null, "first": "Spencer", "middle": null, "last": "Ashford", "suffix": null, "display": "Spencer Ashford"}'::json,
-  'neonwhisper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000669", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "769 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10669", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'neonwhisper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'stalkerhowl',
-  crypt('stalkerhowl', gen_salt('bf')),
-  '{"prefix": null, "first": "Monroe", "middle": null, "last": "Ashford", "suffix": null, "display": "Monroe Ashford"}'::json,
-  'stalkerhowl@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000670", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "770 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10670", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stalkerhowl'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'atomicseer',
-  crypt('atomicseer', gen_salt('bf')),
-  '{"prefix": null, "first": "Beckett", "middle": null, "last": "Ashford", "suffix": null, "display": "Beckett Ashford"}'::json,
-  'atomicseer@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000671", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "771 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10671", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'atomicseer'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'arcanehammer',
-  crypt('arcanehammer', gen_salt('bf')),
-  '{"prefix": null, "first": "Soraya", "middle": null, "last": "Ashford", "suffix": null, "display": "Soraya Ashford"}'::json,
-  'arcanehammer@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000672", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "772 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10672", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'arcanehammer'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ronindefender',
-  crypt('ronindefender', gen_salt('bf')),
-  '{"prefix": null, "first": "Landon", "middle": null, "last": "Ashford", "suffix": null, "display": "Landon Ashford"}'::json,
-  'ronindefender@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000673", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "773 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10673", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ronindefender'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'kingfreeze',
-  crypt('kingfreeze', gen_salt('bf')),
-  '{"prefix": null, "first": "Petra", "middle": null, "last": "Ashford", "suffix": null, "display": "Petra Ashford"}'::json,
-  'kingfreeze@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000674", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "774 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10674", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'kingfreeze'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'kingtempest',
-  crypt('kingtempest', gen_salt('bf')),
-  '{"prefix": null, "first": "Cassius", "middle": null, "last": "Ashford", "suffix": null, "display": "Cassius Ashford"}'::json,
-  'kingtempest@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000675", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "775 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10675", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'kingtempest'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'razorhex',
-  crypt('razorhex', gen_salt('bf')),
-  '{"prefix": null, "first": "Rowan", "middle": null, "last": "Ashford", "suffix": null, "display": "Rowan Ashford"}'::json,
-  'razorhex@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000676", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "776 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10676", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'razorhex'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'neonhowl',
-  crypt('neonhowl', gen_salt('bf')),
-  '{"prefix": null, "first": "Ethan", "middle": null, "last": "Blackwood", "suffix": null, "display": "Ethan Blackwood"}'::json,
-  'neonhowl@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000677", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "777 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10677", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'neonhowl'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'spectralflare',
-  crypt('spectralflare', gen_salt('bf')),
-  '{"prefix": null, "first": "Mia", "middle": null, "last": "Blackwood", "suffix": null, "display": "Mia Blackwood"}'::json,
-  'spectralflare@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000678", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "778 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10678", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'spectralflare'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'arcanehydra',
-  crypt('arcanehydra', gen_salt('bf')),
-  '{"prefix": null, "first": "Noah", "middle": null, "last": "Blackwood", "suffix": null, "display": "Noah Blackwood"}'::json,
-  'arcanehydra@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000679", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "779 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10679", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'arcanehydra'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'stormblade',
-  crypt('stormblade', gen_salt('bf')),
-  '{"prefix": null, "first": "Ava", "middle": null, "last": "Blackwood", "suffix": null, "display": "Ava Blackwood"}'::json,
-  'stormblade@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000680", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "780 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10680", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stormblade'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'stormwarden',
-  crypt('stormwarden', gen_salt('bf')),
-  '{"prefix": null, "first": "Liam", "middle": null, "last": "Blackwood", "suffix": null, "display": "Liam Blackwood"}'::json,
-  'stormwarden@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000681", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "781 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10681", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stormwarden'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'sergeanttempest',
-  crypt('sergeanttempest', gen_salt('bf')),
-  '{"prefix": null, "first": "Sophia", "middle": null, "last": "Blackwood", "suffix": null, "display": "Sophia Blackwood"}'::json,
-  'sergeanttempest@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000682", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "782 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10682", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'sergeanttempest'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'azurecrusher',
-  crypt('azurecrusher', gen_salt('bf')),
-  '{"prefix": null, "first": "Owen", "middle": null, "last": "Blackwood", "suffix": null, "display": "Owen Blackwood"}'::json,
-  'azurecrusher@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000683", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "783 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10683", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'azurecrusher'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'lunarprophet',
-  crypt('lunarprophet', gen_salt('bf')),
-  '{"prefix": null, "first": "Isla", "middle": null, "last": "Blackwood", "suffix": null, "display": "Isla Blackwood"}'::json,
-  'lunarprophet@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000684", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "784 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10684", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'lunarprophet'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'lightningblade',
-  crypt('lightningblade', gen_salt('bf')),
-  '{"prefix": null, "first": "Caleb", "middle": null, "last": "Blackwood", "suffix": null, "display": "Caleb Blackwood"}'::json,
-  'lightningblade@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000685", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "785 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10685", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'lightningblade'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'novaslayer',
-  crypt('novaslayer', gen_salt('bf')),
-  '{"prefix": null, "first": "Nora", "middle": null, "last": "Blackwood", "suffix": null, "display": "Nora Blackwood"}'::json,
-  'novaslayer@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000686", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "786 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10686", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'novaslayer'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'lunarmind',
-  crypt('lunarmind', gen_salt('bf')),
-  '{"prefix": null, "first": "Julian", "middle": null, "last": "Blackwood", "suffix": null, "display": "Julian Blackwood"}'::json,
-  'lunarmind@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000687", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "787 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10687", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'lunarmind'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ionicclaw',
-  crypt('ionicclaw', gen_salt('bf')),
-  '{"prefix": null, "first": "Elena", "middle": null, "last": "Blackwood", "suffix": null, "display": "Elena Blackwood"}'::json,
-  'ionicclaw@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000688", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "788 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10688", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ionicclaw'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'crimsonspark',
-  crypt('crimsonspark', gen_salt('bf')),
-  '{"prefix": null, "first": "Miles", "middle": null, "last": "Blackwood", "suffix": null, "display": "Miles Blackwood"}'::json,
-  'crimsonspark@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000689", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "789 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10689", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'crimsonspark'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'chaoswave',
-  crypt('chaoswave', gen_salt('bf')),
-  '{"prefix": null, "first": "Clara", "middle": null, "last": "Blackwood", "suffix": null, "display": "Clara Blackwood"}'::json,
-  'chaoswave@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000690", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "790 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10690", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'chaoswave'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'steelbane',
-  crypt('steelbane', gen_salt('bf')),
-  '{"prefix": null, "first": "Felix", "middle": null, "last": "Blackwood", "suffix": null, "display": "Felix Blackwood"}'::json,
-  'steelbane@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000691", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "791 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10691", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'steelbane'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'primalmask',
-  crypt('primalmask', gen_salt('bf')),
-  '{"prefix": null, "first": "Hazel", "middle": null, "last": "Blackwood", "suffix": null, "display": "Hazel Blackwood"}'::json,
-  'primalmask@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000692", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "792 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10692", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'primalmask'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'stormwave',
-  crypt('stormwave', gen_salt('bf')),
-  '{"prefix": null, "first": "Adrian", "middle": null, "last": "Blackwood", "suffix": null, "display": "Adrian Blackwood"}'::json,
-  'stormwave@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000693", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "793 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10693", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stormwave'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'dukebreaker',
-  crypt('dukebreaker', gen_salt('bf')),
-  '{"prefix": null, "first": "Iris", "middle": null, "last": "Blackwood", "suffix": null, "display": "Iris Blackwood"}'::json,
-  'dukebreaker@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000694", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "794 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10694", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'dukebreaker'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'agenthydra',
-  crypt('agenthydra', gen_salt('bf')),
-  '{"prefix": null, "first": "Simon", "middle": null, "last": "Blackwood", "suffix": null, "display": "Simon Blackwood"}'::json,
-  'agenthydra@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000695", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "795 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10695", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'agenthydra'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'spectralkraken',
-  crypt('spectralkraken', gen_salt('bf')),
-  '{"prefix": null, "first": "Ruby", "middle": null, "last": "Blackwood", "suffix": null, "display": "Ruby Blackwood"}'::json,
-  'spectralkraken@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000696", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "796 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10696", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'spectralkraken'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'feralrune',
-  crypt('feralrune', gen_salt('bf')),
-  '{"prefix": null, "first": "Victor", "middle": null, "last": "Blackwood", "suffix": null, "display": "Victor Blackwood"}'::json,
-  'feralrune@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000697", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "797 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10697", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'feralrune'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'quantumstrike',
-  crypt('quantumstrike', gen_salt('bf')),
-  '{"prefix": null, "first": "Paige", "middle": null, "last": "Blackwood", "suffix": null, "display": "Paige Blackwood"}'::json,
-  'quantumstrike@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000698", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "798 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10698", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'quantumstrike'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'goldenkeeper',
-  crypt('goldenkeeper', gen_salt('bf')),
-  '{"prefix": null, "first": "Grant", "middle": null, "last": "Blackwood", "suffix": null, "display": "Grant Blackwood"}'::json,
-  'goldenkeeper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000699", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "799 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10699", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goldenkeeper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'majorshield',
-  crypt('majorshield', gen_salt('bf')),
-  '{"prefix": null, "first": "Tessa", "middle": null, "last": "Blackwood", "suffix": null, "display": "Tessa Blackwood"}'::json,
-  'majorshield@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000700", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "800 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10700", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'majorshield'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'wraithecho',
-  crypt('wraithecho', gen_salt('bf')),
-  '{"prefix": null, "first": "Dean", "middle": null, "last": "Blackwood", "suffix": null, "display": "Dean Blackwood"}'::json,
-  'wraithecho@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000701", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "801 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10701", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'wraithecho'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'primalhand',
-  crypt('primalhand', gen_salt('bf')),
-  '{"prefix": null, "first": "Vera", "middle": null, "last": "Blackwood", "suffix": null, "display": "Vera Blackwood"}'::json,
-  'primalhand@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000702", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "802 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10702", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'primalhand'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'lightningshade',
-  crypt('lightningshade', gen_salt('bf')),
-  '{"prefix": null, "first": "Colin", "middle": null, "last": "Blackwood", "suffix": null, "display": "Colin Blackwood"}'::json,
-  'lightningshade@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000703", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "803 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10703", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'lightningshade'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'eldritchbone',
-  crypt('eldritchbone', gen_salt('bf')),
-  '{"prefix": null, "first": "Jade", "middle": null, "last": "Blackwood", "suffix": null, "display": "Jade Blackwood"}'::json,
-  'eldritchbone@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000704", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "804 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10704", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'eldritchbone'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'cosmicrage',
-  crypt('cosmicrage', gen_salt('bf')),
-  '{"prefix": null, "first": "Marcus", "middle": null, "last": "Blackwood", "suffix": null, "display": "Marcus Blackwood"}'::json,
-  'cosmicrage@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000705", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "805 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10705", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cosmicrage'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'gargoylepanther',
-  crypt('gargoylepanther', gen_salt('bf')),
-  '{"prefix": null, "first": "Leah", "middle": null, "last": "Blackwood", "suffix": null, "display": "Leah Blackwood"}'::json,
-  'gargoylepanther@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000706", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "806 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10706", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'gargoylepanther'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'novasmasher',
-  crypt('novasmasher', gen_salt('bf')),
-  '{"prefix": null, "first": "Nolan", "middle": null, "last": "Blackwood", "suffix": null, "display": "Nolan Blackwood"}'::json,
-  'novasmasher@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000707", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "807 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10707", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'novasmasher'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'gargoylespell',
-  crypt('gargoylespell', gen_salt('bf')),
-  '{"prefix": null, "first": "Gwen", "middle": null, "last": "Blackwood", "suffix": null, "display": "Gwen Blackwood"}'::json,
-  'gargoylespell@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000708", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "808 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10708", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'gargoylespell'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'generalgriffin',
-  crypt('generalgriffin', gen_salt('bf')),
-  '{"prefix": null, "first": "Tristan", "middle": null, "last": "Blackwood", "suffix": null, "display": "Tristan Blackwood"}'::json,
-  'generalgriffin@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000709", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "809 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10709", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'generalgriffin'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'samurairipper',
-  crypt('samurairipper', gen_salt('bf')),
-  '{"prefix": null, "first": "Selene", "middle": null, "last": "Blackwood", "suffix": null, "display": "Selene Blackwood"}'::json,
-  'samurairipper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000710", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "810 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10710", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'samurairipper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'razordoom',
-  crypt('razordoom', gen_salt('bf')),
-  '{"prefix": null, "first": "Derek", "middle": null, "last": "Blackwood", "suffix": null, "display": "Derek Blackwood"}'::json,
-  'razordoom@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000711", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "811 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10711", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'razordoom'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'quantumdefender',
-  crypt('quantumdefender', gen_salt('bf')),
-  '{"prefix": null, "first": "Alina", "middle": null, "last": "Blackwood", "suffix": null, "display": "Alina Blackwood"}'::json,
-  'quantumdefender@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000712", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "812 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10712", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'quantumdefender'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'deltarage',
-  crypt('deltarage', gen_salt('bf')),
-  '{"prefix": null, "first": "Rafael", "middle": null, "last": "Blackwood", "suffix": null, "display": "Rafael Blackwood"}'::json,
-  'deltarage@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000713", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "813 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10713", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'deltarage'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'gravebolt',
-  crypt('gravebolt', gen_salt('bf')),
-  '{"prefix": null, "first": "Bianca", "middle": null, "last": "Blackwood", "suffix": null, "display": "Bianca Blackwood"}'::json,
-  'gravebolt@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000714", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "814 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10714", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'gravebolt'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'wardenwarden',
-  crypt('wardenwarden', gen_salt('bf')),
-  '{"prefix": null, "first": "Harper", "middle": null, "last": "Blackwood", "suffix": null, "display": "Harper Blackwood"}'::json,
-  'wardenwarden@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000715", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "815 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10715", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'wardenwarden'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'roninkeeper',
-  crypt('roninkeeper', gen_salt('bf')),
-  '{"prefix": null, "first": "Jonah", "middle": null, "last": "Blackwood", "suffix": null, "display": "Jonah Blackwood"}'::json,
-  'roninkeeper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000716", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "816 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10716", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'roninkeeper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'doctorbone',
-  crypt('doctorbone', gen_salt('bf')),
-  '{"prefix": null, "first": "Mira", "middle": null, "last": "Blackwood", "suffix": null, "display": "Mira Blackwood"}'::json,
-  'doctorbone@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000717", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "817 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10717", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'doctorbone'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'solarcrusher',
-  crypt('solarcrusher', gen_salt('bf')),
-  '{"prefix": null, "first": "Cedric", "middle": null, "last": "Blackwood", "suffix": null, "display": "Cedric Blackwood"}'::json,
-  'solarcrusher@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000718", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "818 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10718", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'solarcrusher'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'agentbane',
-  crypt('agentbane', gen_salt('bf')),
-  '{"prefix": null, "first": "Lena", "middle": null, "last": "Blackwood", "suffix": null, "display": "Lena Blackwood"}'::json,
-  'agentbane@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000719", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "819 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10719", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'agentbane'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ancientripper',
-  crypt('ancientripper', gen_salt('bf')),
-  '{"prefix": null, "first": "Andre", "middle": null, "last": "Blackwood", "suffix": null, "display": "Andre Blackwood"}'::json,
-  'ancientripper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000720", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "820 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10720", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ancientripper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'arcanemirage',
-  crypt('arcanemirage', gen_salt('bf')),
-  '{"prefix": null, "first": "Sasha", "middle": null, "last": "Blackwood", "suffix": null, "display": "Sasha Blackwood"}'::json,
-  'arcanemirage@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000721", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "821 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10721", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'arcanemirage'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'lightningtempest',
-  crypt('lightningtempest', gen_salt('bf')),
-  '{"prefix": null, "first": "Malik", "middle": null, "last": "Blackwood", "suffix": null, "display": "Malik Blackwood"}'::json,
-  'lightningtempest@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000722", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "822 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10722", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'lightningtempest'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'valkyriecobra',
-  crypt('valkyriecobra', gen_salt('bf')),
-  '{"prefix": null, "first": "Priya", "middle": null, "last": "Blackwood", "suffix": null, "display": "Priya Blackwood"}'::json,
-  'valkyriecobra@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000723", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "823 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10723", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'valkyriecobra'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'blizzardcurse',
-  crypt('blizzardcurse', gen_salt('bf')),
-  '{"prefix": null, "first": "Kenji", "middle": null, "last": "Blackwood", "suffix": null, "display": "Kenji Blackwood"}'::json,
-  'blizzardcurse@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000724", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "824 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10724", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'blizzardcurse'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'onyxruin',
-  crypt('onyxruin', gen_salt('bf')),
-  '{"prefix": null, "first": "Yara", "middle": null, "last": "Blackwood", "suffix": null, "display": "Yara Blackwood"}'::json,
-  'onyxruin@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000725", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "825 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10725", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'onyxruin'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ancientdefender',
-  crypt('ancientdefender', gen_salt('bf')),
-  '{"prefix": null, "first": "Rosa", "middle": null, "last": "Blackwood", "suffix": null, "display": "Rosa Blackwood"}'::json,
-  'ancientdefender@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000726", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "826 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10726", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ancientdefender'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'gargoylebeam',
-  crypt('gargoylebeam', gen_salt('bf')),
-  '{"prefix": null, "first": "Hugo", "middle": null, "last": "Blackwood", "suffix": null, "display": "Hugo Blackwood"}'::json,
-  'gargoylebeam@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000727", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "827 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10727", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'gargoylebeam'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'doctorslayer',
-  crypt('doctorslayer', gen_salt('bf')),
-  '{"prefix": null, "first": "Ingrid", "middle": null, "last": "Blackwood", "suffix": null, "display": "Ingrid Blackwood"}'::json,
-  'doctorslayer@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000728", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "828 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10728", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'doctorslayer'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'captainskull',
-  crypt('captainskull', gen_salt('bf')),
-  '{"prefix": null, "first": "Pascal", "middle": null, "last": "Blackwood", "suffix": null, "display": "Pascal Blackwood"}'::json,
-  'captainskull@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000729", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "829 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10729", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'captainskull'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'deltahavoc',
-  crypt('deltahavoc', gen_salt('bf')),
-  '{"prefix": null, "first": "Freya", "middle": null, "last": "Blackwood", "suffix": null, "display": "Freya Blackwood"}'::json,
-  'deltahavoc@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000730", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "830 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10730", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'deltahavoc'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'feralstorm',
-  crypt('feralstorm', gen_salt('bf')),
-  '{"prefix": null, "first": "Dante", "middle": null, "last": "Blackwood", "suffix": null, "display": "Dante Blackwood"}'::json,
-  'feralstorm@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000731", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "831 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10731", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'feralstorm'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'marshalfist',
-  crypt('marshalfist', gen_salt('bf')),
-  '{"prefix": null, "first": "Keiko", "middle": null, "last": "Blackwood", "suffix": null, "display": "Keiko Blackwood"}'::json,
-  'marshalfist@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000732", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "832 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10732", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'marshalfist'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'goblinstorm',
-  crypt('goblinstorm', gen_salt('bf')),
-  '{"prefix": null, "first": "Amir", "middle": null, "last": "Blackwood", "suffix": null, "display": "Amir Blackwood"}'::json,
-  'goblinstorm@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000733", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "833 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10733", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goblinstorm'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'cosmichydra',
-  crypt('cosmichydra', gen_salt('bf')),
-  '{"prefix": null, "first": "Lucia", "middle": null, "last": "Blackwood", "suffix": null, "display": "Lucia Blackwood"}'::json,
-  'cosmichydra@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000734", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "834 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10734", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cosmichydra'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'eldritchcobra',
-  crypt('eldritchcobra', gen_salt('bf')),
-  '{"prefix": null, "first": "Tobias", "middle": null, "last": "Blackwood", "suffix": null, "display": "Tobias Blackwood"}'::json,
-  'eldritchcobra@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000735", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "835 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10735", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'eldritchcobra'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'goldeneagle',
-  crypt('goldeneagle', gen_salt('bf')),
-  '{"prefix": null, "first": "Anika", "middle": null, "last": "Blackwood", "suffix": null, "display": "Anika Blackwood"}'::json,
-  'goldeneagle@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000736", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "836 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10736", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goldeneagle'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'sergeantclaw',
-  crypt('sergeantclaw', gen_salt('bf')),
-  '{"prefix": null, "first": "Reid", "middle": null, "last": "Blackwood", "suffix": null, "display": "Reid Blackwood"}'::json,
-  'sergeantclaw@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000737", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "837 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10737", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'sergeantclaw'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'samuraibolt',
-  crypt('samuraibolt', gen_salt('bf')),
-  '{"prefix": null, "first": "Carmen", "middle": null, "last": "Blackwood", "suffix": null, "display": "Carmen Blackwood"}'::json,
-  'samuraibolt@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000738", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "838 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10738", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'samuraibolt'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'silverrush',
-  crypt('silverrush', gen_salt('bf')),
-  '{"prefix": null, "first": "Elliot", "middle": null, "last": "Blackwood", "suffix": null, "display": "Elliot Blackwood"}'::json,
-  'silverrush@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000739", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "839 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10739", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'silverrush'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'majorwarden',
-  crypt('majorwarden', gen_salt('bf')),
-  '{"prefix": null, "first": "Naomi", "middle": null, "last": "Blackwood", "suffix": null, "display": "Naomi Blackwood"}'::json,
-  'majorwarden@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000740", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "840 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10740", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'majorwarden'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'blizzardwhisper',
-  crypt('blizzardwhisper', gen_salt('bf')),
-  '{"prefix": null, "first": "Sterling", "middle": null, "last": "Blackwood", "suffix": null, "display": "Sterling Blackwood"}'::json,
-  'blizzardwhisper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000741", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "841 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10741", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'blizzardwhisper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'azurespark',
-  crypt('azurespark', gen_salt('bf')),
-  '{"prefix": null, "first": "Zara", "middle": null, "last": "Blackwood", "suffix": null, "display": "Zara Blackwood"}'::json,
-  'azurespark@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000742", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "842 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10742", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'azurespark'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'emberwarden',
-  crypt('emberwarden', gen_salt('bf')),
-  '{"prefix": null, "first": "Gideon", "middle": null, "last": "Blackwood", "suffix": null, "display": "Gideon Blackwood"}'::json,
-  'emberwarden@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000743", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "843 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10743", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'emberwarden'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'goliathpanther',
-  crypt('goliathpanther', gen_salt('bf')),
-  '{"prefix": null, "first": "Helena", "middle": null, "last": "Blackwood", "suffix": null, "display": "Helena Blackwood"}'::json,
-  'goliathpanther@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000744", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "844 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10744", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goliathpanther'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'agentdragon',
-  crypt('agentdragon', gen_salt('bf')),
-  '{"prefix": null, "first": "Roman", "middle": null, "last": "Blackwood", "suffix": null, "display": "Roman Blackwood"}'::json,
-  'agentdragon@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000745", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "845 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10745", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'agentdragon'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'chaosbreaker',
-  crypt('chaosbreaker', gen_salt('bf')),
-  '{"prefix": null, "first": "Vivian", "middle": null, "last": "Blackwood", "suffix": null, "display": "Vivian Blackwood"}'::json,
-  'chaosbreaker@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000746", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "846 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10746", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'chaosbreaker'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'generalchampion',
-  crypt('generalchampion', gen_salt('bf')),
-  '{"prefix": null, "first": "Quinn", "middle": null, "last": "Blackwood", "suffix": null, "display": "Quinn Blackwood"}'::json,
-  'generalchampion@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000747", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "847 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10747", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'generalchampion'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'turbostrike',
-  crypt('turbostrike', gen_salt('bf')),
-  '{"prefix": null, "first": "Marcel", "middle": null, "last": "Blackwood", "suffix": null, "display": "Marcel Blackwood"}'::json,
-  'turbostrike@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000748", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "848 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10748", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'turbostrike'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'marshalblade',
-  crypt('marshalblade', gen_salt('bf')),
-  '{"prefix": null, "first": "Talia", "middle": null, "last": "Blackwood", "suffix": null, "display": "Talia Blackwood"}'::json,
-  'marshalblade@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000749", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "849 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10749", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'marshalblade'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'rogueruin',
-  crypt('rogueruin', gen_salt('bf')),
-  '{"prefix": null, "first": "Desmond", "middle": null, "last": "Blackwood", "suffix": null, "display": "Desmond Blackwood"}'::json,
-  'rogueruin@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000750", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "850 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10750", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'rogueruin'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'marshalwarden',
-  crypt('marshalwarden', gen_salt('bf')),
-  '{"prefix": null, "first": "Ariana", "middle": null, "last": "Blackwood", "suffix": null, "display": "Ariana Blackwood"}'::json,
-  'marshalwarden@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000751", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "851 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10751", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'marshalwarden'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'omegaskull',
-  crypt('omegaskull', gen_salt('bf')),
-  '{"prefix": null, "first": "Brock", "middle": null, "last": "Blackwood", "suffix": null, "display": "Brock Blackwood"}'::json,
-  'omegaskull@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000752", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "852 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10752", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'omegaskull'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'roguepanther',
-  crypt('roguepanther', gen_salt('bf')),
-  '{"prefix": null, "first": "Celeste", "middle": null, "last": "Blackwood", "suffix": null, "display": "Celeste Blackwood"}'::json,
-  'roguepanther@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000753", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "853 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10753", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'roguepanther'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'thundercrusher',
-  crypt('thundercrusher', gen_salt('bf')),
-  '{"prefix": null, "first": "Warren", "middle": null, "last": "Blackwood", "suffix": null, "display": "Warren Blackwood"}'::json,
-  'thundercrusher@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000754", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "854 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10754", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'thundercrusher'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'reaperhawk',
-  crypt('reaperhawk', gen_salt('bf')),
-  '{"prefix": null, "first": "Delilah", "middle": null, "last": "Blackwood", "suffix": null, "display": "Delilah Blackwood"}'::json,
-  'reaperhawk@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000755", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "855 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10755", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'reaperhawk'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'generalphoenix',
-  crypt('generalphoenix', gen_salt('bf')),
-  '{"prefix": null, "first": "Spencer", "middle": null, "last": "Blackwood", "suffix": null, "display": "Spencer Blackwood"}'::json,
-  'generalphoenix@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000756", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "856 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10756", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'generalphoenix'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'onyxquake',
-  crypt('onyxquake', gen_salt('bf')),
-  '{"prefix": null, "first": "Monroe", "middle": null, "last": "Blackwood", "suffix": null, "display": "Monroe Blackwood"}'::json,
-  'onyxquake@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000757", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "857 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10757", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'onyxquake'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'violetwarden',
-  crypt('violetwarden', gen_salt('bf')),
-  '{"prefix": null, "first": "Beckett", "middle": null, "last": "Blackwood", "suffix": null, "display": "Beckett Blackwood"}'::json,
-  'violetwarden@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000758", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "858 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10758", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'violetwarden'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ultrarush',
-  crypt('ultrarush', gen_salt('bf')),
-  '{"prefix": null, "first": "Soraya", "middle": null, "last": "Blackwood", "suffix": null, "display": "Soraya Blackwood"}'::json,
-  'ultrarush@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000759", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "859 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10759", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ultrarush'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'doctorkeeper',
-  crypt('doctorkeeper', gen_salt('bf')),
-  '{"prefix": null, "first": "Landon", "middle": null, "last": "Blackwood", "suffix": null, "display": "Landon Blackwood"}'::json,
-  'doctorkeeper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000760", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "860 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10760", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'doctorkeeper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'renegadeknight',
-  crypt('renegadeknight', gen_salt('bf')),
-  '{"prefix": null, "first": "Petra", "middle": null, "last": "Blackwood", "suffix": null, "display": "Petra Blackwood"}'::json,
-  'renegadeknight@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000761", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "861 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10761", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'renegadeknight'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'outlawhawk',
-  crypt('outlawhawk', gen_salt('bf')),
-  '{"prefix": null, "first": "Cassius", "middle": null, "last": "Blackwood", "suffix": null, "display": "Cassius Blackwood"}'::json,
-  'outlawhawk@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000762", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "862 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10762", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'outlawhawk'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'goliathshield',
-  crypt('goliathshield', gen_salt('bf')),
-  '{"prefix": null, "first": "Rowan", "middle": null, "last": "Blackwood", "suffix": null, "display": "Rowan Blackwood"}'::json,
-  'goliathshield@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000763", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "863 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10763", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goliathshield'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'quantumoracle',
-  crypt('quantumoracle', gen_salt('bf')),
-  '{"prefix": null, "first": "Ethan", "middle": null, "last": "Chambers", "suffix": null, "display": "Ethan Chambers"}'::json,
-  'quantumoracle@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000764", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "864 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10764", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'quantumoracle'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'hyperstomper',
-  crypt('hyperstomper', gen_salt('bf')),
-  '{"prefix": null, "first": "Mia", "middle": null, "last": "Chambers", "suffix": null, "display": "Mia Chambers"}'::json,
-  'hyperstomper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000765", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "865 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10765", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'hyperstomper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'dukestrike',
-  crypt('dukestrike', gen_salt('bf')),
-  '{"prefix": null, "first": "Noah", "middle": null, "last": "Chambers", "suffix": null, "display": "Noah Chambers"}'::json,
-  'dukestrike@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000766", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "866 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10766", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'dukestrike'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'doctorbane',
-  crypt('doctorbane', gen_salt('bf')),
-  '{"prefix": null, "first": "Ava", "middle": null, "last": "Chambers", "suffix": null, "display": "Ava Chambers"}'::json,
-  'doctorbane@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000767", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "867 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10767", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'doctorbane'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'tidalpulse',
-  crypt('tidalpulse', gen_salt('bf')),
-  '{"prefix": null, "first": "Liam", "middle": null, "last": "Chambers", "suffix": null, "display": "Liam Chambers"}'::json,
-  'tidalpulse@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000768", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "868 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10768", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'tidalpulse'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'scarleteagle',
-  crypt('scarleteagle', gen_salt('bf')),
-  '{"prefix": null, "first": "Sophia", "middle": null, "last": "Chambers", "suffix": null, "display": "Sophia Chambers"}'::json,
-  'scarleteagle@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000769", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "869 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10769", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'scarleteagle'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'generalghost',
-  crypt('generalghost', gen_salt('bf')),
-  '{"prefix": null, "first": "Owen", "middle": null, "last": "Chambers", "suffix": null, "display": "Owen Chambers"}'::json,
-  'generalghost@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000770", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "870 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10770", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'generalghost'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'outlawbrain',
-  crypt('outlawbrain', gen_salt('bf')),
-  '{"prefix": null, "first": "Isla", "middle": null, "last": "Chambers", "suffix": null, "display": "Isla Chambers"}'::json,
-  'outlawbrain@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000771", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "871 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10771", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'outlawbrain'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'kingpanther',
-  crypt('kingpanther', gen_salt('bf')),
-  '{"prefix": null, "first": "Caleb", "middle": null, "last": "Chambers", "suffix": null, "display": "Caleb Chambers"}'::json,
-  'kingpanther@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000772", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "872 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10772", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'kingpanther'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'cannoneagle',
-  crypt('cannoneagle', gen_salt('bf')),
-  '{"prefix": null, "first": "Nora", "middle": null, "last": "Chambers", "suffix": null, "display": "Nora Chambers"}'::json,
-  'cannoneagle@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000773", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "873 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10773", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cannoneagle'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'frostkeeper',
-  crypt('frostkeeper', gen_salt('bf')),
-  '{"prefix": null, "first": "Julian", "middle": null, "last": "Chambers", "suffix": null, "display": "Julian Chambers"}'::json,
-  'frostkeeper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000774", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "874 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10774", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'frostkeeper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'bansheegolem',
-  crypt('bansheegolem', gen_salt('bf')),
-  '{"prefix": null, "first": "Elena", "middle": null, "last": "Chambers", "suffix": null, "display": "Elena Chambers"}'::json,
-  'bansheegolem@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000775", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "875 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10775", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'bansheegolem'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'silverguardian',
-  crypt('silverguardian', gen_salt('bf')),
-  '{"prefix": null, "first": "Miles", "middle": null, "last": "Chambers", "suffix": null, "display": "Miles Chambers"}'::json,
-  'silverguardian@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000776", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "876 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10776", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'silverguardian'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'roninhand',
-  crypt('roninhand', gen_salt('bf')),
-  '{"prefix": null, "first": "Clara", "middle": null, "last": "Chambers", "suffix": null, "display": "Clara Chambers"}'::json,
-  'roninhand@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000777", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "877 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10777", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'roninhand'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'cyberrage',
-  crypt('cyberrage', gen_salt('bf')),
-  '{"prefix": null, "first": "Felix", "middle": null, "last": "Chambers", "suffix": null, "display": "Felix Chambers"}'::json,
-  'cyberrage@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000778", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "878 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10778", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cyberrage'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'kingblast',
-  crypt('kingblast', gen_salt('bf')),
-  '{"prefix": null, "first": "Hazel", "middle": null, "last": "Chambers", "suffix": null, "display": "Hazel Chambers"}'::json,
-  'kingblast@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000779", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "879 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10779", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'kingblast'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'wraithhydra',
-  crypt('wraithhydra', gen_salt('bf')),
-  '{"prefix": null, "first": "Adrian", "middle": null, "last": "Chambers", "suffix": null, "display": "Adrian Chambers"}'::json,
-  'wraithhydra@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000780", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "880 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10780", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'wraithhydra'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'solarsigil',
-  crypt('solarsigil', gen_salt('bf')),
-  '{"prefix": null, "first": "Iris", "middle": null, "last": "Chambers", "suffix": null, "display": "Iris Chambers"}'::json,
-  'solarsigil@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000781", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "881 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10781", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'solarsigil'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'crimsonstrike',
-  crypt('crimsonstrike', gen_salt('bf')),
-  '{"prefix": null, "first": "Simon", "middle": null, "last": "Chambers", "suffix": null, "display": "Simon Chambers"}'::json,
-  'crimsonstrike@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000782", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "882 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10782", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'crimsonstrike'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'wraithguardian',
-  crypt('wraithguardian', gen_salt('bf')),
-  '{"prefix": null, "first": "Ruby", "middle": null, "last": "Chambers", "suffix": null, "display": "Ruby Chambers"}'::json,
-  'wraithguardian@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000783", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "883 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10783", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'wraithguardian'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'doctorcrusher',
-  crypt('doctorcrusher', gen_salt('bf')),
-  '{"prefix": null, "first": "Victor", "middle": null, "last": "Chambers", "suffix": null, "display": "Victor Chambers"}'::json,
-  'doctorcrusher@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000784", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "884 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10784", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'doctorcrusher'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'emeraldseer',
-  crypt('emeraldseer', gen_salt('bf')),
-  '{"prefix": null, "first": "Paige", "middle": null, "last": "Chambers", "suffix": null, "display": "Paige Chambers"}'::json,
-  'emeraldseer@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000785", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "885 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10785", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'emeraldseer'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'shadowarrow',
-  crypt('shadowarrow', gen_salt('bf')),
-  '{"prefix": null, "first": "Grant", "middle": null, "last": "Chambers", "suffix": null, "display": "Grant Chambers"}'::json,
-  'shadowarrow@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000786", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "886 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10786", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'shadowarrow'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'neonhavoc',
-  crypt('neonhavoc', gen_salt('bf')),
-  '{"prefix": null, "first": "Tessa", "middle": null, "last": "Chambers", "suffix": null, "display": "Tessa Chambers"}'::json,
-  'neonhavoc@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000787", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "887 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10787", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'neonhavoc'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'mystichammer',
-  crypt('mystichammer', gen_salt('bf')),
-  '{"prefix": null, "first": "Dean", "middle": null, "last": "Chambers", "suffix": null, "display": "Dean Chambers"}'::json,
-  'mystichammer@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000788", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "888 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10788", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'mystichammer'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'nightphoenix',
-  crypt('nightphoenix', gen_salt('bf')),
-  '{"prefix": null, "first": "Vera", "middle": null, "last": "Chambers", "suffix": null, "display": "Vera Chambers"}'::json,
-  'nightphoenix@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000789", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "889 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10789", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'nightphoenix'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'primalecho',
-  crypt('primalecho', gen_salt('bf')),
-  '{"prefix": null, "first": "Colin", "middle": null, "last": "Chambers", "suffix": null, "display": "Colin Chambers"}'::json,
-  'primalecho@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000790", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "890 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10790", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'primalecho'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'outlawslayer',
-  crypt('outlawslayer', gen_salt('bf')),
-  '{"prefix": null, "first": "Jade", "middle": null, "last": "Chambers", "suffix": null, "display": "Jade Chambers"}'::json,
-  'outlawslayer@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000791", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "891 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10791", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'outlawslayer'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'violetviper',
-  crypt('violetviper', gen_salt('bf')),
-  '{"prefix": null, "first": "Marcus", "middle": null, "last": "Chambers", "suffix": null, "display": "Marcus Chambers"}'::json,
-  'violetviper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000792", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "892 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10792", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'violetviper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'emberdoom',
-  crypt('emberdoom', gen_salt('bf')),
-  '{"prefix": null, "first": "Leah", "middle": null, "last": "Chambers", "suffix": null, "display": "Leah Chambers"}'::json,
-  'emberdoom@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000793", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "893 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10793", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'emberdoom'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'scarletwing',
-  crypt('scarletwing', gen_salt('bf')),
-  '{"prefix": null, "first": "Nolan", "middle": null, "last": "Chambers", "suffix": null, "display": "Nolan Chambers"}'::json,
-  'scarletwing@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000794", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "894 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10794", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'scarletwing'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'sergeantleviathan',
-  crypt('sergeantleviathan', gen_salt('bf')),
-  '{"prefix": null, "first": "Gwen", "middle": null, "last": "Chambers", "suffix": null, "display": "Gwen Chambers"}'::json,
-  'sergeantleviathan@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000795", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "895 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10795", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'sergeantleviathan'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'renegaderender',
-  crypt('renegaderender', gen_salt('bf')),
-  '{"prefix": null, "first": "Tristan", "middle": null, "last": "Chambers", "suffix": null, "display": "Tristan Chambers"}'::json,
-  'renegaderender@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000796", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "896 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10796", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'renegaderender'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'bulletstorm',
-  crypt('bulletstorm', gen_salt('bf')),
-  '{"prefix": null, "first": "Selene", "middle": null, "last": "Chambers", "suffix": null, "display": "Selene Chambers"}'::json,
-  'bulletstorm@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000797", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "897 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10797", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'bulletstorm'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ultrapulse',
-  crypt('ultrapulse', gen_salt('bf')),
-  '{"prefix": null, "first": "Derek", "middle": null, "last": "Chambers", "suffix": null, "display": "Derek Chambers"}'::json,
-  'ultrapulse@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000798", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "898 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10798", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ultrapulse'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'goblinstomper',
-  crypt('goblinstomper', gen_salt('bf')),
-  '{"prefix": null, "first": "Alina", "middle": null, "last": "Chambers", "suffix": null, "display": "Alina Chambers"}'::json,
-  'goblinstomper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000799", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "899 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10799", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goblinstomper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'reaperfist',
-  crypt('reaperfist', gen_salt('bf')),
-  '{"prefix": null, "first": "Rafael", "middle": null, "last": "Chambers", "suffix": null, "display": "Rafael Chambers"}'::json,
-  'reaperfist@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000800", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "900 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10800", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'reaperfist'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'turbostorm',
-  crypt('turbostorm', gen_salt('bf')),
-  '{"prefix": null, "first": "Bianca", "middle": null, "last": "Chambers", "suffix": null, "display": "Bianca Chambers"}'::json,
-  'turbostorm@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000801", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "901 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10801", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'turbostorm'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'stormsoul',
-  crypt('stormsoul', gen_salt('bf')),
-  '{"prefix": null, "first": "Harper", "middle": null, "last": "Chambers", "suffix": null, "display": "Harper Chambers"}'::json,
-  'stormsoul@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000802", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "902 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10802", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stormsoul'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'frostwolf',
-  crypt('frostwolf', gen_salt('bf')),
-  '{"prefix": null, "first": "Jonah", "middle": null, "last": "Chambers", "suffix": null, "display": "Jonah Chambers"}'::json,
-  'frostwolf@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000803", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "903 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10803", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'frostwolf'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'deltaknight',
-  crypt('deltaknight', gen_salt('bf')),
-  '{"prefix": null, "first": "Mira", "middle": null, "last": "Chambers", "suffix": null, "display": "Mira Chambers"}'::json,
-  'deltaknight@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000804", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "904 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10804", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'deltaknight'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'mysticavenger',
-  crypt('mysticavenger', gen_salt('bf')),
-  '{"prefix": null, "first": "Cedric", "middle": null, "last": "Chambers", "suffix": null, "display": "Cedric Chambers"}'::json,
-  'mysticavenger@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000805", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "905 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10805", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'mysticavenger'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'blizzardsmasher',
-  crypt('blizzardsmasher', gen_salt('bf')),
-  '{"prefix": null, "first": "Lena", "middle": null, "last": "Chambers", "suffix": null, "display": "Lena Chambers"}'::json,
-  'blizzardsmasher@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000806", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "906 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10806", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'blizzardsmasher'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'outlawhavoc',
-  crypt('outlawhavoc', gen_salt('bf')),
-  '{"prefix": null, "first": "Andre", "middle": null, "last": "Chambers", "suffix": null, "display": "Andre Chambers"}'::json,
-  'outlawhavoc@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000807", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "907 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10807", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'outlawhavoc'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'lunartempest',
-  crypt('lunartempest', gen_salt('bf')),
-  '{"prefix": null, "first": "Sasha", "middle": null, "last": "Chambers", "suffix": null, "display": "Sasha Chambers"}'::json,
-  'lunartempest@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000808", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "908 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10808", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'lunartempest'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'phantomcurse',
-  crypt('phantomcurse', gen_salt('bf')),
-  '{"prefix": null, "first": "Malik", "middle": null, "last": "Chambers", "suffix": null, "display": "Malik Chambers"}'::json,
-  'phantomcurse@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000809", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "909 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10809", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'phantomcurse'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'sergeantsmasher',
-  crypt('sergeantsmasher', gen_salt('bf')),
-  '{"prefix": null, "first": "Priya", "middle": null, "last": "Chambers", "suffix": null, "display": "Priya Chambers"}'::json,
-  'sergeantsmasher@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000810", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "910 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10810", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'sergeantsmasher'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'majorfang',
-  crypt('majorfang', gen_salt('bf')),
-  '{"prefix": null, "first": "Kenji", "middle": null, "last": "Chambers", "suffix": null, "display": "Kenji Chambers"}'::json,
-  'majorfang@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000811", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "911 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10811", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'majorfang'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'agentfreeze',
-  crypt('agentfreeze', gen_salt('bf')),
-  '{"prefix": null, "first": "Yara", "middle": null, "last": "Chambers", "suffix": null, "display": "Yara Chambers"}'::json,
-  'agentfreeze@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000812", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "912 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10812", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'agentfreeze'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ironrage',
-  crypt('ironrage', gen_salt('bf')),
-  '{"prefix": null, "first": "Rosa", "middle": null, "last": "Chambers", "suffix": null, "display": "Rosa Chambers"}'::json,
-  'ironrage@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000813", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "913 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10813", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ironrage'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ionichavoc',
-  crypt('ionichavoc', gen_salt('bf')),
-  '{"prefix": null, "first": "Hugo", "middle": null, "last": "Chambers", "suffix": null, "display": "Hugo Chambers"}'::json,
-  'ionichavoc@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000814", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "914 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10814", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ionichavoc'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'gargoylespark',
-  crypt('gargoylespark', gen_salt('bf')),
-  '{"prefix": null, "first": "Ingrid", "middle": null, "last": "Chambers", "suffix": null, "display": "Ingrid Chambers"}'::json,
-  'gargoylespark@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000815", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "915 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10815", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'gargoylespark'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'titanburn',
-  crypt('titanburn', gen_salt('bf')),
-  '{"prefix": null, "first": "Pascal", "middle": null, "last": "Chambers", "suffix": null, "display": "Pascal Chambers"}'::json,
-  'titanburn@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000816", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "916 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10816", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'titanburn'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'stormcurse',
-  crypt('stormcurse', gen_salt('bf')),
-  '{"prefix": null, "first": "Freya", "middle": null, "last": "Chambers", "suffix": null, "display": "Freya Chambers"}'::json,
-  'stormcurse@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000817", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "917 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10817", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stormcurse'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'emeraldmask',
-  crypt('emeraldmask', gen_salt('bf')),
-  '{"prefix": null, "first": "Dante", "middle": null, "last": "Chambers", "suffix": null, "display": "Dante Chambers"}'::json,
-  'emeraldmask@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000818", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "918 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10818", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'emeraldmask'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ladyquake',
-  crypt('ladyquake', gen_salt('bf')),
-  '{"prefix": null, "first": "Keiko", "middle": null, "last": "Chambers", "suffix": null, "display": "Keiko Chambers"}'::json,
-  'ladyquake@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000819", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "919 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10819", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ladyquake'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'cannonrune',
-  crypt('cannonrune', gen_salt('bf')),
-  '{"prefix": null, "first": "Amir", "middle": null, "last": "Chambers", "suffix": null, "display": "Amir Chambers"}'::json,
-  'cannonrune@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000820", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "920 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10820", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cannonrune'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'marshalchampion',
-  crypt('marshalchampion', gen_salt('bf')),
-  '{"prefix": null, "first": "Lucia", "middle": null, "last": "Chambers", "suffix": null, "display": "Lucia Chambers"}'::json,
-  'marshalchampion@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000821", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "921 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10821", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'marshalchampion'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'crimsonghost',
-  crypt('crimsonghost', gen_salt('bf')),
-  '{"prefix": null, "first": "Tobias", "middle": null, "last": "Chambers", "suffix": null, "display": "Tobias Chambers"}'::json,
-  'crimsonghost@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000822", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "922 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10822", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'crimsonghost'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'marshalknight',
-  crypt('marshalknight', gen_salt('bf')),
-  '{"prefix": null, "first": "Anika", "middle": null, "last": "Chambers", "suffix": null, "display": "Anika Chambers"}'::json,
-  'marshalknight@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000823", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "923 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10823", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'marshalknight'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'razorphoenix',
-  crypt('razorphoenix', gen_salt('bf')),
-  '{"prefix": null, "first": "Reid", "middle": null, "last": "Chambers", "suffix": null, "display": "Reid Chambers"}'::json,
-  'razorphoenix@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000824", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "924 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10824", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'razorphoenix'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'shadowleviathan',
-  crypt('shadowleviathan', gen_salt('bf')),
-  '{"prefix": null, "first": "Carmen", "middle": null, "last": "Chambers", "suffix": null, "display": "Carmen Chambers"}'::json,
-  'shadowleviathan@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000825", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "925 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10825", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'shadowleviathan'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'steelslayer',
-  crypt('steelslayer', gen_salt('bf')),
-  '{"prefix": null, "first": "Elliot", "middle": null, "last": "Chambers", "suffix": null, "display": "Elliot Chambers"}'::json,
-  'steelslayer@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000826", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "926 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10826", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'steelslayer'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'solarspirit',
-  crypt('solarspirit', gen_salt('bf')),
-  '{"prefix": null, "first": "Naomi", "middle": null, "last": "Chambers", "suffix": null, "display": "Naomi Chambers"}'::json,
-  'solarspirit@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000827", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "927 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10827", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'solarspirit'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'colossusleviathan',
-  crypt('colossusleviathan', gen_salt('bf')),
-  '{"prefix": null, "first": "Sterling", "middle": null, "last": "Chambers", "suffix": null, "display": "Sterling Chambers"}'::json,
-  'colossusleviathan@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000828", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "928 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10828", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'colossusleviathan'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'scarletruin',
-  crypt('scarletruin', gen_salt('bf')),
-  '{"prefix": null, "first": "Zara", "middle": null, "last": "Chambers", "suffix": null, "display": "Zara Chambers"}'::json,
-  'scarletruin@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000829", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "929 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10829", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'scarletruin'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'chaoseagle',
-  crypt('chaoseagle', gen_salt('bf')),
-  '{"prefix": null, "first": "Gideon", "middle": null, "last": "Chambers", "suffix": null, "display": "Gideon Chambers"}'::json,
-  'chaoseagle@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000830", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "930 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10830", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'chaoseagle'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'generalpanther',
-  crypt('generalpanther', gen_salt('bf')),
-  '{"prefix": null, "first": "Helena", "middle": null, "last": "Chambers", "suffix": null, "display": "Helena Chambers"}'::json,
-  'generalpanther@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000831", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "931 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10831", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'generalpanther'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'stellarbane',
-  crypt('stellarbane', gen_salt('bf')),
-  '{"prefix": null, "first": "Roman", "middle": null, "last": "Chambers", "suffix": null, "display": "Roman Chambers"}'::json,
-  'stellarbane@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000832", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "932 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10832", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stellarbane'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'neonraven',
-  crypt('neonraven', gen_salt('bf')),
-  '{"prefix": null, "first": "Vivian", "middle": null, "last": "Chambers", "suffix": null, "display": "Vivian Chambers"}'::json,
-  'neonraven@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000833", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "933 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10833", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'neonraven'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'generalmask',
-  crypt('generalmask', gen_salt('bf')),
-  '{"prefix": null, "first": "Quinn", "middle": null, "last": "Chambers", "suffix": null, "display": "Quinn Chambers"}'::json,
-  'generalmask@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000834", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "934 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10834", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'generalmask'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'hunterwhisper',
-  crypt('hunterwhisper', gen_salt('bf')),
-  '{"prefix": null, "first": "Marcel", "middle": null, "last": "Chambers", "suffix": null, "display": "Marcel Chambers"}'::json,
-  'hunterwhisper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000835", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "935 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10835", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'hunterwhisper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'stalkerfury',
-  crypt('stalkerfury', gen_salt('bf')),
-  '{"prefix": null, "first": "Talia", "middle": null, "last": "Chambers", "suffix": null, "display": "Talia Chambers"}'::json,
-  'stalkerfury@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000836", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "936 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10836", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stalkerfury'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'violetbrain',
-  crypt('violetbrain', gen_salt('bf')),
-  '{"prefix": null, "first": "Desmond", "middle": null, "last": "Chambers", "suffix": null, "display": "Desmond Chambers"}'::json,
-  'violetbrain@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000837", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "937 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10837", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'violetbrain'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'goldenwhisper',
-  crypt('goldenwhisper', gen_salt('bf')),
-  '{"prefix": null, "first": "Ariana", "middle": null, "last": "Chambers", "suffix": null, "display": "Ariana Chambers"}'::json,
-  'goldenwhisper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000838", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "938 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10838", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goldenwhisper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'sentinelbrain',
-  crypt('sentinelbrain', gen_salt('bf')),
-  '{"prefix": null, "first": "Brock", "middle": null, "last": "Chambers", "suffix": null, "display": "Brock Chambers"}'::json,
-  'sentinelbrain@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000839", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "939 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10839", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'sentinelbrain'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'baronstrike',
-  crypt('baronstrike', gen_salt('bf')),
-  '{"prefix": null, "first": "Celeste", "middle": null, "last": "Chambers", "suffix": null, "display": "Celeste Chambers"}'::json,
-  'baronstrike@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000840", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "940 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10840", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'baronstrike'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'blizzardbane',
-  crypt('blizzardbane', gen_salt('bf')),
-  '{"prefix": null, "first": "Warren", "middle": null, "last": "Chambers", "suffix": null, "display": "Warren Chambers"}'::json,
-  'blizzardbane@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000841", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "941 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10841", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'blizzardbane'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'goblinrage',
-  crypt('goblinrage', gen_salt('bf')),
-  '{"prefix": null, "first": "Delilah", "middle": null, "last": "Chambers", "suffix": null, "display": "Delilah Chambers"}'::json,
-  'goblinrage@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000842", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "942 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10842", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goblinrage'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'bulletraven',
-  crypt('bulletraven', gen_salt('bf')),
-  '{"prefix": null, "first": "Spencer", "middle": null, "last": "Chambers", "suffix": null, "display": "Spencer Chambers"}'::json,
-  'bulletraven@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000843", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "943 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10843", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'bulletraven'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'deltacobra',
-  crypt('deltacobra', gen_salt('bf')),
-  '{"prefix": null, "first": "Monroe", "middle": null, "last": "Chambers", "suffix": null, "display": "Monroe Chambers"}'::json,
-  'deltacobra@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000844", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "944 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10844", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'deltacobra'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'baronhammer',
-  crypt('baronhammer', gen_salt('bf')),
-  '{"prefix": null, "first": "Beckett", "middle": null, "last": "Chambers", "suffix": null, "display": "Beckett Chambers"}'::json,
-  'baronhammer@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000845", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "945 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10845", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'baronhammer'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'cannoncrusher',
-  crypt('cannoncrusher', gen_salt('bf')),
-  '{"prefix": null, "first": "Soraya", "middle": null, "last": "Chambers", "suffix": null, "display": "Soraya Chambers"}'::json,
-  'cannoncrusher@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000846", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "946 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10846", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cannoncrusher'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'baroncurse',
-  crypt('baroncurse', gen_salt('bf')),
-  '{"prefix": null, "first": "Landon", "middle": null, "last": "Chambers", "suffix": null, "display": "Landon Chambers"}'::json,
-  'baroncurse@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000847", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "947 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10847", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'baroncurse'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'spectralruin',
-  crypt('spectralruin', gen_salt('bf')),
-  '{"prefix": null, "first": "Petra", "middle": null, "last": "Chambers", "suffix": null, "display": "Petra Chambers"}'::json,
-  'spectralruin@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000848", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "948 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10848", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'spectralruin'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'quantumripper',
-  crypt('quantumripper', gen_salt('bf')),
-  '{"prefix": null, "first": "Cassius", "middle": null, "last": "Chambers", "suffix": null, "display": "Cassius Chambers"}'::json,
-  'quantumripper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000849", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "949 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10849", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'quantumripper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'primaleagle',
-  crypt('primaleagle', gen_salt('bf')),
-  '{"prefix": null, "first": "Rowan", "middle": null, "last": "Chambers", "suffix": null, "display": "Rowan Chambers"}'::json,
-  'primaleagle@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000850", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "950 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10850", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'primaleagle'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'wardenbolt',
-  crypt('wardenbolt', gen_salt('bf')),
-  '{"prefix": null, "first": "Ethan", "middle": null, "last": "Donovan", "suffix": null, "display": "Ethan Donovan"}'::json,
-  'wardenbolt@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000851", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "951 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10851", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'wardenbolt'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'reaperpanther',
-  crypt('reaperpanther', gen_salt('bf')),
-  '{"prefix": null, "first": "Mia", "middle": null, "last": "Donovan", "suffix": null, "display": "Mia Donovan"}'::json,
-  'reaperpanther@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000852", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "952 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10852", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'reaperpanther'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'roguedoom',
-  crypt('roguedoom', gen_salt('bf')),
-  '{"prefix": null, "first": "Noah", "middle": null, "last": "Donovan", "suffix": null, "display": "Noah Donovan"}'::json,
-  'roguedoom@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000853", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "953 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10853", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'roguedoom'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'nighteye',
-  crypt('nighteye', gen_salt('bf')),
-  '{"prefix": null, "first": "Ava", "middle": null, "last": "Donovan", "suffix": null, "display": "Ava Donovan"}'::json,
-  'nighteye@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000854", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "954 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10854", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'nighteye'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'reapercurse',
-  crypt('reapercurse', gen_salt('bf')),
-  '{"prefix": null, "first": "Liam", "middle": null, "last": "Donovan", "suffix": null, "display": "Liam Donovan"}'::json,
-  'reapercurse@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000855", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "955 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10855", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'reapercurse'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'sergeantavenger',
-  crypt('sergeantavenger', gen_salt('bf')),
-  '{"prefix": null, "first": "Sophia", "middle": null, "last": "Donovan", "suffix": null, "display": "Sophia Donovan"}'::json,
-  'sergeantavenger@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000856", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "956 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10856", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'sergeantavenger'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ninjaknight',
-  crypt('ninjaknight', gen_salt('bf')),
-  '{"prefix": null, "first": "Owen", "middle": null, "last": "Donovan", "suffix": null, "display": "Owen Donovan"}'::json,
-  'ninjaknight@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000857", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "957 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10857", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ninjaknight'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'feralblade',
-  crypt('feralblade', gen_salt('bf')),
-  '{"prefix": null, "first": "Isla", "middle": null, "last": "Donovan", "suffix": null, "display": "Isla Donovan"}'::json,
-  'feralblade@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000858", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "958 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10858", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'feralblade'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'rangercobra',
-  crypt('rangercobra', gen_salt('bf')),
-  '{"prefix": null, "first": "Caleb", "middle": null, "last": "Donovan", "suffix": null, "display": "Caleb Donovan"}'::json,
-  'rangercobra@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000859", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "959 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10859", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'rangercobra'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'violetspell',
-  crypt('violetspell', gen_salt('bf')),
-  '{"prefix": null, "first": "Nora", "middle": null, "last": "Donovan", "suffix": null, "display": "Nora Donovan"}'::json,
-  'violetspell@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000860", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "960 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10860", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'violetspell'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'baronchampion',
-  crypt('baronchampion', gen_salt('bf')),
-  '{"prefix": null, "first": "Julian", "middle": null, "last": "Donovan", "suffix": null, "display": "Julian Donovan"}'::json,
-  'baronchampion@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000861", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "961 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10861", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'baronchampion'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'violetseer',
-  crypt('violetseer', gen_salt('bf')),
-  '{"prefix": null, "first": "Elena", "middle": null, "last": "Donovan", "suffix": null, "display": "Elena Donovan"}'::json,
-  'violetseer@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000862", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "962 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10862", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'violetseer'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'bulletspell',
-  crypt('bulletspell', gen_salt('bf')),
-  '{"prefix": null, "first": "Clara", "middle": null, "last": "Donovan", "suffix": null, "display": "Clara Donovan"}'::json,
-  'bulletspell@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000863", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "963 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10863", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'bulletspell'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'lunarclaw',
-  crypt('lunarclaw', gen_salt('bf')),
-  '{"prefix": null, "first": "Felix", "middle": null, "last": "Donovan", "suffix": null, "display": "Felix Donovan"}'::json,
-  'lunarclaw@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000864", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "964 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10864", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'lunarclaw'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'venombone',
-  crypt('venombone', gen_salt('bf')),
-  '{"prefix": null, "first": "Hazel", "middle": null, "last": "Donovan", "suffix": null, "display": "Hazel Donovan"}'::json,
-  'venombone@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000865", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "965 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10865", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'venombone'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ultraquake',
-  crypt('ultraquake', gen_salt('bf')),
-  '{"prefix": null, "first": "Adrian", "middle": null, "last": "Donovan", "suffix": null, "display": "Adrian Donovan"}'::json,
-  'ultraquake@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000866", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "966 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10866", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ultraquake'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'feralcrusher',
-  crypt('feralcrusher', gen_salt('bf')),
-  '{"prefix": null, "first": "Iris", "middle": null, "last": "Donovan", "suffix": null, "display": "Iris Donovan"}'::json,
-  'feralcrusher@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000867", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "967 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10867", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'feralcrusher'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'hyperfang',
-  crypt('hyperfang', gen_salt('bf')),
-  '{"prefix": null, "first": "Simon", "middle": null, "last": "Donovan", "suffix": null, "display": "Simon Donovan"}'::json,
-  'hyperfang@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000868", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "968 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10868", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'hyperfang'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'lunareagle',
-  crypt('lunareagle', gen_salt('bf')),
-  '{"prefix": null, "first": "Ruby", "middle": null, "last": "Donovan", "suffix": null, "display": "Ruby Donovan"}'::json,
-  'lunareagle@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000869", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "969 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10869", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'lunareagle'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ironsigil',
-  crypt('ironsigil', gen_salt('bf')),
-  '{"prefix": null, "first": "Victor", "middle": null, "last": "Donovan", "suffix": null, "display": "Victor Donovan"}'::json,
-  'ironsigil@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000870", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "970 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10870", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ironsigil'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'silverruin',
-  crypt('silverruin', gen_salt('bf')),
-  '{"prefix": null, "first": "Paige", "middle": null, "last": "Donovan", "suffix": null, "display": "Paige Donovan"}'::json,
-  'silverruin@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000871", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "971 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10871", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'silverruin'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ladymask',
-  crypt('ladymask', gen_salt('bf')),
-  '{"prefix": null, "first": "Grant", "middle": null, "last": "Donovan", "suffix": null, "display": "Grant Donovan"}'::json,
-  'ladymask@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000872", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "972 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10872", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ladymask'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'thunderkeeper',
-  crypt('thunderkeeper', gen_salt('bf')),
-  '{"prefix": null, "first": "Tessa", "middle": null, "last": "Donovan", "suffix": null, "display": "Tessa Donovan"}'::json,
-  'thunderkeeper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000873", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "973 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10873", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'thunderkeeper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'dukeecho',
-  crypt('dukeecho', gen_salt('bf')),
-  '{"prefix": null, "first": "Dean", "middle": null, "last": "Donovan", "suffix": null, "display": "Dean Donovan"}'::json,
-  'dukeecho@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000874", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "974 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10874", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'dukeecho'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ironblast',
-  crypt('ironblast', gen_salt('bf')),
-  '{"prefix": null, "first": "Vera", "middle": null, "last": "Donovan", "suffix": null, "display": "Vera Donovan"}'::json,
-  'ironblast@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000875", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "975 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10875", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ironblast'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'cyberruin',
-  crypt('cyberruin', gen_salt('bf')),
-  '{"prefix": null, "first": "Colin", "middle": null, "last": "Donovan", "suffix": null, "display": "Colin Donovan"}'::json,
-  'cyberruin@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000876", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "976 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10876", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cyberruin'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'bansheeghost',
-  crypt('bansheeghost', gen_salt('bf')),
-  '{"prefix": null, "first": "Jade", "middle": null, "last": "Donovan", "suffix": null, "display": "Jade Donovan"}'::json,
-  'bansheeghost@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000877", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "977 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10877", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'bansheeghost'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ancientbrain',
-  crypt('ancientbrain', gen_salt('bf')),
-  '{"prefix": null, "first": "Marcus", "middle": null, "last": "Donovan", "suffix": null, "display": "Marcus Donovan"}'::json,
-  'ancientbrain@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000878", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "978 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10878", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ancientbrain'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'goldenbolt',
-  crypt('goldenbolt', gen_salt('bf')),
-  '{"prefix": null, "first": "Leah", "middle": null, "last": "Donovan", "suffix": null, "display": "Leah Donovan"}'::json,
-  'goldenbolt@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000879", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "979 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10879", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goldenbolt'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'reaperclaw',
-  crypt('reaperclaw', gen_salt('bf')),
-  '{"prefix": null, "first": "Nolan", "middle": null, "last": "Donovan", "suffix": null, "display": "Nolan Donovan"}'::json,
-  'reaperclaw@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000880", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "980 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10880", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'reaperclaw'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'cannonquake',
-  crypt('cannonquake', gen_salt('bf')),
-  '{"prefix": null, "first": "Gwen", "middle": null, "last": "Donovan", "suffix": null, "display": "Gwen Donovan"}'::json,
-  'cannonquake@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000881", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "981 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10881", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cannonquake'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'goblinkraken',
-  crypt('goblinkraken', gen_salt('bf')),
-  '{"prefix": null, "first": "Tristan", "middle": null, "last": "Donovan", "suffix": null, "display": "Tristan Donovan"}'::json,
-  'goblinkraken@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000882", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "982 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10882", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goblinkraken'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'alphawrath',
-  crypt('alphawrath', gen_salt('bf')),
-  '{"prefix": null, "first": "Selene", "middle": null, "last": "Donovan", "suffix": null, "display": "Selene Donovan"}'::json,
-  'alphawrath@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000883", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "983 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10883", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'alphawrath'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'baronspark',
-  crypt('baronspark', gen_salt('bf')),
-  '{"prefix": null, "first": "Derek", "middle": null, "last": "Donovan", "suffix": null, "display": "Derek Donovan"}'::json,
-  'baronspark@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000884", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "984 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10884", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'baronspark'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'solartempest',
-  crypt('solartempest', gen_salt('bf')),
-  '{"prefix": null, "first": "Alina", "middle": null, "last": "Donovan", "suffix": null, "display": "Alina Donovan"}'::json,
-  'solartempest@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000885", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "985 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10885", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'solartempest'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'wardenspark',
-  crypt('wardenspark', gen_salt('bf')),
-  '{"prefix": null, "first": "Rafael", "middle": null, "last": "Donovan", "suffix": null, "display": "Rafael Donovan"}'::json,
-  'wardenspark@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000886", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "986 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10886", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'wardenspark'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'renegadecobra',
-  crypt('renegadecobra', gen_salt('bf')),
-  '{"prefix": null, "first": "Bianca", "middle": null, "last": "Donovan", "suffix": null, "display": "Bianca Donovan"}'::json,
-  'renegadecobra@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000887", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "987 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10887", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'renegadecobra'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'toxicwolf',
-  crypt('toxicwolf', gen_salt('bf')),
-  '{"prefix": null, "first": "Harper", "middle": null, "last": "Donovan", "suffix": null, "display": "Harper Donovan"}'::json,
-  'toxicwolf@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000888", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "988 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10888", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'toxicwolf'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'commanderhydra',
-  crypt('commanderhydra', gen_salt('bf')),
-  '{"prefix": null, "first": "Jonah", "middle": null, "last": "Donovan", "suffix": null, "display": "Jonah Donovan"}'::json,
-  'commanderhydra@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000889", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "989 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10889", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'commanderhydra'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'eldritchdragon',
-  crypt('eldritchdragon', gen_salt('bf')),
-  '{"prefix": null, "first": "Mira", "middle": null, "last": "Donovan", "suffix": null, "display": "Mira Donovan"}'::json,
-  'eldritchdragon@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000890", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "990 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10890", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'eldritchdragon'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'frostruin',
-  crypt('frostruin', gen_salt('bf')),
-  '{"prefix": null, "first": "Cedric", "middle": null, "last": "Donovan", "suffix": null, "display": "Cedric Donovan"}'::json,
-  'frostruin@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000891", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "991 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10891", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'frostruin'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ladychampion',
-  crypt('ladychampion', gen_salt('bf')),
-  '{"prefix": null, "first": "Lena", "middle": null, "last": "Donovan", "suffix": null, "display": "Lena Donovan"}'::json,
-  'ladychampion@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000892", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "992 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10892", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ladychampion'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'paladingriffin',
-  crypt('paladingriffin', gen_salt('bf')),
-  '{"prefix": null, "first": "Andre", "middle": null, "last": "Donovan", "suffix": null, "display": "Andre Donovan"}'::json,
-  'paladingriffin@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000893", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "993 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10893", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'paladingriffin'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'dukegriffin',
-  crypt('dukegriffin', gen_salt('bf')),
-  '{"prefix": null, "first": "Sasha", "middle": null, "last": "Donovan", "suffix": null, "display": "Sasha Donovan"}'::json,
-  'dukegriffin@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000894", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "994 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10894", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'dukegriffin'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'sergeantoracle',
-  crypt('sergeantoracle', gen_salt('bf')),
-  '{"prefix": null, "first": "Malik", "middle": null, "last": "Donovan", "suffix": null, "display": "Malik Donovan"}'::json,
-  'sergeantoracle@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000895", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "995 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10895", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'sergeantoracle'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'venomfreeze',
-  crypt('venomfreeze', gen_salt('bf')),
-  '{"prefix": null, "first": "Priya", "middle": null, "last": "Donovan", "suffix": null, "display": "Priya Donovan"}'::json,
-  'venomfreeze@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000896", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "996 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10896", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'venomfreeze'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'thunderquake',
-  crypt('thunderquake', gen_salt('bf')),
-  '{"prefix": null, "first": "Kenji", "middle": null, "last": "Donovan", "suffix": null, "display": "Kenji Donovan"}'::json,
-  'thunderquake@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000897", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "997 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10897", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'thunderquake'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'atomicprophet',
-  crypt('atomicprophet', gen_salt('bf')),
-  '{"prefix": null, "first": "Yara", "middle": null, "last": "Donovan", "suffix": null, "display": "Yara Donovan"}'::json,
-  'atomicprophet@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000898", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "998 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10898", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'atomicprophet'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'alphabrain',
-  crypt('alphabrain', gen_salt('bf')),
-  '{"prefix": null, "first": "Rosa", "middle": null, "last": "Donovan", "suffix": null, "display": "Rosa Donovan"}'::json,
-  'alphabrain@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000899", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "999 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10899", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'alphabrain'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'thundershock',
-  crypt('thundershock', gen_salt('bf')),
-  '{"prefix": null, "first": "Hugo", "middle": null, "last": "Donovan", "suffix": null, "display": "Hugo Donovan"}'::json,
-  'thundershock@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000900", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1000 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10900", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'thundershock'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'titanbolt',
-  crypt('titanbolt', gen_salt('bf')),
-  '{"prefix": null, "first": "Ingrid", "middle": null, "last": "Donovan", "suffix": null, "display": "Ingrid Donovan"}'::json,
-  'titanbolt@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000901", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1001 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10901", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'titanbolt'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ultrahowl',
-  crypt('ultrahowl', gen_salt('bf')),
-  '{"prefix": null, "first": "Pascal", "middle": null, "last": "Donovan", "suffix": null, "display": "Pascal Donovan"}'::json,
-  'ultrahowl@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000902", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "1002 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10902", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ultrahowl'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ultradefender',
-  crypt('ultradefender', gen_salt('bf')),
-  '{"prefix": null, "first": "Freya", "middle": null, "last": "Donovan", "suffix": null, "display": "Freya Donovan"}'::json,
-  'ultradefender@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000903", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "1003 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10903", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ultradefender'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'solarshield',
-  crypt('solarshield', gen_salt('bf')),
-  '{"prefix": null, "first": "Dante", "middle": null, "last": "Donovan", "suffix": null, "display": "Dante Donovan"}'::json,
-  'solarshield@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000904", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1004 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10904", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'solarshield'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'titangriffin',
-  crypt('titangriffin', gen_salt('bf')),
-  '{"prefix": null, "first": "Keiko", "middle": null, "last": "Donovan", "suffix": null, "display": "Keiko Donovan"}'::json,
-  'titangriffin@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000905", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "1005 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10905", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'titangriffin'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'onyxsoul',
-  crypt('onyxsoul', gen_salt('bf')),
-  '{"prefix": null, "first": "Amir", "middle": null, "last": "Donovan", "suffix": null, "display": "Amir Donovan"}'::json,
-  'onyxsoul@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000906", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "1006 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10906", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'onyxsoul'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'doomstorm',
-  crypt('doomstorm', gen_salt('bf')),
-  '{"prefix": null, "first": "Lucia", "middle": null, "last": "Donovan", "suffix": null, "display": "Lucia Donovan"}'::json,
-  'doomstorm@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000907", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "1007 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10907", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'doomstorm'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'valkyriebane',
-  crypt('valkyriebane', gen_salt('bf')),
-  '{"prefix": null, "first": "Tobias", "middle": null, "last": "Donovan", "suffix": null, "display": "Tobias Donovan"}'::json,
-  'valkyriebane@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000908", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "1008 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10908", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'valkyriebane'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'infernoknight',
-  crypt('infernoknight', gen_salt('bf')),
-  '{"prefix": null, "first": "Anika", "middle": null, "last": "Donovan", "suffix": null, "display": "Anika Donovan"}'::json,
-  'infernoknight@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000909", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "1009 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10909", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'infernoknight'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'shadowgolem',
-  crypt('shadowgolem', gen_salt('bf')),
-  '{"prefix": null, "first": "Reid", "middle": null, "last": "Donovan", "suffix": null, "display": "Reid Donovan"}'::json,
-  'shadowgolem@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000910", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "1010 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10910", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'shadowgolem'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'roguecobra',
-  crypt('roguecobra', gen_salt('bf')),
-  '{"prefix": null, "first": "Carmen", "middle": null, "last": "Donovan", "suffix": null, "display": "Carmen Donovan"}'::json,
-  'roguecobra@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000911", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "1011 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10911", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'roguecobra'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'stellarviper',
-  crypt('stellarviper', gen_salt('bf')),
-  '{"prefix": null, "first": "Elliot", "middle": null, "last": "Donovan", "suffix": null, "display": "Elliot Donovan"}'::json,
-  'stellarviper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000912", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1012 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10912", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stellarviper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'titanquake',
-  crypt('titanquake', gen_salt('bf')),
-  '{"prefix": null, "first": "Naomi", "middle": null, "last": "Donovan", "suffix": null, "display": "Naomi Donovan"}'::json,
-  'titanquake@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000913", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1013 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10913", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'titanquake'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'violetshock',
-  crypt('violetshock', gen_salt('bf')),
-  '{"prefix": null, "first": "Sterling", "middle": null, "last": "Donovan", "suffix": null, "display": "Sterling Donovan"}'::json,
-  'violetshock@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000914", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "1014 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10914", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'violetshock'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'feralgriffin',
-  crypt('feralgriffin', gen_salt('bf')),
-  '{"prefix": null, "first": "Zara", "middle": null, "last": "Donovan", "suffix": null, "display": "Zara Donovan"}'::json,
-  'feralgriffin@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000915", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "1015 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10915", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'feralgriffin'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'cannonfang',
-  crypt('cannonfang', gen_salt('bf')),
-  '{"prefix": null, "first": "Gideon", "middle": null, "last": "Donovan", "suffix": null, "display": "Gideon Donovan"}'::json,
-  'cannonfang@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000916", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1016 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10916", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cannonfang'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'graveshield',
-  crypt('graveshield', gen_salt('bf')),
-  '{"prefix": null, "first": "Helena", "middle": null, "last": "Donovan", "suffix": null, "display": "Helena Donovan"}'::json,
-  'graveshield@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000917", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "1017 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10917", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'graveshield'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'samuraimask',
-  crypt('samuraimask', gen_salt('bf')),
-  '{"prefix": null, "first": "Roman", "middle": null, "last": "Donovan", "suffix": null, "display": "Roman Donovan"}'::json,
-  'samuraimask@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000918", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "1018 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10918", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'samuraimask'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'steelburn',
-  crypt('steelburn', gen_salt('bf')),
-  '{"prefix": null, "first": "Vivian", "middle": null, "last": "Donovan", "suffix": null, "display": "Vivian Donovan"}'::json,
-  'steelburn@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000919", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "1019 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10919", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'steelburn'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'majorbeam',
-  crypt('majorbeam', gen_salt('bf')),
-  '{"prefix": null, "first": "Quinn", "middle": null, "last": "Donovan", "suffix": null, "display": "Quinn Donovan"}'::json,
-  'majorbeam@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000920", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "1020 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10920", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'majorbeam'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'rangerheart',
-  crypt('rangerheart', gen_salt('bf')),
-  '{"prefix": null, "first": "Marcel", "middle": null, "last": "Donovan", "suffix": null, "display": "Marcel Donovan"}'::json,
-  'rangerheart@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000921", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "1021 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10921", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'rangerheart'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ultrabolt',
-  crypt('ultrabolt', gen_salt('bf')),
-  '{"prefix": null, "first": "Talia", "middle": null, "last": "Donovan", "suffix": null, "display": "Talia Donovan"}'::json,
-  'ultrabolt@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000922", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "1022 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10922", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ultrabolt'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'steelrage',
-  crypt('steelrage', gen_salt('bf')),
-  '{"prefix": null, "first": "Desmond", "middle": null, "last": "Donovan", "suffix": null, "display": "Desmond Donovan"}'::json,
-  'steelrage@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000923", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "1023 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10923", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'steelrage'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'onyxcurse',
-  crypt('onyxcurse', gen_salt('bf')),
-  '{"prefix": null, "first": "Ariana", "middle": null, "last": "Donovan", "suffix": null, "display": "Ariana Donovan"}'::json,
-  'onyxcurse@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000924", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1024 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10924", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'onyxcurse'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'bulletleviathan',
-  crypt('bulletleviathan', gen_salt('bf')),
-  '{"prefix": null, "first": "Brock", "middle": null, "last": "Donovan", "suffix": null, "display": "Brock Donovan"}'::json,
-  'bulletleviathan@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000925", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1025 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10925", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'bulletleviathan'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'reaperrush',
-  crypt('reaperrush', gen_salt('bf')),
-  '{"prefix": null, "first": "Celeste", "middle": null, "last": "Donovan", "suffix": null, "display": "Celeste Donovan"}'::json,
-  'reaperrush@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000926", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "1026 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10926", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'reaperrush'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'savagesigil',
-  crypt('savagesigil', gen_salt('bf')),
-  '{"prefix": null, "first": "Warren", "middle": null, "last": "Donovan", "suffix": null, "display": "Warren Donovan"}'::json,
-  'savagesigil@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000927", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "1027 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10927", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'savagesigil'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'violetecho',
-  crypt('violetecho', gen_salt('bf')),
-  '{"prefix": null, "first": "Delilah", "middle": null, "last": "Donovan", "suffix": null, "display": "Delilah Donovan"}'::json,
-  'violetecho@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000928", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1028 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10928", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'violetecho'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'doommind',
-  crypt('doommind', gen_salt('bf')),
-  '{"prefix": null, "first": "Spencer", "middle": null, "last": "Donovan", "suffix": null, "display": "Spencer Donovan"}'::json,
-  'doommind@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000929", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "1029 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10929", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'doommind'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'roguewhisper',
-  crypt('roguewhisper', gen_salt('bf')),
-  '{"prefix": null, "first": "Monroe", "middle": null, "last": "Donovan", "suffix": null, "display": "Monroe Donovan"}'::json,
-  'roguewhisper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000930", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "1030 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10930", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'roguewhisper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'rangerhowl',
-  crypt('rangerhowl', gen_salt('bf')),
-  '{"prefix": null, "first": "Beckett", "middle": null, "last": "Donovan", "suffix": null, "display": "Beckett Donovan"}'::json,
-  'rangerhowl@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000931", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "1031 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10931", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'rangerhowl'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'paladinstomper',
-  crypt('paladinstomper', gen_salt('bf')),
-  '{"prefix": null, "first": "Soraya", "middle": null, "last": "Donovan", "suffix": null, "display": "Soraya Donovan"}'::json,
-  'paladinstomper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000932", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "1032 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10932", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'paladinstomper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'doctorhowl',
-  crypt('doctorhowl', gen_salt('bf')),
-  '{"prefix": null, "first": "Landon", "middle": null, "last": "Donovan", "suffix": null, "display": "Landon Donovan"}'::json,
-  'doctorhowl@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000933", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "1033 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10933", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'doctorhowl'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'marshaleagle',
-  crypt('marshaleagle', gen_salt('bf')),
-  '{"prefix": null, "first": "Petra", "middle": null, "last": "Donovan", "suffix": null, "display": "Petra Donovan"}'::json,
-  'marshaleagle@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000934", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "1034 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10934", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'marshaleagle'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'crimsoncrusher',
-  crypt('crimsoncrusher', gen_salt('bf')),
-  '{"prefix": null, "first": "Cassius", "middle": null, "last": "Donovan", "suffix": null, "display": "Cassius Donovan"}'::json,
-  'crimsoncrusher@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000935", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "1035 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10935", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'crimsoncrusher'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'agentpulse',
-  crypt('agentpulse', gen_salt('bf')),
-  '{"prefix": null, "first": "Rowan", "middle": null, "last": "Donovan", "suffix": null, "display": "Rowan Donovan"}'::json,
-  'agentpulse@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000936", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1036 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10936", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'agentpulse'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'gargoylewhisper',
-  crypt('gargoylewhisper', gen_salt('bf')),
-  '{"prefix": null, "first": "Ethan", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Ethan Ellsworth"}'::json,
-  'gargoylewhisper@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000937", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1037 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10937", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'gargoylewhisper'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'atomicgriffin',
-  crypt('atomicgriffin', gen_salt('bf')),
-  '{"prefix": null, "first": "Mia", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Mia Ellsworth"}'::json,
-  'atomicgriffin@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000938", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "1038 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10938", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'atomicgriffin'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'stellarchampion',
-  crypt('stellarchampion', gen_salt('bf')),
-  '{"prefix": null, "first": "Noah", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Noah Ellsworth"}'::json,
-  'stellarchampion@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000939", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "1039 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10939", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stellarchampion'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'marshalflare',
-  crypt('marshalflare', gen_salt('bf')),
-  '{"prefix": null, "first": "Ava", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Ava Ellsworth"}'::json,
-  'marshalflare@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000940", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1040 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10940", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'marshalflare'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'cosmicskull',
-  crypt('cosmicskull', gen_salt('bf')),
-  '{"prefix": null, "first": "Liam", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Liam Ellsworth"}'::json,
-  'cosmicskull@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000941", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "1041 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10941", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cosmicskull'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'frostsoul',
-  crypt('frostsoul', gen_salt('bf')),
-  '{"prefix": null, "first": "Sophia", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Sophia Ellsworth"}'::json,
-  'frostsoul@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000942", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "1042 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10942", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'frostsoul'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'reaperburn',
-  crypt('reaperburn', gen_salt('bf')),
-  '{"prefix": null, "first": "Owen", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Owen Ellsworth"}'::json,
-  'reaperburn@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000943", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "1043 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10943", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'reaperburn'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'solarbane',
-  crypt('solarbane', gen_salt('bf')),
-  '{"prefix": null, "first": "Isla", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Isla Ellsworth"}'::json,
-  'solarbane@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000944", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "1044 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10944", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'solarbane'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'wardenfury',
-  crypt('wardenfury', gen_salt('bf')),
-  '{"prefix": null, "first": "Caleb", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Caleb Ellsworth"}'::json,
-  'wardenfury@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000945", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "1045 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10945", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'wardenfury'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'wardenwrath',
-  crypt('wardenwrath', gen_salt('bf')),
-  '{"prefix": null, "first": "Nora", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Nora Ellsworth"}'::json,
-  'wardenwrath@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000946", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "1046 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10946", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'wardenwrath'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'silverfreeze',
-  crypt('silverfreeze', gen_salt('bf')),
-  '{"prefix": null, "first": "Julian", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Julian Ellsworth"}'::json,
-  'silverfreeze@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000947", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "1047 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10947", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'silverfreeze'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'stellaroracle',
-  crypt('stellaroracle', gen_salt('bf')),
-  '{"prefix": null, "first": "Elena", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Elena Ellsworth"}'::json,
-  'stellaroracle@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000948", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1048 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10948", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stellaroracle'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'hypereagle',
-  crypt('hypereagle', gen_salt('bf')),
-  '{"prefix": null, "first": "Miles", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Miles Ellsworth"}'::json,
-  'hypereagle@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000949", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1049 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10949", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'hypereagle'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'feralspirit',
-  crypt('feralspirit', gen_salt('bf')),
-  '{"prefix": null, "first": "Clara", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Clara Ellsworth"}'::json,
-  'feralspirit@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000950", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "1050 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10950", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'feralspirit'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'stalkermask',
-  crypt('stalkermask', gen_salt('bf')),
-  '{"prefix": null, "first": "Felix", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Felix Ellsworth"}'::json,
-  'stalkermask@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000951", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "1051 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10951", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stalkermask'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'primalshade',
-  crypt('primalshade', gen_salt('bf')),
-  '{"prefix": null, "first": "Hazel", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Hazel Ellsworth"}'::json,
-  'primalshade@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000952", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1052 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10952", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'primalshade'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'rangersurge',
-  crypt('rangersurge', gen_salt('bf')),
-  '{"prefix": null, "first": "Adrian", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Adrian Ellsworth"}'::json,
-  'rangersurge@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000953", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "1053 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10953", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'rangersurge'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'kingdefender',
-  crypt('kingdefender', gen_salt('bf')),
-  '{"prefix": null, "first": "Iris", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Iris Ellsworth"}'::json,
-  'kingdefender@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000954", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "1054 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10954", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'kingdefender'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'roninoracle',
-  crypt('roninoracle', gen_salt('bf')),
-  '{"prefix": null, "first": "Simon", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Simon Ellsworth"}'::json,
-  'roninoracle@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000955", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "1055 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10955", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'roninoracle'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'solareagle',
-  crypt('solareagle', gen_salt('bf')),
-  '{"prefix": null, "first": "Ruby", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Ruby Ellsworth"}'::json,
-  'solareagle@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000956", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "1056 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10956", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'solareagle'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'stalkersurge',
-  crypt('stalkersurge', gen_salt('bf')),
-  '{"prefix": null, "first": "Victor", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Victor Ellsworth"}'::json,
-  'stalkersurge@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000957", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "1057 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10957", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stalkersurge'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ladysmasher',
-  crypt('ladysmasher', gen_salt('bf')),
-  '{"prefix": null, "first": "Paige", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Paige Ellsworth"}'::json,
-  'ladysmasher@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000958", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "1058 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10958", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ladysmasher'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'queengriffin',
-  crypt('queengriffin', gen_salt('bf')),
-  '{"prefix": null, "first": "Grant", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Grant Ellsworth"}'::json,
-  'queengriffin@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000959", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "1059 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10959", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'queengriffin'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'bulletstrike',
-  crypt('bulletstrike', gen_salt('bf')),
-  '{"prefix": null, "first": "Tessa", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Tessa Ellsworth"}'::json,
-  'bulletstrike@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000960", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1060 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10960", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'bulletstrike'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'agentrender',
-  crypt('agentrender', gen_salt('bf')),
-  '{"prefix": null, "first": "Dean", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Dean Ellsworth"}'::json,
-  'agentrender@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000961", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1061 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10961", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'agentrender'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'colossusskull',
-  crypt('colossusskull', gen_salt('bf')),
-  '{"prefix": null, "first": "Vera", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Vera Ellsworth"}'::json,
-  'colossusskull@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000962", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "1062 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10962", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'colossusskull'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'atomicsmasher',
-  crypt('atomicsmasher', gen_salt('bf')),
-  '{"prefix": null, "first": "Colin", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Colin Ellsworth"}'::json,
-  'atomicsmasher@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000963", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "1063 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10963", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'atomicsmasher'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'goblinshade',
-  crypt('goblinshade', gen_salt('bf')),
-  '{"prefix": null, "first": "Jade", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Jade Ellsworth"}'::json,
-  'goblinshade@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000964", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1064 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10964", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goblinshade'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'outlawcyclone',
-  crypt('outlawcyclone', gen_salt('bf')),
-  '{"prefix": null, "first": "Marcus", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Marcus Ellsworth"}'::json,
-  'outlawcyclone@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000965", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "1065 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10965", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'outlawcyclone'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'outlawsurge',
-  crypt('outlawsurge', gen_salt('bf')),
-  '{"prefix": null, "first": "Leah", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Leah Ellsworth"}'::json,
-  'outlawsurge@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000966", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "1066 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10966", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'outlawsurge'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'goblinsigil',
-  crypt('goblinsigil', gen_salt('bf')),
-  '{"prefix": null, "first": "Nolan", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Nolan Ellsworth"}'::json,
-  'goblinsigil@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000967", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "1067 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10967", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goblinsigil'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ironhowl',
-  crypt('ironhowl', gen_salt('bf')),
-  '{"prefix": null, "first": "Gwen", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Gwen Ellsworth"}'::json,
-  'ironhowl@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000968", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "1068 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10968", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ironhowl'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'eldritchspark',
-  crypt('eldritchspark', gen_salt('bf')),
-  '{"prefix": null, "first": "Tristan", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Tristan Ellsworth"}'::json,
-  'eldritchspark@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000969", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "1069 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10969", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'eldritchspark'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'azurequake',
-  crypt('azurequake', gen_salt('bf')),
-  '{"prefix": null, "first": "Selene", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Selene Ellsworth"}'::json,
-  'azurequake@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000970", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "1070 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10970", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'azurequake'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'lightningquake',
-  crypt('lightningquake', gen_salt('bf')),
-  '{"prefix": null, "first": "Derek", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Derek Ellsworth"}'::json,
-  'lightningquake@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000971", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "1071 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10971", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'lightningquake'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'cyberwave',
-  crypt('cyberwave', gen_salt('bf')),
-  '{"prefix": null, "first": "Alina", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Alina Ellsworth"}'::json,
-  'cyberwave@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000972", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1072 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10972", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cyberwave'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'spectralblade',
-  crypt('spectralblade', gen_salt('bf')),
-  '{"prefix": null, "first": "Rafael", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Rafael Ellsworth"}'::json,
-  'spectralblade@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000973", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1073 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10973", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'spectralblade'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'toxicavenger',
-  crypt('toxicavenger', gen_salt('bf')),
-  '{"prefix": null, "first": "Bianca", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Bianca Ellsworth"}'::json,
-  'toxicavenger@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000974", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "1074 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10974", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'toxicavenger'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'cannoncyclone',
-  crypt('cannoncyclone', gen_salt('bf')),
-  '{"prefix": null, "first": "Harper", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Harper Ellsworth"}'::json,
-  'cannoncyclone@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000975", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "1075 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10975", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cannoncyclone'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'commandersurge',
-  crypt('commandersurge', gen_salt('bf')),
-  '{"prefix": null, "first": "Jonah", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Jonah Ellsworth"}'::json,
-  'commandersurge@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000976", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1076 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10976", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'commandersurge'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'goldenecho',
-  crypt('goldenecho', gen_salt('bf')),
-  '{"prefix": null, "first": "Mira", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Mira Ellsworth"}'::json,
-  'goldenecho@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000977", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "1077 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10977", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goldenecho'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'rangerspell',
-  crypt('rangerspell', gen_salt('bf')),
-  '{"prefix": null, "first": "Cedric", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Cedric Ellsworth"}'::json,
-  'rangerspell@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000978", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "1078 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10978", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'rangerspell'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'generalslayer',
-  crypt('generalslayer', gen_salt('bf')),
-  '{"prefix": null, "first": "Lena", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Lena Ellsworth"}'::json,
-  'generalslayer@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000979", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "1079 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10979", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'generalslayer'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'renegadebreaker',
-  crypt('renegadebreaker', gen_salt('bf')),
-  '{"prefix": null, "first": "Andre", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Andre Ellsworth"}'::json,
-  'renegadebreaker@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000980", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "1080 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10980", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'renegadebreaker'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'novabrain',
-  crypt('novabrain', gen_salt('bf')),
-  '{"prefix": null, "first": "Sasha", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Sasha Ellsworth"}'::json,
-  'novabrain@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000981", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "1081 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10981", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'novabrain'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'arcanesigil',
-  crypt('arcanesigil', gen_salt('bf')),
-  '{"prefix": null, "first": "Malik", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Malik Ellsworth"}'::json,
-  'arcanesigil@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000982", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "1082 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10982", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'arcanesigil'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'sergeantgriffin',
-  crypt('sergeantgriffin', gen_salt('bf')),
-  '{"prefix": null, "first": "Priya", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Priya Ellsworth"}'::json,
-  'sergeantgriffin@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000983", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "1083 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10983", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'sergeantgriffin'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'mysticecho',
-  crypt('mysticecho', gen_salt('bf')),
-  '{"prefix": null, "first": "Kenji", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Kenji Ellsworth"}'::json,
-  'mysticecho@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000984", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1084 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10984", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'mysticecho'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'azurefang',
-  crypt('azurefang', gen_salt('bf')),
-  '{"prefix": null, "first": "Yara", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Yara Ellsworth"}'::json,
-  'azurefang@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000985", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1085 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10985", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'azurefang'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'chaosskull',
-  crypt('chaosskull', gen_salt('bf')),
-  '{"prefix": null, "first": "Rosa", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Rosa Ellsworth"}'::json,
-  'chaosskull@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000986", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "1086 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10986", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'chaosskull'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'bansheeraven',
-  crypt('bansheeraven', gen_salt('bf')),
-  '{"prefix": null, "first": "Hugo", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Hugo Ellsworth"}'::json,
-  'bansheeraven@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000987", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "1087 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10987", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'bansheeraven'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'ancientbane',
-  crypt('ancientbane', gen_salt('bf')),
-  '{"prefix": null, "first": "Ingrid", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Ingrid Ellsworth"}'::json,
-  'ancientbane@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000988", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "purple", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1088 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10988", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'ancientbane'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'novastorm',
-  crypt('novastorm', gen_salt('bf')),
-  '{"prefix": null, "first": "Pascal", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Pascal Ellsworth"}'::json,
-  'novastorm@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000989", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "orange", "color2": "brown"}'::json,
-  '[{"label": "home", "line1": "1089 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10989", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'novastorm'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'sentinelwave',
-  crypt('sentinelwave', gen_salt('bf')),
-  '{"prefix": null, "first": "Freya", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Freya Ellsworth"}'::json,
-  'sentinelwave@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000990", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "yellow", "color2": "blue"}'::json,
-  '[{"label": "home", "line1": "1090 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10990", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'sentinelwave'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'goliathfang',
-  crypt('goliathfang', gen_salt('bf')),
-  '{"prefix": null, "first": "Dante", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Dante Ellsworth"}'::json,
-  'goliathfang@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000991", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "black", "color2": "white"}'::json,
-  '[{"label": "home", "line1": "1091 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10991", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'goliathfang'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'hunterfang',
-  crypt('hunterfang', gen_salt('bf')),
-  '{"prefix": null, "first": "Keiko", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Keiko Ellsworth"}'::json,
-  'hunterfang@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000992", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "white", "color2": "red"}'::json,
-  '[{"label": "home", "line1": "1092 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10992", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'hunterfang'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'steelwarden',
-  crypt('steelwarden', gen_salt('bf')),
-  '{"prefix": null, "first": "Amir", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Amir Ellsworth"}'::json,
-  'steelwarden@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000993", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "crimson", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "1093 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10993", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'steelwarden'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'cosmicgolem',
-  crypt('cosmicgolem', gen_salt('bf')),
-  '{"prefix": null, "first": "Lucia", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Lucia Ellsworth"}'::json,
-  'cosmicgolem@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000994", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "teal", "color2": "gray"}'::json,
-  '[{"label": "home", "line1": "1094 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10994", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cosmicgolem'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'stellarcyclone',
-  crypt('stellarcyclone', gen_salt('bf')),
-  '{"prefix": null, "first": "Tobias", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Tobias Ellsworth"}'::json,
-  'stellarcyclone@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000995", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "indigo", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "1095 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10995", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'stellarcyclone'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'wardenshade',
-  crypt('wardenshade', gen_salt('bf')),
-  '{"prefix": null, "first": "Anika", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Anika Ellsworth"}'::json,
-  'wardenshade@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000996", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "pink", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1096 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10996", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'wardenshade'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'baronhydra',
-  crypt('baronhydra', gen_salt('bf')),
-  '{"prefix": null, "first": "Reid", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Reid Ellsworth"}'::json,
-  'baronhydra@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000997", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Marvel superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "red", "color2": "black"}'::json,
-  '[{"label": "home", "line1": "1097 Hero Lane", "line2": null, "city": "New York", "state_or_province": "NY", "postal_code": "10997", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'baronhydra'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'cosmicruin',
-  crypt('cosmicruin', gen_salt('bf')),
-  '{"prefix": null, "first": "Carmen", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Carmen Ellsworth"}'::json,
-  'cosmicruin@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000998", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "DC superhero seed user.", "preferred_contact": "email", "sex": "female", "primary-role": "follower", "color1": "blue", "color2": "silver"}'::json,
-  '[{"label": "home", "line1": "1098 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10998", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'cosmicruin'
-);
-
-INSERT INTO public."user" (
-  username,
-  password_encrypted,
-  name_json,
-  email,
-  phone_numbers_json,
-  social_media_json,
-  volunteer_json,
-  password_recovery_json,
-  additional_info_json,
-  addresses_json,
-  active,
-  created_by,
-  modified_by,
-  modified_date
-)
-SELECT
-  'agentavenger',
-  crypt('agentavenger', gen_salt('bf')),
-  '{"prefix": null, "first": "Elliot", "middle": null, "last": "Ellsworth", "suffix": null, "display": "Elliot Ellsworth"}'::json,
-  'agentavenger@superhero.com',
-  '[{"type": "mobile", "country_code": "1", "number": "5550000999", "primary": true}]'::json,
-  '{}'::json,
-  '{"interested": false, "roles": [], "availability": null}'::json,
-  '{}'::json,
-  '{"notes": "Independent superhero seed user.", "preferred_contact": "email", "sex": "male", "primary-role": "leader", "color1": "green", "color2": "gold"}'::json,
-  '[{"label": "home", "line1": "1099 Hero Lane", "line2": "Metropolis HQ", "city": "Metropolis", "state_or_province": "NY", "postal_code": "10999", "country_code": "USA"}]'::json,
-  TRUE,
-  'c-agent',
-  NULL,
-  NULL
-
-WHERE NOT EXISTS (
-  SELECT 1 FROM public."user" WHERE username = 'agentavenger'
+  SELECT 1 FROM public."user" WHERE username = 'judomaster'
 );
 
 SELECT COUNT(*) AS superhero_seed_users

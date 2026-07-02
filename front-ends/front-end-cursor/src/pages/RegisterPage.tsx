@@ -12,7 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   hashPasswordRecoveryAnswers,
   registerUser,
-  fetchCountriesStaticList,
+  fetchCountries,
   fetchSecretQuestions,
   fetchUsStatesStaticList,
   type PasswordRecoveryJson,
@@ -161,7 +161,7 @@ export default function RegisterPage() {
   useEffect(() => {
     let cancelled = false;
 
-    Promise.all([fetchCountriesStaticList(), fetchUsStatesStaticList()])
+    Promise.all([fetchCountries(), fetchUsStatesStaticList()])
       .then(([countryItems, stateItems]) => {
         if (cancelled) {
           return;

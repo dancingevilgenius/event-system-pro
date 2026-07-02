@@ -109,11 +109,6 @@ export type SecretQuestion = {
   created_date: string;
 };
 
-export type Country = {
-  iso3: string;
-  long_name: string;
-};
-
 export type UsState = {
   code: string;
   name: string;
@@ -329,12 +324,7 @@ export async function fetchUsStateCodes(): Promise<string[]> {
 }
 
 export async function fetchUsStatesStaticList(): Promise<StaticListEntry[]> {
-  const list = await fetchStaticListByCode(US_STATES_LIST_CODE);
-  if (!list) {
-    throw new Error('Unable to load states (US_STATES list not found)');
-  }
-
-  return [...list.listJson].sort((a, b) => a.label.localeCompare(b.label));
+  return fetchSortedStaticListEntries(US_STATES_LIST_CODE, 'states');
 }
 
 export async function fetchUsStates(): Promise<UsState[]> {
@@ -342,18 +332,8 @@ export async function fetchUsStates(): Promise<UsState[]> {
   return entries.map((entry) => ({ code: entry.key, name: entry.label }));
 }
 
-export async function fetchCountriesStaticList(): Promise<StaticListEntry[]> {
-  const list = await fetchStaticListByCode(COUNTRIES_LIST_CODE);
-  if (!list) {
-    throw new Error('Unable to load countries (COUNTRIES list not found)');
-  }
-
-  return [...list.listJson].sort((a, b) => a.label.localeCompare(b.label));
-}
-
-export async function fetchCountries(): Promise<Country[]> {
-  const entries = await fetchCountriesStaticList();
-  return entries.map((entry) => ({ iso3: entry.key, long_name: entry.label }));
+export async function fetchCountries(): Promise<StaticListEntry[]> {
+  return fetchSortedStaticListEntries(COUNTRIES_LIST_CODE, 'countries');
 }
 
 export async function fetchSecretQuestions(): Promise<SecretQuestion[]> {
@@ -831,6 +811,18 @@ export async function fetchStaticListByCode(listCode: string): Promise<StaticLis
   }
 
   return mapStaticListRecord(row);
+}
+
+export async function fetchSortedStaticListEntries(
+  listCode: string,
+  resourceLabel: string,
+): Promise<StaticListEntry[]> {
+  const list = await fetchStaticListByCode(listCode);
+  if (!list) {
+    throw new Error(`Unable to load ${resourceLabel} (${listCode} list not found)`);
+  }
+
+  return [...list.listJson].sort((a, b) => a.label.localeCompare(b.label));
 }
 
 export async function updateStaticListJson(

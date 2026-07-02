@@ -151,7 +151,7 @@ Login page links: **Forgot password?** and **Register**.
 
 - **Username**, **email**, and **password** are required (password ≥ 8 characters, must match confirm).
 - **First name** and **last name** are required.
-- Optional address: **city**, **state** (`us_state_lu`), and **country** (`country_lu`) only — no street line on this form (`addresses_json.line1` is `null` when an address row is saved).
+- Optional address: **city**, **state** (`static_list` → `US_STATES`), and **country** (`static_list` → `COUNTRIES`) only — no street line on this form (`addresses_json.line1` is `null` when an address row is saved).
 - Phone uses three numeric US segments (area, prefix, line).
 - Before submit, user must complete **three secret password-recovery questions** (answers bcrypt-hashed via `api.hash_password_recovery_answers`, stored in `password_recovery_json`).
 - Submit calls **`api.register_user`**; on success navigates to login.

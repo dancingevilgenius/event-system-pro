@@ -1,7 +1,7 @@
 import { loadSession } from '../lib/session';
 
 const POSTGREST_URL =
-  import.meta.env.VITE_POSTGREST_URL ?? 'http://localhost:3000';
+  import.meta.env.VITE_POSTGREST_URL ?? (import.meta.env.DEV ? '/api' : 'http://localhost:3000');
 
 const POC_COUNTER_LABEL = 'poc_counter';
 

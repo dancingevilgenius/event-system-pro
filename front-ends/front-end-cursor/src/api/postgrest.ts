@@ -2,7 +2,7 @@ import { loadSession, type AppRole } from '../lib/session';
 import { NOT_APPLICABLE_INT, COUNTRIES_LIST_CODE, US_STATES_LIST_CODE } from '../lib/staticList';
 
 const POSTGREST_URL =
-  import.meta.env.VITE_POSTGREST_URL ?? 'http://localhost:3000';
+  import.meta.env.VITE_POSTGREST_URL ?? (import.meta.env.DEV ? '/api' : 'http://localhost:3000');
 
 type RpcErrorBody = {
   message?: string;
@@ -834,17 +834,24 @@ export async function fetchStaticLists(): Promise<StaticListListRow[]> {
   }));
 }
 
-export async function fetchStaticListByCode(listCode: string): Promise<StaticListRecord | null> {
+export async function fetchStaticListByCode(
+  listCode: string,
+  auth: RequestAuthMode = 'include',
+): Promise<StaticListRecord | null> {
   const params = new URLSearchParams({
     select: 'list_code,governing_body_code,short_desc,list_json',
   });
   params.append('list_code', `eq.${listCode}`);
 
-  const rows = await fetchJson<ApiStaticListRecord[]>(
-    `${POSTGREST_URL}/static_list?${params.toString()}`,
-    'Unable to load static list',
-  );
+  const response = await fetch(`${POSTGREST_URL}/static_list?${params.toString()}`, {
+    headers: buildAuthHeaders(undefined, auth),
+  });
 
+  if (!response.ok) {
+    throw new Error(`Unable to load static list (${response.status})`);
+  }
+
+  const rows = (await response.json()) as ApiStaticListRecord[];
   const row = rows[0];
   if (!row) {
     return null;

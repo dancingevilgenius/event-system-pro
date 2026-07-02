@@ -46,7 +46,7 @@ services:
       SMTP_PORT: 1025
       SMTP_SECURE: "false"
       EMAIL_FROM: Event System Pro <no-reply@eventsystempro.local>
-      CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:

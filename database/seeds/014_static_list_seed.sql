@@ -71,15 +71,17 @@ SELECT
   'Countries and territories',
   COALESCE(
     (
-      SELECT json_agg(
-        json_build_object(
+      SELECT json_agg(country_entry ORDER BY country_entry->>'label')
+      FROM (
+        SELECT json_build_object(
           'key', trim(c.iso3),
           'label', c.long_name
-        )
-        ORDER BY c.long_name
-      )
-      FROM public.country_lu AS c
-      WHERE c.iso3 IS NOT NULL
+        ) AS country_entry
+        FROM public.country_lu AS c
+        WHERE c.iso3 IS NOT NULL
+        UNION ALL
+        SELECT json_build_object('key', 'WAK', 'label', 'Wakanda')
+      ) AS countries
     ),
     '[]'::json
   )

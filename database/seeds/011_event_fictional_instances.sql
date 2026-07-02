@@ -14,11 +14,11 @@ DELETE FROM public.attendee
 WHERE event_id IN (
   SELECT event_id FROM public."event"
   WHERE event_group_code IN (
-    'BRINDLEWICK_CLASSIC',
-    'LARKSPUR_OPEN',
-    'MARIGLEN_INVITATIONAL',
-    'SELWICK_CONGRESS',
-    'THORNBAY_COUPLES_CHAMPIONSHIP',
+    'SWING_STATE_CLASSIC',
+    'VERTEX_SWING_OPEN',
+    'WILDCARD_SWING_INVITATIONAL',
+    'JITTERBUG_JAMBOREE',
+    'POWER_COUPLE_SWING_CHAMPIONSHIP',
     'VELLGRIMM_LONGSWORD_OPEN',
     'CINDERHOLT_HEMA_SYMPOSIUM',
     'BRAMBLEGATE_RAPIER_CUP',
@@ -44,11 +44,11 @@ WHERE event_id IN (
 
 DELETE FROM public."event"
 WHERE event_group_code IN (
-  'BRINDLEWICK_CLASSIC',
-  'LARKSPUR_OPEN',
-  'MARIGLEN_INVITATIONAL',
-  'SELWICK_CONGRESS',
-  'THORNBAY_COUPLES_CHAMPIONSHIP',
+  'SWING_STATE_CLASSIC',
+  'VERTEX_SWING_OPEN',
+  'WILDCARD_SWING_INVITATIONAL',
+  'JITTERBUG_JAMBOREE',
+  'POWER_COUPLE_SWING_CHAMPIONSHIP',
   'VELLGRIMM_LONGSWORD_OPEN',
   'CINDERHOLT_HEMA_SYMPOSIUM',
   'BRAMBLEGATE_RAPIER_CUP',
@@ -85,11 +85,11 @@ INSERT INTO public."event" (
 )
 VALUES
   (
-    'BRINDLEWICK_CLASSIC',
-    'Brindlewick Classic 2025',
+    'SWING_STATE_CLASSIC',
+    'Swing State Classic 2025',
     'USA',
     'MN',
-    '{"venue":"The Halcyon Harbor Hotel","street":"4182 Copper Veil Road","city":"Brindlewick","state":"MN","country":"USA"}',
+    '{"venue":"The Halcyon Harbor Hotel","street":"4182 Copper Veil Road","city":"Swing State","state":"MN","country":"USA"}',
     TRUE,
     3,
     TIMESTAMPTZ '2025-06-22 09:00:00-05' - INTERVAL '2 days',
@@ -97,11 +97,11 @@ VALUES
     'c-agent'
   ),
   (
-    'BRINDLEWICK_CLASSIC',
-    'Brindlewick Classic 2026',
+    'SWING_STATE_CLASSIC',
+    'Swing State Classic 2026',
     'USA',
     'MN',
-    '{"venue":"Meridian Wharf Sports Complex","street":"901 Meridian Wharf Lane","city":"Brindlewick","state":"MN","country":"USA"}',
+    '{"venue":"Meridian Wharf Sports Complex","street":"901 Meridian Wharf Lane","city":"Swing State","state":"MN","country":"USA"}',
     TRUE,
     5,
     TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '1 days',
@@ -109,11 +109,11 @@ VALUES
     'c-agent'
   ),
   (
-    'BRINDLEWICK_CLASSIC',
-    'Brindlewick Classic 2027',
+    'SWING_STATE_CLASSIC',
+    'Swing State Classic 2027',
     'USA',
     'MN',
-    '{"venue":"Ironvale Training Dojo","street":"77 Halcyon Foundry Way","city":"Brindlewick","state":"MN","country":"USA"}',
+    '{"venue":"Ironvale Training Dojo","street":"77 Halcyon Foundry Way","city":"Swing State","state":"MN","country":"USA"}',
     TRUE,
     5,
     TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '1 days',
@@ -121,11 +121,11 @@ VALUES
     'c-agent'
   ),
   (
-    'LARKSPUR_OPEN',
-    'Larkspur Open I',
+    'VERTEX_SWING_OPEN',
+    'Vertex Swing Open I',
     'USA',
-    'CA',
-    '{"venue":"Emberline Grand Hotel","street":"1204 North Ashford Circle","city":"Larkspur","state":"CA","country":"USA"}',
+    'CO',
+    '{"venue":"Emberline Grand Hotel","street":"1204 North Ashford Circle","city":"Vertex","state":"CO","country":"USA"}',
     TRUE,
     3,
     TIMESTAMPTZ '2025-06-22 09:00:00-05',
@@ -133,11 +133,11 @@ VALUES
     'c-agent'
   ),
   (
-    'LARKSPUR_OPEN',
-    'Larkspur Open II',
+    'VERTEX_SWING_OPEN',
+    'Vertex Swing Open II',
     'USA',
-    'CA',
-    '{"venue":"Valebridge Event Center","street":"633 Valebridge Court","city":"Larkspur","state":"CA","country":"USA"}',
+    'CO',
+    '{"venue":"Valebridge Event Center","street":"633 Valebridge Court","city":"Vertex","state":"CO","country":"USA"}',
     TRUE,
     3,
     TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '2 days',
@@ -145,11 +145,11 @@ VALUES
     'c-agent'
   ),
   (
-    'LARKSPUR_OPEN',
-    'Larkspur Open III',
+    'VERTEX_SWING_OPEN',
+    'Vertex Swing Open III',
     'USA',
-    'CA',
-    '{"venue":"Foundry Lane Combat Gym","street":"15 Orchard Gate Parkway","city":"Larkspur","state":"CA","country":"USA"}',
+    'CO',
+    '{"venue":"Foundry Lane Combat Gym","street":"15 Orchard Gate Parkway","city":"Vertex","state":"CO","country":"USA"}',
     TRUE,
     4,
     TIMESTAMPTZ '2027-06-24 09:00:00-05' - INTERVAL '1 days',
@@ -157,11 +157,11 @@ VALUES
     'c-agent'
   ),
   (
-    'MARIGLEN_INVITATIONAL',
-    'Mariglen Invitational 2025',
+    'WILDCARD_SWING_INVITATIONAL',
+    'Wildcard Swing Invitational 2025',
     'USA',
     'CO',
-    '{"venue":"Copper Veil Inn & Suites","street":"2880 Ridgewell Station Drive","city":"Mariglen","state":"CO","country":"USA"}',
+    '{"venue":"Copper Veil Inn & Suites","street":"2880 Ridgewell Station Drive","city":"Wildcard Swing","state":"CO","country":"USA"}',
     TRUE,
     5,
     TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '2 days',
@@ -169,11 +169,11 @@ VALUES
     'c-agent'
   ),
   (
-    'MARIGLEN_INVITATIONAL',
-    'Mariglen Invitational 2026',
+    'WILDCARD_SWING_INVITATIONAL',
+    'Wildcard Swing Invitational 2026',
     'USA',
     'CO',
-    '{"venue":"Orchard Gate Athletic Complex","street":"504 Emberline Terrace","city":"Mariglen","state":"CO","country":"USA"}',
+    '{"venue":"Orchard Gate Athletic Complex","street":"504 Emberline Terrace","city":"Wildcard Swing","state":"CO","country":"USA"}',
     TRUE,
     4,
     TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '2 days',
@@ -181,11 +181,11 @@ VALUES
     'c-agent'
   ),
   (
-    'MARIGLEN_INVITATIONAL',
-    'Mariglen Invitational 2027',
+    'WILDCARD_SWING_INVITATIONAL',
+    'Wildcard Swing Invitational 2027',
     'USA',
     'CO',
-    '{"venue":"Ashford Martial Arts Gym","street":"4182 Copper Veil Road","city":"Mariglen","state":"CO","country":"USA"}',
+    '{"venue":"Ashford Martial Arts Gym","street":"4182 Copper Veil Road","city":"Wildcard Swing","state":"CO","country":"USA"}',
     TRUE,
     5,
     TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '1 days',
@@ -193,11 +193,11 @@ VALUES
     'c-agent'
   ),
   (
-    'SELWICK_CONGRESS',
-    'Selwick Congress 2025',
+    'JITTERBUG_JAMBOREE',
+    'Jitterbug Jamboree 2025',
     'USA',
     'OH',
-    '{"venue":"Ridgewell Station Hotel","street":"901 Meridian Wharf Lane","city":"Selwick","state":"OH","country":"USA"}',
+    '{"venue":"Ridgewell Station Hotel","street":"901 Meridian Wharf Lane","city":"Jitterbug Jamboree","state":"OH","country":"USA"}',
     TRUE,
     5,
     TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '1 days',
@@ -205,11 +205,11 @@ VALUES
     'c-agent'
   ),
   (
-    'SELWICK_CONGRESS',
-    'Selwick Congress 2026',
+    'JITTERBUG_JAMBOREE',
+    'Jitterbug Jamboree 2026',
     'USA',
     'OH',
-    '{"venue":"North Ashford Sportsplex","street":"77 Halcyon Foundry Way","city":"Selwick","state":"OH","country":"USA"}',
+    '{"venue":"North Ashford Sportsplex","street":"77 Halcyon Foundry Way","city":"Jitterbug Jamboree","state":"OH","country":"USA"}',
     TRUE,
     5,
     TIMESTAMPTZ '2026-06-24 09:00:00-05' + INTERVAL '1 days',
@@ -217,11 +217,11 @@ VALUES
     'c-agent'
   ),
   (
-    'SELWICK_CONGRESS',
-    'Selwick Congress 2027',
+    'JITTERBUG_JAMBOREE',
+    'Jitterbug Jamboree 2027',
     'USA',
     'OH',
-    '{"venue":"Copper Veil Fitness Dojo","street":"1204 North Ashford Circle","city":"Selwick","state":"OH","country":"USA"}',
+    '{"venue":"Copper Veil Fitness Dojo","street":"1204 North Ashford Circle","city":"Jitterbug Jamboree","state":"OH","country":"USA"}',
     TRUE,
     3,
     TIMESTAMPTZ '2027-06-24 09:00:00-05' - INTERVAL '2 days',
@@ -229,11 +229,11 @@ VALUES
     'c-agent'
   ),
   (
-    'THORNBAY_COUPLES_CHAMPIONSHIP',
-    'Thornbay Couples Championship II',
+    'POWER_COUPLE_SWING_CHAMPIONSHIP',
+    'Power Couple Swing Championship II',
     'USA',
     'FL',
-    '{"venue":"Meridian Wharf Hotel","street":"633 Valebridge Court","city":"Thornbay","state":"FL","country":"USA"}',
+    '{"venue":"Meridian Wharf Hotel","street":"633 Valebridge Court","city":"Power Couple","state":"FL","country":"USA"}',
     TRUE,
     4,
     TIMESTAMPTZ '2025-06-22 09:00:00-05' - INTERVAL '2 days',
@@ -241,11 +241,11 @@ VALUES
     'c-agent'
   ),
   (
-    'THORNBAY_COUPLES_CHAMPIONSHIP',
-    'Thornbay Couples Championship III',
+    'POWER_COUPLE_SWING_CHAMPIONSHIP',
+    'Power Couple Swing Championship III',
     'USA',
     'FL',
-    '{"venue":"Copper Veil Arena & Fieldhouse","street":"15 Orchard Gate Parkway","city":"Thornbay","state":"FL","country":"USA"}',
+    '{"venue":"Copper Veil Arena & Fieldhouse","street":"15 Orchard Gate Parkway","city":"Power Couple","state":"FL","country":"USA"}',
     TRUE,
     4,
     TIMESTAMPTZ '2026-06-24 09:00:00-05' - INTERVAL '1 days',
@@ -253,11 +253,11 @@ VALUES
     'c-agent'
   ),
   (
-    'THORNBAY_COUPLES_CHAMPIONSHIP',
-    'Thornbay Couples Championship IV',
+    'POWER_COUPLE_SWING_CHAMPIONSHIP',
+    'Power Couple Swing Championship IV',
     'USA',
     'FL',
-    '{"venue":"Meridian Wharf Gym & Dojo","street":"2880 Ridgewell Station Drive","city":"Thornbay","state":"FL","country":"USA"}',
+    '{"venue":"Meridian Wharf Gym & Dojo","street":"2880 Ridgewell Station Drive","city":"Power Couple","state":"FL","country":"USA"}',
     TRUE,
     3,
     TIMESTAMPTZ '2027-06-24 09:00:00-05' + INTERVAL '2 days',
@@ -473,7 +473,7 @@ VALUES
     'Riveton Kart Grand Prix VI',
     'USA',
     'CO',
-    '{"venue":"Thornbay Couples Dance Gym","street":"4182 Copper Veil Road","city":"Riveton","state":"CO","country":"USA"}',
+    '{"venue":"Power Couple Dance Gym","street":"4182 Copper Veil Road","city":"Riveton","state":"CO","country":"USA"}',
     TRUE,
     5,
     TIMESTAMPTZ '2027-06-24 09:00:00-05' - INTERVAL '1 days',
@@ -521,7 +521,7 @@ VALUES
     'Drakewell Oval Classic 2025',
     'USA',
     'FL',
-    '{"venue":"Thornbay Harbor Inn","street":"633 Valebridge Court","city":"Drakewell","state":"FL","country":"USA"}',
+    '{"venue":"Vertex Harbor Inn","street":"633 Valebridge Court","city":"Drakewell","state":"FL","country":"USA"}',
     TRUE,
     4,
     TIMESTAMPTZ '2025-06-22 09:00:00-05' + INTERVAL '1 days',
@@ -533,7 +533,7 @@ VALUES
     'Drakewell Oval Classic 2026',
     'USA',
     'FL',
-    '{"venue":"Thornbay Riverfront Sports Center","street":"15 Orchard Gate Parkway","city":"Drakewell","state":"FL","country":"USA"}',
+    '{"venue":"Vertex Riverfront Sports Center","street":"15 Orchard Gate Parkway","city":"Drakewell","state":"FL","country":"USA"}',
     TRUE,
     3,
     TIMESTAMPTZ '2026-06-24 09:00:00-05',
@@ -992,11 +992,11 @@ SET more_json = jsonb_build_object(
 FROM public.event_group AS g
 WHERE e.event_group_code = g.event_group_code
   AND e.event_group_code IN (
-  'BRINDLEWICK_CLASSIC',
-  'LARKSPUR_OPEN',
-  'MARIGLEN_INVITATIONAL',
-  'SELWICK_CONGRESS',
-  'THORNBAY_COUPLES_CHAMPIONSHIP',
+  'SWING_STATE_CLASSIC',
+  'VERTEX_SWING_OPEN',
+  'WILDCARD_SWING_INVITATIONAL',
+  'JITTERBUG_JAMBOREE',
+  'POWER_COUPLE_SWING_CHAMPIONSHIP',
   'VELLGRIMM_LONGSWORD_OPEN',
   'CINDERHOLT_HEMA_SYMPOSIUM',
   'BRAMBLEGATE_RAPIER_CUP',

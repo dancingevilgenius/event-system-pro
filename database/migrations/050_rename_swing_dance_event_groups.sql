@@ -1,10 +1,31 @@
--- Admin RPC: regenerate demo attendees (attendee_id 1–3000).
--- Core logic in generate_demo_attendees_core(); admin wrapper for PostgREST.
---
--- Run: psql -U postgres -d event_system_pro -f database/migrations/044_generate_demo_attendees.sql
+﻿-- Rename vague dance demo event_group codes to swing-themed names.
+-- Run: psql -U postgres -d event_system_pro -f database/migrations/050_rename_swing_dance_event_groups.sql
 
 \connect event_system_pro
 
+INSERT INTO public.event_group (event_group_code, full_name, short_name, more_json, created_by)
+VALUES
+  ('LINDY_LOOP_CLASSIC', 'Lindy Loop Classic', 'Lindy Loop', '{"demo": true}'::jsonb, 'c-agent'),
+  ('CHARLESTON_CIRCUIT_OPEN', 'Charleston Circuit Open', 'Charleston Circuit', '{"demo": true}'::jsonb, 'c-agent'),
+  ('BALBOA_BASH_INVITATIONAL', 'Balboa Bash Invitational', 'Balboa Bash', '{"demo": true}'::jsonb, 'c-agent'),
+  ('JITTERBUG_JAMBOREE', 'Jitterbug Jamboree', 'Jitterbug Jamboree', '{"demo": true}'::jsonb, 'c-agent')
+ON CONFLICT (event_group_code) DO UPDATE SET
+  full_name = EXCLUDED.full_name,
+  short_name = EXCLUDED.short_name,
+  more_json = EXCLUDED.more_json;
+
+UPDATE public."event" SET event_group_code = 'LINDY_LOOP_CLASSIC' WHERE event_group_code = 'BRINDLEWICK_CLASSIC';
+UPDATE public."event" SET event_group_code = 'CHARLESTON_CIRCUIT_OPEN' WHERE event_group_code = 'LARKSPUR_OPEN';
+UPDATE public."event" SET event_group_code = 'BALBOA_BASH_INVITATIONAL' WHERE event_group_code = 'MARIGLEN_INVITATIONAL';
+UPDATE public."event" SET event_group_code = 'JITTERBUG_JAMBOREE' WHERE event_group_code = 'SELWICK_CONGRESS';
+
+DELETE FROM public.event_group
+WHERE event_group_code IN (
+  'BRINDLEWICK_CLASSIC',
+  'LARKSPUR_OPEN',
+  'MARIGLEN_INVITATIONAL',
+  'SELWICK_CONGRESS'
+);
 CREATE OR REPLACE FUNCTION api.generate_demo_attendees_core()
 RETURNS json
 LANGUAGE plpgsql
@@ -19,11 +40,11 @@ DECLARE
   dance_groups_to_select CONSTANT INT := 3;
   companion_groups_to_select CONSTANT INT := 2;
   dance_group_codes CONSTANT TEXT[] := ARRAY[
-    'SWING_STATE_CLASSIC',
-    'VERTEX_SWING_OPEN',
-    'WILDCARD_SWING_INVITATIONAL',
+    'LINDY_LOOP_CLASSIC',
+    'CHARLESTON_CIRCUIT_OPEN',
+    'BALBOA_BASH_INVITATIONAL',
     'JITTERBUG_JAMBOREE',
-    'POWER_COUPLE_SWING_CHAMPIONSHIP'
+    'THORNBAY_COUPLES_CHAMPIONSHIP'
   ];
   kart_robot_group_codes CONSTANT TEXT[] := ARRAY[
     'RIVETON_KART_GRAND_PRIX',
@@ -203,7 +224,7 @@ BEGIN
     RETURN json_build_object(
       'ok', false,
       'message', format(
-        'Reserved range invalid: %s rows, %s events, attendee_id %s–%s.',
+        'Reserved range invalid: %s rows, %s events, attendee_id %sâ€“%s.',
         row_count, event_count, id_min, id_max
       )
     );
@@ -238,7 +259,7 @@ BEGIN
   RETURN json_build_object(
     'ok', true,
     'message', format(
-      'Generated %s demo attendees (attendee_id 1–%s).',
+      'Generated %s demo attendees (attendee_id 1â€“%s).',
       demo_attendee_reserve,
       demo_attendee_reserve
     ),
@@ -249,27 +270,5 @@ BEGIN
   );
 END;
 $$;
-
-CREATE OR REPLACE FUNCTION api.generate_demo_attendees()
-RETURNS json
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public, api
-AS $$
-BEGIN
-  IF NOT api.has_app_role('admin') THEN
-    RETURN json_build_object(
-      'ok', false,
-      'message', 'Admin role required.'
-    );
-  END IF;
-
-  RETURN api.generate_demo_attendees_core();
-END;
-$$;
-
-REVOKE ALL ON FUNCTION api.generate_demo_attendees_core() FROM PUBLIC;
-REVOKE ALL ON FUNCTION api.generate_demo_attendees() FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION api.generate_demo_attendees() TO authenticated;
-
 NOTIFY pgrst, 'reload schema';
+

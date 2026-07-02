@@ -1,9 +1,51 @@
--- Admin RPC: regenerate demo attendees (attendee_id 1–3000).
--- Core logic in generate_demo_attendees_core(); admin wrapper for PostgREST.
---
--- Run: psql -U postgres -d event_system_pro -f database/migrations/044_generate_demo_attendees.sql
+-- Rename swing demo event_group codes to clever swing-themed names.
+-- Run: psql -U postgres -d event_system_pro -f database/migrations/054_rename_clever_swing_dance_event_groups.sql
 
 \connect event_system_pro
+
+INSERT INTO public.event_group (event_group_code, full_name, short_name, more_json, created_by)
+VALUES
+  ('SWING_STATE_CLASSIC', 'Swing State Classic', 'Swing State', '{"demo": true}'::jsonb, 'c-agent'),
+  ('VERTEX_SWING_OPEN', 'Vertex Swing Open', 'Vertex Swing', '{"demo": true}'::jsonb, 'c-agent'),
+  ('WILDCARD_SWING_INVITATIONAL', 'Wildcard Swing Invitational', 'Wildcard Swing', '{"demo": true}'::jsonb, 'c-agent'),
+  ('POWER_COUPLE_SWING_CHAMPIONSHIP', 'Power Couple Swing Championship', 'Power Couple', '{"demo": true}'::jsonb, 'c-agent')
+ON CONFLICT (event_group_code) DO UPDATE SET
+  full_name = EXCLUDED.full_name,
+  short_name = EXCLUDED.short_name,
+  more_json = EXCLUDED.more_json;
+
+UPDATE public."event" SET event_group_code = 'SWING_STATE_CLASSIC' WHERE event_group_code = 'LINDY_LOOP_CLASSIC';
+UPDATE public."event" SET event_group_code = 'VERTEX_SWING_OPEN' WHERE event_group_code = 'CHARLESTON_CIRCUIT_OPEN';
+UPDATE public."event" SET event_group_code = 'WILDCARD_SWING_INVITATIONAL' WHERE event_group_code = 'BALBOA_BASH_INVITATIONAL';
+UPDATE public."event" SET event_group_code = 'POWER_COUPLE_SWING_CHAMPIONSHIP' WHERE event_group_code = 'THORNBAY_COUPLES_CHAMPIONSHIP';
+
+UPDATE public."event" SET name = REPLACE(name, 'Lindy Loop Classic', 'Swing State Classic')
+WHERE event_group_code = 'SWING_STATE_CLASSIC';
+
+UPDATE public."event" SET name = REPLACE(name, 'Charleston Circuit Open', 'Vertex Swing Open')
+WHERE event_group_code = 'VERTEX_SWING_OPEN';
+
+UPDATE public."event" SET name = REPLACE(name, 'Balboa Bash Invitational', 'Wildcard Swing Invitational')
+WHERE event_group_code = 'WILDCARD_SWING_INVITATIONAL';
+
+UPDATE public."event" SET name = REPLACE(name, 'Thornbay Couples Championship', 'Power Couple Swing Championship')
+WHERE event_group_code = 'POWER_COUPLE_SWING_CHAMPIONSHIP';
+
+ALTER TABLE public.event_staff_pool
+  ALTER COLUMN event_group_code TYPE varchar(64);
+
+UPDATE public.event_staff_pool SET event_group_code = 'SWING_STATE_CLASSIC' WHERE event_group_code = 'LINDY_LOOP_CLASSIC';
+UPDATE public.event_staff_pool SET event_group_code = 'VERTEX_SWING_OPEN' WHERE event_group_code = 'CHARLESTON_CIRCUIT_OPEN';
+UPDATE public.event_staff_pool SET event_group_code = 'WILDCARD_SWING_INVITATIONAL' WHERE event_group_code = 'BALBOA_BASH_INVITATIONAL';
+UPDATE public.event_staff_pool SET event_group_code = 'POWER_COUPLE_SWING_CHAMPIONSHIP' WHERE event_group_code = 'THORNBAY_COUPLES_CHAMPIONSHIP';
+
+DELETE FROM public.event_group
+WHERE event_group_code IN (
+  'LINDY_LOOP_CLASSIC',
+  'CHARLESTON_CIRCUIT_OPEN',
+  'BALBOA_BASH_INVITATIONAL',
+  'THORNBAY_COUPLES_CHAMPIONSHIP'
+);
 
 CREATE OR REPLACE FUNCTION api.generate_demo_attendees_core()
 RETURNS json
@@ -203,7 +245,7 @@ BEGIN
     RETURN json_build_object(
       'ok', false,
       'message', format(
-        'Reserved range invalid: %s rows, %s events, attendee_id %s–%s.',
+        'Reserved range invalid: %s rows, %s events, attendee_id %s-%s.',
         row_count, event_count, id_min, id_max
       )
     );
@@ -238,7 +280,7 @@ BEGIN
   RETURN json_build_object(
     'ok', true,
     'message', format(
-      'Generated %s demo attendees (attendee_id 1–%s).',
+      'Generated %s demo attendees (attendee_id 1-%s).',
       demo_attendee_reserve,
       demo_attendee_reserve
     ),
@@ -249,27 +291,5 @@ BEGIN
   );
 END;
 $$;
-
-CREATE OR REPLACE FUNCTION api.generate_demo_attendees()
-RETURNS json
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public, api
-AS $$
-BEGIN
-  IF NOT api.has_app_role('admin') THEN
-    RETURN json_build_object(
-      'ok', false,
-      'message', 'Admin role required.'
-    );
-  END IF;
-
-  RETURN api.generate_demo_attendees_core();
-END;
-$$;
-
-REVOKE ALL ON FUNCTION api.generate_demo_attendees_core() FROM PUBLIC;
-REVOKE ALL ON FUNCTION api.generate_demo_attendees() FROM PUBLIC;
-GRANT EXECUTE ON FUNCTION api.generate_demo_attendees() TO authenticated;
 
 NOTIFY pgrst, 'reload schema';

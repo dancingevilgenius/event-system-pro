@@ -6,6 +6,46 @@
 
 \connect event_system_pro
 
+-- Retire superseded dance group codes before upserting current swing demo names.
+DELETE FROM public.attendee
+WHERE event_id IN (
+  SELECT event_id FROM public."event"
+  WHERE event_group_code IN (
+    'BRINDLEWICK_CLASSIC',
+    'LARKSPUR_OPEN',
+    'MARIGLEN_INVITATIONAL',
+    'SELWICK_CONGRESS',
+    'LINDY_LOOP_CLASSIC',
+    'CHARLESTON_CIRCUIT_OPEN',
+    'BALBOA_BASH_INVITATIONAL',
+    'THORNBAY_COUPLES_CHAMPIONSHIP'
+  )
+);
+
+DELETE FROM public."event"
+WHERE event_group_code IN (
+  'BRINDLEWICK_CLASSIC',
+  'LARKSPUR_OPEN',
+  'MARIGLEN_INVITATIONAL',
+  'SELWICK_CONGRESS',
+  'LINDY_LOOP_CLASSIC',
+  'CHARLESTON_CIRCUIT_OPEN',
+  'BALBOA_BASH_INVITATIONAL',
+  'THORNBAY_COUPLES_CHAMPIONSHIP'
+);
+
+DELETE FROM public.event_group
+WHERE event_group_code IN (
+  'BRINDLEWICK_CLASSIC',
+  'LARKSPUR_OPEN',
+  'MARIGLEN_INVITATIONAL',
+  'SELWICK_CONGRESS',
+  'LINDY_LOOP_CLASSIC',
+  'CHARLESTON_CIRCUIT_OPEN',
+  'BALBOA_BASH_INVITATIONAL',
+  'THORNBAY_COUPLES_CHAMPIONSHIP'
+);
+
 INSERT INTO public.event_group (
   event_group_code,
   full_name,
@@ -14,39 +54,39 @@ INSERT INTO public.event_group (
   created_by
 )
 VALUES
-  -- Couples dance circuit (no dance-style names in titles)
+  -- Swing / couples dance circuit
   (
-    'BRINDLEWICK_CLASSIC',
-    'Brindlewick Classic',
-    'Brindlewick',
+    'SWING_STATE_CLASSIC',
+    'Swing State Classic',
+    'Swing State',
     '{"demo": true}'::jsonb,
     'c-agent'
   ),
   (
-    'LARKSPUR_OPEN',
-    'Larkspur Open',
-    'Larkspur',
+    'VERTEX_SWING_OPEN',
+    'Vertex Swing Open',
+    'Vertex Swing',
     '{"demo": true}'::jsonb,
     'c-agent'
   ),
   (
-    'MARIGLEN_INVITATIONAL',
-    'Mariglen Invitational',
-    'Mariglen',
+    'WILDCARD_SWING_INVITATIONAL',
+    'Wildcard Swing Invitational',
+    'Wildcard Swing',
     '{"demo": true}'::jsonb,
     'c-agent'
   ),
   (
-    'SELWICK_CONGRESS',
-    'Selwick Congress',
-    'Selwick',
+    'JITTERBUG_JAMBOREE',
+    'Jitterbug Jamboree',
+    'Jitterbug Jamboree',
     '{"demo": true}'::jsonb,
     'c-agent'
   ),
   (
-    'THORNBAY_COUPLES_CHAMPIONSHIP',
-    'Thornbay Couples Championship',
-    'Thornbay',
+    'POWER_COUPLE_SWING_CHAMPIONSHIP',
+    'Power Couple Swing Championship',
+    'Power Couple',
     '{"demo": true}'::jsonb,
     'c-agent'
   ),

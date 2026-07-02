@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -11,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from female_follower_heroes import FEMALE_FOLLOWERS
 from image_comics_heroes import IMAGE_HEROES
+from internet_comics_heroes import INTERNET_COMICS_HEROES
 from superhero_locations import build_address
 
 TARGET_COUNT = 1000
@@ -177,7 +179,7 @@ HEROES: list[tuple[str, str, str, str, str | None, str | None, str | None]] = [
     ("cable", "Nathan", "Summers", "Marvel", "male", "blue", "silver"),
     ("domino", "Neena", "Thurman", "Marvel", "female", "black", "white"),
     ("cablegirl", "Hope", "Summers", "Marvel", "female", "yellow", "blue"),
-    ("x23", "Laura", "Kinney", "Marvel", "female", "yellow", "blue"),
+    ("weaponx", "Laura", "Kinney", "Marvel", "female", "yellow", "blue"),
     ("dazzler", "Alison", "Blaire", "Marvel", "female", "silver", "pink"),
     ("bishop", "Lucas", "Bishop", "Marvel", "male", "red", "black"),
     ("sunspot", "Roberto", "da Costa", "Marvel", "male", "black", "gold"),
@@ -221,7 +223,6 @@ HEROES: list[tuple[str, str, str, str, str | None, str | None, str | None]] = [
     ("shuri", "Shuri", "Udaku", "Marvel", "female", "black", "purple"),
     ("okoye", "Okoye", "Dora Milaje", "Marvel", "female", "red", "gold"),
     ("killmonger", "Erik", "Stevens", "Marvel", "male", "black", "gold"),
-    ("mysterio2", "Ludwig", "Ravelli", "Marvel", "male", "silver", "green"),
     ("war machine", "James", "Rhodes", "Marvel", "male", "gray", "silver"),
     ("pepperpotts", "Virginia", "Potts", "Marvel", "female", "blue", "silver"),
     ("nickfury", "Nicholas", "Fury", "Marvel", "male", "black", "gray"),
@@ -233,7 +234,6 @@ HEROES: list[tuple[str, str, str, str, str | None, str | None, str | None]] = [
     ("scarletspider", "Ben", "Reilly", "Marvel", "male", "red", "blue"),
     ("spiderwoman", "Jessica", "Drew", "Marvel", "female", "red", "yellow"),
     ("silk", "Cindy", "Moon", "Marvel", "female", "red", "black"),
-    ("punisher2", "Frank", "Castle", "Marvel", "male", "gray", "black"),
     ("moon girl", "Lunella", "Lafayette", "Marvel", "female", "purple", "yellow"),
     ("devil dinosaur", "Devil", "Dinosaur", "Marvel", "male", "red", "orange"),
     ("americachavez", "America", "Chavez", "Marvel", "female", "red", "blue"),
@@ -244,7 +244,6 @@ HEROES: list[tuple[str, str, str, str, str | None, str | None, str | None]] = [
     ("redguardian", "Alexei", "Shostakov", "Marvel", "male", "red", "white"),
     ("taskmaster", "Tony", "Masters", "Marvel", "male", "orange", "black"),
     ("ultron", "Ultron", "Prime", "Marvel", "male", "red", "silver"),
-    ("vision2", "Vision", "Android", "Marvel", "male", "green", "gold"),
     ("wong", "Wong", "Master", "Marvel", "male", "red", "black"),
     ("ancientone", "Ancient", "One", "Marvel", None, "gold", "green"),
     ("mordo", "Karl", "Mordo", "Marvel", "male", "red", "black"),
@@ -255,7 +254,6 @@ HEROES: list[tuple[str, str, str, str, str | None, str | None, str | None]] = [
     ("hulkling", "Theodore", "Altman", "Marvel", "male", "green", "gold"),
     ("speed", "Thomas", "Shepherd", "Marvel", "male", "red", "silver"),
     ("northstar", "Jean-Paul", "Beaubier", "Marvel", "male", "white", "black"),
-    ("iceman2", "Robert", "Drake", "Marvel", "male", "white", "blue"),
     ("squirrelgirl", "Doreen", "Green", "Marvel", "female", "brown", "gray"),
     ("hellcat", "Patsy", "Walker", "Marvel", "female", "yellow", "blue"),
     ("white tiger", "Ava", "Ayala", "Marvel", "female", "white", "black"),
@@ -263,11 +261,9 @@ HEROES: list[tuple[str, str, str, str, str | None, str | None, str | None]] = [
     ("kang", "Nathaniel", "Richards", "Marvel", "male", "green", "purple"),
     ("immortus", "Nathaniel", "Richards", "Marvel", "male", "blue", "gold"),
     ("galactus", "Galan", "Galactus", "Marvel", "male", "purple", "blue"),
-    ("silversurfer2", "Norrin", "Radd", "Marvel", "male", "chrome", "black"),
     ("dormammu", "Dormammu", "Dark", "Marvel", "male", "red", "orange"),
     ("shuma gorath", "Shuma", "Gorath", "Marvel", "male", "green", "yellow"),
     ("ghost rider robbie", "Robbie", "Reyes", "Marvel", "male", "blue", "orange"),
-    ("punisher2099", "Jake", "Gallows", "Marvel", "male", "black", "red"),
     ("spidergwen", "Gwen", "Stacy", "Marvel", "female", "white", "pink"),
     ("spiderpunk", "Hobie", "Brown", "Marvel", "male", "red", "black"),
     ("spideruk", "William", "Braddock", "Marvel", "male", "blue", "red"),
@@ -275,12 +271,10 @@ HEROES: list[tuple[str, str, str, str, str | None, str | None, str | None]] = [
     ("miguelohara", "Miguel", "O'Hara", "Marvel", "male", "blue", "red"),
     ("spidernoir", "Peter", "Parker", "Marvel", "male", "black", "gray"),
     ("spiderham", "Peter", "Porker", "Marvel", "male", "blue", "red"),
-    ("sentry2", "Bob", "Reynolds", "Marvel", "male", "gold", "red"),
     ("blue marvel", "Adam", "Brashear", "Marvel", "male", "blue", "white"),
     ("spectrum", "Monica", "Rambeau", "Marvel", "female", "white", "gold"),
     ("photon", "Monica", "Rambeau", "Marvel", "female", "gold", "white"),
     ("binary", "Carol", "Danvers", "Marvel", "female", "white", "gold"),
-    ("rogue2", "Rogue", "X-Men", "Marvel", "female", "yellow", "green"),
     ("mystique", "Raven", "Darkholme", "Marvel", "female", "blue", "yellow"),
     ("sabretooth", "Victor", "Creed", "Marvel", "male", "orange", "brown"),
     ("omega red", "Arkady", "Rossovich", "Marvel", "male", "red", "silver"),
@@ -303,16 +297,15 @@ HEROES: list[tuple[str, str, str, str, str | None, str | None, str | None]] = [
     ("clea", "Clea", "Strange", "Marvel", "female", "purple", "black"),
     ("hellstorm", "Daimon", "Hellstrom", "Marvel", "male", "red", "black"),
     ("satana", "Satana", "Hellstrom", "Marvel", "female", "red", "black"),
-    ("hellcat2", "Hellcat", "Walker", "Marvel", "female", "yellow", "black"),
     ("manthing", "Theodore", "Sallis", "Marvel", "male", "green", "brown"),
     ("howardduck", "Howard", "Duck", "Marvel", "male", "green", "white"),
-    ("squirrelgirl2", "Doreen", "Green", "Marvel", "female", "orange", "brown"),
 ]
 
 
 def iter_curated_heroes() -> list[tuple[str, str, str, str, str | None, str | None, str | None]]:
     rows = list(HEROES)
     rows.extend(IMAGE_HEROES)
+    rows.extend(INTERNET_COMICS_HEROES)
     rows.extend(
         (username, first, last, publisher, "female", color1, color2)
         for username, first, last, publisher, color1, color2 in FEMALE_FOLLOWERS
@@ -321,6 +314,83 @@ def iter_curated_heroes() -> list[tuple[str, str, str, str, str | None, str | No
 
 def normalize_username(raw: str) -> str:
     return "".join(ch for ch in raw.lower() if ch.isalnum())[:64]
+
+
+NUMERIC_SUFFIX_RE = re.compile(r"^(.*?)(\d+)$")
+
+
+def username_root(username: str) -> str:
+    lower = username.lower()
+    match = NUMERIC_SUFFIX_RE.match(lower)
+    return match.group(1) if match else lower
+
+
+def numeric_suffix_part(username: str) -> int:
+    lower = username.lower()
+    match = NUMERIC_SUFFIX_RE.match(lower)
+    return int(match.group(2)) if match else 0
+
+
+def name_key_from_parts(first: str, last: str) -> tuple[str, str]:
+    return (first.strip().lower(), last.strip().lower())
+
+
+def name_key_from_row(row: tuple[str, ...]) -> tuple[str, str]:
+    name = json.loads(row[1].replace("''", "'"))
+    return name_key_from_parts(name.get("first", ""), name.get("last", ""))
+
+
+def existing_names_for_root(
+    rows: list[tuple[str, str, str, str, str, str, str, str, str]],
+    root: str,
+) -> set[tuple[str, str]]:
+    names: set[tuple[str, str]] = set()
+    for row in rows:
+        if username_root(row[0]) == root:
+            names.add(name_key_from_row(row))
+    return names
+
+
+def is_duplicate_person_for_root(
+    rows: list[tuple[str, str, str, str, str, str, str, str, str]],
+    root: str,
+    first: str,
+    last: str,
+) -> bool:
+    return name_key_from_parts(first, last) in existing_names_for_root(rows, root)
+
+
+def rejects_numeric_codename(raw: str) -> bool:
+    """Reject codenames/usernames that contain digits or trailing numeric suffixes."""
+    if re.search(r"\d", raw):
+        return True
+    normalized = normalize_username(raw)
+    return bool(normalized) and numeric_suffix_part(normalized) > 0
+
+
+def resolve_unique_username(
+    raw_username: str,
+    first: str,
+    last: str,
+    publisher: str,
+    seen: set[str],
+    rows: list[tuple[str, str, str, str, str, str, str, str, str]],
+) -> str | None:
+    if rejects_numeric_codename(raw_username):
+        return None
+
+    base = normalize_username(raw_username)
+    if not base:
+        return None
+
+    root = username_root(base)
+    if is_duplicate_person_for_root(rows, root, first, last):
+        return None
+
+    if base in seen:
+        return None
+
+    return base
 
 
 def rejects_concat_username(username: str, first: str, last: str) -> bool:
@@ -337,23 +407,22 @@ def try_add_hero(
     color1: str | None,
     color2: str | None,
     seen: set[str],
-    seen_names: set[tuple[str, str]],
     rows: list[tuple[str, str, str, str, str, str, str, str, str]],
 ) -> bool:
-    username = normalize_username(raw_username)
-    if not username or username in seen:
+    if rejects_numeric_codename(raw_username):
+        return False
+
+    username = resolve_unique_username(raw_username, first, last, publisher, seen, rows)
+    if not username:
         return False
 
     name_key = (first.strip().lower(), last.strip().lower())
     if name_key[1] in BLOCKED_LAST_NAMES:
         return False
-    if name_key in seen_names:
-        return False
     if rejects_concat_username(username, first, last):
         return False
 
     seen.add(username)
-    seen_names.add(name_key)
 
     display = f"{first} {last}".strip()
     name_json = {
@@ -392,6 +461,173 @@ def try_add_hero(
     return True
 
 
+def try_add_hero_or_alt(
+    raw_username: str,
+    first: str,
+    last: str,
+    publisher: str,
+    sex: str | None,
+    color1: str | None,
+    color2: str | None,
+    seen: set[str],
+    rows: list[tuple[str, str, str, str, str, str, str, str, str]],
+) -> bool:
+    if try_add_hero(
+        raw_username, first, last, publisher, sex, color1, color2,
+        seen, rows,
+    ):
+        return True
+
+    alt = normalize_username(f"{first[0]}{last}")
+    if not alt or alt == normalize_username(first + last) or rejects_numeric_codename(alt):
+        return False
+
+    return try_add_hero(
+        alt, first, last, publisher, sex, color1, color2,
+        seen, rows,
+    )
+
+
+PUBLISHER_SUFFIXES = ("dc", "marvel")
+YOUNGBLOOD_PREFIX = "youngblood"
+REMOVED_USERNAMES = frozenset({"wonderwomanwonderwoman"})
+
+
+def row_publisher(row: tuple[str, ...]) -> str:
+    info = json.loads(row[4].replace("''", "'"))
+    notes = info.get("notes", "")
+    for pub in ("DC", "Marvel", "Image"):
+        if notes.startswith(f"{pub} "):
+            return pub
+    return "Marvel"
+
+
+def update_row_username(
+    row: tuple[str, str, str, str, str, str, str, str, str],
+    new_username: str,
+    row_index: int,
+) -> tuple[str, str, str, str, str, str, str, str, str]:
+    publisher = row_publisher(row)
+    email = f"{new_username}@superhero.com"
+    address = sql_json([build_address(new_username, publisher, row_index)])
+    return (
+        new_username,
+        row[1],
+        email,
+        row[3],
+        row[4],
+        address,
+        row[6],
+        row[7],
+        row[8],
+    )
+
+
+def is_publisher_suffix_variant(base: str, candidate: str) -> bool:
+    base_l = base.lower()
+    candidate_l = candidate.lower()
+    return any(candidate_l == base_l + suffix for suffix in PUBLISHER_SUFFIXES)
+
+
+def remove_numeric_suffix_usernames(
+    rows: list[tuple[str, str, str, str, str, str, str, str, str]],
+) -> tuple[list[tuple[str, str, str, str, str, str, str, str, str]], int]:
+    kept = [row for row in rows if numeric_suffix_part(row[0]) == 0]
+    return kept, len(rows) - len(kept)
+
+
+def remove_adjacent_publisher_suffix_duplicates(
+    rows: list[tuple[str, str, str, str, str, str, str, str, str]],
+) -> tuple[list[tuple[str, str, str, str, str, str, str, str, str]], int]:
+    if not rows:
+        return rows, 0
+
+    kept = [rows[0]]
+    deleted = 0
+    for row in rows[1:]:
+        if is_publisher_suffix_variant(kept[-1][0], row[0]):
+            deleted += 1
+            continue
+        kept.append(row)
+    return kept, deleted
+
+
+def rename_youngblood_usernames(
+    rows: list[tuple[str, str, str, str, str, str, str, str, str]],
+) -> tuple[list[tuple[str, str, str, str, str, str, str, str, str]], int]:
+    seen: set[str] = set()
+    renamed: list[tuple[str, str, str, str, str, str, str, str, str]] = []
+    deleted = 0
+
+    for index, row in enumerate(rows):
+        username = row[0]
+        lower = username.lower()
+        if lower.startswith(YOUNGBLOOD_PREFIX) and len(lower) > len(YOUNGBLOOD_PREFIX):
+            new_username = normalize_username(lower[len(YOUNGBLOOD_PREFIX) :])
+            if not new_username or new_username in seen or new_username in REMOVED_USERNAMES:
+                deleted += 1
+                continue
+            row = update_row_username(row, new_username, index)
+            username = new_username
+
+        if username in seen:
+            deleted += 1
+            continue
+
+        seen.add(username)
+        renamed.append(row)
+
+    return renamed, deleted
+
+
+def remove_blocked_usernames(
+    rows: list[tuple[str, str, str, str, str, str, str, str, str]],
+) -> tuple[list[tuple[str, str, str, str, str, str, str, str, str]], int]:
+    kept = [row for row in rows if row[0] not in REMOVED_USERNAMES]
+    return kept, len(rows) - len(kept)
+
+
+def rebuild_seen(rows: list[tuple[str, str, str, str, str, str, str, str, str]]) -> set[str]:
+    return {row[0] for row in rows}
+
+
+def cleanup_rows(
+    rows: list[tuple[str, str, str, str, str, str, str, str, str]],
+) -> tuple[list[tuple[str, str, str, str, str, str, str, str, str]], int]:
+    total_deleted = 0
+
+    rows, deleted = remove_numeric_suffix_usernames(rows)
+    total_deleted += deleted
+
+    rows, deleted = remove_adjacent_publisher_suffix_duplicates(rows)
+    total_deleted += deleted
+
+    rows, deleted = rename_youngblood_usernames(rows)
+    total_deleted += deleted
+
+    rows, deleted = remove_blocked_usernames(rows)
+    total_deleted += deleted
+
+    return rows, total_deleted
+
+
+def backfill_rows(
+    rows: list[tuple[str, str, str, str, str, str, str, str, str]],
+    seen: set[str],
+    at_least: int,
+) -> tuple[list[tuple[str, str, str, str, str, str, str, str, str]], int]:
+    added = 0
+    for raw_username, first, last, publisher, sex, color1, color2 in iter_curated_heroes():
+        if len(rows) >= at_least:
+            break
+        if try_add_hero_or_alt(
+            raw_username, first, last, publisher, sex, color1, color2,
+            seen, rows,
+        ):
+            added += 1
+    return rows, added
+
+
 def build_additional_info(
     publisher: str,
     sex: str | None,
@@ -418,16 +654,40 @@ def sql_json(value: dict | list) -> str:
 
 def main() -> None:
     seen: set[str] = set()
-    seen_names: set[tuple[str, str]] = set()
     rows: list[tuple[str, str, str, str, str, str, str, str, str]] = []
 
     for raw_username, first, last, publisher, sex, color1, color2 in iter_curated_heroes():
         try_add_hero(
             raw_username, first, last, publisher, sex, color1, color2,
-            seen, seen_names, rows,
+            seen, rows,
         )
-        if len(rows) >= TARGET_COUNT:
+
+    numeric_deleted = 0
+    backfill_added = 0
+    while True:
+        before_len = len(rows)
+        rows, deleted_count = cleanup_rows(rows)
+        numeric_deleted += deleted_count
+        seen = rebuild_seen(rows)
+        if deleted_count == 0:
             break
+        rows, added = backfill_rows(rows, seen, at_least=before_len)
+        backfill_added += added
+
+    while len(rows) < TARGET_COUNT:
+        before = len(rows)
+        rows, added = backfill_rows(rows, seen, at_least=TARGET_COUNT)
+        backfill_added += added
+        if len(rows) == before:
+            break
+
+    if numeric_deleted:
+        print(
+            f"Cleanup removed {numeric_deleted} duplicate/bad usernames; "
+            f"backfilled {backfill_added} replacements."
+        )
+    else:
+        print("Cleanup: 0 duplicate/bad usernames removed.")
 
     if len(rows) < TARGET_COUNT:
         print(
@@ -443,9 +703,10 @@ def main() -> None:
         / "005a_update_superhero_addresses.sql"
     )
     lines = [
-        f"-- Up to {TARGET_COUNT} Marvel/DC/Image superhero seed users for local development.",
+        f"-- {TARGET_COUNT} Marvel/DC/Image superhero seed users for local development.",
         "-- Username and plaintext password are identical; password is bcrypt-hashed on insert.",
-        "-- Safe to re-run: skips rows when username already exists.",
+        "-- user_id is assigned sequentially 1..N (run before other user seeds in dev.manifest).",
+        "-- Safe to re-run: removes prior @superhero.com rows, then inserts with fixed user_id values.",
         "--",
         "--   psql -U postgres -d event_system_pro -f database/seeds/005_user_superheroes.sql",
         "",
@@ -453,12 +714,63 @@ def main() -> None:
         "",
         "CREATE EXTENSION IF NOT EXISTS pgcrypto;",
         "",
+        "BEGIN;",
+        "",
+        "-- Move non-superhero users out of reserved user_id band 1..1000.",
+        "CREATE TEMP TABLE _relocate_users ON COMMIT DROP AS",
+        "SELECT user_id AS old_id, username",
+        "FROM public.\"user\"",
+        "WHERE email NOT LIKE '%@superhero.com'",
+        "  AND user_id <= 1000;",
+        "",
+        "CREATE TEMP TABLE _saved_user_app_roles ON COMMIT DROP AS",
+        "SELECT uar.user_id AS old_id, uar.role_code",
+        "FROM public.user_app_role uar",
+        "WHERE uar.user_id IN (SELECT old_id FROM _relocate_users);",
+        "",
+        "CREATE TEMP TABLE _relocate_map (old_id bigint PRIMARY KEY, new_id bigint NOT NULL) ON COMMIT DROP;",
+        "",
+        "DO $$",
+        "DECLARE",
+        "  r RECORD;",
+        "  next_id bigint;",
+        "BEGIN",
+        "  SELECT COALESCE(MAX(user_id), 1000) INTO next_id FROM public.\"user\";",
+        "  FOR r IN",
+        "    SELECT old_id FROM _relocate_users ORDER BY old_id DESC",
+        "  LOOP",
+        "    next_id := next_id + 1;",
+        "    INSERT INTO _relocate_map (old_id, new_id) VALUES (r.old_id, next_id);",
+        "    DELETE FROM public.user_app_role WHERE user_id = r.old_id;",
+        "    DELETE FROM public.user_password_reset WHERE user_id = r.old_id;",
+        "    DELETE FROM public.attendee WHERE user_id = r.old_id;",
+        "    DELETE FROM public.competitor WHERE user_id = r.old_id;",
+        "    DELETE FROM public.user_preference WHERE user_id = r.old_id;",
+        "    UPDATE public.\"user\" SET user_id = next_id WHERE user_id = r.old_id;",
+        "  END LOOP;",
+        "END $$;",
+        "",
+        "INSERT INTO public.user_app_role (user_id, role_code)",
+        "SELECT m.new_id, s.role_code",
+        "FROM _saved_user_app_roles s",
+        "JOIN _relocate_map m ON m.old_id = s.old_id",
+        "ON CONFLICT DO NOTHING;",
+        "",
+        "DELETE FROM public.attendee a",
+        "USING public.\"user\" u",
+        "WHERE a.user_id = u.user_id",
+        "  AND u.email LIKE '%@superhero.com';",
+        "",
+        "DELETE FROM public.\"user\"",
+        "WHERE email LIKE '%@superhero.com';",
+        "",
     ]
 
-    for username, name_json, email, phone, additional_info, address, social, volunteer, recovery in rows:
+    for user_id, (username, name_json, email, phone, additional_info, address, social, volunteer, recovery) in enumerate(rows, start=1):
         lines.extend(
             [
                 "INSERT INTO public.\"user\" (",
+                "  user_id,",
                 "  username,",
                 "  password_encrypted,",
                 "  name_json,",
@@ -474,7 +786,8 @@ def main() -> None:
                 "  modified_by,",
                 "  modified_date",
                 ")",
-                "SELECT",
+                "VALUES (",
+                f"  {user_id},",
                 f"  '{username}',",
                 f"  crypt('{username}', gen_salt('bf')),",
                 f"  '{name_json}'::json,",
@@ -489,9 +802,6 @@ def main() -> None:
                 "  'c-agent',",
                 "  NULL,",
                 "  NULL",
-                "",
-                "WHERE NOT EXISTS (",
-                f"  SELECT 1 FROM public.\"user\" WHERE username = '{username}'",
                 ");",
                 "",
             ]
@@ -499,7 +809,21 @@ def main() -> None:
 
     lines.extend(
         [
+            "COMMIT;",
+            "",
+            "DO $$",
+            "BEGIN",
+            "  EXECUTE format(",
+            "    'ALTER TABLE public.\"user\" ALTER COLUMN user_id RESTART WITH %s',",
+            "    (SELECT COALESCE(MAX(user_id), 0) + 1 FROM public.\"user\")",
+            "  );",
+            "END $$;",
+            "",
             "SELECT COUNT(*) AS superhero_seed_users",
+            "FROM public.\"user\"",
+            "WHERE email LIKE '%@superhero.com';",
+            "",
+            "SELECT MIN(user_id) AS min_user_id, MAX(user_id) AS max_user_id",
             "FROM public.\"user\"",
             "WHERE email LIKE '%@superhero.com';",
             "",

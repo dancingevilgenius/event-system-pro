@@ -3,10 +3,10 @@
 # Keep in sync with scripts/rebuild-local-database.ps1.
 
 002_event_type_lu_seed.sql
-003_user_dummy.sql
-004_user_carlos.sql
 005_user_superheroes.sql
 005a_update_superhero_addresses.sql
+003_user_dummy.sql
+004_user_carlos.sql
 007_dancingevilgenius_app_roles.sql
 008_event_group_fictional.sql
 009_event_group_robot.sql

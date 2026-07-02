@@ -40,3 +40,26 @@ ON CONFLICT (list_code) DO UPDATE SET
   governing_body_code = EXCLUDED.governing_body_code,
   short_desc = EXCLUDED.short_desc,
   list_json = EXCLUDED.list_json;
+
+INSERT INTO public.static_list (list_code, governing_body_code, short_desc, list_json)
+SELECT
+  'US_STATES',
+  'US',
+  'United States states and territories',
+  COALESCE(
+    (
+      SELECT json_agg(
+        json_build_object(
+          'key', trim(s.code),
+          'label', s.name
+        )
+        ORDER BY s.id
+      )
+      FROM public.us_state_lu AS s
+    ),
+    '[]'::json
+  )
+ON CONFLICT (list_code) DO UPDATE SET
+  governing_body_code = EXCLUDED.governing_body_code,
+  short_desc = EXCLUDED.short_desc,
+  list_json = EXCLUDED.list_json;

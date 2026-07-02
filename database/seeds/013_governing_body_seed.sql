@@ -39,6 +39,13 @@ VALUES
     'PRS',
     '{"website": "https://powerracingseries.org", "facebook": "https://www.facebook.com/PowerRacingSeries", "discord": ""}'::json,
     'c-agent'
+  ),
+  (
+    'US',
+    'United States',
+    'US',
+    NULL,
+    'c-agent'
   )
 ON CONFLICT (governing_body_code) DO UPDATE SET
   long_name = EXCLUDED.long_name,

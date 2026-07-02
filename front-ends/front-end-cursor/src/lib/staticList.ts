@@ -1,6 +1,9 @@
 /** Sentinel integer for min-age / max-age when no limit applies. */
 export const NOT_APPLICABLE_INT = -1;
 
+/** `static_list.list_code` for United States states and territories. */
+export const US_STATES_LIST_CODE = 'US_STATES';
+
 export type StaticListJsonField = 'min-age' | 'max-age';
 
 export function formatStaticListAge(value: number): string {

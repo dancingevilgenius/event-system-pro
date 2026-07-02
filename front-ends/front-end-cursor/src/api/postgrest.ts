@@ -1,5 +1,5 @@
 import { loadSession, type AppRole } from '../lib/session';
-import { NOT_APPLICABLE_INT } from '../lib/staticList';
+import { NOT_APPLICABLE_INT, US_STATES_LIST_CODE } from '../lib/staticList';
 
 const POSTGREST_URL =
   import.meta.env.VITE_POSTGREST_URL ?? 'http://localhost:3000';
@@ -328,16 +328,18 @@ export async function fetchUsStateCodes(): Promise<string[]> {
   return states.map((state) => state.code);
 }
 
-export async function fetchUsStates(): Promise<UsState[]> {
-  const response = await fetch(`${POSTGREST_URL}/us_state_lu?select=code,name&order=name`, {
-    headers: buildAuthHeaders(undefined, 'omit'),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Unable to load states (${response.status})`);
+export async function fetchUsStatesStaticList(): Promise<StaticListEntry[]> {
+  const list = await fetchStaticListByCode(US_STATES_LIST_CODE);
+  if (!list) {
+    throw new Error('Unable to load states (US_STATES list not found)');
   }
 
-  return (await response.json()) as UsState[];
+  return [...list.listJson].sort((a, b) => a.label.localeCompare(b.label));
+}
+
+export async function fetchUsStates(): Promise<UsState[]> {
+  const entries = await fetchUsStatesStaticList();
+  return entries.map((entry) => ({ code: entry.key, name: entry.label }));
 }
 
 export async function fetchCountries(): Promise<Country[]> {

@@ -14,10 +14,10 @@ import {
   registerUser,
   fetchCountries,
   fetchSecretQuestions,
-  fetchUsStates,
+  fetchUsStatesStaticList,
   type Country,
   type PasswordRecoveryJson,
-  type UsState,
+  type StaticListEntry,
 } from '../api/postgrest';
 import PasswordRecoveryDialog, {
   type PasswordRecoveryAnswer,
@@ -151,7 +151,7 @@ export default function RegisterPage() {
   const [submitting, setSubmitting] = useState(false);
   const [assignedQuestionIds, setAssignedQuestionIds] = useState<number[]>([]);
   const [countries, setCountries] = useState<Country[]>([]);
-  const [states, setStates] = useState<UsState[]>([]);
+  const [states, setStates] = useState<StaticListEntry[]>([]);
   const [loadingCountries, setLoadingCountries] = useState(true);
   const [loadingStates, setLoadingStates] = useState(true);
 
@@ -162,7 +162,7 @@ export default function RegisterPage() {
   useEffect(() => {
     let cancelled = false;
 
-    Promise.all([fetchCountries(), fetchUsStates()])
+    Promise.all([fetchCountries(), fetchUsStatesStaticList()])
       .then(([countryItems, stateItems]) => {
         if (cancelled) {
           return;
@@ -403,8 +403,8 @@ export default function RegisterPage() {
                 <em>Select a state</em>
               </MenuItem>
               {states.map((state) => (
-                <MenuItem key={state.code} value={state.code}>
-                  {state.name}
+                <MenuItem key={state.key} value={state.key}>
+                  {state.label}
                 </MenuItem>
               ))}
             </AppTextField>

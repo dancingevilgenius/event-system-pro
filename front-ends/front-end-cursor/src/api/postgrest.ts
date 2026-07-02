@@ -349,6 +349,46 @@ export async function fetchSecretQuestions(): Promise<SecretQuestion[]> {
   return (await response.json()) as SecretQuestion[];
 }
 
+export type DeploymentInfo = {
+  deployedAt: string | null;
+  deploySource: string | null;
+};
+
+type ApiDeploymentInfo = {
+  deployed_at?: string;
+  deploy_source?: string;
+};
+
+function parseDeploymentInfo(value: string | null | undefined): DeploymentInfo | null {
+  if (!value?.trim()) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(value) as ApiDeploymentInfo;
+    return {
+      deployedAt: typeof parsed.deployed_at === 'string' ? parsed.deployed_at : null,
+      deploySource: typeof parsed.deploy_source === 'string' ? parsed.deploy_source : null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+export async function fetchDeploymentInfo(): Promise<DeploymentInfo | null> {
+  const params = new URLSearchParams({
+    select: 'value',
+    label: 'eq.deployment_info',
+  });
+
+  const rows = await fetchJson<Array<{ value: string | null }>>(
+    `${POSTGREST_URL}/system_config?${params.toString()}`,
+    'Unable to load deployment info',
+  );
+
+  return parseDeploymentInfo(rows[0]?.value);
+}
+
 export function login(identifier: string, password: string) {
   return callRpc<LoginResult>(
     'login',

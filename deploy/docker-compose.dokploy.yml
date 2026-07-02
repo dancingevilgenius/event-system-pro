@@ -104,6 +104,11 @@ services:
         VITE_POSTGREST_URL: ${VITE_POSTGREST_URL:-https://imake.wtf/api}
         VITE_MAILER_URL: ${VITE_MAILER_URL:-https://imake.wtf/mailer}
         VITE_REALTIME_WS_URL: ${VITE_REALTIME_WS_URL:-wss://imake.wtf/realtime/ws}
+        DOKPLOY_COMMIT_HASH: ${DOKPLOY_COMMIT_HASH:-}
+        GIT_COMMIT: ${GIT_COMMIT:-unknown}
+        GIT_BRANCH: ${GIT_BRANCH:-main}
+        GITHUB_REPOSITORY: ${GITHUB_REPOSITORY:-dancingevilgenius/event-system-pro}
+        BUILD_DATE: ${BUILD_DATE:-}
     restart: unless-stopped
     networks:
       - default

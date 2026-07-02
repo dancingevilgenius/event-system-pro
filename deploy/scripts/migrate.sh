@@ -137,3 +137,32 @@ case "${SEED_DEV_DATA:-}" in
     echo "SEED_DEV_DATA not set — skipping dev seeds (set SEED_DEV_DATA=true for imake.wtf test deploys)."
     ;;
 esac
+
+LAST_STEP="record deployment_info"
+DEPLOYED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+psql_cmd <<SQL
+WITH updated AS (
+  UPDATE public.system_config
+  SET
+    value = json_build_object(
+      'deployed_at', '${DEPLOYED_AT}',
+      'deploy_source', 'dokploy'
+    )::text,
+    modified_by = 'maintenance',
+    modified_date = CURRENT_TIMESTAMP
+  WHERE label = 'deployment_info'
+  RETURNING 1
+)
+INSERT INTO public.system_config (label, value, active, created_by)
+SELECT
+  'deployment_info',
+  json_build_object(
+    'deployed_at', '${DEPLOYED_AT}',
+    'deploy_source', 'dokploy'
+  )::text,
+  true,
+  'maintenance'
+WHERE NOT EXISTS (SELECT 1 FROM updated);
+SQL
+
+echo "Recorded deployment_info at ${DEPLOYED_AT}."

@@ -39,6 +39,10 @@ jobs:
           VITE_POSTGREST_URL: http://localhost:8090/api
           VITE_MAILER_URL: http://localhost:8090/mailer
           VITE_REALTIME_WS_URL: ws://localhost:8090/realtime/ws
+          VITE_GITHUB_REPOSITORY: ${{ github.repository }}
+          VITE_GIT_BRANCH: ${{ github.ref_name }}
+          VITE_GIT_COMMIT: ${{ github.sha }}
+          VITE_BUILD_DATE: ${{ github.event.head_commit.timestamp }}
 
   docker:
     name: Docker images and compose config
@@ -55,6 +59,10 @@ jobs:
             --build-arg VITE_POSTGREST_URL=http://localhost:8090/api \
             --build-arg VITE_MAILER_URL=http://localhost:8090/mailer \
             --build-arg VITE_REALTIME_WS_URL=ws://localhost:8090/realtime/ws \
+            --build-arg GITHUB_REPOSITORY=${{ github.repository }} \
+            --build-arg GIT_BRANCH=${{ github.ref_name }} \
+            --build-arg GIT_COMMIT=${{ github.sha }} \
+            --build-arg BUILD_DATE=${{ github.event.head_commit.timestamp }} \
             -t event-system-pro-web \
             .
 

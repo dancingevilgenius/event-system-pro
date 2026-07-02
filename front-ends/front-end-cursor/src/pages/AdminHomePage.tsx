@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button, Container, Paper, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { generateDemoAttendees } from '../api/postgrest';
+import BuildInfoDialog from '../components/BuildInfoDialog';
 import { centeredContentStackSx } from '../constants/layout';
 import { useMessages } from '../hooks/useMessages';
 import { usePocCounter } from '../hooks/usePocCounter';
@@ -22,6 +23,7 @@ export default function AdminHomePage() {
   const { showSuccess, showWarning, showProblem, clearMessages } = useMessages();
   const { counter, error: counterError } = usePocCounter();
   const [generatingAttendees, setGeneratingAttendees] = useState(false);
+  const [buildInfoOpen, setBuildInfoOpen] = useState(false);
 
   const handleTestMessages = () => {
     clearMessages();
@@ -98,11 +100,16 @@ export default function AdminHomePage() {
           <Button variant="outlined" fullWidth onClick={handleTestMessages}>
             Test Message Boxes
           </Button>
+          <Button variant="outlined" fullWidth onClick={() => setBuildInfoOpen(true)}>
+            Build Info
+          </Button>
           <Button variant="outlined" fullWidth onClick={() => navigate('/home')}>
             Back to Home
           </Button>
         </Stack>
       </Paper>
+
+      <BuildInfoDialog open={buildInfoOpen} onClose={() => setBuildInfoOpen(false)} />
     </Container>
   );
 }

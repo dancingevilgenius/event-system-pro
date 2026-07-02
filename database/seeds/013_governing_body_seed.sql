@@ -46,6 +46,13 @@ VALUES
     'US',
     NULL,
     'c-agent'
+  ),
+  (
+    'GLOBAL',
+    'Global',
+    'Global',
+    NULL,
+    'c-agent'
   )
 ON CONFLICT (governing_body_code) DO UPDATE SET
   long_name = EXCLUDED.long_name,

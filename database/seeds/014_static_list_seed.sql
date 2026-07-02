@@ -63,3 +63,27 @@ ON CONFLICT (list_code) DO UPDATE SET
   governing_body_code = EXCLUDED.governing_body_code,
   short_desc = EXCLUDED.short_desc,
   list_json = EXCLUDED.list_json;
+
+INSERT INTO public.static_list (list_code, governing_body_code, short_desc, list_json)
+SELECT
+  'COUNTRIES',
+  'GLOBAL',
+  'Countries and territories',
+  COALESCE(
+    (
+      SELECT json_agg(
+        json_build_object(
+          'key', trim(c.iso3),
+          'label', c.long_name
+        )
+        ORDER BY c.long_name
+      )
+      FROM public.country_lu AS c
+      WHERE c.iso3 IS NOT NULL
+    ),
+    '[]'::json
+  )
+ON CONFLICT (list_code) DO UPDATE SET
+  governing_body_code = EXCLUDED.governing_body_code,
+  short_desc = EXCLUDED.short_desc,
+  list_json = EXCLUDED.list_json;

@@ -12,10 +12,9 @@ import { useNavigate } from 'react-router-dom';
 import {
   hashPasswordRecoveryAnswers,
   registerUser,
-  fetchCountries,
+  fetchCountriesStaticList,
   fetchSecretQuestions,
   fetchUsStatesStaticList,
-  type Country,
   type PasswordRecoveryJson,
   type StaticListEntry,
 } from '../api/postgrest';
@@ -150,7 +149,7 @@ export default function RegisterPage() {
   const [recoveryOpen, setRecoveryOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [assignedQuestionIds, setAssignedQuestionIds] = useState<number[]>([]);
-  const [countries, setCountries] = useState<Country[]>([]);
+  const [countries, setCountries] = useState<StaticListEntry[]>([]);
   const [states, setStates] = useState<StaticListEntry[]>([]);
   const [loadingCountries, setLoadingCountries] = useState(true);
   const [loadingStates, setLoadingStates] = useState(true);
@@ -162,7 +161,7 @@ export default function RegisterPage() {
   useEffect(() => {
     let cancelled = false;
 
-    Promise.all([fetchCountries(), fetchUsStatesStaticList()])
+    Promise.all([fetchCountriesStaticList(), fetchUsStatesStaticList()])
       .then(([countryItems, stateItems]) => {
         if (cancelled) {
           return;
@@ -422,8 +421,8 @@ export default function RegisterPage() {
               </MenuItem>
               <MenuItem value="UNL">Unlisted</MenuItem>
               {countries.map((country) => (
-                <MenuItem key={country.iso3} value={country.iso3}>
-                  {country.long_name}
+                <MenuItem key={country.key} value={country.key}>
+                  {country.label}
                 </MenuItem>
               ))}
             </AppTextField>

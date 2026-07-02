@@ -27,12 +27,25 @@ const STEPS = [
   'Done',
 ];
 
+const FORGOT_PASSWORD_EMAIL_KEY = 'forgotPasswordEmail';
+
+function normalizeVerificationCodeInput(code: string): string {
+  const digits = code.replace(/\D/g, '');
+  if (digits.length === 0 || digits.length > 6) {
+    return digits;
+  }
+
+  return digits.padStart(6, '0');
+}
+
 export default function ForgotPasswordPage() {
   const navigate = useNavigate();
   const { clearMessages, showProblem, showSuccess } = useMessages();
   const [activeStep, setActiveStep] = useState(0);
   const [identifier, setIdentifier] = useState('');
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState(
+    () => sessionStorage.getItem(FORGOT_PASSWORD_EMAIL_KEY) ?? '',
+  );
   const [code, setCode] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -47,9 +60,15 @@ export default function ForgotPasswordPage() {
     setBusy(true);
     try {
       const result = await requestPasswordResetEmail(identifier.trim());
-      if (result.email) {
-        setEmail(result.email);
+      if (!result.email) {
+        showProblem(
+          'No account was found for that email or username. Check the spelling and try again.',
+        );
+        return;
       }
+
+      setEmail(result.email);
+      sessionStorage.setItem(FORGOT_PASSWORD_EMAIL_KEY, result.email);
       showSuccess(result.message);
       setActiveStep(1);
     } catch (error) {
@@ -66,9 +85,15 @@ export default function ForgotPasswordPage() {
       return;
     }
 
+    const normalizedCode = normalizeVerificationCodeInput(code.trim());
+    if (normalizedCode.length !== 6) {
+      showProblem('Enter the 6-digit verification code from your email.');
+      return;
+    }
+
     setBusy(true);
     try {
-      const result = await forgotPasswordVerify(email, code.trim());
+      const result = await forgotPasswordVerify(email, normalizedCode);
       if (!result.ok) {
         showProblem(result.message);
         return;
@@ -84,6 +109,17 @@ export default function ForgotPasswordPage() {
 
   const handleReset = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!email) {
+      showProblem('Your reset session expired. Start again from step 1.');
+      return;
+    }
+
+    const normalizedCode = normalizeVerificationCodeInput(code.trim());
+    if (normalizedCode.length !== 6) {
+      showProblem('Enter the same 6-digit verification code from step 2.');
+      return;
+    }
+
     if (password.length < 8) {
       showProblem('Password must be at least 8 characters.');
       return;
@@ -95,12 +131,13 @@ export default function ForgotPasswordPage() {
 
     setBusy(true);
     try {
-      const result = await forgotPasswordComplete(email, code.trim(), password);
+      const result = await forgotPasswordComplete(email, normalizedCode, password);
       if (!result.ok) {
         showProblem(result.message);
         return;
       }
       showSuccess(result.message);
+      sessionStorage.removeItem(FORGOT_PASSWORD_EMAIL_KEY);
       setActiveStep(3);
     } catch (error) {
       showProblem(error instanceof Error ? error.message : 'Password reset failed.');
@@ -154,6 +191,12 @@ export default function ForgotPasswordPage() {
               {email && (
                 <Typography variant="body2" color="text.secondary" align="center">
                   A verification code was sent to <strong>{email}</strong>
+                </Typography>
+              )}
+              {import.meta.env.DEV && (
+                <Typography variant="body2" color="text.secondary" align="center">
+                  Local dev: open <strong>http://localhost:8025</strong> (Mailpit) and use the code
+                  from the <strong>latest</strong> message only.
                 </Typography>
               )}
               <AppTextField

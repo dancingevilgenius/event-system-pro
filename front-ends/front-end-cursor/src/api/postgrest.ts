@@ -425,7 +425,7 @@ export function forgotPasswordVerify(email: string, code: string) {
     'forgot_password_verify',
     {
       p_email: email,
-      p_code: code,
+      p_code: normalizeVerificationCode(code),
     },
     'omit',
   );
@@ -440,11 +440,20 @@ export function forgotPasswordComplete(
     'forgot_password_complete',
     {
       p_email: email,
-      p_code: code,
+      p_code: normalizeVerificationCode(code),
       p_new_password: newPassword,
     },
     'omit',
   );
+}
+
+function normalizeVerificationCode(code: string): string {
+  const digits = code.replace(/\D/g, '');
+  if (digits.length === 0 || digits.length > 6) {
+    return digits;
+  }
+
+  return digits.padStart(6, '0');
 }
 
 export function changePassword(

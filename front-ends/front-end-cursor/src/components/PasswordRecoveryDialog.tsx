@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 import { fetchSecretQuestions, type SecretQuestion } from '../api/postgrest';
 import { useMessages } from '../hooks/useMessages';
 import CloseIcon from './CloseIcon';
+import InfoMessageBox from './InfoMessageBox';
 import SecretQuestionAndAnswer from './SecretQuestionAndAnswer';
 import SecretQuestionSlot from './SecretQuestionSlot';
 import { initialQuestionIdsForSlots } from './SecretQuestionCarousel';
@@ -219,7 +220,19 @@ export default function PasswordRecoveryDialog({
     slots.every((slot) => slot.secretQuestionId !== '');
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth="sm"
+      slotProps={{ paper: { sx: { position: 'relative' } } }}
+    >
+      {open && (
+        <InfoMessageBox overlay>
+          Choose three secret questions and answers. On mobile, use the arrows to browse questions.
+          Answers are encrypted on save.
+        </InfoMessageBox>
+      )}
       <DialogTitle
         sx={{
           textAlign: 'center',
@@ -245,11 +258,6 @@ export default function PasswordRecoveryDialog({
       </DialogTitle>
 
       <DialogContent sx={{ pt: 1, px: { xs: 2, sm: 3 } }}>
-        <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', mb: 2 }}>
-          Choose three secret questions and answers. On mobile, use the arrows to browse questions.
-          Answers are encrypted on save.
-        </Typography>
-
         {loading && (
           <Stack sx={{ py: 3, alignItems: 'center' }}>
             <CircularProgress size={28} />

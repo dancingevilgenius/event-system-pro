@@ -8,6 +8,7 @@ import {
 import SecretQuestionsSelector, {
   type PasswordRecoveryAnswer,
 } from '../components/SecretQuestionsSelector';
+import InfoMessageBox from '../components/InfoMessageBox';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
 import { useMessages } from '../hooks/useMessages';
@@ -96,13 +97,14 @@ export default function SecretQuestionsPage() {
 
   return (
     <Container maxWidth="sm" sx={{ py: 6 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
+      <Paper elevation={3} sx={{ p: 4, position: 'relative' }}>
+        <InfoMessageBox overlay>
+          Choose three secret questions and answers. You can use two of them later on the
+          forgot-password page. Answers are encrypted on save.
+        </InfoMessageBox>
+
         <Typography variant="h4" component="h1" gutterBottom align="center">
           Password Recovery
-        </Typography>
-        <Typography variant="body1" color="text.secondary" align="center" sx={{ mb: 3 }}>
-          Choose three secret questions and answers. You can use two of them later on the forgot-password
-          page. Answers are encrypted on save.
         </Typography>
 
         <Stack spacing={2} sx={centeredContentStackSx}>

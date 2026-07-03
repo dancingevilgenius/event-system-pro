@@ -129,6 +129,7 @@ export default function SecretQuestionsSelector({
   saveButtonLabel = 'Save secret questions',
   showSlotLabels = true,
 }: SecretQuestionsSelectorProps) {
+  const isMobile = useIsMobileDevice();
   const [questions, setQuestions] = useState<SecretQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -234,7 +235,7 @@ export default function SecretQuestionsSelector({
       {slots.map((slot, index) => (
         <SecretQuestionSlot
           key={index}
-          label={showSlotLabels ? `Question ${index + 1}` : undefined}
+          label={showSlotLabels && !isMobile ? `Question ${index + 1}` : undefined}
         >
           <SecretQuestionAndAnswer
             questions={questions}

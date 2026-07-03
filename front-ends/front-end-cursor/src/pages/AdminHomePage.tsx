@@ -103,13 +103,6 @@ export default function AdminHomePage() {
           <Button variant="outlined" fullWidth onClick={() => setBuildInfoOpen(true)}>
             Build Info
           </Button>
-          <Button
-            variant="outlined"
-            fullWidth
-            onClick={() => navigate('/admin/tournament-bracket-demo')}
-          >
-            Tournament Bracket Demo
-          </Button>
           <Button variant="outlined" fullWidth onClick={() => navigate('/home')}>
             Back to Home
           </Button>

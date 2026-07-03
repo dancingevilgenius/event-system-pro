@@ -346,6 +346,30 @@ export async function fetchUsersPage(
   };
 }
 
+export type DemoBracketCompetitor = {
+  userId: number;
+  label: string;
+};
+
+export async function fetchDemoBracketCompetitors(): Promise<DemoBracketCompetitor[]> {
+  const rows = await callRpc<unknown>('demo_tournament_bracket_competitors', {}, 'omit');
+
+  if (!Array.isArray(rows)) {
+    return [];
+  }
+
+  return rows
+    .filter((row): row is Record<string, unknown> => Boolean(row) && typeof row === 'object')
+    .map((row) => ({
+      userId: typeof row.user_id === 'number' ? row.user_id : Number(row.user_id),
+      label:
+        typeof row.label === 'string' && row.label.trim() !== ''
+          ? row.label.trim()
+          : 'Unnamed user',
+    }))
+    .filter((row) => Number.isFinite(row.userId));
+}
+
 export async function fetchUsStateCodes(): Promise<string[]> {
   const states = await fetchUsStates();
   return states.map((state) => state.code);

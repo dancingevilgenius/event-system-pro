@@ -36,6 +36,7 @@ export default function App() {
       <Routes>
       <Route path="/" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/tournament-bracket-demo" element={<TournamentBracketDemoPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route
         path="/home"
@@ -199,11 +200,7 @@ export default function App() {
       />
       <Route
         path="/admin/tournament-bracket-demo"
-        element={
-          <ProtectedRoute roles={['admin']}>
-            <TournamentBracketDemoPage />
-          </ProtectedRoute>
-        }
+        element={<Navigate to="/tournament-bracket-demo" replace />}
       />
       <Route
         path="/staff"

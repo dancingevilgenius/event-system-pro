@@ -10,11 +10,9 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchUsersPage } from '../api/postgrest';
-import { DEFAULT_USER_SORT, EMPTY_USER_FILTERS } from '../components/UserFilterSortDialog';
+import { fetchDemoBracketCompetitors } from '../api/postgrest';
 import {
   buildInitialBracket,
-  formatCompetitorName,
   roundLabel,
   setMatchOutcome,
   type BracketMatch,
@@ -130,23 +128,18 @@ export default function TournamentBracketDemoPage() {
   useEffect(() => {
     let cancelled = false;
 
-    fetchUsersPage(0, 16, EMPTY_USER_FILTERS, DEFAULT_USER_SORT)
-      .then((result) => {
+    fetchDemoBracketCompetitors()
+      .then((competitors) => {
         if (cancelled) {
           return;
         }
 
-        if (result.users.length < 16) {
-          setError(`Need at least 16 users in the database (found ${result.users.length}).`);
+        if (competitors.length < 16) {
+          setError(`Need at least 16 users in the database (found ${competitors.length}).`);
           return;
         }
 
-        const competitors = result.users.slice(0, 16).map((user) => ({
-          userId: user.userId,
-          label: formatCompetitorName(user.firstName, user.lastName),
-        }));
-
-        setBracket(buildInitialBracket(competitors));
+        setBracket(buildInitialBracket(competitors.slice(0, 16)));
       })
       .catch((loadError) => {
         if (!cancelled) {
@@ -234,8 +227,8 @@ export default function TournamentBracketDemoPage() {
         )}
 
         <Stack direction="row" spacing={2} sx={{ mt: 4, justifyContent: 'center' }}>
-          <Button variant="outlined" onClick={() => navigate('/adminhome')}>
-            Back to Admin
+          <Button variant="outlined" onClick={() => navigate('/')}>
+            Back to Login
           </Button>
         </Stack>
       </Paper>

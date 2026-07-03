@@ -11,11 +11,16 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { Bracket } from 'react-bracket-ui';
+import {
+  Match,
+  SingleEliminationBracket,
+  SVGViewer,
+  createTheme,
+} from '@cm3tahkuh/react-tournament-brackets';
 import { useMemo } from 'react';
 import CloseIcon from './CloseIcon';
 import {
-  bracketStateToUiMatches,
+  bracketJsonToTournamentMatches,
   roundLabel,
   serializeBracketState,
   type BracketState,
@@ -27,6 +32,9 @@ type TournamentBracketViewDialogProps = {
   bracket: BracketState;
 };
 
+const BRACKET_VIEWER_WIDTH = 960;
+const BRACKET_VIEWER_HEIGHT = 520;
+
 export default function TournamentBracketViewDialog({
   open,
   onClose,
@@ -34,10 +42,55 @@ export default function TournamentBracketViewDialog({
 }: TournamentBracketViewDialogProps) {
   const theme = useTheme();
   const bracketJson = useMemo(() => serializeBracketState(bracket), [bracket]);
-  const uiMatches = useMemo(() => bracketStateToUiMatches(bracket), [bracket]);
+  const tournamentMatches = useMemo(
+    () => bracketJsonToTournamentMatches(bracketJson),
+    [bracketJson],
+  );
 
-  const roundNames = Object.fromEntries(
-    bracketJson.rounds.map((round, index) => [index + 1, round.name || roundLabel(index)]),
+  const bracketTheme = useMemo(
+    () =>
+      createTheme({
+        textColor: {
+          main: theme.palette.text.primary,
+          highlighted: theme.palette.primary.main,
+          dark: theme.palette.text.secondary,
+          disabled: theme.palette.text.disabled,
+        },
+        matchBackground: {
+          wonColor: theme.palette.success.light,
+          lostColor: theme.palette.background.paper,
+        },
+        border: {
+          color: theme.palette.divider,
+          highlightedColor: theme.palette.primary.main,
+        },
+        canvasBackground: theme.palette.background.default,
+        connectorColor: theme.palette.divider,
+        connectorColorHighlight: theme.palette.primary.main,
+        roundHeader: {
+          backgroundColor: theme.palette.background.paper,
+          fontColor: theme.palette.text.primary,
+        },
+        roundHeaders: {
+          background: theme.palette.action.hover,
+        },
+        score: {
+          text: {
+            highlightedWonColor: theme.palette.success.dark,
+            highlightedLostColor: theme.palette.text.secondary,
+          },
+          background: {
+            wonColor: theme.palette.success.light,
+            lostColor: theme.palette.action.hover,
+          },
+        },
+      }),
+    [theme],
+  );
+
+  const roundNames = useMemo(
+    () => bracketJson.rounds.map((round, index) => round.name || roundLabel(index)),
+    [bracketJson.rounds],
   );
 
   return (
@@ -72,25 +125,34 @@ export default function TournamentBracketViewDialog({
               borderColor: 'divider',
               borderRadius: 1,
               bgcolor: 'background.default',
-              overflow: 'auto',
-              minHeight: 480,
+              overflow: 'hidden',
+              minHeight: BRACKET_VIEWER_HEIGHT,
             }}
           >
-            <Bracket
-              matches={uiMatches}
-              enableZoomPan
-              showRoundNames
-              roundNames={roundNames}
-              matchWidth={220}
-              matchHeight={88}
-              gap={28}
-              colors={{
-                primary: theme.palette.primary.main,
-                secondary: theme.palette.text.secondary,
-                background: theme.palette.background.paper,
-                winner: theme.palette.success.light,
+            <SingleEliminationBracket
+              matches={tournamentMatches}
+              matchComponent={Match}
+              theme={bracketTheme}
+              options={{
+                style: {
+                  roundHeader: {
+                    isShown: true,
+                    roundTextGenerator: (roundNumber) =>
+                      roundNames[roundNumber - 1] ?? `Round ${roundNumber}`,
+                  },
+                },
               }}
-              style={{ minHeight: 480, padding: 16 }}
+              svgWrapper={({ children, ...props }) => (
+                <SVGViewer
+                  width={BRACKET_VIEWER_WIDTH}
+                  height={BRACKET_VIEWER_HEIGHT}
+                  background={theme.palette.background.default}
+                  SVGBackground={theme.palette.background.default}
+                  {...props}
+                >
+                  {children}
+                </SVGViewer>
+              )}
             />
           </Box>
 

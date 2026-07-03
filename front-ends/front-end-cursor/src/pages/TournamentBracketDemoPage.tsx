@@ -242,8 +242,8 @@ export default function TournamentBracketDemoPage() {
           >
             View Bracket
           </Button>
-          <Button variant="outlined" onClick={() => navigate('/')}>
-            Back to Login
+          <Button variant="outlined" onClick={() => navigate('/demo')}>
+            Back to Demo
           </Button>
         </Stack>
       </Paper>

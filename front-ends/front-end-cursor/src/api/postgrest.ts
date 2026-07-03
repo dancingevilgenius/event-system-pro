@@ -1026,6 +1026,77 @@ export async function updateStaticListJson(
   return mapStaticListRecord(row);
 }
 
+export type GoverningBodyRow = {
+  code: string;
+  longName: string;
+  shortName: string;
+};
+
+type ApiGoverningBodyRow = {
+  governing_body_code: string;
+  long_name: string;
+  short_name: string | null;
+};
+
+function mapGoverningBodyRow(row: ApiGoverningBodyRow): GoverningBodyRow {
+  return {
+    code: row.governing_body_code,
+    longName: row.long_name,
+    shortName: row.short_name?.trim() ?? '',
+  };
+}
+
+export async function fetchGoverningBodies(): Promise<GoverningBodyRow[]> {
+  const rows = await fetchJson<ApiGoverningBodyRow[]>(
+    `${POSTGREST_URL}/governing_body?select=governing_body_code,long_name,short_name&order=governing_body_code`,
+    'Unable to load governing bodies',
+  );
+
+  return rows.map(mapGoverningBodyRow);
+}
+
+export type GoverningBodyUpdate = {
+  longName: string;
+  shortName: string;
+};
+
+export async function updateGoverningBody(
+  code: string,
+  values: GoverningBodyUpdate,
+): Promise<GoverningBodyRow> {
+  const trimmedLongName = values.longName.trim();
+  if (trimmedLongName === '') {
+    throw new Error('Long name cannot be empty.');
+  }
+
+  const params = new URLSearchParams();
+  params.append('governing_body_code', `eq.${code}`);
+
+  const response = await fetch(`${POSTGREST_URL}/governing_body?${params.toString()}`, {
+    method: 'PATCH',
+    headers: buildAuthHeaders({
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation',
+    }),
+    body: JSON.stringify({
+      long_name: trimmedLongName,
+      short_name: values.shortName.trim() || null,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Unable to update governing body (${response.status})`);
+  }
+
+  const rows = (await response.json()) as ApiGoverningBodyRow[];
+  const row = rows[0];
+  if (!row) {
+    throw new Error('Governing body update returned no rows.');
+  }
+
+  return mapGoverningBodyRow(row);
+}
+
 export function hashPasswordRecoveryAnswers(
   answers: Array<{ secret_question_id: number; answer: string }>,
 ) {

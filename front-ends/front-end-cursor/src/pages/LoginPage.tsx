@@ -129,13 +129,8 @@ export default function LoginPage() {
           >
             Register
           </Button>
-          <Button
-            variant="outlined"
-            size="large"
-            fullWidth
-            onClick={() => navigate('/tournament-bracket-demo')}
-          >
-            Tournament Bracket Demo
+          <Button variant="text" fullWidth onClick={() => navigate('/home-page')}>
+            Back to Home
           </Button>
         </Stack>
       </Paper>

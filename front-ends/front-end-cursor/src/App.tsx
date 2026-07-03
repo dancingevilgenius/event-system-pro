@@ -17,6 +17,9 @@ import ChangePasswordPage from './pages/ChangePasswordPage';
 import CompetitorPage from './pages/CompetitorPage';
 import EventHomePage from './pages/EventHomePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import PublicHomePage from './pages/PublicHomePage';
+import DemoPage from './pages/DemoPage';
+import GoverningBodyPage from './pages/GoverningBodyPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -34,8 +37,11 @@ export default function App() {
       <ActivityMonitor />
       <LoginFlashHandler />
       <Routes>
-      <Route path="/" element={<LoginPage />} />
+      <Route path="/" element={<PublicHomePage />} />
+      <Route path="/home-page" element={<PublicHomePage />} />
+      <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/demo" element={<DemoPage />} />
       <Route path="/tournament-bracket-demo" element={<TournamentBracketDemoPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route
@@ -83,6 +89,14 @@ export default function App() {
         element={
           <ProtectedRoute>
             <StaticListDetailsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/governing-body"
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <GoverningBodyPage />
           </ProtectedRoute>
         }
       />

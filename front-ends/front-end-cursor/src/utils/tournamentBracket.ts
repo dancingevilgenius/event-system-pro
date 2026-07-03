@@ -1,5 +1,3 @@
-import type { Match as BracketUiMatch } from 'react-bracket-ui';
-
 export type BracketCompetitor = {
   userId: number;
   username: string;
@@ -271,29 +269,69 @@ function nextMatchId(roundIndex: number, matchIndex: number): string | null {
   return matchId(roundIndex + 1, Math.floor(matchIndex / 2));
 }
 
-export function bracketStateToUiMatches(state: BracketState): BracketUiMatch[] {
-  const matches: BracketUiMatch[] = [];
+export type TournamentBracketParticipant = {
+  id: string | number;
+  name: string;
+  isWinner: boolean;
+  resultText: string | null;
+  status: 'PLAYED' | 'NO_PARTY' | null;
+};
 
-  for (const round of state.rounds) {
-    for (const match of round) {
-      const participant1 = match.slotA
-        ? { id: match.slotA.userId, name: match.slotA['display-name'] }
-        : null;
-      const participant2 = match.slotB
-        ? { id: match.slotB.userId, name: match.slotB['display-name'] }
-        : null;
+export type TournamentBracketMatch = {
+  id: string;
+  name: string;
+  nextMatchId: string | null;
+  tournamentRoundText: string;
+  startTime: string;
+  state: 'DONE' | 'NO_PARTY' | 'SCHEDULED';
+  participants: TournamentBracketParticipant[];
+};
 
-      matches.push({
-        id: match.id,
-        round: match.roundIndex + 1,
-        matchNumber: match.matchIndex + 1,
-        participant1,
-        participant2,
-        winner: match.winnerId,
-        nextMatchId: nextMatchId(match.roundIndex, match.matchIndex),
-      });
-    }
+function toTournamentParticipant(
+  slot: BracketParticipantJson | null,
+  placeholderId: string,
+  winnerId: number | null,
+  isPlayed: boolean,
+): TournamentBracketParticipant {
+  if (!slot) {
+    return {
+      id: placeholderId,
+      name: 'TBD',
+      isWinner: false,
+      resultText: null,
+      status: 'NO_PARTY',
+    };
   }
 
-  return matches;
+  const isWinner = winnerId === slot.user_id;
+
+  return {
+    id: slot.user_id,
+    name: slot['display-name'],
+    isWinner,
+    resultText: isPlayed ? (isWinner ? 'WON' : '') : null,
+    status: isPlayed ? 'PLAYED' : null,
+  };
+}
+
+export function bracketJsonToTournamentMatches(json: BracketStateJson): TournamentBracketMatch[] {
+  return json.rounds.flatMap((round, roundIndex) =>
+    round.matches.map((match) => {
+      const hasBothSlots = Boolean(match.slot_a && match.slot_b);
+      const isPlayed = match.winner != null && hasBothSlots;
+
+      return {
+        id: match.id,
+        name: `${round.name} — Match ${match.match_index + 1}`,
+        nextMatchId: nextMatchId(match.round_index, match.match_index),
+        tournamentRoundText: String(roundIndex + 1),
+        startTime: json.updated_at,
+        state: isPlayed ? 'DONE' : hasBothSlots ? 'SCHEDULED' : 'NO_PARTY',
+        participants: [
+          toTournamentParticipant(match.slot_a, `${match.id}-a`, match.winner?.user_id ?? null, isPlayed),
+          toTournamentParticipant(match.slot_b, `${match.id}-b`, match.winner?.user_id ?? null, isPlayed),
+        ],
+      };
+    }),
+  );
 }

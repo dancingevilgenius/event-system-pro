@@ -76,7 +76,7 @@ export default function SecretQuestionCarousel({
 
   return (
     <Stack spacing={1} sx={{ width: '100%' }}>
-      <Stack direction="row" alignItems="center" spacing={0.5} sx={{ width: '100%' }}>
+      <Stack direction="row" spacing={0.5} sx={{ width: '100%', alignItems: 'center' }}>
         <IconButton
           aria-label="Previous secret question"
           onClick={() => cycle(-1)}

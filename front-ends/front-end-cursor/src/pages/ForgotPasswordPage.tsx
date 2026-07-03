@@ -174,13 +174,14 @@ export default function ForgotPasswordPage() {
     try {
       if (recoveryMethod === 'secret_questions') {
         const result = await forgotPasswordSecretQuestionsStart(trimmedIdentifier);
-        if (!result.ok || !result.email || (result.questions?.length ?? 0) < 3) {
+        const questions = result.questions;
+        if (!result.ok || !result.email || !questions || questions.length < 3) {
           showProblem(result.message);
           return;
         }
 
         setEmail(result.email);
-        setSecretQuestions(result.questions);
+        setSecretQuestions(questions);
         setSecretAnswers({});
         setSecretAnswerFeedback({});
         persistRecoverySession(trimmedIdentifier, result.email, 'secret_questions');

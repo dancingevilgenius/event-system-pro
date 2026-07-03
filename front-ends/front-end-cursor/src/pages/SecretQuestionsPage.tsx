@@ -5,9 +5,10 @@ import {
   getPasswordRecoverySetup,
   updatePasswordRecovery,
 } from '../api/postgrest';
-import PasswordRecoverySetupForm, {
+import SecretQuestionsSelector, {
   type PasswordRecoveryAnswer,
-} from '../components/PasswordRecoverySetupForm';
+} from '../components/SecretQuestionsSelector';
+import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
 import { useMessages } from '../hooks/useMessages';
 
@@ -60,7 +61,7 @@ export default function SecretQuestionsPage() {
     return () => {
       cancelled = true;
     };
-  }, [session]);
+  }, [session, showProblem]);
 
   if (!session) {
     return null;
@@ -104,18 +105,18 @@ export default function SecretQuestionsPage() {
           page. Answers are encrypted on save.
         </Typography>
 
-        <Stack spacing={2} sx={{ width: '100%' }}>
-          {!loadingSetup && (
-            <PasswordRecoverySetupForm
-              initialQuestionIds={initialQuestionIds}
-              onSave={handleSave}
-              saving={saving}
-            />
-          )}
+        <Stack spacing={2} sx={centeredContentStackSx}>
           {loadingSetup && (
             <Typography variant="body2" color="text.secondary" align="center">
               Loading your password recovery settings…
             </Typography>
+          )}
+          {!loadingSetup && (
+            <SecretQuestionsSelector
+              initialQuestionIds={initialQuestionIds}
+              onSave={handleSave}
+              saving={saving}
+            />
           )}
           <Button variant="text" fullWidth onClick={() => navigate('/account')}>
             Back to Account

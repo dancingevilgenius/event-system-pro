@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   CircularProgress,
   Dialog,
@@ -13,11 +12,10 @@ import {
 import { useEffect, useState } from 'react';
 import { fetchSecretQuestions, type SecretQuestion } from '../api/postgrest';
 import { useMessages } from '../hooks/useMessages';
-import AppTextField from './AppTextField';
 import CloseIcon from './CloseIcon';
-import SecretQuestionCarousel, {
-  initialQuestionIdsForSlots,
-} from './SecretQuestionCarousel';
+import SecretQuestionAndAnswer from './SecretQuestionAndAnswer';
+import SecretQuestionSlot from './SecretQuestionSlot';
+import { initialQuestionIdsForSlots } from './SecretQuestionCarousel';
 import { CONTENT_MAX_WIDTH } from '../constants/layout';
 
 export type PasswordRecoveryAnswer = {
@@ -248,8 +246,8 @@ export default function PasswordRecoveryDialog({
 
       <DialogContent sx={{ pt: 1, px: { xs: 2, sm: 3 } }}>
         <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', mb: 2 }}>
-          Choose three secret questions and answers. Use the arrows to browse all questions. Answers
-          are encrypted on save.
+          Choose three secret questions and answers. On mobile, use the arrows to browse questions.
+          Answers are encrypted on save.
         </Typography>
 
         {loading && (
@@ -267,41 +265,22 @@ export default function PasswordRecoveryDialog({
         {readyToShowQuestions && (
           <Stack spacing={2.5} sx={{ width: '100%' }}>
             {slots.map((slot, index) => (
-              <Box
-                key={index}
-                sx={{
-                  border: 1,
-                  borderColor: 'divider',
-                  borderRadius: 1,
-                  p: { xs: 1.5, sm: 2 },
-                  width: '100%',
-                }}
-              >
-                <Stack spacing={1.5} sx={{ width: '100%' }}>
-                  <SecretQuestionCarousel
-                    questions={questions}
-                    selectedQuestionId={slot.secretQuestionId}
-                    excludedQuestionIds={selectedQuestionIds.filter(
-                      (questionId) => questionId !== slot.secretQuestionId,
-                    )}
-                    onQuestionChange={(questionId) =>
-                      updateSlot(index, { secretQuestionId: questionId })
-                    }
-                  />
-                  <AppTextField
-                    label="Your answer"
-                    value={slot.answer}
-                    onChange={(event) => updateSlot(index, { answer: event.target.value })}
-                    fullWidth
-                    autoComplete="off"
-                    error={answerFeedback[index] === 'empty'}
-                    sx={{
-                      width: '100%',
-                      ...secretAnswerFieldSx(answerFeedback[index]),
-                    }}
-                  />
-                </Stack>
-              </Box>
+              <SecretQuestionSlot key={index}>
+                <SecretQuestionAndAnswer
+                  questions={questions}
+                  selectedQuestionId={slot.secretQuestionId}
+                  excludedQuestionIds={selectedQuestionIds.filter(
+                    (questionId) => questionId !== slot.secretQuestionId,
+                  )}
+                  answer={slot.answer}
+                  onQuestionChange={(questionId) =>
+                    updateSlot(index, { secretQuestionId: questionId })
+                  }
+                  onAnswerChange={(answer) => updateSlot(index, { answer })}
+                  answerError={answerFeedback[index] === 'empty'}
+                  answerFieldSx={secretAnswerFieldSx(answerFeedback[index])}
+                />
+              </SecretQuestionSlot>
             ))}
           </Stack>
         )}

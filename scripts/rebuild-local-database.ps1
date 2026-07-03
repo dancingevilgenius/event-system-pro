@@ -45,7 +45,7 @@ function Resolve-PsqlPath {
 
 function Test-MigrationSupersededByBaseline {
     param([string]$FileName)
-    return $FileName -match '^(005|006|007|015|027|030)_'
+    return $FileName -match '^(005|006|007|015|017|027|030|051|052|053)_'
 }
 
 function Invoke-Psql {
@@ -140,9 +140,7 @@ Invoke-Psql @(
     '-v', 'ON_ERROR_STOP=1',
     '-c',
     @"
-SELECT 'country_lu' AS tbl, created_by, modified_by, count(*) FROM public.country_lu GROUP BY 1,2,3
-UNION ALL SELECT 'us_state_lu', created_by, modified_by, count(*) FROM public.us_state_lu GROUP BY 1,2,3
-UNION ALL SELECT 'secret_question_lu', created_by, modified_by, count(*) FROM public.secret_question_lu GROUP BY 1,2,3
+SELECT 'secret_question_lu', created_by, modified_by, count(*) FROM public.secret_question_lu GROUP BY 1,2,3
 UNION ALL SELECT 'skill_level_lu', created_by, modified_by, count(*) FROM public.skill_level_lu GROUP BY 1,2,3
 UNION ALL SELECT 'competitor_type_lu', created_by, modified_by, count(*) FROM public.competitor_type_lu GROUP BY 1,2,3
 UNION ALL SELECT 'event_type_lu', created_by, modified_by, count(*) FROM public.event_type_lu GROUP BY 1,2,3

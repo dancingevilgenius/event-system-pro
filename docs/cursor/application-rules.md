@@ -901,7 +901,9 @@ Prefer **`jsonb`** for new columns that will be queried or merged.
 
 ## Lookup table (`_lu`) seeds
 
-Reference/lookup tables (`country_lu`, `us_state_lu`, `event_type_lu`, `secret_question_lu`, etc.) use audit columns like other tables. Baseline and migration `024` expect **`created_by = 'c-agent'`** on `_lu` seed rows with **`modified_by` / `modified_date` NULL**.
+Reference/lookup tables (`event_type_lu`, `secret_question_lu`, etc.) use audit columns like other tables. Baseline and migration `024` expect **`created_by = 'c-agent'`** on `_lu` seed rows with **`modified_by` / `modified_date` NULL**.
+
+Countries and US states are stored in **`static_list`** (`COUNTRIES`, `US_STATES`); the obsolete `country_lu` / `us_state_lu` tables were removed in migration `069`.
 
 ---
 

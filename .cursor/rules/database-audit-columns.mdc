@@ -30,8 +30,8 @@ Do **not** use epoch placeholder defaults (`1970-01-01`, `1969-12-31`, etc.).
 - RPCs call `api.set_audit_actor(username)` before `UPDATE`; migration `026_modified_audit_actor.sql` adds a `BEFORE UPDATE` trigger that applies the JWT username on REST PATCH when available.
 
 ```sql
-INSERT INTO public.country_lu (iso2, short_name, long_name, created_by)
-VALUES ('XX', 'Example', 'Example Country', 'c-agent');
+INSERT INTO public.event_type_lu (event_type_code, description_json, created_by)
+VALUES ('EXAMPLE', '{"en": "Example event type"}'::jsonb, 'c-agent');
 
 UPDATE public."user"
 SET email = lower(trim(p_email)),

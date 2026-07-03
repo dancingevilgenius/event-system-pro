@@ -101,7 +101,7 @@ apply_sql() {
 
 skip_superseded_by_baseline() {
   case "$1" in
-    migrations/005_*|migrations/006_*|migrations/007_*|migrations/015_*|migrations/027_*|migrations/030_*) return 0 ;;
+    migrations/005_*|migrations/006_*|migrations/007_*|migrations/015_*|migrations/017_*|migrations/027_*|migrations/030_*|migrations/051_*|migrations/052_*|migrations/053_*) return 0 ;;
     *) return 1 ;;
   esac
 }

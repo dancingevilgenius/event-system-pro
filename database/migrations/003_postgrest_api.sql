@@ -59,26 +59,6 @@ SELECT
   short_desc
 FROM public.static_list;
 
-CREATE OR REPLACE VIEW api.country_lu AS
-SELECT
-  country_id,
-  iso2,
-  short_name,
-  long_name,
-  iso3,
-  numcode,
-  un_member,
-  calling_code,
-  cctld,
-  active
-FROM public.country_lu
-WHERE active IS NOT FALSE;
-
-CREATE OR REPLACE VIEW api.us_state_lu AS
-SELECT id, code, name, active
-FROM public.us_state_lu
-WHERE active IS NOT FALSE;
-
 CREATE OR REPLACE VIEW api.competitor_type_lu AS
 SELECT competitor_type_id, description
 FROM public.competitor_type_lu;

@@ -58,6 +58,11 @@ export default function MessageProvider({ children }: MessageProviderProps) {
     [showMessage],
   );
 
+  const showInfo = useCallback(
+    (text: string) => showMessage('info', text),
+    [showMessage],
+  );
+
   const value = useMemo(
     () => ({
       messages,
@@ -67,6 +72,7 @@ export default function MessageProvider({ children }: MessageProviderProps) {
       showSuccess,
       showWarning,
       showProblem,
+      showInfo,
       dismissMessage,
       clearMessages,
     }),
@@ -78,6 +84,7 @@ export default function MessageProvider({ children }: MessageProviderProps) {
       showSuccess,
       showWarning,
       showProblem,
+      showInfo,
       dismissMessage,
       clearMessages,
     ],

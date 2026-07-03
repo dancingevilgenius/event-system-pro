@@ -22,7 +22,7 @@ const ADMIN_BUTTONS = [
 
 export default function AdminHomePage() {
   const navigate = useNavigate();
-  const { showSuccess, showWarning, showProblem, clearMessages } = useMessages();
+  const { showSuccess, showWarning, showProblem, showInfo, clearMessages } = useMessages();
   const { counter, error: counterError } = usePocCounter();
   const [generatingAttendees, setGeneratingAttendees] = useState(false);
   const [buildInfoOpen, setBuildInfoOpen] = useState(false);
@@ -32,6 +32,7 @@ export default function AdminHomePage() {
     showSuccess('Your change has been saved.');
     showWarning('Your event starts in less than 15 min.');
     showProblem('Your sign in time has passed.');
+    showInfo('You look marvelous!');
   };
 
   const handleGenerateAttendees = async () => {

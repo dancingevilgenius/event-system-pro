@@ -9,6 +9,7 @@ export type MessageContextValue = {
   showSuccess: (text: string) => string;
   showWarning: (text: string) => string;
   showProblem: (text: string) => string;
+  showInfo: (text: string) => string;
   dismissMessage: (id: string) => void;
   clearMessages: () => void;
 };

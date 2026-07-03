@@ -6,19 +6,16 @@ export function formatReadableDateTime(value: string | Date): string {
     return typeof value === 'string' ? value : '';
   }
 
-  const datePart = date.toLocaleString(undefined, {
-    month: 'long',
+  return date.toLocaleString('en-US', {
+    month: 'short',
     day: 'numeric',
     year: 'numeric',
-  });
-  const timePart = date.toLocaleString(undefined, {
     hour: 'numeric',
     minute: '2-digit',
     second: '2-digit',
     hour12: true,
+    timeZoneName: 'short',
   });
-
-  return `${datePart} at ${timePart}`;
 }
 
 function formatAuditJsonValue(value: unknown): unknown {

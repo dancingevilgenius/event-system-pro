@@ -7,6 +7,9 @@
 #   Domains tab: leave empty — Traefik labels are on service "proxy" in compose
 #   Env: copy from deploy/.env.dokploy.example
 #   Dev DB access: optional — see DOKPLOY-CHECKLIST.md (do not publish 5432 by default).
+#
+# Only "proxy" joins dokploy-network (Traefik). Other services stay on the project
+# default network so hostname "postgres" cannot resolve to another stack's DB.
 
 networks:
   default:
@@ -17,9 +20,6 @@ services:
   postgres:
     image: postgres:18-alpine
     restart: unless-stopped
-    networks:
-      - default
-      - dokploy-network
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in Dokploy}
@@ -38,9 +38,6 @@ services:
       dockerfile: deploy/Dockerfile.migrate
     image: event-system-pro-migrate:latest
     restart: "no"
-    networks:
-      - default
-      - dokploy-network
     environment:
       PGHOST: postgres
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -54,9 +51,6 @@ services:
   postgrest:
     image: postgrest/postgrest:v12.2.8
     restart: unless-stopped
-    networks:
-      - default
-      - dokploy-network
     environment:
       PGRST_DB_URI: postgres://authenticator:${PGRST_AUTHENTICATOR_PASSWORD:?Set PGRST_AUTHENTICATOR_PASSWORD}@postgres:5432/${POSTGRES_DB:-event_system_pro}
       PGRST_DB_SCHEMAS: api
@@ -75,9 +69,6 @@ services:
     build:
       context: ../back-ends/realtime
     restart: unless-stopped
-    networks:
-      - default
-      - dokploy-network
     environment:
       DATABASE_URL: postgres://realtime:${REALTIME_DB_PASSWORD:?Set REALTIME_DB_PASSWORD}@postgres:5432/${POSTGRES_DB:-event_system_pro}
       COUNTER_INTERVAL_MS: "5000"
@@ -100,9 +91,6 @@ services:
         GITHUB_REPOSITORY: ${GITHUB_REPOSITORY:-dancingevilgenius/event-system-pro}
         BUILD_DATE: ${BUILD_DATE:-}
     restart: unless-stopped
-    networks:
-      - default
-      - dokploy-network
     depends_on:
       - postgrest
       - realtime
@@ -123,17 +111,17 @@ services:
       - traefik.docker.network=dokploy-network
       # Traefik routing (HTTP + HTTPS). If you use these labels, remove the same
       # domain from Dokploy Domains tab to avoid duplicate routers.
-      - traefik.http.routers.esp-imake-proxy-secure.rule=Host(`${APP_DOMAIN:-imake.wtf}`)
-      - traefik.http.routers.esp-imake-proxy-secure.entrypoints=websecure
-      - traefik.http.routers.esp-imake-proxy-secure.tls.certresolver=letsencrypt
-      - traefik.http.routers.esp-imake-proxy-secure.service=esp-imake-proxy
-      - traefik.http.routers.esp-imake-proxy-web.rule=Host(`${APP_DOMAIN:-imake.wtf}`)
-      - traefik.http.routers.esp-imake-proxy-web.entrypoints=web
-      - traefik.http.routers.esp-imake-proxy-web.middlewares=esp-imake-proxy-redirect
-      - traefik.http.routers.esp-imake-proxy-web.service=esp-imake-proxy
-      - traefik.http.middlewares.esp-imake-proxy-redirect.redirectscheme.scheme=https
-      - traefik.http.middlewares.esp-imake-proxy-redirect.redirectscheme.permanent=true
-      - traefik.http.services.esp-imake-proxy.loadbalancer.server.port=80
+      - traefik.http.routers.${APP_NAME:-esp-compose}-proxy-secure.rule=Host(`${APP_DOMAIN:-imake.wtf}`)
+      - traefik.http.routers.${APP_NAME:-esp-compose}-proxy-secure.entrypoints=websecure
+      - traefik.http.routers.${APP_NAME:-esp-compose}-proxy-secure.tls.certresolver=letsencrypt
+      - traefik.http.routers.${APP_NAME:-esp-compose}-proxy-secure.service=${APP_NAME:-esp-compose}-proxy
+      - traefik.http.routers.${APP_NAME:-esp-compose}-proxy-web.rule=Host(`${APP_DOMAIN:-imake.wtf}`)
+      - traefik.http.routers.${APP_NAME:-esp-compose}-proxy-web.entrypoints=web
+      - traefik.http.routers.${APP_NAME:-esp-compose}-proxy-web.middlewares=${APP_NAME:-esp-compose}-proxy-redirect
+      - traefik.http.routers.${APP_NAME:-esp-compose}-proxy-web.service=${APP_NAME:-esp-compose}-proxy
+      - traefik.http.middlewares.${APP_NAME:-esp-compose}-proxy-redirect.redirectscheme.scheme=https
+      - traefik.http.middlewares.${APP_NAME:-esp-compose}-proxy-redirect.redirectscheme.permanent=true
+      - traefik.http.services.${APP_NAME:-esp-compose}-proxy.loadbalancer.server.port=80
     volumes:
       - caddy_data:/data
     depends_on:

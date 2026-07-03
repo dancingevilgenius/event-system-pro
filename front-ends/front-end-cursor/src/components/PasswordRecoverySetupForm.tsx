@@ -9,7 +9,6 @@ import {
 import { useEffect, useState } from 'react';
 import { fetchSecretQuestions, type SecretQuestion } from '../api/postgrest';
 import AppTextField from './AppTextField';
-import { CONTENT_MAX_WIDTH } from '../constants/layout';
 
 export type PasswordRecoveryAnswer = {
   secretQuestionId: number;
@@ -154,7 +153,7 @@ export default function PasswordRecoverySetupForm({
   }
 
   return (
-    <Stack spacing={2.5} sx={{ width: '100%', maxWidth: CONTENT_MAX_WIDTH, mx: 'auto' }}>
+    <Stack spacing={2.5} sx={{ width: '100%' }}>
       {slots.map((slot, index) => (
         <Box
           key={index}
@@ -163,12 +162,13 @@ export default function PasswordRecoverySetupForm({
             borderColor: 'divider',
             borderRadius: 1,
             p: 2,
+            width: '100%',
           }}
         >
           <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
             Question {index + 1}
           </Typography>
-          <Stack spacing={1.5}>
+          <Stack spacing={1.5} sx={{ width: '100%' }}>
             <AppTextField
               select
               label="Secret question"
@@ -206,6 +206,7 @@ export default function PasswordRecoverySetupForm({
               onChange={(event) => updateSlot(index, { answer: event.target.value })}
               fullWidth
               autoComplete="off"
+              sx={{ width: '100%' }}
             />
           </Stack>
         </Box>

@@ -1024,23 +1024,23 @@ export function updatePasswordRecovery(
 
 export function registerUser(params: {
   username: string;
-  email: string;
+  email?: string;
   password: string;
   nameJson: Record<string, unknown>;
   phoneNumbersJson: unknown[];
   addressesJson: unknown[];
-  passwordRecoveryJson: PasswordRecoveryJson;
+  passwordRecoveryJson?: PasswordRecoveryJson | null;
 }) {
   return callRpc<RegisterUserResult>(
     'register_user',
     {
       p_username: params.username,
-      p_email: params.email,
+      p_email: params.email?.trim() || null,
       p_password: params.password,
       p_name_json: params.nameJson,
       p_phone_numbers_json: params.phoneNumbersJson,
       p_addresses_json: params.addressesJson,
-      p_password_recovery_json: params.passwordRecoveryJson,
+      p_password_recovery_json: params.passwordRecoveryJson ?? null,
     },
     'omit',
   );

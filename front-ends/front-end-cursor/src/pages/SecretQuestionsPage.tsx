@@ -8,7 +8,6 @@ import {
 import PasswordRecoverySetupForm, {
   type PasswordRecoveryAnswer,
 } from '../components/PasswordRecoverySetupForm';
-import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
 import { useMessages } from '../hooks/useMessages';
 
@@ -105,7 +104,7 @@ export default function SecretQuestionsPage() {
           page. Answers are encrypted on save.
         </Typography>
 
-        <Stack spacing={2} sx={centeredContentStackSx}>
+        <Stack spacing={2} sx={{ width: '100%' }}>
           {!loadingSetup && (
             <PasswordRecoverySetupForm
               initialQuestionIds={initialQuestionIds}

@@ -430,7 +430,7 @@ export default function ForgotPasswordPage() {
 
         {activeStep === 1 && recoveryMethod === 'secret_questions' && (
           <Box component="form" onSubmit={handleVerify} noValidate>
-            <Stack spacing={2} sx={centeredContentStackSx}>
+            <Stack spacing={2} sx={{ width: '100%' }}>
               {email && (
                 <Typography variant="body2" color="text.secondary" align="center">
                   Answer at least two of your saved secret questions for <strong>{email}</strong>
@@ -447,7 +447,7 @@ export default function ForgotPasswordPage() {
                     width: '100%',
                   }}
                 >
-                  <Stack spacing={1.5}>
+                  <Stack spacing={1.5} sx={{ width: '100%' }}>
                     <Typography variant="body1">{question.question}</Typography>
                     <AppTextField
                       label="Your answer"
@@ -470,7 +470,10 @@ export default function ForgotPasswordPage() {
                       fullWidth
                       autoComplete="off"
                       error={secretAnswerFeedback[question.secret_question_id] === 'incorrect'}
-                      sx={secretAnswerFieldSx(secretAnswerFeedback[question.secret_question_id])}
+                      sx={{
+                        width: '100%',
+                        ...secretAnswerFieldSx(secretAnswerFeedback[question.secret_question_id]),
+                      }}
                     />
                   </Stack>
                 </Box>

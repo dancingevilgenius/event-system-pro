@@ -200,7 +200,7 @@ CREATE TABLE IF NOT EXISTS "user" (
   username varchar(64) NOT NULL UNIQUE,
   password_encrypted varchar(64) NOT NULL,
   name_json json DEFAULT NULL,
-  email varchar(64) NOT NULL,
+  email varchar(64) DEFAULT NULL,
   phone_numbers_json json DEFAULT NULL,
   social_media_json json DEFAULT NULL,
   volunteer_json json DEFAULT NULL,
@@ -762,30 +762,30 @@ INSERT INTO us_state_lu VALUES ('56', 'WA', 'Washington', TRUE);
 INSERT INTO us_state_lu VALUES ('57', 'WV', 'West Virginia', TRUE);
 INSERT INTO us_state_lu VALUES ('58', 'WI', 'Wisconsin', TRUE);
 INSERT INTO us_state_lu VALUES ('59', 'WY', 'Wyoming', TRUE);
-INSERT INTO secret_question_lu VALUES ('1', 'What was your favorite place to visit as a child?', '2018-12-01 16:57:23');
-INSERT INTO secret_question_lu VALUES ('2', 'Who is your favorite actor?', '2018-12-01 16:57:23');
-INSERT INTO secret_question_lu VALUES ('3', 'Who is your favorite musician?', '2018-12-01 16:57:23');
-INSERT INTO secret_question_lu VALUES ('4', 'What was the name of your pet as a child?', '2018-12-01 16:57:23');
+INSERT INTO secret_question_lu VALUES ('1', 'Favorite place to visit as a child?', '2018-12-01 16:57:23');
+INSERT INTO secret_question_lu VALUES ('2', 'Favorite actor?', '2018-12-01 16:57:23');
+INSERT INTO secret_question_lu VALUES ('3', 'Favorite musician?', '2018-12-01 16:57:23');
+INSERT INTO secret_question_lu VALUES ('4', 'Name of your pet as a child?', '2018-12-01 16:57:23');
 INSERT INTO secret_question_lu VALUES ('5', 'In what city were you born?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('6', 'What is your favorite movie?', '2018-12-01 16:57:24');
+INSERT INTO secret_question_lu VALUES ('6', 'Favorite movie?', '2018-12-01 16:57:24');
 INSERT INTO secret_question_lu VALUES ('7', 'What street did you grow up on?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('8', 'What was the color of your first car?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('9', 'What is your father''s middle name?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('10', 'What is your mother''s maiden name?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('11', 'What is the first name of the first person you kissed?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('12', 'What is your guilty pleasure?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('13', 'What was the name of your best friend in high school?', '2018-12-01 16:57:24');
+INSERT INTO secret_question_lu VALUES ('8', 'Color of your first car?', '2018-12-01 16:57:24');
+INSERT INTO secret_question_lu VALUES ('9', 'Father''s middle name?', '2018-12-01 16:57:24');
+INSERT INTO secret_question_lu VALUES ('10', 'Mother''s maiden name?', '2018-12-01 16:57:24');
+INSERT INTO secret_question_lu VALUES ('11', 'First name of your first kiss?', '2018-12-01 16:57:24');
+INSERT INTO secret_question_lu VALUES ('12', 'Guilty pleasure?', '2018-12-01 16:57:24');
+INSERT INTO secret_question_lu VALUES ('13', 'Name of best friend in high school', '2018-12-01 16:57:24');
 INSERT INTO secret_question_lu VALUES ('14', 'You have 99 problems. What ain''t one of them?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('15', 'What was the name of your elementary school?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('16', 'What was your childhood nickname?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('17', 'What was the make and model of your first car?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('18', 'What was the name of your first employer?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('19', 'What was the first concert you attended?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('20', 'What was your favorite food as a child?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('21', 'What was the name of your favorite teacher?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('22', 'What was the first album you bought?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('23', 'What is the name of the town where your parents met?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('24', 'What was the name of your first stuffed animal or toy?', '2018-12-01 16:57:24');
+INSERT INTO secret_question_lu VALUES ('15', 'Name of your elementary school?', '2018-12-01 16:57:24');
+INSERT INTO secret_question_lu VALUES ('16', 'Childhood nickname?', '2018-12-01 16:57:24');
+INSERT INTO secret_question_lu VALUES ('17', 'Make and model of your first car?', '2018-12-01 16:57:24');
+INSERT INTO secret_question_lu VALUES ('18', 'Name of your first employer?', '2018-12-01 16:57:24');
+INSERT INTO secret_question_lu VALUES ('19', 'First concert you attended?', '2018-12-01 16:57:24');
+INSERT INTO secret_question_lu VALUES ('20', 'Favorite food as a child?', '2018-12-01 16:57:24');
+INSERT INTO secret_question_lu VALUES ('21', 'Name of your favorite teacher?', '2018-12-01 16:57:24');
+INSERT INTO secret_question_lu VALUES ('22', 'First album you bought?', '2018-12-01 16:57:24');
+INSERT INTO secret_question_lu VALUES ('23', 'Town where your parents met?', '2018-12-01 16:57:24');
+INSERT INTO secret_question_lu VALUES ('24', 'Name of your childhood toy?', '2018-12-01 16:57:24');
 INSERT INTO event_group (event_group_code, full_name, short_name, created_date, created_by) VALUES ('TSL_ARMAGEDDON', 'Armageddon', 'Armageddon', '2021-04-04 06:16:45', 'ceg');
 INSERT INTO event_group (event_group_code, full_name, short_name, created_date, created_by) VALUES ('TSL_AWAKENING', 'Awakening', 'Awakening', '2021-04-04 06:16:45', 'ceg');
 INSERT INTO event_group (event_group_code, full_name, short_name, created_date, created_by) VALUES ('TSL_BATTLEGROUND', 'Battleground', 'Battleground', '2021-04-04 06:16:45', 'ceg');

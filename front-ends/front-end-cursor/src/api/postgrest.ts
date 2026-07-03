@@ -348,6 +348,10 @@ export async function fetchUsersPage(
 
 export type DemoBracketCompetitor = {
   userId: number;
+  username: string;
+  firstName: string;
+  lastName: string;
+  'display-name': string;
   label: string;
 };
 
@@ -360,13 +364,25 @@ export async function fetchDemoBracketCompetitors(): Promise<DemoBracketCompetit
 
   return rows
     .filter((row): row is Record<string, unknown> => Boolean(row) && typeof row === 'object')
-    .map((row) => ({
-      userId: typeof row.user_id === 'number' ? row.user_id : Number(row.user_id),
-      label:
-        typeof row.label === 'string' && row.label.trim() !== ''
-          ? row.label.trim()
-          : 'Unnamed user',
-    }))
+    .map((row) => {
+      const userId = typeof row.user_id === 'number' ? row.user_id : Number(row.user_id);
+      const username = typeof row.username === 'string' ? row.username.trim() : '';
+      const firstName = typeof row.first_name === 'string' ? row.first_name.trim() : '';
+      const lastName = typeof row.last_name === 'string' ? row.last_name.trim() : '';
+      const displayName =
+        typeof row['display-name'] === 'string' && row['display-name'].trim() !== ''
+          ? row['display-name'].trim()
+          : [firstName, lastName].filter(Boolean).join(' ') || 'Unnamed user';
+
+      return {
+        userId,
+        username,
+        firstName,
+        lastName,
+        'display-name': displayName,
+        label: displayName,
+      };
+    })
     .filter((row) => Number.isFinite(row.userId));
 }
 

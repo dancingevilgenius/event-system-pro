@@ -8,12 +8,14 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchDemoBracketCompetitors } from '../api/postgrest';
+import TournamentBracketViewDialog from '../components/TournamentBracketViewDialog';
 import {
   buildInitialBracket,
   roundLabel,
+  serializeBracketState,
   setMatchOutcome,
   type BracketMatch,
   type BracketState,
@@ -124,6 +126,12 @@ export default function TournamentBracketDemoPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [bracket, setBracket] = useState<BracketState | null>(null);
+  const [viewBracketOpen, setViewBracketOpen] = useState(false);
+
+  const bracketJson = useMemo(
+    () => (bracket ? serializeBracketState(bracket) : null),
+    [bracket],
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -227,11 +235,26 @@ export default function TournamentBracketDemoPage() {
         )}
 
         <Stack direction="row" spacing={2} sx={{ mt: 4, justifyContent: 'center' }}>
+          <Button
+            variant="contained"
+            disabled={!bracketJson}
+            onClick={() => setViewBracketOpen(true)}
+          >
+            View Bracket
+          </Button>
           <Button variant="outlined" onClick={() => navigate('/')}>
             Back to Login
           </Button>
         </Stack>
       </Paper>
+
+      {bracket && (
+        <TournamentBracketViewDialog
+          open={viewBracketOpen}
+          onClose={() => setViewBracketOpen(false)}
+          bracket={bracket}
+        />
+      )}
     </Container>
   );
 }

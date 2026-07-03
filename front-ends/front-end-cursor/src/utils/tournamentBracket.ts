@@ -1,5 +1,11 @@
+import type { Match as BracketUiMatch } from 'react-bracket-ui';
+
 export type BracketCompetitor = {
   userId: number;
+  username: string;
+  firstName: string;
+  lastName: string;
+  'display-name': string;
   label: string;
 };
 
@@ -15,6 +21,35 @@ export type BracketMatch = {
 
 export type BracketState = {
   rounds: BracketMatch[][];
+};
+
+export type BracketParticipantJson = {
+  user_id: number;
+  username: string;
+  first_name: string;
+  last_name: string;
+  'display-name': string;
+};
+
+export type BracketMatchJson = {
+  id: string;
+  round_index: number;
+  match_index: number;
+  slot_a: BracketParticipantJson | null;
+  slot_b: BracketParticipantJson | null;
+  winner: BracketParticipantJson | null;
+  loser: BracketParticipantJson | null;
+};
+
+export type BracketStateJson = {
+  format: 'single-elimination';
+  size: 16;
+  updated_at: string;
+  rounds: {
+    name: string;
+    matches: BracketMatchJson[];
+  }[];
+  champion: BracketParticipantJson | null;
 };
 
 const ROUND_LABELS = ['Round of 16', 'Quarterfinals', 'Semifinals', 'Final'] as const;
@@ -180,4 +215,85 @@ export function formatCompetitorName(firstName: string, lastName: string): strin
   const last = lastName.trim();
   const full = [first, last].filter(Boolean).join(' ');
   return full || 'Unnamed user';
+}
+
+export function toBracketParticipantJson(
+  competitor: BracketCompetitor | null,
+): BracketParticipantJson | null {
+  if (!competitor) {
+    return null;
+  }
+
+  return {
+    user_id: competitor.userId,
+    username: competitor.username,
+    first_name: competitor.firstName,
+    last_name: competitor.lastName,
+    'display-name': competitor['display-name'],
+  };
+}
+
+export function serializeBracketState(
+  state: BracketState,
+  updatedAt = new Date(),
+): BracketStateJson {
+  const finalMatch = state.rounds[3]?.[0];
+  const championCompetitor =
+    finalMatch?.winnerId != null ? competitorById(finalMatch, finalMatch.winnerId) : null;
+
+  return {
+    format: 'single-elimination',
+    size: 16,
+    updated_at: updatedAt.toISOString(),
+    rounds: state.rounds.map((round, roundIndex) => ({
+      name: roundLabel(roundIndex),
+      matches: round.map((match) => ({
+        id: match.id,
+        round_index: match.roundIndex,
+        match_index: match.matchIndex,
+        slot_a: toBracketParticipantJson(match.slotA),
+        slot_b: toBracketParticipantJson(match.slotB),
+        winner:
+          match.winnerId != null ? toBracketParticipantJson(competitorById(match, match.winnerId)) : null,
+        loser:
+          match.loserId != null ? toBracketParticipantJson(competitorById(match, match.loserId)) : null,
+      })),
+    })),
+    champion: toBracketParticipantJson(championCompetitor),
+  };
+}
+
+function nextMatchId(roundIndex: number, matchIndex: number): string | null {
+  if (roundIndex >= 3) {
+    return null;
+  }
+
+  return matchId(roundIndex + 1, Math.floor(matchIndex / 2));
+}
+
+export function bracketStateToUiMatches(state: BracketState): BracketUiMatch[] {
+  const matches: BracketUiMatch[] = [];
+
+  for (const round of state.rounds) {
+    for (const match of round) {
+      const participant1 = match.slotA
+        ? { id: match.slotA.userId, name: match.slotA['display-name'] }
+        : null;
+      const participant2 = match.slotB
+        ? { id: match.slotB.userId, name: match.slotB['display-name'] }
+        : null;
+
+      matches.push({
+        id: match.id,
+        round: match.roundIndex + 1,
+        matchNumber: match.matchIndex + 1,
+        participant1,
+        participant2,
+        winner: match.winnerId,
+        nextMatchId: nextMatchId(match.roundIndex, match.matchIndex),
+      });
+    }
+  }
+
+  return matches;
 }

@@ -15,6 +15,12 @@ import CloseIcon from './CloseIcon';
 import { formatBuildTimestamp, getGitHubBuildInfo } from '../lib/buildInfo';
 import { CONTENT_MAX_WIDTH } from '../constants/layout';
 
+const BUILD_INFO_LABEL_SX = {
+  fontWeight: 700,
+  color: '#0047AB',
+  textDecoration: 'line-through',
+} as const;
+
 type BuildInfoDialogProps = {
   open: boolean;
   onClose: () => void;
@@ -28,7 +34,7 @@ type InfoRowProps = {
 function InfoRow({ label, value }: InfoRowProps) {
   return (
     <Stack spacing={0.5}>
-      <Typography variant="subtitle1" color="text.primary" sx={{ fontWeight: 700 }}>
+      <Typography variant="subtitle1" sx={BUILD_INFO_LABEL_SX}>
         {label}
       </Typography>
       <Typography variant="body1" sx={{ wordBreak: 'break-word' }}>
@@ -105,7 +111,7 @@ export default function BuildInfoDialog({ open, onClose }: BuildInfoDialogProps)
 
       <DialogContent sx={{ pt: 1 }}>
         <Stack spacing={2.5} sx={{ width: '100%', maxWidth: CONTENT_MAX_WIDTH, mx: 'auto' }}>
-          <Typography variant="subtitle1" color="text.primary" sx={{ fontWeight: 700 }}>
+          <Typography variant="subtitle1" sx={BUILD_INFO_LABEL_SX}>
             GitHub
           </Typography>
           <InfoRow label="Repository" value={buildInfo.repository} />
@@ -113,7 +119,7 @@ export default function BuildInfoDialog({ open, onClose }: BuildInfoDialogProps)
           <InfoRow label="Commit" value={buildInfo.commit} />
           <InfoRow label="Build date" value={formatBuildTimestamp(buildInfo.buildDate)} />
 
-          <Typography variant="subtitle1" color="text.primary" sx={{ pt: 1, fontWeight: 700 }}>
+          <Typography variant="subtitle1" sx={{ ...BUILD_INFO_LABEL_SX, pt: 1 }}>
             Dokploy
           </Typography>
 

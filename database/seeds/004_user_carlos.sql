@@ -25,7 +25,7 @@ INSERT INTO public."user" (
 )
 SELECT
   'dancingevilgenius',
-  crypt('ChangeMeOnFirstLogin!', gen_salt('bf')),
+  crypt('ChangeMeFool!', gen_salt('bf')),
   '{
     "prefix": null,
     "first": "Carlos",

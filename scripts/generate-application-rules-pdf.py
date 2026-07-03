@@ -648,7 +648,7 @@ def build_pdf() -> None:
     pdf.section_title("Lookup tables and owner account")
     for item in [
         "_lu tables: created_by = c-agent on seed rows; modified_* NULL.",
-        "dancingevilgenius dev account (seed 004); default password ChangeMeOnFirstLogin!",
+        "dancingevilgenius dev account (seed 004); default password ChangeMeFool!",
         "Seed 007 grants all seven app roles to dancingevilgenius.",
     ]:
         pdf.bullet(item)

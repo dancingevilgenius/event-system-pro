@@ -907,7 +907,7 @@ Reference/lookup tables (`country_lu`, `us_state_lu`, `event_type_lu`, `secret_q
 
 ## Owner dev account
 
-Seed **`004_user_carlos.sql`** creates **`dancingevilgenius`** (project owner). Default password: **`ChangeMeOnFirstLogin!`** (reset via `scripts/reset_dancingevilgenius_password.sql`). Seed **`007`** grants **all seven app roles** to that user.
+Seed **`004_user_carlos.sql`** creates **`dancingevilgenius`** (project owner). Default password: **`ChangeMeFool!`** (reset via `scripts/reset_dancingevilgenius_password.sql`). Seed **`007`** grants **all seven app roles** to that user.
 
 ---
 

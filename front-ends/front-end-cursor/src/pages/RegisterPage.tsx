@@ -8,9 +8,7 @@ import {
 } from '@mui/material';
 import {
   type ChangeEvent,
-  type ClipboardEvent,
   type FormEvent,
-  type KeyboardEvent,
   useEffect,
   useMemo,
   useState,
@@ -24,9 +22,11 @@ import {
 import PasswordRecoveryDialog, {
   type PasswordRecoveryAnswer,
 } from '../components/PasswordRecoveryDialog';
+import AppPhoneNumberField from '../components/AppPhoneNumberField';
 import AppTextField from '../components/AppTextField';
 import { centeredContentStackSx } from '../constants/layout';
 import { useMessages } from '../hooks/useMessages';
+import { buildPhoneNumbersJson, hasCompletePhone } from '../utils/phoneNumbers';
 
 type RegisterForm = {
   username: string;
@@ -35,9 +35,7 @@ type RegisterForm = {
   confirmPassword: string;
   firstName: string;
   lastName: string;
-  phoneArea: string;
-  phonePrefix: string;
-  phoneLine: string;
+  phone: string;
   passwordRecoveryJson: PasswordRecoveryJson | null;
 };
 
@@ -48,9 +46,7 @@ const initialForm: RegisterForm = {
   confirmPassword: '',
   firstName: '',
   lastName: '',
-  phoneArea: '',
-  phonePrefix: '',
-  phoneLine: '',
+  phone: '',
   passwordRecoveryJson: null,
 };
 
@@ -58,41 +54,6 @@ const RECOVERY_HELP_MESSAGE =
   'For password recovery help, provide at least two of: email, phone number, and secret question answers.';
 
 const SAVED_QUESTION_IDS_EMPTY: number[] = [];
-
-function digitsOnly(value: string, maxLength: number): string {
-  return value.replace(/\D/g, '').slice(0, maxLength);
-}
-
-function isPhoneControlKey(key: string): boolean {
-  return (
-    key === 'Backspace' ||
-    key === 'Delete' ||
-    key === 'Tab' ||
-    key === 'ArrowLeft' ||
-    key === 'ArrowRight' ||
-    key === 'Home' ||
-    key === 'End'
-  );
-}
-
-function phoneInputSlotProps(maxLength: number) {
-  return {
-    htmlInput: {
-      inputMode: 'numeric' as const,
-      maxLength,
-      pattern: '[0-9]*',
-      onKeyDown: (event: KeyboardEvent<HTMLInputElement>) => {
-        if (event.ctrlKey || event.metaKey || isPhoneControlKey(event.key)) {
-          return;
-        }
-
-        if (!/^\d$/.test(event.key)) {
-          event.preventDefault();
-        }
-      },
-    },
-  };
-}
 
 function buildNameJson(firstName: string, lastName: string) {
   const first = firstName.trim();
@@ -109,28 +70,8 @@ function buildNameJson(firstName: string, lastName: string) {
   };
 }
 
-function buildPhoneNumbersJson(phoneArea: string, phonePrefix: string, phoneLine: string) {
-  const number = `${phoneArea}${phonePrefix}${phoneLine}`;
-  if (number.length !== 10) {
-    return [];
-  }
-
-  return [
-    {
-      type: 'mobile',
-      country_code: '1',
-      number,
-      primary: true,
-    },
-  ];
-}
-
 function hasEmail(email: string): boolean {
   return email.trim().length > 0;
-}
-
-function hasCompletePhone(phoneArea: string, phonePrefix: string, phoneLine: string): boolean {
-  return `${phoneArea}${phonePrefix}${phoneLine}`.length === 10;
 }
 
 function hasSecretQuestions(passwordRecoveryJson: PasswordRecoveryJson | null): boolean {
@@ -146,7 +87,7 @@ function countRecoveryMethods(form: RegisterForm): number {
   if (hasEmail(form.email)) {
     count += 1;
   }
-  if (hasCompletePhone(form.phoneArea, form.phonePrefix, form.phoneLine)) {
+  if (hasCompletePhone(form.phone)) {
     count += 1;
   }
   if (hasSecretQuestions(form.passwordRecoveryJson)) {
@@ -186,24 +127,9 @@ export default function RegisterPage() {
       setForm((current) => ({ ...current, [field]: event.target.value }));
     };
 
-  const updatePhoneField =
-    (field: 'phoneArea' | 'phonePrefix' | 'phoneLine', maxLength: number) =>
-    (event: ChangeEvent<HTMLInputElement>) => {
-      setForm((current) => ({
-        ...current,
-        [field]: digitsOnly(event.target.value, maxLength),
-      }));
-    };
-
-  const pastePhoneField =
-    (field: 'phoneArea' | 'phonePrefix' | 'phoneLine', maxLength: number) =>
-    (event: ClipboardEvent<HTMLInputElement>) => {
-      event.preventDefault();
-      setForm((current) => ({
-        ...current,
-        [field]: digitsOnly(event.clipboardData.getData('text'), maxLength),
-      }));
-    };
+  const updatePhone = (phone: string) => {
+    setForm((current) => ({ ...current, phone }));
+  };
 
   const handleSavePasswordRecovery = async (answers: PasswordRecoveryAnswer[]) => {
     if (
@@ -267,11 +193,7 @@ export default function RegisterPage() {
         email: hasEmail(form.email) ? form.email.trim() : undefined,
         password: form.password,
         nameJson: buildNameJson(form.firstName, form.lastName),
-        phoneNumbersJson: buildPhoneNumbersJson(
-          form.phoneArea,
-          form.phonePrefix,
-          form.phoneLine,
-        ),
+        phoneNumbersJson: buildPhoneNumbersJson(form.phone),
         addressesJson: [],
         passwordRecoveryJson: form.passwordRecoveryJson,
       });
@@ -361,36 +283,12 @@ export default function RegisterPage() {
               autoComplete="family-name"
             />
 
-            <Typography variant="subtitle2" color="text.secondary">
-              Phone (US)
-            </Typography>
-            <Stack direction="row" spacing={1} sx={{ width: '100%' }}>
-              <AppTextField
-                placeholder="Area"
-                value={form.phoneArea}
-                onChange={updatePhoneField('phoneArea', 3)}
-                onPaste={pastePhoneField('phoneArea', 3)}
-                slotProps={phoneInputSlotProps(3)}
-                fullWidth
-                autoComplete="tel-area-code"
-              />
-              <AppTextField
-                placeholder="Middle part"
-                value={form.phonePrefix}
-                onChange={updatePhoneField('phonePrefix', 3)}
-                onPaste={pastePhoneField('phonePrefix', 3)}
-                slotProps={phoneInputSlotProps(3)}
-                fullWidth
-              />
-              <AppTextField
-                placeholder="Last part"
-                value={form.phoneLine}
-                onChange={updatePhoneField('phoneLine', 4)}
-                onPaste={pastePhoneField('phoneLine', 4)}
-                slotProps={phoneInputSlotProps(4)}
-                fullWidth
-              />
-            </Stack>
+            <AppPhoneNumberField
+              label="Phone"
+              value={form.phone}
+              onChange={(phone) => updatePhone(phone)}
+              autoComplete="tel"
+            />
 
             <Button
               variant="outlined"

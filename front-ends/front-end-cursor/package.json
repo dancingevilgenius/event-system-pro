@@ -15,9 +15,11 @@
     "@mui/material": "^9.1.2",
     "@mui/x-data-grid": "^9.7.0",
     "framer-motion": "^12.41.0",
+    "libphonenumber-js": "^1.13.8",
     "react": "^19.2.7",
     "react-bracket-ui": "^1.2.0",
     "react-dom": "^19.2.7",
+    "react-international-phone": "^4.8.0",
     "react-router-dom": "^7.18.0"
   },
   "devDependencies": {

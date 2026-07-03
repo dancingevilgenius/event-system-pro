@@ -25,6 +25,7 @@ import SecretQuestionsPage from './pages/SecretQuestionsPage';
 import StaffPage from './pages/StaffPage';
 import StaticListDetailsPage from './pages/StaticListDetailsPage';
 import StaticListsPage from './pages/StaticListsPage';
+import TournamentBracketDemoPage from './pages/TournamentBracketDemoPage';
 import { EVENT_HOME_PATH, EVENT_GROUPS_PATH, EVENTS_PATH } from './constants/eventRoutes';
 
 export default function App() {
@@ -193,6 +194,14 @@ export default function App() {
         element={
           <ProtectedRoute roles={['admin']}>
             <AdminPlaceholderPage title="Competition Entries" />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/tournament-bracket-demo"
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <TournamentBracketDemoPage />
           </ProtectedRoute>
         }
       />

@@ -87,6 +87,8 @@ services:
         VITE_REALTIME_WS_URL: ${VITE_REALTIME_WS_URL:-wss://imake.wtf/realtime/ws}
         DOKPLOY_COMMIT_HASH: ${DOKPLOY_COMMIT_HASH:-}
         GIT_COMMIT: ${GIT_COMMIT:-unknown}
+        DOKPLOY_COMMIT_MESSAGE: ${DOKPLOY_COMMIT_MESSAGE:-}
+        GIT_COMMIT_MESSAGE: ${GIT_COMMIT_MESSAGE:-unknown}
         GIT_BRANCH: ${GIT_BRANCH:-main}
         GITHUB_REPOSITORY: ${GITHUB_REPOSITORY:-dancingevilgenius/event-system-pro}
         BUILD_DATE: ${BUILD_DATE:-}

@@ -2,6 +2,7 @@ export type GitHubBuildInfo = {
   repository: string;
   branch: string;
   commit: string;
+  commitMessage: string;
   buildDate: string | null;
 };
 
@@ -14,12 +15,14 @@ export function getGitHubBuildInfo(): GitHubBuildInfo {
   const repository = readBuildEnv('VITE_GITHUB_REPOSITORY');
   const branch = readBuildEnv('VITE_GIT_BRANCH');
   const commit = readBuildEnv('VITE_GIT_COMMIT');
+  const commitMessage = readBuildEnv('VITE_GIT_COMMIT_MESSAGE');
   const buildDate = readBuildEnv('VITE_BUILD_DATE');
 
   return {
     repository: repository || 'unknown',
     branch: branch || 'unknown',
     commit: commit || 'unknown',
+    commitMessage: commitMessage || 'Not available',
     buildDate: buildDate || null,
   };
 }

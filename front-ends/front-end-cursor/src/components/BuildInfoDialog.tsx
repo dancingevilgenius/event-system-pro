@@ -116,6 +116,7 @@ export default function BuildInfoDialog({ open, onClose }: BuildInfoDialogProps)
           <InfoRow label="Repository" value={buildInfo.repository} />
           <InfoRow label="Branch" value={buildInfo.branch} />
           <InfoRow label="Commit" value={buildInfo.commit} />
+          <InfoRow label="Commit message" value={buildInfo.commitMessage} />
           <InfoRow label="Build date" value={formatBuildTimestamp(buildInfo.buildDate)} />
 
           <Typography variant="subtitle1" sx={{ ...BUILD_INFO_LABEL_SX, pt: 1 }}>

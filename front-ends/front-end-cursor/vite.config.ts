@@ -31,6 +31,8 @@ function buildInfoEnv(): Record<string, string> {
       process.env.VITE_GIT_BRANCH || tryGit('rev-parse --abbrev-ref HEAD') || 'unknown',
     VITE_GIT_COMMIT:
       process.env.VITE_GIT_COMMIT || tryGit('rev-parse --short HEAD') || 'unknown',
+    VITE_GIT_COMMIT_MESSAGE:
+      process.env.VITE_GIT_COMMIT_MESSAGE || tryGit('log -1 --pretty=%s') || 'Not available',
     VITE_BUILD_DATE: process.env.VITE_BUILD_DATE || new Date().toISOString(),
   }
 }

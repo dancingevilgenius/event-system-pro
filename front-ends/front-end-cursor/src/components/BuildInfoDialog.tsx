@@ -28,7 +28,7 @@ type InfoRowProps = {
 function InfoRow({ label, value }: InfoRowProps) {
   return (
     <Stack spacing={0.5}>
-      <Typography variant="subtitle2" color="text.secondary">
+      <Typography variant="subtitle1" fontWeight={700} color="text.primary">
         {label}
       </Typography>
       <Typography variant="body1" sx={{ wordBreak: 'break-word' }}>
@@ -105,7 +105,7 @@ export default function BuildInfoDialog({ open, onClose }: BuildInfoDialogProps)
 
       <DialogContent sx={{ pt: 1 }}>
         <Stack spacing={2.5} sx={{ width: '100%', maxWidth: CONTENT_MAX_WIDTH, mx: 'auto' }}>
-          <Typography variant="subtitle1" color="text.secondary">
+          <Typography variant="subtitle1" fontWeight={700} color="text.primary">
             GitHub
           </Typography>
           <InfoRow label="Repository" value={buildInfo.repository} />
@@ -113,7 +113,7 @@ export default function BuildInfoDialog({ open, onClose }: BuildInfoDialogProps)
           <InfoRow label="Commit" value={buildInfo.commit} />
           <InfoRow label="Build date" value={formatBuildTimestamp(buildInfo.buildDate)} />
 
-          <Typography variant="subtitle1" color="text.secondary" sx={{ pt: 1 }}>
+          <Typography variant="subtitle1" fontWeight={700} color="text.primary" sx={{ pt: 1 }}>
             Dokploy
           </Typography>
 

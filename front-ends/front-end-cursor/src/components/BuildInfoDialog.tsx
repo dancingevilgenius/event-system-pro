@@ -1,12 +1,14 @@
 import {
   Button,
   CircularProgress,
+  Collapse,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   IconButton,
   Stack,
+  TextField,
   Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
@@ -19,6 +21,8 @@ const BUILD_INFO_LABEL_SX = {
   fontWeight: 700,
   color: 'text.primary',
 } as const;
+
+const COMMIT_MESSAGE_PREVIEW_CHARS = 30;
 
 type BuildInfoDialogProps = {
   open: boolean;
@@ -39,6 +43,69 @@ function InfoRow({ label, value }: InfoRowProps) {
       <Typography variant="body1" sx={{ wordBreak: 'break-word' }}>
         {value}
       </Typography>
+    </Stack>
+  );
+}
+
+type CommitMessageRowProps = {
+  message: string;
+  dialogOpen: boolean;
+};
+
+function CommitMessageRow({ message, dialogOpen }: CommitMessageRowProps) {
+  const [expanded, setExpanded] = useState(false);
+  const isLong =
+    message !== 'Not available' && message.length > COMMIT_MESSAGE_PREVIEW_CHARS;
+  const preview = isLong ? `${message.slice(0, COMMIT_MESSAGE_PREVIEW_CHARS)}…` : message;
+
+  useEffect(() => {
+    if (!dialogOpen) {
+      setExpanded(false);
+    }
+  }, [dialogOpen]);
+
+  return (
+    <Stack spacing={0.5}>
+      <Typography variant="subtitle1" sx={BUILD_INFO_LABEL_SX}>
+        Commit message
+      </Typography>
+      {!isLong ? (
+        <Typography variant="body1" sx={{ wordBreak: 'break-word' }}>
+          {message}
+        </Typography>
+      ) : (
+        <Stack spacing={1}>
+          {!expanded && (
+            <Typography variant="body1" sx={{ wordBreak: 'break-word' }}>
+              {preview}
+            </Typography>
+          )}
+          <Button
+            variant="text"
+            size="small"
+            onClick={() => setExpanded((value) => !value)}
+            aria-expanded={expanded}
+            sx={{ alignSelf: 'flex-start', px: 0, minWidth: 0 }}
+          >
+            {expanded ? 'Show less' : 'Show full message (more text)'}
+          </Button>
+          <Collapse in={expanded}>
+            <TextField
+              value={message}
+              multiline
+              fullWidth
+              minRows={2}
+              maxRows={8}
+              slotProps={{
+                input: {
+                  readOnly: true,
+                  'aria-label': 'Full commit message',
+                },
+              }}
+            />
+          </Collapse>
+        </Stack>
+      )}
     </Stack>
   );
 }
@@ -116,7 +183,7 @@ export default function BuildInfoDialog({ open, onClose }: BuildInfoDialogProps)
           <InfoRow label="Repository" value={buildInfo.repository} />
           <InfoRow label="Branch" value={buildInfo.branch} />
           <InfoRow label="Commit" value={buildInfo.commit} />
-          <InfoRow label="Commit message" value={buildInfo.commitMessage} />
+          <CommitMessageRow message={buildInfo.commitMessage} dialogOpen={open} />
           <InfoRow label="Build date" value={formatBuildTimestamp(buildInfo.buildDate)} />
 
           <Typography variant="subtitle1" sx={{ ...BUILD_INFO_LABEL_SX, pt: 1 }}>

@@ -17,7 +17,14 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 | Forgot password | `front-ends/front-end-cursor/src/pages/ForgotPasswordPage.tsx` |
 | Home | `front-ends/front-end-cursor/src/pages/HomePage.tsx` |
 | Account | `front-ends/front-end-cursor/src/pages/AccountPage.tsx` |
+| Secret questions (password recovery) | `front-ends/front-end-cursor/src/pages/SecretQuestionsPage.tsx` |
 | Change password | `front-ends/front-end-cursor/src/pages/ChangePasswordPage.tsx` |
+| Secret questions form | `front-ends/front-end-cursor/src/components/SecretQuestionsSelector.tsx` |
+| Secret question slot chrome | `front-ends/front-end-cursor/src/components/SecretQuestionSlot.tsx` |
+| Secret question + answer (one slot) | `front-ends/front-end-cursor/src/components/SecretQuestionAndAnswer.tsx` |
+| Secret question carousel (mobile) | `front-ends/front-end-cursor/src/components/SecretQuestionCarousel.tsx` |
+| Register password-recovery dialog | `front-ends/front-end-cursor/src/components/PasswordRecoveryDialog.tsx` |
+| Password recovery setup re-export | `front-ends/front-end-cursor/src/components/PasswordRecoverySetupForm.tsx` |
 | Admin home | `front-ends/front-end-cursor/src/pages/AdminHomePage.tsx` |
 | Admin competitors | `front-ends/front-end-cursor/src/pages/AdminCompetitorsPage.tsx` |
 | Staff / contest pick | `front-ends/front-end-cursor/src/pages/StaffPage.tsx`, `ContestSelectionPage.tsx` |
@@ -100,7 +107,7 @@ Seven roles from `user_app_role` (included in login JWT `app_roles`):
 
 | Route | Required role(s) |
 |-------|------------------|
-| `/home`, `/account`, `/changepassword` | Any signed-in user |
+| `/home`, `/account`, `/changepassword`, `/secret-questions` | Any signed-in user |
 | `/staff`, `/judging` | `staff` (or `admin`) |
 | `/competitor` | `competitor` (or `admin`) |
 | `/adminhome`, `/admin/event-details`, `/admin/contests`, `/admin/contests/contest`, `/admin/competitors`, `/admin/competition-entries` | `admin` |
@@ -123,7 +130,19 @@ Seven roles from `user_app_role` (included in login JWT `app_roles`):
 
 - Shows signed-in **username**.
 - **Change Password** navigates to `/changepassword`.
+- **Password Recovery** navigates to `/secret-questions`.
 - **Back to Home** returns to `/home`.
+
+### Secret questions (`/secret-questions`)
+
+- Protected route; opened from **Account → Password Recovery**.
+- Title: **Password Recovery**; same centered card layout as Register (`Container maxWidth="sm"`, `Paper`, `centeredContentStackSx`).
+- On load, calls RPC **`get_password_recovery_setup`** with session `user_id` to pre-select the user's three saved question ids (answers are not returned).
+- Renders **`SecretQuestionsSelector`** (full 3-slot form with save button).
+- Save calls RPC **`update_password_recovery`** with three `{ secret_question_id, answer }` pairs; answers are bcrypt-hashed server-side.
+- On success: success message and navigate to **`/account`**.
+- **Back to Account** returns to `/account`.
+- Slot labels **Question 1**, **Question 2**, **Question 3** are shown (`showSlotLabels` defaults to `true` on this page).
 
 ### Change password (`/changepassword`)
 
@@ -153,9 +172,61 @@ Login page links: **Forgot password?** and **Register**.
 - **First name** and **last name** are required.
 - Optional address: **city**, **state** (`static_list` → `US_STATES`), and **country** (`static_list` → `COUNTRIES`) only — no street line on this form (`addresses_json.line1` is `null` when an address row is saved).
 - Phone uses three numeric US segments (area, prefix, line).
-- Before submit, user must complete **three secret password-recovery questions** (answers bcrypt-hashed via `api.hash_password_recovery_answers`, stored in `password_recovery_json`).
+- Before submit, user must complete **three secret password-recovery questions** in the **`PasswordRecoveryDialog`** (opened from the register form).
+- Dialog uses the same shared slot components as `/secret-questions` (see **Secret question UI** below); slot labels are **not** shown in the dialog.
+- Answers are bcrypt-hashed via RPC **`api.hash_password_recovery_answers`** (`auth: omit`) and stored in `password_recovery_json` on submit.
 - Submit calls **`api.register_user`**; on success navigates to login.
 - **Login** and **Register** call `clearMessages()` on mount.
+
+---
+
+## Secret question UI
+
+Shared React components for choosing three secret questions and answers. Used on **Register** (`PasswordRecoveryDialog`) and **Account → Password Recovery** (`SecretQuestionsPage` → `SecretQuestionsSelector`).
+
+### Component hierarchy
+
+| Component | File | Role |
+|-----------|------|------|
+| **`SecretQuestionsSelector`** | `SecretQuestionsSelector.tsx` | Full 3-slot form: loads question list, manages slots, validates, save button. |
+| **`SecretQuestionSlot`** | `SecretQuestionSlot.tsx` | Bordered wrapper around one slot; optional **Question N** label. Border: `divider`, 1px, rounded, responsive padding. |
+| **`SecretQuestionAndAnswer`** | `SecretQuestionAndAnswer.tsx` | One slot's picker + answer field; content centered via `centeredContentStackSx`. **No border** (border lives in `SecretQuestionSlot`). |
+| **`SecretQuestionPicker`** | exported from `SecretQuestionsSelector.tsx` | Desktop: MUI select dropdown (`aria-label="Secret question"`, no visible field label). Mobile: **`SecretQuestionCarousel`**. |
+| **`SecretQuestionCarousel`** | `SecretQuestionCarousel.tsx` | Mobile carousel; arrow buttons to browse questions. |
+| **`PasswordRecoveryDialog`** | `PasswordRecoveryDialog.tsx` | Register modal; maps three slots as `SecretQuestionSlot` → `SecretQuestionAndAnswer`. |
+| **`PasswordRecoverySetupForm`** | `PasswordRecoverySetupForm.tsx` | Thin re-export of `SecretQuestionsSelector` (legacy import path). |
+
+Typical slot markup:
+
+```tsx
+<SecretQuestionSlot label={showSlotLabels ? `Question ${index + 1}` : undefined}>
+  <SecretQuestionAndAnswer ... />
+</SecretQuestionSlot>
+```
+
+### Mobile vs desktop picker
+
+- **`useIsMobileDevice`** chooses the picker:
+  - **Desktop:** `AppTextField` select with all questions; already-selected questions in other slots are **disabled**.
+  - **Mobile:** `SecretQuestionCarousel` with left/right arrows.
+- Same behavior on Register dialog and `/secret-questions`.
+
+### Validation (both flows)
+
+- All three slots must have a selected question and a non-blank answer (trimmed).
+- Each question id may be used **once** across the three slots.
+- Register dialog may highlight empty answer fields on failed submit; `SecretQuestionsSelector` shows a single inline error message.
+
+### API
+
+| Call | When | Auth |
+|------|------|------|
+| `fetchSecretQuestions()` → `GET /secret_question_lu` | Load question list | `omit` (public lookup) |
+| `hash_password_recovery_answers` | Register submit (pre-hash answers) | `omit` |
+| `get_password_recovery_setup` | `/secret-questions` load | bearer |
+| `update_password_recovery` | `/secret-questions` save | bearer |
+
+Forgot-password flow uses a separate stepper on **`/forgot-password`** (user answers two of their saved questions); it does **not** reuse these picker components.
 
 ---
 

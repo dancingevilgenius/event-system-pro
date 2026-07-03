@@ -180,7 +180,7 @@ export default function TournamentBracketDemoPage() {
           Tournament Bracket Demo
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', mb: 3 }}>
-          Single elimination · 16 competitors from the user table · pick a winner for each match
+          Single elimination · 16 random demo users · pick a winner for each match
         </Typography>
 
         {loading && (

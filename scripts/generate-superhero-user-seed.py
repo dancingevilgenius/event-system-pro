@@ -634,9 +634,10 @@ def build_additional_info(
     color1: str | None,
     color2: str | None,
 ) -> dict:
-    info: dict[str, str] = {
+    info: dict[str, str | bool] = {
         "notes": f"{publisher} superhero seed user.",
         "preferred_contact": "email",
+        "demo": True,
     }
     if sex:
         info["sex"] = sex

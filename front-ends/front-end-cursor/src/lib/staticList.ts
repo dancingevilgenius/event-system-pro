@@ -7,6 +7,12 @@ export const US_STATES_LIST_CODE = 'US_STATES';
 /** `static_list.list_code` for countries and territories. */
 export const COUNTRIES_LIST_CODE = 'COUNTRIES';
 
+/** `static_list.list_code` for WSDC swing competition event types. */
+export const WSDC_SWING_EVENTS_LIST_CODE = 'WSDC_SWING_EVENTS';
+
+/** `static_list.list_code` for WSDC ability / age levels. */
+export const WSDC_LEVELS_LIST_CODE = 'WSDC_LEVELS';
+
 export type StaticListJsonField = 'min-age' | 'max-age';
 
 export function formatStaticListAge(value: number): string {

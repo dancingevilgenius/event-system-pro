@@ -8,6 +8,7 @@ import AdminCompetitorsPage from './pages/AdminCompetitorsPage';
 import AdminContestResultsPage from './pages/AdminContestResultsPage';
 import AdminContestsPage from './pages/AdminContestsPage';
 import AdminEventAttendeesPage from './pages/AdminEventAttendeesPage';
+import AdminEventContestsPage from './pages/AdminEventContestsPage';
 import AdminEventGroupPage from './pages/AdminEventGroupPage';
 import AdminEventPage from './pages/AdminEventPage';
 import AdminEventSectionPlaceholderPage from './pages/AdminEventSectionPlaceholderPage';
@@ -165,7 +166,7 @@ export default function App() {
         path={`${EVENT_GROUPS_PATH}/:eventGroupCode/:eventId/contests`}
         element={
           <ProtectedRoute roles={['admin']}>
-            <AdminEventSectionPlaceholderPage title="Contests" />
+            <AdminEventContestsPage />
           </ProtectedRoute>
         }
       />

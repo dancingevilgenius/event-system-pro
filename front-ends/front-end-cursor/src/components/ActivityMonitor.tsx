@@ -30,6 +30,10 @@ function parseServerExpiresAt(value: unknown): number | null {
   return Number.isNaN(expiresAt) ? null : expiresAt;
 }
 
+function isInactiveLogout(status: { ok?: boolean; active?: boolean }): boolean {
+  return status.ok !== false && status.active === false;
+}
+
 export default function ActivityMonitor() {
   const { session, logout } = useAuth();
   const { showWarning } = useMessages();
@@ -55,7 +59,7 @@ export default function ActivityMonitor() {
 
   const applyServerStatus = useCallback(
     async     (status: Awaited<ReturnType<typeof sessionStatus>>) => {
-      if (status.active === false) {
+      if (isInactiveLogout(status)) {
         forceInactiveLogout();
         return true;
       }
@@ -102,7 +106,7 @@ export default function ActivityMonitor() {
         const result = await touchLastActivity();
         lastSyncRef.current = Date.now();
 
-        if (result.active === false) {
+        if (isInactiveLogout(result)) {
           forceInactiveLogout();
         }
       } catch {

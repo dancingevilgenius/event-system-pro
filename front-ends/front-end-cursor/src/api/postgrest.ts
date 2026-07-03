@@ -73,6 +73,34 @@ export type ForgotPasswordSimpleResult = {
   message: string;
 };
 
+export type ForgotPasswordRecoveryOptionsResult = {
+  ok: boolean;
+  found: boolean;
+  has_secret_questions: boolean;
+  email?: string;
+};
+
+export type SecretQuestionPrompt = {
+  secret_question_id: number;
+  question: string;
+};
+
+export type ForgotPasswordSecretQuestionsStartResult = {
+  ok: boolean;
+  message: string;
+  email?: string;
+  questions?: SecretQuestionPrompt[];
+};
+
+export type ForgotPasswordSecretQuestionsVerifyResult = {
+  ok: boolean;
+  message: string;
+  correct_count?: number;
+  incorrect_count?: number;
+  correct_question_ids?: number[];
+  incorrect_question_ids?: number[];
+};
+
 export type LoginResult = {
   ok: boolean;
   message: string;
@@ -441,6 +469,52 @@ export function forgotPasswordComplete(
     {
       p_email: email,
       p_code: normalizeVerificationCode(code),
+      p_new_password: newPassword,
+    },
+    'omit',
+  );
+}
+
+export function forgotPasswordRecoveryOptions(identifier: string) {
+  return callRpc<ForgotPasswordRecoveryOptionsResult>(
+    'forgot_password_recovery_options',
+    { p_identifier: identifier },
+    'omit',
+  );
+}
+
+export function forgotPasswordSecretQuestionsStart(identifier: string) {
+  return callRpc<ForgotPasswordSecretQuestionsStartResult>(
+    'forgot_password_secret_questions_start',
+    { p_identifier: identifier },
+    'omit',
+  );
+}
+
+export function forgotPasswordSecretQuestionsVerify(
+  identifier: string,
+  answers: Array<{ secret_question_id: number; answer: string }>,
+) {
+  return callRpc<ForgotPasswordSecretQuestionsVerifyResult>(
+    'forgot_password_secret_questions_verify',
+    {
+      p_identifier: identifier,
+      p_answers: answers,
+    },
+    'omit',
+  );
+}
+
+export function forgotPasswordSecretQuestionsComplete(
+  identifier: string,
+  answers: Array<{ secret_question_id: number; answer: string }>,
+  newPassword: string,
+) {
+  return callRpc<ForgotPasswordSimpleResult>(
+    'forgot_password_secret_questions_complete',
+    {
+      p_identifier: identifier,
+      p_answers: answers,
       p_new_password: newPassword,
     },
     'omit',
@@ -919,6 +993,32 @@ export function hashPasswordRecoveryAnswers(
     'hash_password_recovery_answers',
     { p_answers: answers },
     'omit',
+  );
+}
+
+export type PasswordRecoverySetupResult = {
+  ok: boolean;
+  message?: string;
+  has_setup?: boolean;
+  secret_question_ids?: number[];
+};
+
+export function getPasswordRecoverySetup(userId: number) {
+  return callRpc<PasswordRecoverySetupResult>('get_password_recovery_setup', {
+    p_user_id: userId,
+  });
+}
+
+export function updatePasswordRecovery(
+  answers: Array<{ secret_question_id: number; answer: string }>,
+  userId: number,
+) {
+  return callRpc<HashPasswordRecoveryResult>(
+    'update_password_recovery',
+    {
+      p_answers: answers,
+      p_user_id: userId,
+    },
   );
 }
 

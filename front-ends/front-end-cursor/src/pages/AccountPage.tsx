@@ -58,6 +58,14 @@ export default function AccountPage() {
           >
             Change Password
           </Button>
+          <Button
+            variant="outlined"
+            size="large"
+            fullWidth
+            onClick={() => navigate('/secret-questions')}
+          >
+            Password Recovery
+          </Button>
           <Button variant="text" fullWidth onClick={() => navigate('/home')}>
             Back to Home
           </Button>

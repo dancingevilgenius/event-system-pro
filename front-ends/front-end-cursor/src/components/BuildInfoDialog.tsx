@@ -17,8 +17,7 @@ import { CONTENT_MAX_WIDTH } from '../constants/layout';
 
 const BUILD_INFO_LABEL_SX = {
   fontWeight: 700,
-  color: '#0047AB',
-  textDecoration: 'line-through',
+  color: 'text.primary',
 } as const;
 
 type BuildInfoDialogProps = {

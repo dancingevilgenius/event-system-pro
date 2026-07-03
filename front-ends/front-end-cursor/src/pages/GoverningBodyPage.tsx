@@ -18,11 +18,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   fetchGoverningBodies,
-  updateGoverningBody,
+  updateGoverningBodyMoreJson,
   type GoverningBodyRow,
-  type GoverningBodyUpdate,
 } from '../api/postgrest';
-import GoverningBodyEditDialog from '../components/GoverningBodyEditDialog';
+import GoverningBodyMoreDialog from '../components/GoverningBodyMoreDialog';
 import { useIsMobileDevice } from '../hooks/useIsMobileDevice';
 import { useMessages } from '../hooks/useMessages';
 
@@ -32,10 +31,10 @@ function displayValue(value: string): string {
 
 function MobileGoverningBodyCard({
   row,
-  onEdit,
+  onMore,
 }: {
   row: GoverningBodyRow;
-  onEdit: (row: GoverningBodyRow) => void;
+  onMore: (row: GoverningBodyRow) => void;
 }) {
   return (
     <Paper variant="outlined" sx={{ p: 2 }}>
@@ -59,8 +58,8 @@ function MobileGoverningBodyCard({
           <Typography variant="body2">{displayValue(row.shortName)}</Typography>
         </Box>
         <Divider />
-        <Button variant="outlined" size="small" onClick={() => onEdit(row)} sx={{ alignSelf: 'flex-start' }}>
-          Edit
+        <Button variant="outlined" size="small" onClick={() => onMore(row)} sx={{ alignSelf: 'flex-start' }}>
+          More
         </Button>
       </Stack>
     </Paper>
@@ -75,7 +74,7 @@ export default function GoverningBodyPage() {
   const [rows, setRows] = useState<GoverningBodyRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [editRow, setEditRow] = useState<GoverningBodyRow | null>(null);
+  const [moreRow, setMoreRow] = useState<GoverningBodyRow | null>(null);
   const [saving, setSaving] = useState(false);
 
   const loadGoverningBodies = useCallback(async () => {
@@ -97,27 +96,27 @@ export default function GoverningBodyPage() {
     void loadGoverningBodies();
   }, [loadGoverningBodies]);
 
-  const handleOpenEdit = (row: GoverningBodyRow) => {
-    setEditRow(row);
+  const handleOpenMore = (row: GoverningBodyRow) => {
+    setMoreRow(row);
   };
 
-  const handleCloseEdit = () => {
+  const handleCloseMore = () => {
     if (saving) {
       return;
     }
 
-    setEditRow(null);
+    setMoreRow(null);
   };
 
-  const handleSaveEdit = async (code: string, values: GoverningBodyUpdate) => {
+  const handleSaveMore = async (code: string, moreJson: Record<string, string>) => {
     setSaving(true);
 
     try {
-      const updated = await updateGoverningBody(code, values);
+      const updated = await updateGoverningBodyMoreJson(code, moreJson);
       setRows((current) =>
         current.map((row) => (row.code === updated.code ? updated : row)),
       );
-      setEditRow(null);
+      setMoreRow(null);
       showSuccess('Governing body updated.');
     } catch (saveError) {
       showProblem(saveError instanceof Error ? saveError.message : 'Unable to save governing body.');
@@ -153,7 +152,7 @@ export default function GoverningBodyPage() {
               </Typography>
             ) : (
               rows.map((row) => (
-                <MobileGoverningBodyCard key={row.code} row={row} onEdit={handleOpenEdit} />
+                <MobileGoverningBodyCard key={row.code} row={row} onMore={handleOpenMore} />
               ))
             )}
           </Stack>
@@ -184,8 +183,8 @@ export default function GoverningBodyPage() {
                       <TableCell>{displayValue(row.longName)}</TableCell>
                       <TableCell>{displayValue(row.shortName)}</TableCell>
                       <TableCell align="right">
-                        <Button variant="outlined" size="small" onClick={() => handleOpenEdit(row)}>
-                          Edit
+                        <Button variant="outlined" size="small" onClick={() => handleOpenMore(row)}>
+                          More
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -203,12 +202,12 @@ export default function GoverningBodyPage() {
         </Stack>
       </Paper>
 
-      <GoverningBodyEditDialog
-        open={editRow !== null}
-        row={editRow}
+      <GoverningBodyMoreDialog
+        open={moreRow !== null}
+        row={moreRow}
         saving={saving}
-        onClose={handleCloseEdit}
-        onSave={(code, values) => void handleSaveEdit(code, values)}
+        onClose={handleCloseMore}
+        onSave={(code, moreJson) => void handleSaveMore(code, moreJson)}
       />
     </Container>
   );

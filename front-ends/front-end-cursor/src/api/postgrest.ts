@@ -1030,47 +1030,59 @@ export type GoverningBodyRow = {
   code: string;
   longName: string;
   shortName: string;
+  moreJson: Record<string, string>;
 };
 
 type ApiGoverningBodyRow = {
   governing_body_code: string;
   long_name: string;
   short_name: string | null;
+  more_json: unknown;
 };
+
+export function parseGoverningBodyMoreJson(value: unknown): Record<string, string> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return {};
+  }
+
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>)
+      .filter(([key]) => key.trim() !== '')
+      .map(([key, entryValue]) => [key, entryValue == null ? '' : String(entryValue)]),
+  );
+}
 
 function mapGoverningBodyRow(row: ApiGoverningBodyRow): GoverningBodyRow {
   return {
     code: row.governing_body_code,
     longName: row.long_name,
     shortName: row.short_name?.trim() ?? '',
+    moreJson: parseGoverningBodyMoreJson(row.more_json),
   };
 }
 
 export async function fetchGoverningBodies(): Promise<GoverningBodyRow[]> {
   const rows = await fetchJson<ApiGoverningBodyRow[]>(
-    `${POSTGREST_URL}/governing_body?select=governing_body_code,long_name,short_name&order=governing_body_code`,
+    `${POSTGREST_URL}/governing_body?select=governing_body_code,long_name,short_name,more_json&order=governing_body_code`,
     'Unable to load governing bodies',
   );
 
   return rows.map(mapGoverningBodyRow);
 }
 
-export type GoverningBodyUpdate = {
-  longName: string;
-  shortName: string;
-};
-
-export async function updateGoverningBody(
+export async function updateGoverningBodyMoreJson(
   code: string,
-  values: GoverningBodyUpdate,
+  moreJson: Record<string, string>,
 ): Promise<GoverningBodyRow> {
-  const trimmedLongName = values.longName.trim();
-  if (trimmedLongName === '') {
-    throw new Error('Long name cannot be empty.');
-  }
-
   const params = new URLSearchParams();
   params.append('governing_body_code', `eq.${code}`);
+
+  const serialized =
+    Object.keys(moreJson).length === 0
+      ? null
+      : Object.fromEntries(
+          Object.entries(moreJson).map(([key, value]) => [key, value]),
+        );
 
   const response = await fetch(`${POSTGREST_URL}/governing_body?${params.toString()}`, {
     method: 'PATCH',
@@ -1079,8 +1091,7 @@ export async function updateGoverningBody(
       Prefer: 'return=representation',
     }),
     body: JSON.stringify({
-      long_name: trimmedLongName,
-      short_name: values.shortName.trim() || null,
+      more_json: serialized,
     }),
   });
 
@@ -1095,6 +1106,78 @@ export async function updateGoverningBody(
   }
 
   return mapGoverningBodyRow(row);
+}
+
+export type AuditLogRow = {
+  auditId: number;
+  occurredAt: string;
+  action: string;
+  actorUserId: number | null;
+  actorUsername: string;
+  tableName: string;
+  recordKey: string;
+  oldData: Record<string, unknown> | null;
+  newData: Record<string, unknown> | null;
+  metadata: Record<string, unknown> | null;
+};
+
+type ApiAuditLogRow = {
+  audit_id: number;
+  occurred_at: string;
+  action: string;
+  actor_user_id: number | null;
+  actor_username: string | null;
+  table_name: string | null;
+  record_key: string | null;
+  old_data: Record<string, unknown> | null;
+  new_data: Record<string, unknown> | null;
+  metadata: Record<string, unknown> | null;
+};
+
+function mapAuditLogRow(row: ApiAuditLogRow): AuditLogRow {
+  return {
+    auditId: row.audit_id,
+    occurredAt: row.occurred_at,
+    action: row.action,
+    actorUserId: row.actor_user_id,
+    actorUsername: row.actor_username?.trim() ?? '',
+    tableName: row.table_name?.trim() ?? '',
+    recordKey: row.record_key?.trim() ?? '',
+    oldData: row.old_data,
+    newData: row.new_data,
+    metadata: row.metadata,
+  };
+}
+
+export async function fetchAuditLogPage(
+  offset: number,
+  limit: number,
+): Promise<{ rows: AuditLogRow[]; total: number }> {
+  const params = new URLSearchParams({
+    select:
+      'audit_id,occurred_at,action,actor_user_id,actor_username,table_name,record_key,old_data,new_data,metadata',
+    order: 'occurred_at.desc,audit_id.desc',
+    offset: String(offset),
+    limit: String(limit),
+  });
+
+  const response = await fetch(`${POSTGREST_URL}/audit_log?${params.toString()}`, {
+    headers: buildAuthHeaders({
+      Prefer: 'count=exact',
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Unable to load audit log (${response.status})`);
+  }
+
+  const records = (await response.json()) as ApiAuditLogRow[];
+  const total = parseContentRangeTotal(response.headers.get('Content-Range')) ?? records.length;
+
+  return {
+    rows: records.map(mapAuditLogRow),
+    total,
+  };
 }
 
 export function hashPasswordRecoveryAnswers(

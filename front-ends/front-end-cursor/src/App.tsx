@@ -3,6 +3,7 @@ import ActivityMonitor from './components/ActivityMonitor';
 import LoginFlashHandler from './components/LoginFlashHandler';
 import ProtectedRoute from './components/ProtectedRoute';
 import AccountPage from './pages/AccountPage';
+import AdminAuditLogPage from './pages/AdminAuditLogPage';
 import AdminCompetitorsPage from './pages/AdminCompetitorsPage';
 import AdminContestResultsPage from './pages/AdminContestResultsPage';
 import AdminContestsPage from './pages/AdminContestsPage';
@@ -97,6 +98,14 @@ export default function App() {
         element={
           <ProtectedRoute roles={['admin']}>
             <GoverningBodyPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/audit-log"
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <AdminAuditLogPage />
           </ProtectedRoute>
         }
       />

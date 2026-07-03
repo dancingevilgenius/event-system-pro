@@ -15,6 +15,7 @@ const ADMIN_BUTTONS = [
   { label: 'Competitors', path: '/admin/competitors' },
   { label: 'Competition Entries', path: '/admin/competition-entries' },
   { label: 'Governing Bodies', path: '/governing-body' },
+  { label: 'Audit Log', path: '/admin/audit-log' },
   { label: 'Static Lists', path: '/static-lists' },
   { label: 'Staff', path: '/staff' },
 ] as const;

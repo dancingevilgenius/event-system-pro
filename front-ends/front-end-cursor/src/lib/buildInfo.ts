@@ -11,18 +11,26 @@ function readBuildEnv(name: string): string {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+function normalizeCommitMessage(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed || trimmed.toLowerCase() === 'unknown') {
+    return 'Not available';
+  }
+  return trimmed;
+}
+
 export function getGitHubBuildInfo(): GitHubBuildInfo {
   const repository = readBuildEnv('VITE_GITHUB_REPOSITORY');
   const branch = readBuildEnv('VITE_GIT_BRANCH');
   const commit = readBuildEnv('VITE_GIT_COMMIT');
-  const commitMessage = readBuildEnv('VITE_GIT_COMMIT_MESSAGE');
+  const commitMessage = normalizeCommitMessage(readBuildEnv('VITE_GIT_COMMIT_MESSAGE'));
   const buildDate = readBuildEnv('VITE_BUILD_DATE');
 
   return {
     repository: repository || 'unknown',
     branch: branch || 'unknown',
     commit: commit || 'unknown',
-    commitMessage: commitMessage || 'Not available',
+    commitMessage,
     buildDate: buildDate || null,
   };
 }

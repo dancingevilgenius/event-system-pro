@@ -10,6 +10,7 @@ COPY front-ends/front-end-cursor/package.json front-ends/front-end-cursor/packag
 RUN npm ci
 
 COPY front-ends/front-end-cursor/ ./
+COPY .git /.git-metadata
 
 ARG VITE_POSTGREST_URL=http://localhost:3000
 ARG VITE_MAILER_URL=http://localhost:3001
@@ -25,9 +26,14 @@ ENV VITE_POSTGREST_URL=$VITE_POSTGREST_URL
 ENV VITE_MAILER_URL=$VITE_MAILER_URL
 ENV VITE_REALTIME_WS_URL=$VITE_REALTIME_WS_URL
 
-RUN BUILD_TS="${BUILD_DATE:-$(date -u +%Y-%m-%dT%H:%M:%SZ)}" && \
+RUN apk add --no-cache git && \
+    RESOLVED_COMMIT_MSG="${DOKPLOY_COMMIT_MESSAGE:-$GIT_COMMIT_MESSAGE}" && \
+    if [ -z "$RESOLVED_COMMIT_MSG" ] || [ "$RESOLVED_COMMIT_MSG" = "unknown" ]; then \
+      RESOLVED_COMMIT_MSG=$(git --git-dir=/.git-metadata log -1 --pretty=%s 2>/dev/null || echo "Not available"); \
+    fi && \
+    BUILD_TS="${BUILD_DATE:-$(date -u +%Y-%m-%dT%H:%M:%SZ)}" && \
     VITE_GIT_COMMIT="${DOKPLOY_COMMIT_HASH:-$GIT_COMMIT}" \
-    VITE_GIT_COMMIT_MESSAGE="${DOKPLOY_COMMIT_MESSAGE:-$GIT_COMMIT_MESSAGE}" \
+    VITE_GIT_COMMIT_MESSAGE="$RESOLVED_COMMIT_MSG" \
     VITE_GIT_BRANCH="$GIT_BRANCH" \
     VITE_GITHUB_REPOSITORY="$GITHUB_REPOSITORY" \
     VITE_BUILD_DATE="$BUILD_TS" \

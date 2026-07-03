@@ -20,8 +20,6 @@ services:
     networks:
       - default
       - dokploy-network
-    env_file:
-      - .env
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in Dokploy}
@@ -45,8 +43,6 @@ services:
     networks:
       - default
       - dokploy-network
-    env_file:
-      - .env
     environment:
       PGHOST: postgres
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -63,8 +59,6 @@ services:
     networks:
       - default
       - dokploy-network
-    env_file:
-      - .env
     environment:
       PGRST_DB_URI: postgres://authenticator:${PGRST_AUTHENTICATOR_PASSWORD:?Set PGRST_AUTHENTICATOR_PASSWORD}@postgres:5432/${POSTGRES_DB:-event_system_pro}
       PGRST_DB_SCHEMAS: api
@@ -86,8 +80,6 @@ services:
     networks:
       - default
       - dokploy-network
-    env_file:
-      - .env
     environment:
       DATABASE_URL: postgres://realtime:${REALTIME_DB_PASSWORD:?Set REALTIME_DB_PASSWORD}@postgres:5432/${POSTGRES_DB:-event_system_pro}
       COUNTER_INTERVAL_MS: "5000"
@@ -126,8 +118,6 @@ services:
     networks:
       - default
       - dokploy-network
-    env_file:
-      - .env
     expose:
       - "80"
     labels:

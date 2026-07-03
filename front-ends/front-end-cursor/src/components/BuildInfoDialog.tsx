@@ -6,6 +6,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   IconButton,
   Stack,
   TextField,
@@ -177,18 +178,13 @@ export default function BuildInfoDialog({ open, onClose }: BuildInfoDialogProps)
 
       <DialogContent sx={{ pt: 1 }}>
         <Stack spacing={2.5} sx={{ width: '100%', maxWidth: CONTENT_MAX_WIDTH, mx: 'auto' }}>
-          <Typography variant="subtitle1" sx={BUILD_INFO_LABEL_SX}>
-            GitHub
-          </Typography>
           <InfoRow label="Repository" value={buildInfo.repository} />
           <InfoRow label="Branch" value={buildInfo.branch} />
           <InfoRow label="Commit" value={buildInfo.commit} />
           <CommitMessageRow message={buildInfo.commitMessage} dialogOpen={open} />
           <InfoRow label="Build date" value={formatBuildTimestamp(buildInfo.buildDate)} />
 
-          <Typography variant="subtitle1" sx={{ ...BUILD_INFO_LABEL_SX, pt: 1 }}>
-            Dokploy
-          </Typography>
+          <Divider sx={{ pt: 0.5 }} />
 
           {loadingDeployment && (
             <Stack sx={{ py: 2, alignItems: 'center' }}>

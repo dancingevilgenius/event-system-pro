@@ -130,14 +130,14 @@ export default function SwingDanceContest({
   const danceField = (
     <AppTextField
       select
-      label="Swing event"
+      label="Swing Division"
       value={contest.danceKey}
       onChange={(event) => handleDanceChange(event.target.value)}
       fullWidth
       sx={{ minWidth: 0 }}
     >
       <MenuItem value="">
-        <em>Select event</em>
+        <em>Select Division</em>
       </MenuItem>
       {danceOptions.map((entry) => (
         <MenuItem key={entry.key} value={entry.key}>
@@ -150,14 +150,14 @@ export default function SwingDanceContest({
   const levelField = (
     <AppTextField
       select
-      label="Level"
+      label="Skill Level"
       value={contest.levelKey}
       onChange={(event) => handleLevelChange(event.target.value)}
       fullWidth
       sx={{ minWidth: 0 }}
     >
       <MenuItem value="">
-        <em>Select level</em>
+        <em>Select skill level</em>
       </MenuItem>
       {levelOptions.map((entry) => (
         <MenuItem key={entry.key} value={entry.key}>
@@ -169,7 +169,7 @@ export default function SwingDanceContest({
 
   const titleField = (
     <AppTextField
-      label="Title"
+      label="Contest Name"
       value={contest.title}
       onChange={(event) => handleTitleChange(event.target.value)}
       fullWidth

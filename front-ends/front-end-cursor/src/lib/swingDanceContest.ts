@@ -9,11 +9,11 @@ export type SwingDanceContestFormState = {
 };
 
 export type SwingDanceContestJson = {
-  danceKey: string;
-  danceLabel: string;
-  levelKey: string;
-  levelLabel: string;
-  title: string;
+  'dance-key': string;
+  'dance-label': string;
+  'level-key': string;
+  'level-label': string;
+  'contest-name': string;
 };
 
 export function createEmptySwingDanceContest(): SwingDanceContestFormState {
@@ -74,11 +74,11 @@ export function swingDanceContestToJson(
   }
 
   return {
-    danceKey: state.danceKey,
-    danceLabel,
-    levelKey: state.levelKey,
-    levelLabel,
-    title: state.title.trim(),
+    'dance-key': state.danceKey,
+    'dance-label': danceLabel,
+    'level-key': state.levelKey,
+    'level-label': levelLabel,
+    'contest-name': state.title.trim(),
   };
 }
 

@@ -23,10 +23,10 @@ import {
 import { type SyntheticEvent, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { fetchEventGroupByCode } from '../api/postgrest';
-import AddEventDatesSection from '../components/AddEventDatesSection';
+import EventDatesForm from '../components/EventDatesForm';
 import AddEventLocationSection from '../components/AddEventLocationSection';
 import AddEventOnlineLinksSection from '../components/AddEventOnlineLinksSection';
-import AddEventScheduleSection from '../components/AddEventScheduleSection';
+import EventScheduleDays from '../components/EventScheduleDays';
 import AddEventSortableSectionAccordion from '../components/AddEventSortableSectionAccordion';
 import { type AddEventSectionStatus } from '../components/AddEventSectionStatusToggle';
 import { centeredContentStackSx } from '../constants/layout';
@@ -135,10 +135,13 @@ function renderSectionContent(
   onFieldEdit: () => void,
   eventDates: EventDatesFormState,
   onEventDatesChange: (dates: EventDatesFormState) => void,
+  scheduleSectionStatus: AddEventSectionStatus,
+  onScheduleSectionStatusChange: (status: AddEventSectionStatus) => void,
+  scheduleDatesSelected: boolean,
 ) {
   if (sectionId === 'dates') {
     return (
-      <AddEventDatesSection
+      <EventDatesForm
         dates={eventDates}
         onDatesChange={onEventDatesChange}
         onFieldEdit={onFieldEdit}
@@ -156,8 +159,13 @@ function renderSectionContent(
 
   if (sectionId === 'schedule') {
     return (
-      <AddEventScheduleSection
+      <EventScheduleDays
         scheduleTimeBlocks={getScheduleTimeBlockDays(eventDates)}
+        status={scheduleSectionStatus}
+        onStatusChange={onScheduleSectionStatusChange}
+        disabledStatuses={
+          scheduleDatesSelected ? undefined : ['in_progress', 'finalized']
+        }
       />
     );
   }
@@ -284,6 +292,9 @@ export default function AdminAddEventPage() {
                     () => handleSectionFieldEdit(section.id),
                     eventDates,
                     setEventDates,
+                    sectionStatuses.schedule,
+                    handleSectionStatusChange('schedule'),
+                    scheduleDatesSelected,
                   );
                   const sectionStatus = sectionStatuses[section.id];
 
@@ -298,6 +309,7 @@ export default function AdminAddEventPage() {
                       sectionContent={sectionContent}
                       sectionStatus={sectionStatus}
                       onStatusChange={handleSectionStatusChange(section.id)}
+                      showStatusToggle={section.id !== 'schedule'}
                       disabledStatuses={
                         section.id === 'schedule' && !scheduleDatesSelected
                           ? ['in_progress', 'finalized']

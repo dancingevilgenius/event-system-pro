@@ -194,7 +194,8 @@ def build_pdf() -> None:
 
     pdf.section_title("Roles and route guards")
     pdf.body_text(
-        "Seven roles: admin, staff, judge, headjudge, registration, floorcoordinator, competitor."
+        "Ten app roles: admin, staff, judge, headjudge, registration, floorparent, "
+        "ballroomcoordinator, dj, eventcoordinator, competitor."
     )
     for item in [
         "ProtectedRoute: no session -> /; missing role -> /home.",

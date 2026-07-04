@@ -41,6 +41,11 @@ export function getEventDayCount(dates: EventDatesFormState): number | null {
   return countInclusiveEventDays(start, end);
 }
 
+/** True when dates are complete and end is on or after start (single-day: start only). */
+export function isEventDatesValid(dates: EventDatesFormState): boolean {
+  return getEventDayCount(dates) !== null;
+}
+
 /** One inner-accordion entry per event calendar day for the Schedule panel. */
 export function getScheduleTimeBlockDays(dates: EventDatesFormState): ScheduleTimeBlockDay[] {
   const start = parseDateTimeLocalValue(dates.startDateTime);

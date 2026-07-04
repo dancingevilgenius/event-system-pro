@@ -98,9 +98,20 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 
 ### App roles
 
-Seven roles from `user_app_role` (included in login JWT `app_roles`):
+Ten roles from `user_app_role` (included in login JWT `app_roles`):
 
-`admin`, `staff`, `judge`, `headjudge`, `registration`, `floorcoordinator`, `competitor`
+| Code | Label |
+|------|-------|
+| `admin` | Admin |
+| `staff` | Staff |
+| `judge` | Judge |
+| `headjudge` | Head Judge |
+| `registration` | Registration |
+| `floorparent` | Floor Parent |
+| `ballroomcoordinator` | Ballroom Coordinator |
+| `dj` | DJ |
+| `eventcoordinator` | Event Coordinator |
+| `competitor` | Competitor |
 
 ### `ProtectedRoute` behavior
 
@@ -960,8 +971,8 @@ Login JWT payload includes:
 
 1. Terminate connections to `event_system_pro`
 2. `DROP DATABASE` + `CREATE DATABASE`
-3. Apply **`database/event-system-pro/evp_schema_postgresql.sql`** (baseline)
-4. Apply **`database/migrations/*.sql`** in sorted order (skips superseded: `005`, `006`, `007`, `015`, `027`, `030`)
+3. Apply **`database/event-system-pro/evp_schema_postgresql.sql`** then **`baseline_reference_data.sql`** (baseline bundle)
+4. Apply **`database/migrations/*.sql`** in sorted order (skips patterns in **`database/superseded-by-baseline.manifest`**)
 5. Apply dev **seeds** listed in **`database/seeds/dev.manifest`** (order matters; currently `002`–`014`)
 6. Print verification counts (tables, views, users, events)
 
@@ -1069,7 +1080,7 @@ Countries and US states are stored in **`static_list`** (`COUNTRIES`, `US_STATES
 
 ## Owner dev account
 
-Seed **`004_user_carlos.sql`** creates **`dancingevilgenius`** (project owner). Default password: **`ChangeMeFool!`** (reset via `scripts/reset_dancingevilgenius_password.sql`). Seed **`007`** grants **all seven app roles** to that user.
+Seed **`004_user_carlos.sql`** creates **`dancingevilgenius`** (project owner). Default password: **`ChangeMeFool!`** (reset via `scripts/reset_dancingevilgenius_password.sql`). Seed **`007`** grants **all ten app roles** to that user.
 
 ---
 
@@ -1104,7 +1115,7 @@ Example logins: **`superman`** / **`superman`**, **`batman`** / **`batman`**.
 - Files live in **`database/migrations/`** as **`NNN_short_description.sql`** (three-digit prefix, sorted lexically).
 - Each file should be idempotent where practical (`IF NOT EXISTS`, `CREATE OR REPLACE`).
 - End migrations that change the API with **`NOTIFY pgrst, 'reload schema';`** when PostgREST is running.
-- After folding a migration into **`evp_schema_postgresql.sql`**, mark it **superseded** in `rebuild-local-database.ps1` (`Test-MigrationSupersededByBaseline`).
+- After folding a migration into the baseline bundle (`evp_schema_postgresql.sql` and/or `baseline_reference_data.sql`), add its filename pattern to **`database/superseded-by-baseline.manifest`** (read by `migrate.sh` and `rebuild-local-database.ps1`). See **`database/BASELINE-REBASELINE-CHECKLIST.md`**.
 
 ### Agent-written SQL updates
 

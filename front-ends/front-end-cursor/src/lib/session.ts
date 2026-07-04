@@ -19,7 +19,10 @@ export type AppRole =
   | 'judge'
   | 'headjudge'
   | 'registration'
-  | 'floorcoordinator'
+  | 'floorparent'
+  | 'ballroomcoordinator'
+  | 'dj'
+  | 'eventcoordinator'
   | 'competitor';
 
 export type UserSession = {
@@ -36,7 +39,10 @@ const APP_ROLES: AppRole[] = [
   'judge',
   'headjudge',
   'registration',
-  'floorcoordinator',
+  'floorparent',
+  'ballroomcoordinator',
+  'dj',
+  'eventcoordinator',
   'competitor',
 ];
 

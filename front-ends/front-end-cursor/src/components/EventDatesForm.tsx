@@ -1,10 +1,11 @@
 import { Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
-import { type MouseEvent, useMemo } from 'react';
+import { type MouseEvent, useEffect, useMemo } from 'react';
 import { CONTENT_MAX_WIDTH } from '../constants/layout';
 import {
   type EventDateMode,
   type EventDatesFormState,
   getEventDayCount,
+  isEventDatesValid,
 } from '../lib/eventDates';
 import { parseDateTimeLocalValue } from '../lib/eventDuration';
 import AppTextField from './AppTextField';
@@ -22,17 +23,25 @@ const dateModeToggleSx = {
   },
 } as const;
 
-type AddEventDatesSectionProps = {
+export type EventDatesFormProps = {
   dates: EventDatesFormState;
   onDatesChange: (dates: EventDatesFormState) => void;
   onFieldEdit?: () => void;
+  onValidityChange?: (isEventDateValid: boolean) => void;
 };
 
-export default function AddEventDatesSection({
+export default function EventDatesForm({
   dates,
   onDatesChange,
   onFieldEdit,
-}: AddEventDatesSectionProps) {
+  onValidityChange,
+}: EventDatesFormProps) {
+  const isEventDateValid = useMemo(() => isEventDatesValid(dates), [dates]);
+
+  useEffect(() => {
+    onValidityChange?.(isEventDateValid);
+  }, [isEventDateValid, onValidityChange]);
+
   const startDate = useMemo(
     () => parseDateTimeLocalValue(dates.startDateTime),
     [dates.startDateTime],
@@ -45,7 +54,7 @@ export default function AddEventDatesSection({
   const numberOfDays = useMemo(() => getEventDayCount(dates), [dates]);
 
   const rangeError =
-    dates.mode === 'multi_day' && startDate && endDate && numberOfDays === null
+    dates.mode === 'multi_day' && startDate && endDate && !isEventDateValid
       ? 'End date and time must be on or after the start date and time.'
       : null;
 
@@ -71,7 +80,7 @@ export default function AddEventDatesSection({
   };
 
   return (
-    <Stack spacing={2}>
+    <Stack spacing={2} data-event-dates-valid={isEventDateValid}>
       <ToggleButtonGroup
         value={dates.mode}
         exclusive

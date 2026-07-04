@@ -1,7 +1,7 @@
 # Deploy to Dokploy (imake.wtf — test)
 
-Full stack: **PostgreSQL + migrations + PostgREST + web + Caddy proxy**.  
-Mailer is **skipped initially** (forgot-password email will not work until mailer/SMTP is added).
+Full stack: **PostgreSQL + migrations + PostgREST + mailer + Mailpit + web + Caddy proxy**.  
+Forgot-password **Send verification code** uses the mailer — captured by **Mailpit** on test deploys (no real SMTP required).
 
 ## Two repos, two domains
 
@@ -16,7 +16,7 @@ Use a **separate Dokploy application** for event-system-pro. Do not repoint the 
 
 EventSystemPro uses a **single root `Dockerfile`** because it is one container (Vite dev server).
 
-event-system-pro needs **postgres, migrate, PostgREST, web, and proxy**. In Dokploy:
+event-system-pro needs **postgres, migrate, PostgREST, mailer, mailpit, web, and proxy**. In Dokploy:
 
 | Dokploy setting | Value |
 |-----------------|--------|
@@ -44,8 +44,9 @@ The root `Dockerfile` builds the production React app (nginx). Compose orchestra
 |-----|---------|
 | https://imake.wtf | React app |
 | https://imake.wtf/api/ | PostgREST |
-| https://imake.wtf/mailer/ | Reserved (mailer not deployed yet) |
+| https://imake.wtf/mailer/health | Mailer health check |
 | https://imake.wtf/realtime/health | Realtime POC health |
+| http://YOUR_VPS_IP:8025 | Mailpit inbox UI (dev/test; optional firewall) |
 
 ## Local smoke test (before Dokploy)
 
@@ -68,12 +69,69 @@ docker compose -f deploy/docker-compose.dokploy.yml exec postgres \
 
 - **Rotate DB role passwords** to match `PGRST_AUTHENTICATOR_PASSWORD` (migration 003 creates `postgrest_dev_password` by default on first boot — change via SQL `ALTER ROLE` before production traffic).
 
-## Adding mailer later
+## Email / forgot-password (Mailpit on test)
 
-1. Add `mailpit` or real SMTP env vars
-2. Add `mailer` service (copy from `deploy/docker-compose.yml`)
-3. Add `/mailer/*` route to `deploy/Caddyfile.dokploy`
-4. Redeploy
+The stack includes **mailer** (Node) and **Mailpit** (SMTP capture). Caddy routes `/mailer/*` to the mailer service (`deploy/Caddyfile.dokploy`).
+
+### Flow
+
+1. User opens **Forgot password** → enters email or username → **Send verification code**
+2. Browser calls `POST https://imake.wtf/mailer/forgot-password/request`
+3. Mailer calls `api.mailer_issue_password_reset()` in Postgres and sends a 6-digit code via SMTP
+4. On imake.wtf test deploys, Mailpit receives the message (not a real inbox)
+
+### Required env (Dokploy Environment)
+
+Already in `deploy/.env.dokploy.example`:
+
+| Variable | Purpose |
+|----------|---------|
+| `MAILER_DB_PASSWORD` | Postgres `mailer` role (migration 010 default: `mailer_dev_password`) |
+| `VITE_MAILER_URL` | Baked into web at build: `https://imake.wtf/mailer` |
+| `CORS_ORIGINS` | Must include `https://imake.wtf` (mailer CORS) |
+
+Optional:
+
+| Variable | Purpose |
+|----------|---------|
+| `MAILPIT_UI_PORT` | Host port for Mailpit web UI (default `8025`) |
+
+If you change `MAILER_DB_PASSWORD` after the database already exists:
+
+```sql
+ALTER ROLE mailer WITH PASSWORD 'your-new-password';
+```
+
+### Read verification codes (test)
+
+After **Send verification code**, open Mailpit:
+
+- **Direct:** `http://YOUR_VPS_IP:8025` (open TCP **8025** in the VPS firewall; dev/test only)
+- **SSH tunnel:** `ssh -L 8025:localhost:8025 root@YOUR_VPS_IP` → browse `http://localhost:8025`
+
+Use a seed user email (e.g. `@superhero.com` when `SEED_DEV_DATA=true`).
+
+### Verify mailer is up
+
+```text
+https://imake.wtf/mailer/health   →  {"ok":true}
+```
+
+Redeploy **with rebuild** after changing `VITE_MAILER_URL` or editing `Caddyfile.dokploy` (proxy image bakes in Caddy config).
+
+### Real SMTP (optional)
+
+For delivery to real inboxes, replace Mailpit SMTP in `deploy/docker-compose.dokploy.yml` mailer `environment` with your provider, for example:
+
+```yaml
+SMTP_HOST: smtp.sendgrid.net
+SMTP_PORT: "587"
+SMTP_SECURE: "false"
+SMTP_USER: apikey
+SMTP_PASS: ${SMTP_PASS}
+```
+
+Set `SMTP_PASS` (and related vars) in Dokploy Environment. You can remove the `mailpit` service if unused.
 
 ## EventSystemPro comparison
 

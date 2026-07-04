@@ -1,5 +1,5 @@
-# Dokploy full stack (postgres + migrate + PostgREST + web + Caddy proxy).
-# Mailer omitted initially — add later when SMTP is configured.
+# Dokploy full stack (postgres + migrate + PostgREST + mailer + web + Caddy proxy).
+# Dev/test email: Mailpit captures SMTP; optional UI on host port MAILPIT_UI_PORT (8025).
 #
 # Dokploy UI:
 #   Type: Docker Compose (not Stack)
@@ -96,6 +96,38 @@ services:
       migrate:
         condition: service_completed_successfully
 
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: unless-stopped
+    networks:
+      - default
+      - dokploy-network
+    ports:
+      - "${MAILPIT_UI_PORT:-8025}:8025"
+
+  mailer:
+    build:
+      context: ../back-ends/mailer
+    restart: unless-stopped
+    networks:
+      - default
+      - dokploy-network
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgres://mailer:${MAILER_DB_PASSWORD:-mailer_dev_password}@postgres:5432/${POSTGRES_DB:-event_system_pro}
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
+      SMTP_SECURE: "false"
+      EMAIL_FROM: Event System Pro <no-reply@imake.wtf>
+      APP_NAME: Event System Pro
+      CORS_ORIGINS: ${CORS_ORIGINS:-https://imake.wtf}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      mailpit:
+        condition: service_started
+
   web:
     build:
       context: ..
@@ -152,6 +184,7 @@ services:
       - web
       - postgrest
       - realtime
+      - mailer
 
 volumes:
   pgdata:

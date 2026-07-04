@@ -18,7 +18,10 @@ Phone/browser → https://imake.wtf (Dokploy HTTPS)
               → proxy (Caddy, port 80 inside stack)
                  /           → web (React)
                  /api/*      → PostgREST
+                 /mailer/*   → mailer (password-reset email)
                  /realtime/* → WebSocket counter POC
+
+Mailpit (dev/test): SMTP on mailpit:1025 inside stack; optional UI on VPS :8025
 ```
 
 Dokploy terminates HTTPS at the edge. Caddy inside the stack routes by path.
@@ -133,12 +136,14 @@ Migrations create DB roles with **dev defaults** on a fresh database:
 | Role | Default password (migrations) |
 |------|-------------------------------|
 | `authenticator` | `postgrest_dev_password` |
+| `mailer` | `mailer_dev_password` |
 | `realtime` | `realtime_dev_password` |
 
 **Easiest first deploy:** set env vars to match those defaults, deploy successfully, then rotate later:
 
 ```env
 PGRST_AUTHENTICATOR_PASSWORD=postgrest_dev_password
+MAILER_DB_PASSWORD=mailer_dev_password
 REALTIME_DB_PASSWORD=realtime_dev_password
 ```
 
@@ -182,7 +187,7 @@ Startup order:
 
 1. `postgres`
 2. `migrate` (runs all SQL, including migration `029` for the counter)
-3. `postgrest`, `realtime`, `web`
+3. `postgrest`, `realtime`, `mailpit`, `mailer`, `web`
 4. `proxy` (Caddy)
 
 - [ ] Deploy started
@@ -201,14 +206,35 @@ Test from phone or laptop:
 |-----|-----------------|
 | https://imake.wtf | Login page (Event System Pro) |
 | https://imake.wtf/api/ | PostgREST OpenAPI JSON |
+| https://imake.wtf/mailer/health | `{"ok":true}` |
 | https://imake.wtf/realtime/health | `{"ok":true}` |
 | https://imake.wtf/adminhome | `counter: …` ticking every 5s (admin login required) |
 
 - [ ] Site loads over HTTPS
 - [ ] API responds
+- [ ] Mailer health check passes
 - [ ] Realtime health check passes
 - [ ] Admin counter updates live without page refresh
 - [ ] https://eventsystem.pro still shows Scoring System (EventSystemPro unchanged)
+
+---
+
+## 8b. Verify forgot-password email (Mailpit)
+
+Test **Send verification code** on https://imake.wtf/forgot-password using a seed user (e.g. email ending in `@superhero.com` when `SEED_DEV_DATA=true`).
+
+Read the 6-digit code from Mailpit:
+
+| Method | Steps |
+|--------|--------|
+| VPS port | Open `http://YOUR_VPS_IP:8025` (optional env `MAILPIT_UI_PORT=8025`; open firewall TCP 8025 — dev/test only) |
+| SSH tunnel | `ssh -L 8025:localhost:8025 root@YOUR_VPS_IP` → `http://localhost:8025` |
+
+- [ ] **Send verification code** succeeds (no network/CORS error)
+- [ ] Code appears in Mailpit inbox
+- [ ] Code verifies on step 2 and password reset completes
+
+If mailer fails, check Dokploy **Logs** → service **`mailer`**. Common fixes: `MAILER_DB_PASSWORD` matches Postgres `mailer` role; `CORS_ORIGINS=https://imake.wtf`; redeploy with rebuild after `Caddyfile.dokploy` changes.
 
 ---
 
@@ -349,7 +375,7 @@ Test-NetConnection YOUR_VPS_IP -Port 5432
 
 ## Not included yet
 
-- **Mailer** — forgot-password email will not work until mailer/SMTP is added (see `deploy/DOKPLOY.md`)
+- **Real SMTP** — test deploy uses Mailpit (captured mail only); swap mailer SMTP env for SendGrid/etc. when you need real delivery (see `deploy/DOKPLOY.md`)
 - **www → apex redirect** — configure in Dokploy if you use both hostnames
 - **Production cutover to eventsystem.pro** — only when ready; requires a separate migration plan
 
@@ -407,6 +433,10 @@ In **General**, application type must be **Docker Compose**, not **Stack**. Stac
 | `migrate` / PostgreSQL authentication failed | `POSTGRES_PASSWORD` in Dokploy no longer matches the existing **pgdata** volume. **Stop** the app, delete the `pgdata` volume, **Deploy** again (fresh DB). |
 | `migrate` logs "baseline SQL not found" | Migrate image was not rebuilt — **Stop** → **Deploy** again. Confirm app type is **Docker Compose** (not Stack). |
 | Site loads but `/api/` or `/realtime/health` is 404 | Domain must target **`proxy`** port **80**. Redeploy after pulling latest (proxy uses `handle_path` in Caddy). SSH: `docker exec <proxy> wget -qO- http://127.0.0.1/realtime/health` — if that works, fix Traefik (see HTTPS row). |
+| `/mailer/health` is 404 | Redeploy with rebuild (proxy image includes `Caddyfile.dokploy`); confirm `mailer` service is running |
+| Forgot-password send fails (network/CORS) | `CORS_ORIGINS` must be exactly `https://imake.wtf`; `VITE_MAILER_URL=https://imake.wtf/mailer` (rebuild web if changed) |
+| Mailer 500 / "Unable to send verification email" | Check **mailer** logs; verify `MAILER_DB_PASSWORD` matches Postgres `mailer` role (`ALTER ROLE mailer ...` if rotated) |
+| Code sent but no email in Mailpit | Check **mailer** logs for SMTP errors; confirm `mailpit` service is up |
 | HTTP works but HTTPS returns 404 | Traefik **websecure** router missing or broken. Remove Domains-tab entry; use compose Traefik labels + `APP_DOMAIN`; Deploy + Reload Traefik. Or fix certificate type to Let's Encrypt in Domains tab. |
 | Realtime password authentication failed | Set `REALTIME_DB_PASSWORD=realtime_dev_password` (migration default), redeploy. |
 | Site doesn't load | DNS A record for imake.wtf → VPS IP; ports 80/443 open |
@@ -420,6 +450,6 @@ In **General**, application type must be **Docker Compose**, not **Stack**. Stac
 
 ## Related docs
 
-- `deploy/DOKPLOY.md` — overview and mailer setup later
+- `deploy/DOKPLOY.md` — overview and email / Mailpit setup
 - `deploy/.env.dokploy.example` — environment variable template (imake.wtf defaults)
 - `deploy/docker-compose.dokploy.yml` — compose stack definition

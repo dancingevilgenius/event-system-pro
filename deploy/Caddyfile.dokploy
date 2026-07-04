@@ -4,6 +4,7 @@
 # Dokploy Domains tab: imake.wtf -> service "proxy", container port 80 (NOT "web").
 #
 #   /api/*      -> postgrest:3000  (prefix stripped via handle_path)
+#   /mailer/*   -> mailer:3001     (prefix stripped via handle_path)
 #   /realtime/* -> realtime:3002   (prefix stripped via handle_path)
 #   /*          -> web (React SPA)
 
@@ -20,7 +21,12 @@
     reverse_proxy realtime:3002
   }
 
+  handle_path /mailer/* {
+    reverse_proxy mailer:3001
+  }
+
   handle {
     reverse_proxy web:80
   }
+
 }

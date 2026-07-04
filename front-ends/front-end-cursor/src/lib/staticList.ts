@@ -7,8 +7,8 @@ export const US_STATES_LIST_CODE = 'US_STATES';
 /** `static_list.list_code` for countries and territories. */
 export const COUNTRIES_LIST_CODE = 'COUNTRIES';
 
-/** `static_list.list_code` for WSDC swing competition event types. */
-export const WSDC_SWING_EVENTS_LIST_CODE = 'WSDC_SWING_EVENTS';
+/** `static_list.list_code` for WSDC swing competition divisions. */
+export const WSDC_SWING_DIVISIONS_LIST_CODE = 'WSDC_SWING_DIVISIONS';
 
 /** `static_list.list_code` for WSDC swing skill / age levels. */
 export const WSDC_SKILL_LEVELS_LIST_CODE = 'WSDC_SKILL_LEVELS';

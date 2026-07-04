@@ -29,7 +29,7 @@ import { fetchSortedStaticListEntries, type StaticListEntry } from '../api/postg
 import { useMessages } from '../hooks/useMessages';
 import {
   WSDC_SKILL_LEVELS_LIST_CODE,
-  WSDC_SWING_EVENTS_LIST_CODE,
+  WSDC_SWING_DIVISIONS_LIST_CODE,
 } from '../lib/staticList';
 import {
   countOtherContestsWithPair,
@@ -69,7 +69,7 @@ export default function SwingDanceContestSet() {
     setListError(null);
 
     Promise.all([
-      fetchSortedStaticListEntries(WSDC_SWING_EVENTS_LIST_CODE, 'swing events'),
+      fetchSortedStaticListEntries(WSDC_SWING_DIVISIONS_LIST_CODE, 'swing divisions'),
       fetchSortedStaticListEntries(WSDC_SKILL_LEVELS_LIST_CODE, 'skill levels'),
     ])
       .then(([dances, levels]) => {

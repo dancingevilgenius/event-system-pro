@@ -7,7 +7,7 @@
 INSERT INTO public.static_list (list_code, governing_body_code, short_desc, list_json)
 VALUES
   (
-    'WSDC_SWING_EVENTS',
+    'WSDC_SWING_DIVISIONS',
     'WSDC',
     'List of competition events that might appear at a swing dance',
     '[

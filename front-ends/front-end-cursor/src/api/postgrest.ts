@@ -648,6 +648,70 @@ export async function fetchDemoEventGroupsWithAttendees(): Promise<EventGroupLis
   }));
 }
 
+/** All event groups ordered by full name. */
+export async function fetchEventGroups(): Promise<EventGroupListRow[]> {
+  const params = new URLSearchParams({
+    select: 'event_group_code,full_name',
+    order: 'full_name',
+  });
+
+  const eventGroups = await fetchJson<ApiEventGroupRecord[]>(
+    `${POSTGREST_URL}/event_group?${params.toString()}`,
+    'Unable to load event groups',
+  );
+
+  return eventGroups.map((row) => ({
+    eventGroupCode: row.event_group_code,
+    fullName: row.full_name,
+  }));
+}
+
+export type CreateEventGroupInput = {
+  eventGroupCode: string;
+  fullName: string;
+  shortName: string;
+};
+
+export async function createEventGroup(input: CreateEventGroupInput): Promise<EventGroupListRow> {
+  const response = await fetch(`${POSTGREST_URL}/event_group`, {
+    method: 'POST',
+    headers: buildAuthHeaders({
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation',
+    }),
+    body: JSON.stringify({
+      event_group_code: input.eventGroupCode.trim(),
+      full_name: input.fullName.trim(),
+      short_name: input.shortName.trim(),
+      more_json: { demo: false },
+    }),
+  });
+
+  if (!response.ok) {
+    let message = `Unable to create event group (${response.status})`;
+    try {
+      const errorBody = (await response.json()) as RpcErrorBody;
+      if (errorBody.message) {
+        message = errorBody.message;
+      }
+    } catch {
+      // Keep default message when body is not JSON.
+    }
+    throw new Error(message);
+  }
+
+  const rows = (await response.json()) as ApiEventGroupRecord[];
+  const row = rows[0];
+  if (!row) {
+    throw new Error('Event group create returned no rows.');
+  }
+
+  return {
+    eventGroupCode: row.event_group_code,
+    fullName: row.full_name,
+  };
+}
+
 export type EventListRow = {
   eventId: number;
   name: string;

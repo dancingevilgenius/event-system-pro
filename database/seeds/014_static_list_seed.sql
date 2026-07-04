@@ -14,7 +14,8 @@ VALUES
       {"key": "JNJ", "label": "Jack and Jill"},
       {"key": "SS", "label": "Strictly Swing"},
       {"key": "ROU_CLASSIC", "label": "Classic Routine"},
-      {"key": "ROU_SHOWCASE", "label": "Showcase Routine"}
+      {"key": "ROU_SHOWCASE", "label": "Showcase Routine"},
+      {"key": "CUSTOM", "label": "Custom"}
     ]'::json
   ),
   (
@@ -33,7 +34,8 @@ VALUES
       {"key": "SOP", "label": "Sophisticated", "min-age": 35, "max-age": -1},
       {"key": "MAS", "label": "Masters", "min-age": 50, "max-age": -1},
       {"key": "JUN", "label": "Juniors", "min-age": -1, "max-age": 18},
-      {"key": "YAM", "label": "Young America", "min-age": -1, "max-age": 12}
+      {"key": "YAM", "label": "Young America", "min-age": -1, "max-age": 12},
+      {"key": "CUSTOM", "label": "Custom", "min-age": -1, "max-age": -1}
     ]'::json
   )
 ON CONFLICT (list_code) DO UPDATE SET

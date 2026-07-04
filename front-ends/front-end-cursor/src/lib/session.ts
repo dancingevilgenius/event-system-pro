@@ -3,6 +3,16 @@ const ACTIVITY_EXPIRES_AT_KEY = 'esp_activity_expires_at';
 
 export const INACTIVITY_TIMEOUT_MS = 10 * 60 * 1000;
 
+/** Skip client inactivity logout on local dev hosts (localhost / 127.0.0.*). */
+export function isInactivityLogoutDisabled(): boolean {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  const hostname = window.location.hostname;
+  return hostname === 'localhost' || hostname.startsWith('127.0.0.');
+}
+
 export type AppRole =
   | 'admin'
   | 'staff'
@@ -71,6 +81,10 @@ export function clearActivityExpiry(): void {
 }
 
 export function isActivityExpired(): boolean {
+  if (isInactivityLogoutDisabled()) {
+    return false;
+  }
+
   const expiresAt = getActivityExpiresAt();
   return expiresAt !== null && Date.now() >= expiresAt;
 }

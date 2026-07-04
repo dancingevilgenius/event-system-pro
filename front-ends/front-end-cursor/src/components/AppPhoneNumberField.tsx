@@ -10,8 +10,16 @@ import AppTextField from './AppTextField';
 const phoneFieldSx = {
   display: 'flex',
   gap: 1,
-  width: '100%',
+  minWidth: 0,
+  maxWidth: '100%',
   alignItems: 'flex-end',
+  boxSizing: 'border-box',
+} as const;
+
+const phoneInputWrapperSx = {
+  flex: 1,
+  minWidth: 0,
+  maxWidth: '100%',
 } as const;
 
 const countryButtonSx = {
@@ -61,16 +69,19 @@ export default function AppPhoneNumberField({
           </IconButton>
         )}
       />
-      <AppTextField
-        label={label}
-        fullWidth={fullWidth}
-        value={inputValue}
-        onChange={handlePhoneValueChange}
-        inputRef={inputRef}
-        autoComplete={autoComplete}
-        type="tel"
-        variant="outlined"
-      />
+      <Box sx={phoneInputWrapperSx}>
+        <AppTextField
+          label={label}
+          fullWidth={fullWidth}
+          value={inputValue}
+          onChange={handlePhoneValueChange}
+          inputRef={inputRef}
+          autoComplete={autoComplete}
+          type="tel"
+          variant="outlined"
+          sx={{ minWidth: 0, maxWidth: '100%' }}
+        />
+      </Box>
     </Box>
   );
 }

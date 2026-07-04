@@ -7,6 +7,7 @@ import AdminAuditLogPage from './pages/AdminAuditLogPage';
 import AdminCompetitorsPage from './pages/AdminCompetitorsPage';
 import AdminContestResultsPage from './pages/AdminContestResultsPage';
 import AdminContestsPage from './pages/AdminContestsPage';
+import AdminAddEventPage from './pages/AdminAddEventPage';
 import AdminEventAttendeesPage from './pages/AdminEventAttendeesPage';
 import AdminEventContestsPage from './pages/AdminEventContestsPage';
 import AdminEventGroupPage from './pages/AdminEventGroupPage';
@@ -31,7 +32,7 @@ import StaffPage from './pages/StaffPage';
 import StaticListDetailsPage from './pages/StaticListDetailsPage';
 import StaticListsPage from './pages/StaticListsPage';
 import TournamentBracketDemoPage from './pages/TournamentBracketDemoPage';
-import { EVENT_HOME_PATH, EVENT_GROUPS_PATH, EVENTS_PATH } from './constants/eventRoutes';
+import { ADD_EVENT_PATH, EVENT_HOME_PATH, EVENT_GROUPS_PATH, EVENTS_PATH } from './constants/eventRoutes';
 
 export default function App() {
   return (
@@ -143,6 +144,14 @@ export default function App() {
         element={
           <ProtectedRoute roles={['admin']}>
             <AdminEventsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ADD_EVENT_PATH}
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <AdminAddEventPage />
           </ProtectedRoute>
         }
       />

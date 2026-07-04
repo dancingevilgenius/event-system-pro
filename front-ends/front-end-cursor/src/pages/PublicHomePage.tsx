@@ -17,6 +17,9 @@ export default function PublicHomePage() {
         <Typography variant="body2" color="text.secondary" sx={{ mb: 4, fontStyle: 'italic' }}>
           More features coming soon.
         </Typography>
+        <Typography variant="caption" color="text.secondary" sx={{ mb: 4, display: 'block' }}>
+          Host: {window.location.hostname}
+        </Typography>
 
         <Stack spacing={2} sx={centeredContentStackSx}>
           <Button variant="contained" size="large" fullWidth onClick={() => navigate('/login')}>

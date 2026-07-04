@@ -852,6 +852,11 @@ export type StaticListEntry = {
   label: string;
   minAge?: number;
   maxAge?: number;
+  description?: string;
+  majorGroup?: string;
+  minorGroup?: string;
+  minPersonsPerEntry?: number;
+  maxPersonsPerEntry?: number;
 };
 
 export type StaticListListRow = {
@@ -913,6 +918,35 @@ function parseStaticListJson(value: unknown): StaticListEntry[] {
         entry.maxAge = parseStaticListAge(item['max-age']);
       }
 
+      if (Object.prototype.hasOwnProperty.call(item, 'description')) {
+        entry.description =
+          typeof item.description === 'string'
+            ? item.description.trim()
+            : String(item.description ?? '').trim();
+      }
+
+      if (Object.prototype.hasOwnProperty.call(item, 'major-group')) {
+        entry.majorGroup =
+          typeof item['major-group'] === 'string'
+            ? item['major-group'].trim()
+            : String(item['major-group'] ?? '').trim();
+      }
+
+      if (Object.prototype.hasOwnProperty.call(item, 'minor-group')) {
+        entry.minorGroup =
+          typeof item['minor-group'] === 'string'
+            ? item['minor-group'].trim()
+            : String(item['minor-group'] ?? '').trim();
+      }
+
+      if (Object.prototype.hasOwnProperty.call(item, 'min-persons-per-entry')) {
+        entry.minPersonsPerEntry = parseStaticListAge(item['min-persons-per-entry']);
+      }
+
+      if (Object.prototype.hasOwnProperty.call(item, 'max-persons-per-entry')) {
+        entry.maxPersonsPerEntry = parseStaticListAge(item['max-persons-per-entry']);
+      }
+
       return entry;
     })
     .filter((item) => item.key !== '');
@@ -930,6 +964,26 @@ function serializeStaticListEntry(entry: StaticListEntry): Record<string, string
 
   if (entry.maxAge !== undefined) {
     serialized['max-age'] = entry.maxAge;
+  }
+
+  if (entry.description !== undefined) {
+    serialized.description = entry.description;
+  }
+
+  if (entry.majorGroup !== undefined) {
+    serialized['major-group'] = entry.majorGroup;
+  }
+
+  if (entry.minorGroup !== undefined) {
+    serialized['minor-group'] = entry.minorGroup;
+  }
+
+  if (entry.minPersonsPerEntry !== undefined) {
+    serialized['min-persons-per-entry'] = entry.minPersonsPerEntry;
+  }
+
+  if (entry.maxPersonsPerEntry !== undefined) {
+    serialized['max-persons-per-entry'] = entry.maxPersonsPerEntry;
   }
 
   return serialized;

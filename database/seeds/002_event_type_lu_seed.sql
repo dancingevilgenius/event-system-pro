@@ -1,4 +1,4 @@
-﻿-- Seed event_type_lu: 7 contest types (one row per type)
+﻿-- Seed event_type_lu: 9 contest types (one row per type)
 
 INSERT INTO event_type_lu (event_type_code, description_json, created_by)
 VALUES (
@@ -87,6 +87,32 @@ VALUES (
     "description": "Modern fencing competition in foil, epee, or sabre. Athletes score touches through speed, distance, tactics, and precise blade work within standardized piste rules and officiating.",
     "min_persons_per_entry": 1,
     "max_persons_per_entry": 2
+  }'::jsonb,
+  'c-agent'
+);
+
+INSERT INTO event_type_lu (event_type_code, description_json, created_by)
+VALUES (
+  'MOTORSPORTS_KART',
+  '{
+    "major_group": "motorsports",
+    "minor_group": "kart",
+    "description": "Wheel-to-wheel kart racing on dedicated sprint circuits or full-size tracks. Drivers compete in lightweight open-wheel karts through practice, qualifying, heats, and finals. Classes are commonly defined by age, engine package, and weight, with results based on finishing position, consistency, or fastest lap depending on the event format.",
+    "min_persons_per_entry": 1,
+    "max_persons_per_entry": 20
+  }'::jsonb,
+  'c-agent'
+);
+
+INSERT INTO event_type_lu (event_type_code, description_json, created_by)
+VALUES (
+  'ROBOTICS_GENERAL',
+  '{
+    "major_group": "robotics",
+    "minor_group": "general",
+    "description": "Amateur autonomous and remote-controlled robot competitions spanning popular hobby and student formats. Events may include line following, sumo-style pushing matches, line or wall maze solving, and combat bouts where robots score points or achieve knockouts within weight and safety rules. Classes are commonly split by builder age, robot weight, and autonomy level.",
+    "min_persons_per_entry": 1,
+    "max_persons_per_entry": 8
   }'::jsonb,
   'c-agent'
 );

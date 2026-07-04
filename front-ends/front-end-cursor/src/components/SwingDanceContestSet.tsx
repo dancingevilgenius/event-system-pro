@@ -28,7 +28,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { fetchSortedStaticListEntries, type StaticListEntry } from '../api/postgrest';
 import { useMessages } from '../hooks/useMessages';
 import {
-  WSDC_LEVELS_LIST_CODE,
+  WSDC_SKILL_LEVELS_LIST_CODE,
   WSDC_SWING_EVENTS_LIST_CODE,
 } from '../lib/staticList';
 import {
@@ -70,7 +70,7 @@ export default function SwingDanceContestSet() {
 
     Promise.all([
       fetchSortedStaticListEntries(WSDC_SWING_EVENTS_LIST_CODE, 'swing events'),
-      fetchSortedStaticListEntries(WSDC_LEVELS_LIST_CODE, 'levels'),
+      fetchSortedStaticListEntries(WSDC_SKILL_LEVELS_LIST_CODE, 'skill levels'),
     ])
       .then(([dances, levels]) => {
         if (cancelled) {

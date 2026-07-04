@@ -18,7 +18,7 @@ VALUES
     ]'::json
   ),
   (
-    'WSDC_LEVELS',
+    'WSDC_SKILL_LEVELS',
     'WSDC',
     'Ability or age levels to further describe a swing contest',
     '[

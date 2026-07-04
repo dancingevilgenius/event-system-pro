@@ -10,8 +10,8 @@ export const COUNTRIES_LIST_CODE = 'COUNTRIES';
 /** `static_list.list_code` for WSDC swing competition event types. */
 export const WSDC_SWING_EVENTS_LIST_CODE = 'WSDC_SWING_EVENTS';
 
-/** `static_list.list_code` for WSDC ability / age levels. */
-export const WSDC_LEVELS_LIST_CODE = 'WSDC_LEVELS';
+/** `static_list.list_code` for WSDC swing skill / age levels. */
+export const WSDC_SKILL_LEVELS_LIST_CODE = 'WSDC_SKILL_LEVELS';
 
 /** `static_list.list_code` for competition and event type definitions. */
 export const EVENT_TYPES_LIST_CODE = 'EVENT_TYPES';

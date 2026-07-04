@@ -1,7 +1,7 @@
 -- Add event_code (varchar 64, unique) as the new primary key on public."event".
 -- event_code = event_group_code + YYYY + MMM from start_date (UTC).
 -- event_id remains a surrogate identity column with a unique constraint for existing FKs.
--- Run: psql -U postgres -d event_system_pro -f database/migrations/072_event_code_primary_key.sql
+-- Run: psql -U postgres -d event_system_pro -f database/migrations/089_event_code_primary_key.sql
 
 \connect event_system_pro
 

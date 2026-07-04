@@ -1,6 +1,6 @@
 -- Refactor all event_code values to event_group_code + YYYY + MMM from start_date.
--- Safe to run after 072 when rows already use the previous name-based codes.
--- Run: psql -U postgres -d event_system_pro -f database/migrations/073_refactor_event_code_from_start_date.sql
+-- Safe to run after 089 when rows already use the previous name-based codes.
+-- Run: psql -U postgres -d event_system_pro -f database/migrations/090_refactor_event_code_from_start_date.sql
 
 \connect event_system_pro
 

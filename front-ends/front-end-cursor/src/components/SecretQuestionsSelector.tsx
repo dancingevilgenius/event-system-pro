@@ -7,7 +7,8 @@ import {
   Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { fetchSecretQuestions, type SecretQuestion } from '../api/postgrest';
+import { type SecretQuestion } from '../api/postgrest';
+import { useSecretQuestions } from '../hooks/useSecretQuestions';
 import { centeredContentStackSx } from '../constants/layout';
 import { useIsMobileDevice } from '../hooks/useIsMobileDevice';
 import AppTextField from './AppTextField';
@@ -130,9 +131,7 @@ export default function SecretQuestionsSelector({
   showSlotLabels = true,
 }: SecretQuestionsSelectorProps) {
   const isMobile = useIsMobileDevice();
-  const [questions, setQuestions] = useState<SecretQuestion[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const { questions, loading, error: loadError } = useSecretQuestions();
   const [slots, setSlots] = useState<PasswordRecoverySlot[]>(() =>
     slotsFromQuestionIds(initialQuestionIds),
   );
@@ -141,35 +140,6 @@ export default function SecretQuestionsSelector({
   useEffect(() => {
     setSlots(slotsFromQuestionIds(initialQuestionIds));
   }, [initialQuestionIds]);
-
-  useEffect(() => {
-    let cancelled = false;
-    setLoading(true);
-    setLoadError(null);
-
-    void fetchSecretQuestions()
-      .then((items) => {
-        if (!cancelled) {
-          setQuestions(items);
-        }
-      })
-      .catch((error) => {
-        if (!cancelled) {
-          setLoadError(
-            error instanceof Error ? error.message : 'Unable to load secret questions.',
-          );
-        }
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   const updateSlot = (index: number, patch: Partial<PasswordRecoverySlot>) => {
     setSlots((current) =>

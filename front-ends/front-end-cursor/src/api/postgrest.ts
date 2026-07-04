@@ -1,5 +1,11 @@
 import { loadSession, type AppRole } from '../lib/session';
-import { NOT_APPLICABLE_INT, COUNTRIES_LIST_CODE, US_STATES_LIST_CODE } from '../lib/staticList';
+import {
+  NOT_APPLICABLE_INT,
+  COUNTRIES_LIST_CODE,
+  SECRET_QUESTIONS_LIST_CODE,
+  US_STATES_LIST_CODE,
+} from '../lib/staticList';
+import { secretQuestionsFromStaticListEntries } from '../utils/secretQuestions';
 
 const POSTGREST_URL =
   import.meta.env.VITE_POSTGREST_URL ?? (import.meta.env.DEV ? '/api' : 'http://localhost:3000');
@@ -405,16 +411,12 @@ export async function fetchCountries(): Promise<StaticListEntry[]> {
 }
 
 export async function fetchSecretQuestions(): Promise<SecretQuestion[]> {
-  const response = await fetch(
-    `${POSTGREST_URL}/secret_question_lu?order=secret_question_id`,
-    { headers: buildAuthHeaders(undefined, 'omit') },
-  );
-
-  if (!response.ok) {
-    throw new Error(`Unable to load secret questions (${response.status})`);
+  const list = await fetchStaticListByCode(SECRET_QUESTIONS_LIST_CODE, 'omit');
+  if (!list) {
+    throw new Error('Unable to load secret questions (SECRET_QUESTIONS list not found)');
   }
 
-  return (await response.json()) as SecretQuestion[];
+  return secretQuestionsFromStaticListEntries(list.listJson);
 }
 
 export type DeploymentInfo = {

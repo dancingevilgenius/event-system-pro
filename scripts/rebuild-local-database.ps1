@@ -45,7 +45,7 @@ function Resolve-PsqlPath {
 
 function Test-MigrationSupersededByBaseline {
     param([string]$FileName)
-    return $FileName -match '^(005|006|007|015|017|027|030|051|052|053)_'
+    return $FileName -match '^(005|006|007|015|017|027|030|051|052|053|001_event_type|002_event_type|078_|079_|080_)'
 }
 
 function Invoke-Psql {
@@ -127,7 +127,7 @@ Invoke-Psql @(
 SELECT 'public_tables' AS metric, count(*)::text AS value FROM pg_tables WHERE schemaname = 'public'
 UNION ALL SELECT 'api_views', count(*)::text FROM pg_views WHERE schemaname = 'api'
 UNION ALL SELECT 'users', count(*)::text FROM public."user"
-UNION ALL SELECT 'event_types', count(*)::text FROM public.event_type_lu
+UNION ALL SELECT 'event_types', jsonb_array_length(list_json::jsonb)::text FROM public.static_list WHERE list_code = 'EVENT_TYPES'
 UNION ALL SELECT 'events', count(*)::text FROM public."event"
 ORDER BY 1;
 "@
@@ -143,7 +143,6 @@ Invoke-Psql @(
 SELECT 'secret_question_lu', created_by, modified_by, count(*) FROM public.secret_question_lu GROUP BY 1,2,3
 UNION ALL SELECT 'skill_level_lu', created_by, modified_by, count(*) FROM public.skill_level_lu GROUP BY 1,2,3
 UNION ALL SELECT 'competitor_type_lu', created_by, modified_by, count(*) FROM public.competitor_type_lu GROUP BY 1,2,3
-UNION ALL SELECT 'event_type_lu', created_by, modified_by, count(*) FROM public.event_type_lu GROUP BY 1,2,3
 ORDER BY 1, 2, 3;
 "@
 )

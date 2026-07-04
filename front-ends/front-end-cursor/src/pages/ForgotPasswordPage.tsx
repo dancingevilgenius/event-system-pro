@@ -26,6 +26,8 @@ import {
 import AppTextField from '../components/AppTextField';
 import { centeredContentStackSx } from '../constants/layout';
 import { useMessages } from '../hooks/useMessages';
+import { useSecretQuestions } from '../hooks/useSecretQuestions';
+import { questionTextForId } from '../utils/secretQuestions';
 
 type RecoveryMethod = 'verification_code' | 'secret_questions';
 
@@ -122,6 +124,9 @@ export default function ForgotPasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPasswords, setShowPasswords] = useState(false);
   const [busy, setBusy] = useState(false);
+  const { questions: secretQuestionCatalog } = useSecretQuestions(
+    recoveryMethod === 'secret_questions',
+  );
 
   const steps = useMemo(() => stepLabelsForMethod(recoveryMethod), [recoveryMethod]);
   const passwordInputType = showPasswords ? 'text' : 'password';
@@ -449,7 +454,12 @@ export default function ForgotPasswordPage() {
                   }}
                 >
                   <Stack spacing={1.5} sx={{ width: '100%' }}>
-                    <Typography variant="body1">{question.question}</Typography>
+                    <Typography variant="body1">
+                      {questionTextForId(
+                        secretQuestionCatalog,
+                        question.secret_question_id,
+                      ) || question.question}
+                    </Typography>
                     <AppTextField
                       label="Your answer"
                       value={secretAnswers[question.secret_question_id] ?? ''}

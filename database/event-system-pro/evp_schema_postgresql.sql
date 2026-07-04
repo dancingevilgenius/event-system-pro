@@ -28,7 +28,6 @@ DROP TABLE IF EXISTS "event" CASCADE;
 DROP TABLE IF EXISTS event_group CASCADE;
 DROP TABLE IF EXISTS static_list CASCADE;
 DROP TABLE IF EXISTS governing_body CASCADE;
-DROP TABLE IF EXISTS event_type_lu CASCADE;
 DROP TABLE IF EXISTS skill_level_lu CASCADE;
 DROP TABLE IF EXISTS secret_question_lu CASCADE;
 DROP TABLE IF EXISTS competitor_type_lu CASCADE;
@@ -68,17 +67,6 @@ CREATE TABLE IF NOT EXISTS skill_level_lu (
   modified_date TIMESTAMPTZ NULL DEFAULT NULL,
   modified_by varchar(128) NULL DEFAULT NULL,
 PRIMARY KEY (skill_level_id)
-);
-
--- Table: event_type_lu
-CREATE TABLE IF NOT EXISTS event_type_lu (
-  event_type_code varchar(32) NOT NULL,
-  description_json JSONB,
-  created_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  created_by varchar(32) NOT NULL,
-  modified_date TIMESTAMPTZ NULL DEFAULT NULL,
-  modified_by varchar(32) NULL DEFAULT NULL,
-PRIMARY KEY (event_type_code)
 );
 
 -- Table: governing_body

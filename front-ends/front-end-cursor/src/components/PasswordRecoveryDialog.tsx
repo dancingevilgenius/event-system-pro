@@ -10,8 +10,8 @@ import {
   Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { fetchSecretQuestions, type SecretQuestion } from '../api/postgrest';
 import { useMessages } from '../hooks/useMessages';
+import { useSecretQuestions } from '../hooks/useSecretQuestions';
 import CloseIcon from './CloseIcon';
 import InfoMessageBox from './InfoMessageBox';
 import SecretQuestionAndAnswer from './SecretQuestionAndAnswer';
@@ -103,59 +103,37 @@ export default function PasswordRecoveryDialog({
   onSave,
 }: PasswordRecoveryDialogProps) {
   const { clearMessages, showProblem } = useMessages();
-  const [questions, setQuestions] = useState<SecretQuestion[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { questions, loading, error: fetchError } = useSecretQuestions(open);
   const [saving, setSaving] = useState(false);
-  const [loadError, setLoadError] = useState<string | null>(null);
   const [slots, setSlots] = useState<PasswordRecoverySlot[]>(EMPTY_SLOTS);
   const [answerFeedback, setAnswerFeedback] = useState<Record<number, AnswerFieldFeedback>>({});
   const initialQuestionIdsKey = initialQuestionIds.join(',');
+  const loadError =
+    fetchError ??
+    (!loading && open && questions.length > 0 && questions.length < 3
+      ? 'At least three secret questions must be configured.'
+      : null);
 
   useEffect(() => {
     if (!open) {
       return;
     }
 
-    let cancelled = false;
-
     clearMessages();
     setSlots(EMPTY_SLOTS);
     setAnswerFeedback({});
-    setLoadError(null);
-    setLoading(true);
+  }, [open, clearMessages]);
 
-    fetchSecretQuestions()
-      .then((items) => {
-        if (cancelled) {
-          return;
-        }
+  useEffect(() => {
+    if (!open || loading || loadError || questions.length < 3) {
+      return;
+    }
 
-        if (items.length < 3) {
-          setLoadError('At least three secret questions must be configured.');
-          return;
-        }
-
-        setQuestions(items);
-        const questionIds = initialQuestionIdsKey
-          ? initialQuestionIdsKey.split(',').map((id) => Number.parseInt(id, 10))
-          : [];
-        setSlots(slotsFromQuestionIds(initialQuestionIdsForSlots(items, questionIds)));
-      })
-      .catch((error) => {
-        if (!cancelled) {
-          setLoadError(error instanceof Error ? error.message : 'Unable to load secret questions.');
-        }
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [open, initialQuestionIdsKey]);
+    const questionIds = initialQuestionIdsKey
+      ? initialQuestionIdsKey.split(',').map((id) => Number.parseInt(id, 10))
+      : [];
+    setSlots(slotsFromQuestionIds(initialQuestionIdsForSlots(questions, questionIds)));
+  }, [open, loading, loadError, questions, initialQuestionIdsKey]);
 
   const updateSlot = (index: number, patch: Partial<PasswordRecoverySlot>) => {
     setSlots((current) =>

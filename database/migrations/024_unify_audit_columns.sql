@@ -124,10 +124,6 @@ ALTER TABLE public.secret_question_lu
   ADD COLUMN IF NOT EXISTS modified_date TIMESTAMPTZ NULL DEFAULT NULL,
   ADD COLUMN IF NOT EXISTS modified_by varchar(128) NULL DEFAULT NULL;
 
-ALTER TABLE public.event_type_lu
-  ADD COLUMN IF NOT EXISTS modified_date TIMESTAMPTZ NULL DEFAULT NULL,
-  ADD COLUMN IF NOT EXISTS modified_by varchar(128) NULL DEFAULT NULL;
-
 ALTER TABLE public.image
   ADD COLUMN IF NOT EXISTS created_by varchar(128) NOT NULL DEFAULT 'c-agent',
   ADD COLUMN IF NOT EXISTS modified_by varchar(128) NULL DEFAULT NULL;

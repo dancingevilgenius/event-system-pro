@@ -16,6 +16,9 @@ export const WSDC_LEVELS_LIST_CODE = 'WSDC_LEVELS';
 /** `static_list.list_code` for competition and event type definitions. */
 export const EVENT_TYPES_LIST_CODE = 'EVENT_TYPES';
 
+/** `static_list.list_code` for password-recovery secret questions. */
+export const SECRET_QUESTIONS_LIST_CODE = 'SECRET_QUESTIONS';
+
 export type StaticListJsonField = 'min-age' | 'max-age' | 'description';
 
 export function staticListHasDescription(

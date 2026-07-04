@@ -2,7 +2,8 @@
 # Order matters. One filename per line; # comments and blank lines ignored.
 # Keep in sync with scripts/rebuild-local-database.ps1.
 
-002_event_type_lu_seed.sql
+002_event_types_static_list_seed.sql
+002b_secret_questions_static_list_seed.sql
 005_user_superheroes.sql
 005a_update_superhero_addresses.sql
 003_user_dummy.sql

@@ -45,7 +45,23 @@ function Resolve-PsqlPath {
 
 function Test-MigrationSupersededByBaseline {
     param([string]$FileName)
-    return $FileName -match '^(005|006|007|015|027|030)_'
+
+    $manifestPath = Join-Path $RepoRoot 'database\superseded-by-baseline.manifest'
+    if (-not (Test-Path $manifestPath)) {
+        return $FileName -match '^(005|006|007|015|017|027|030|051|052|053|001_event_type|002_event_type|078_|079_|080_)'
+    }
+
+    $patterns = Get-Content $manifestPath | ForEach-Object {
+        ($_ -replace '#.*', '').Trim().Trim("`r")
+    } | Where-Object { $_ -ne '' }
+
+    foreach ($pattern in $patterns) {
+        if ($FileName -match $pattern) {
+            return $true
+        }
+    }
+
+    return $false
 }
 
 function Invoke-Psql {
@@ -85,6 +101,10 @@ Invoke-Psql @(
 Write-Host 'Applying baseline schema...'
 $baseline = Join-Path $RepoRoot 'database\event-system-pro\evp_schema_postgresql.sql'
 Invoke-Psql @('-U', $PostgresUser, '-d', $Database, '-v', 'ON_ERROR_STOP=1', '-f', $baseline)
+
+Write-Host 'Applying baseline reference data...'
+$baselineRef = Join-Path $RepoRoot 'database\event-system-pro\baseline_reference_data.sql'
+Invoke-Psql @('-U', $PostgresUser, '-d', $Database, '-v', 'ON_ERROR_STOP=1', '-f', $baselineRef)
 
 Write-Host 'Applying migrations...'
 Get-ChildItem (Join-Path $RepoRoot 'database\migrations\*.sql') |
@@ -127,25 +147,28 @@ Invoke-Psql @(
 SELECT 'public_tables' AS metric, count(*)::text AS value FROM pg_tables WHERE schemaname = 'public'
 UNION ALL SELECT 'api_views', count(*)::text FROM pg_views WHERE schemaname = 'api'
 UNION ALL SELECT 'users', count(*)::text FROM public."user"
-UNION ALL SELECT 'event_types', count(*)::text FROM public.event_type_lu
+UNION ALL SELECT 'event_types', jsonb_array_length(list_json::jsonb)::text FROM public.static_list WHERE list_code = 'EVENT_TYPES'
+UNION ALL SELECT 'secret_questions', jsonb_array_length(list_json::jsonb)::text FROM public.static_list WHERE list_code = 'SECRET_QUESTIONS'
 UNION ALL SELECT 'events', count(*)::text FROM public."event"
 ORDER BY 1;
 "@
 )
 
-Write-Host 'Verifying _lu audit actors...'
+Write-Host 'Verifying reference static_list rows...'
 Invoke-Psql @(
     '-U', $PostgresUser,
     '-d', $Database,
     '-v', 'ON_ERROR_STOP=1',
     '-c',
     @"
-SELECT 'country_lu' AS tbl, created_by, modified_by, count(*) FROM public.country_lu GROUP BY 1,2,3
-UNION ALL SELECT 'us_state_lu', created_by, modified_by, count(*) FROM public.us_state_lu GROUP BY 1,2,3
-UNION ALL SELECT 'secret_question_lu', created_by, modified_by, count(*) FROM public.secret_question_lu GROUP BY 1,2,3
-UNION ALL SELECT 'skill_level_lu', created_by, modified_by, count(*) FROM public.skill_level_lu GROUP BY 1,2,3
-UNION ALL SELECT 'competitor_type_lu', created_by, modified_by, count(*) FROM public.competitor_type_lu GROUP BY 1,2,3
-UNION ALL SELECT 'event_type_lu', created_by, modified_by, count(*) FROM public.event_type_lu GROUP BY 1,2,3
+SELECT list_code, jsonb_array_length(list_json::jsonb)::text AS entries
+FROM public.static_list
+WHERE list_code IN ('EVENT_TYPES', 'SECRET_QUESTIONS')
+ORDER BY 1;
+
+SELECT 'competitor_type_lu' AS table_name, created_by, modified_by, count(*)
+FROM public.competitor_type_lu
+GROUP BY 1, 2, 3
 ORDER BY 1, 2, 3;
 "@
 )

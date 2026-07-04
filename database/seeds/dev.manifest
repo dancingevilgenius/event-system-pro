@@ -1,8 +1,8 @@
 # Dev/test seed bundle (applied when SEED_DEV_DATA=true after migrate).
 # Order matters. One filename per line; # comments and blank lines ignored.
 # Keep in sync with scripts/rebuild-local-database.ps1.
+# EVENT_TYPES and SECRET_QUESTIONS are in baseline_reference_data.sql (not repeated here).
 
-002_event_type_lu_seed.sql
 005_user_superheroes.sql
 005a_update_superhero_addresses.sql
 003_user_dummy.sql

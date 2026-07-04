@@ -14,13 +14,15 @@ const ADMIN_BUTTONS = [
   { label: 'Contests', path: '/admin/contests' },
   { label: 'Competitors', path: '/admin/competitors' },
   { label: 'Competition Entries', path: '/admin/competition-entries' },
+  { label: 'Governing Bodies', path: '/governing-body' },
+  { label: 'Audit Log', path: '/admin/audit-log' },
   { label: 'Static Lists', path: '/static-lists' },
   { label: 'Staff', path: '/staff' },
 ] as const;
 
 export default function AdminHomePage() {
   const navigate = useNavigate();
-  const { showSuccess, showWarning, showProblem, clearMessages } = useMessages();
+  const { showSuccess, showWarning, showProblem, showInfo, clearMessages } = useMessages();
   const { counter, error: counterError } = usePocCounter();
   const [generatingAttendees, setGeneratingAttendees] = useState(false);
   const [buildInfoOpen, setBuildInfoOpen] = useState(false);
@@ -30,6 +32,7 @@ export default function AdminHomePage() {
     showSuccess('Your change has been saved.');
     showWarning('Your event starts in less than 15 min.');
     showProblem('Your sign in time has passed.');
+    showInfo('You look marvelous!');
   };
 
   const handleGenerateAttendees = async () => {

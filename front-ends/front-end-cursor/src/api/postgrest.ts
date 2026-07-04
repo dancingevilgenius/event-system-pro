@@ -1,5 +1,11 @@
 import { loadSession, type AppRole } from '../lib/session';
-import { NOT_APPLICABLE_INT, COUNTRIES_LIST_CODE, US_STATES_LIST_CODE } from '../lib/staticList';
+import {
+  NOT_APPLICABLE_INT,
+  COUNTRIES_LIST_CODE,
+  SECRET_QUESTIONS_LIST_CODE,
+  US_STATES_LIST_CODE,
+} from '../lib/staticList';
+import { secretQuestionsFromStaticListEntries } from '../utils/secretQuestions';
 
 const POSTGREST_URL =
   import.meta.env.VITE_POSTGREST_URL ?? (import.meta.env.DEV ? '/api' : 'http://localhost:3000');
@@ -71,6 +77,34 @@ export type ForgotPasswordRequestResult = {
 export type ForgotPasswordSimpleResult = {
   ok: boolean;
   message: string;
+};
+
+export type ForgotPasswordRecoveryOptionsResult = {
+  ok: boolean;
+  found: boolean;
+  has_secret_questions: boolean;
+  email?: string;
+};
+
+export type SecretQuestionPrompt = {
+  secret_question_id: number;
+  question: string;
+};
+
+export type ForgotPasswordSecretQuestionsStartResult = {
+  ok: boolean;
+  message: string;
+  email?: string;
+  questions?: SecretQuestionPrompt[];
+};
+
+export type ForgotPasswordSecretQuestionsVerifyResult = {
+  ok: boolean;
+  message: string;
+  correct_count?: number;
+  incorrect_count?: number;
+  correct_question_ids?: number[];
+  incorrect_question_ids?: number[];
 };
 
 export type LoginResult = {
@@ -318,6 +352,46 @@ export async function fetchUsersPage(
   };
 }
 
+export type DemoBracketCompetitor = {
+  userId: number;
+  username: string;
+  firstName: string;
+  lastName: string;
+  'display-name': string;
+  label: string;
+};
+
+export async function fetchDemoBracketCompetitors(): Promise<DemoBracketCompetitor[]> {
+  const rows = await callRpc<unknown>('demo_tournament_bracket_competitors', {}, 'omit');
+
+  if (!Array.isArray(rows)) {
+    return [];
+  }
+
+  return rows
+    .filter((row): row is Record<string, unknown> => Boolean(row) && typeof row === 'object')
+    .map((row) => {
+      const userId = typeof row.user_id === 'number' ? row.user_id : Number(row.user_id);
+      const username = typeof row.username === 'string' ? row.username.trim() : '';
+      const firstName = typeof row.first_name === 'string' ? row.first_name.trim() : '';
+      const lastName = typeof row.last_name === 'string' ? row.last_name.trim() : '';
+      const displayName =
+        typeof row['display-name'] === 'string' && row['display-name'].trim() !== ''
+          ? row['display-name'].trim()
+          : [firstName, lastName].filter(Boolean).join(' ') || 'Unnamed user';
+
+      return {
+        userId,
+        username,
+        firstName,
+        lastName,
+        'display-name': displayName,
+        label: displayName,
+      };
+    })
+    .filter((row) => Number.isFinite(row.userId));
+}
+
 export async function fetchUsStateCodes(): Promise<string[]> {
   const states = await fetchUsStates();
   return states.map((state) => state.code);
@@ -337,16 +411,12 @@ export async function fetchCountries(): Promise<StaticListEntry[]> {
 }
 
 export async function fetchSecretQuestions(): Promise<SecretQuestion[]> {
-  const response = await fetch(
-    `${POSTGREST_URL}/secret_question_lu?order=secret_question_id`,
-    { headers: buildAuthHeaders(undefined, 'omit') },
-  );
-
-  if (!response.ok) {
-    throw new Error(`Unable to load secret questions (${response.status})`);
+  const list = await fetchStaticListByCode(SECRET_QUESTIONS_LIST_CODE, 'omit');
+  if (!list) {
+    throw new Error('Unable to load secret questions (SECRET_QUESTIONS list not found)');
   }
 
-  return (await response.json()) as SecretQuestion[];
+  return secretQuestionsFromStaticListEntries(list.listJson);
 }
 
 export type DeploymentInfo = {
@@ -447,6 +517,52 @@ export function forgotPasswordComplete(
   );
 }
 
+export function forgotPasswordRecoveryOptions(identifier: string) {
+  return callRpc<ForgotPasswordRecoveryOptionsResult>(
+    'forgot_password_recovery_options',
+    { p_identifier: identifier },
+    'omit',
+  );
+}
+
+export function forgotPasswordSecretQuestionsStart(identifier: string) {
+  return callRpc<ForgotPasswordSecretQuestionsStartResult>(
+    'forgot_password_secret_questions_start',
+    { p_identifier: identifier },
+    'omit',
+  );
+}
+
+export function forgotPasswordSecretQuestionsVerify(
+  identifier: string,
+  answers: Array<{ secret_question_id: number; answer: string }>,
+) {
+  return callRpc<ForgotPasswordSecretQuestionsVerifyResult>(
+    'forgot_password_secret_questions_verify',
+    {
+      p_identifier: identifier,
+      p_answers: answers,
+    },
+    'omit',
+  );
+}
+
+export function forgotPasswordSecretQuestionsComplete(
+  identifier: string,
+  answers: Array<{ secret_question_id: number; answer: string }>,
+  newPassword: string,
+) {
+  return callRpc<ForgotPasswordSimpleResult>(
+    'forgot_password_secret_questions_complete',
+    {
+      p_identifier: identifier,
+      p_answers: answers,
+      p_new_password: newPassword,
+    },
+    'omit',
+  );
+}
+
 function normalizeVerificationCode(code: string): string {
   const digits = code.replace(/\D/g, '');
   if (digits.length === 0 || digits.length > 6) {
@@ -530,6 +646,70 @@ export async function fetchDemoEventGroupsWithAttendees(): Promise<EventGroupLis
     eventGroupCode: row.event_group_code,
     fullName: row.full_name,
   }));
+}
+
+/** All event groups ordered by full name. */
+export async function fetchEventGroups(): Promise<EventGroupListRow[]> {
+  const params = new URLSearchParams({
+    select: 'event_group_code,full_name',
+    order: 'full_name',
+  });
+
+  const eventGroups = await fetchJson<ApiEventGroupRecord[]>(
+    `${POSTGREST_URL}/event_group?${params.toString()}`,
+    'Unable to load event groups',
+  );
+
+  return eventGroups.map((row) => ({
+    eventGroupCode: row.event_group_code,
+    fullName: row.full_name,
+  }));
+}
+
+export type CreateEventGroupInput = {
+  eventGroupCode: string;
+  fullName: string;
+  shortName: string;
+};
+
+export async function createEventGroup(input: CreateEventGroupInput): Promise<EventGroupListRow> {
+  const response = await fetch(`${POSTGREST_URL}/event_group`, {
+    method: 'POST',
+    headers: buildAuthHeaders({
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation',
+    }),
+    body: JSON.stringify({
+      event_group_code: input.eventGroupCode.trim(),
+      full_name: input.fullName.trim(),
+      short_name: input.shortName.trim(),
+      more_json: { demo: false },
+    }),
+  });
+
+  if (!response.ok) {
+    let message = `Unable to create event group (${response.status})`;
+    try {
+      const errorBody = (await response.json()) as RpcErrorBody;
+      if (errorBody.message) {
+        message = errorBody.message;
+      }
+    } catch {
+      // Keep default message when body is not JSON.
+    }
+    throw new Error(message);
+  }
+
+  const rows = (await response.json()) as ApiEventGroupRecord[];
+  const row = rows[0];
+  if (!row) {
+    throw new Error('Event group create returned no rows.');
+  }
+
+  return {
+    eventGroupCode: row.event_group_code,
+    fullName: row.full_name,
+  };
 }
 
 export type EventListRow = {
@@ -738,6 +918,11 @@ export type StaticListEntry = {
   label: string;
   minAge?: number;
   maxAge?: number;
+  description?: string;
+  majorGroup?: string;
+  minorGroup?: string;
+  minPersonsPerEntry?: number;
+  maxPersonsPerEntry?: number;
 };
 
 export type StaticListListRow = {
@@ -799,6 +984,35 @@ function parseStaticListJson(value: unknown): StaticListEntry[] {
         entry.maxAge = parseStaticListAge(item['max-age']);
       }
 
+      if (Object.prototype.hasOwnProperty.call(item, 'description')) {
+        entry.description =
+          typeof item.description === 'string'
+            ? item.description.trim()
+            : String(item.description ?? '').trim();
+      }
+
+      if (Object.prototype.hasOwnProperty.call(item, 'major-group')) {
+        entry.majorGroup =
+          typeof item['major-group'] === 'string'
+            ? item['major-group'].trim()
+            : String(item['major-group'] ?? '').trim();
+      }
+
+      if (Object.prototype.hasOwnProperty.call(item, 'minor-group')) {
+        entry.minorGroup =
+          typeof item['minor-group'] === 'string'
+            ? item['minor-group'].trim()
+            : String(item['minor-group'] ?? '').trim();
+      }
+
+      if (Object.prototype.hasOwnProperty.call(item, 'min-persons-per-entry')) {
+        entry.minPersonsPerEntry = parseStaticListAge(item['min-persons-per-entry']);
+      }
+
+      if (Object.prototype.hasOwnProperty.call(item, 'max-persons-per-entry')) {
+        entry.maxPersonsPerEntry = parseStaticListAge(item['max-persons-per-entry']);
+      }
+
       return entry;
     })
     .filter((item) => item.key !== '');
@@ -816,6 +1030,26 @@ function serializeStaticListEntry(entry: StaticListEntry): Record<string, string
 
   if (entry.maxAge !== undefined) {
     serialized['max-age'] = entry.maxAge;
+  }
+
+  if (entry.description !== undefined) {
+    serialized.description = entry.description;
+  }
+
+  if (entry.majorGroup !== undefined) {
+    serialized['major-group'] = entry.majorGroup;
+  }
+
+  if (entry.minorGroup !== undefined) {
+    serialized['minor-group'] = entry.minorGroup;
+  }
+
+  if (entry.minPersonsPerEntry !== undefined) {
+    serialized['min-persons-per-entry'] = entry.minPersonsPerEntry;
+  }
+
+  if (entry.maxPersonsPerEntry !== undefined) {
+    serialized['max-persons-per-entry'] = entry.maxPersonsPerEntry;
   }
 
   return serialized;
@@ -912,6 +1146,160 @@ export async function updateStaticListJson(
   return mapStaticListRecord(row);
 }
 
+export type GoverningBodyRow = {
+  code: string;
+  longName: string;
+  shortName: string;
+  moreJson: Record<string, string>;
+};
+
+type ApiGoverningBodyRow = {
+  governing_body_code: string;
+  long_name: string;
+  short_name: string | null;
+  more_json: unknown;
+};
+
+export function parseGoverningBodyMoreJson(value: unknown): Record<string, string> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return {};
+  }
+
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>)
+      .filter(([key]) => key.trim() !== '')
+      .map(([key, entryValue]) => [key, entryValue == null ? '' : String(entryValue)]),
+  );
+}
+
+function mapGoverningBodyRow(row: ApiGoverningBodyRow): GoverningBodyRow {
+  return {
+    code: row.governing_body_code,
+    longName: row.long_name,
+    shortName: row.short_name?.trim() ?? '',
+    moreJson: parseGoverningBodyMoreJson(row.more_json),
+  };
+}
+
+export async function fetchGoverningBodies(): Promise<GoverningBodyRow[]> {
+  const rows = await fetchJson<ApiGoverningBodyRow[]>(
+    `${POSTGREST_URL}/governing_body?select=governing_body_code,long_name,short_name,more_json&order=governing_body_code`,
+    'Unable to load governing bodies',
+  );
+
+  return rows.map(mapGoverningBodyRow);
+}
+
+export async function updateGoverningBodyMoreJson(
+  code: string,
+  moreJson: Record<string, string>,
+): Promise<GoverningBodyRow> {
+  const params = new URLSearchParams();
+  params.append('governing_body_code', `eq.${code}`);
+
+  const serialized =
+    Object.keys(moreJson).length === 0
+      ? null
+      : Object.fromEntries(
+          Object.entries(moreJson).map(([key, value]) => [key, value]),
+        );
+
+  const response = await fetch(`${POSTGREST_URL}/governing_body?${params.toString()}`, {
+    method: 'PATCH',
+    headers: buildAuthHeaders({
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation',
+    }),
+    body: JSON.stringify({
+      more_json: serialized,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Unable to update governing body (${response.status})`);
+  }
+
+  const rows = (await response.json()) as ApiGoverningBodyRow[];
+  const row = rows[0];
+  if (!row) {
+    throw new Error('Governing body update returned no rows.');
+  }
+
+  return mapGoverningBodyRow(row);
+}
+
+export type AuditLogRow = {
+  auditId: number;
+  occurredAt: string;
+  action: string;
+  actorUserId: number | null;
+  actorUsername: string;
+  tableName: string;
+  recordKey: string;
+  oldData: Record<string, unknown> | null;
+  newData: Record<string, unknown> | null;
+  metadata: Record<string, unknown> | null;
+};
+
+type ApiAuditLogRow = {
+  audit_id: number;
+  occurred_at: string;
+  action: string;
+  actor_user_id: number | null;
+  actor_username: string | null;
+  table_name: string | null;
+  record_key: string | null;
+  old_data: Record<string, unknown> | null;
+  new_data: Record<string, unknown> | null;
+  metadata: Record<string, unknown> | null;
+};
+
+function mapAuditLogRow(row: ApiAuditLogRow): AuditLogRow {
+  return {
+    auditId: row.audit_id,
+    occurredAt: row.occurred_at,
+    action: row.action,
+    actorUserId: row.actor_user_id,
+    actorUsername: row.actor_username?.trim() ?? '',
+    tableName: row.table_name?.trim() ?? '',
+    recordKey: row.record_key?.trim() ?? '',
+    oldData: row.old_data,
+    newData: row.new_data,
+    metadata: row.metadata,
+  };
+}
+
+export async function fetchAuditLogPage(
+  offset: number,
+  limit: number,
+): Promise<{ rows: AuditLogRow[]; total: number }> {
+  const params = new URLSearchParams({
+    select:
+      'audit_id,occurred_at,action,actor_user_id,actor_username,table_name,record_key,old_data,new_data,metadata',
+    order: 'occurred_at.desc,audit_id.desc',
+    offset: String(offset),
+    limit: String(limit),
+  });
+
+  const response = await fetch(`${POSTGREST_URL}/audit_log?${params.toString()}`, {
+    headers: buildAuthHeaders({
+      Prefer: 'count=exact',
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Unable to load audit log (${response.status})`);
+  }
+
+  const records = (await response.json()) as ApiAuditLogRow[];
+  const total = parseContentRangeTotal(response.headers.get('Content-Range')) ?? records.length;
+
+  return {
+    rows: records.map(mapAuditLogRow),
+    total,
+  };
+}
+
 export function hashPasswordRecoveryAnswers(
   answers: Array<{ secret_question_id: number; answer: string }>,
 ) {
@@ -922,25 +1310,51 @@ export function hashPasswordRecoveryAnswers(
   );
 }
 
+export type PasswordRecoverySetupResult = {
+  ok: boolean;
+  message?: string;
+  has_setup?: boolean;
+  secret_question_ids?: number[];
+};
+
+export function getPasswordRecoverySetup(userId: number) {
+  return callRpc<PasswordRecoverySetupResult>('get_password_recovery_setup', {
+    p_user_id: userId,
+  });
+}
+
+export function updatePasswordRecovery(
+  answers: Array<{ secret_question_id: number; answer: string }>,
+  userId: number,
+) {
+  return callRpc<HashPasswordRecoveryResult>(
+    'update_password_recovery',
+    {
+      p_answers: answers,
+      p_user_id: userId,
+    },
+  );
+}
+
 export function registerUser(params: {
   username: string;
-  email: string;
+  email?: string;
   password: string;
   nameJson: Record<string, unknown>;
   phoneNumbersJson: unknown[];
   addressesJson: unknown[];
-  passwordRecoveryJson: PasswordRecoveryJson;
+  passwordRecoveryJson?: PasswordRecoveryJson | null;
 }) {
   return callRpc<RegisterUserResult>(
     'register_user',
     {
       p_username: params.username,
-      p_email: params.email,
+      p_email: params.email?.trim() || null,
       p_password: params.password,
       p_name_json: params.nameJson,
       p_phone_numbers_json: params.phoneNumbersJson,
       p_addresses_json: params.addressesJson,
-      p_password_recovery_json: params.passwordRecoveryJson,
+      p_password_recovery_json: params.passwordRecoveryJson ?? null,
     },
     'omit',
   );

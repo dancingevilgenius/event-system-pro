@@ -17,7 +17,14 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 | Forgot password | `front-ends/front-end-cursor/src/pages/ForgotPasswordPage.tsx` |
 | Home | `front-ends/front-end-cursor/src/pages/HomePage.tsx` |
 | Account | `front-ends/front-end-cursor/src/pages/AccountPage.tsx` |
+| Secret questions (password recovery) | `front-ends/front-end-cursor/src/pages/SecretQuestionsPage.tsx` |
 | Change password | `front-ends/front-end-cursor/src/pages/ChangePasswordPage.tsx` |
+| Secret questions form | `front-ends/front-end-cursor/src/components/SecretQuestionsSelector.tsx` |
+| Secret question slot chrome | `front-ends/front-end-cursor/src/components/SecretQuestionSlot.tsx` |
+| Secret question + answer (one slot) | `front-ends/front-end-cursor/src/components/SecretQuestionAndAnswer.tsx` |
+| Secret question carousel (mobile) | `front-ends/front-end-cursor/src/components/SecretQuestionCarousel.tsx` |
+| Register password-recovery dialog | `front-ends/front-end-cursor/src/components/PasswordRecoveryDialog.tsx` |
+| Password recovery setup re-export | `front-ends/front-end-cursor/src/components/PasswordRecoverySetupForm.tsx` |
 | Admin home | `front-ends/front-end-cursor/src/pages/AdminHomePage.tsx` |
 | Admin competitors | `front-ends/front-end-cursor/src/pages/AdminCompetitorsPage.tsx` |
 | Staff / contest pick | `front-ends/front-end-cursor/src/pages/StaffPage.tsx`, `ContestSelectionPage.tsx` |
@@ -32,6 +39,11 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 | Duplicate score dialog | `front-ends/front-end-cursor/src/components/DuplicateScoreDialog.tsx` |
 | Progress bar | `front-ends/front-end-cursor/src/components/PercentCompleteBar.tsx` |
 | Layout constants | `front-ends/front-end-cursor/src/constants/layout.ts` |
+| Event admin routes | `front-ends/front-end-cursor/src/constants/eventRoutes.ts` |
+| Add Event page | `front-ends/front-end-cursor/src/pages/AdminAddEventPage.tsx` |
+| Add Event sections | `front-ends/front-end-cursor/src/components/AddEvent*Section.tsx`, `AddEventSortableSectionAccordion.tsx` |
+| Add Event shared helpers | `front-ends/front-end-cursor/src/lib/eventDates.ts`, `eventGroupSession.ts`, `eventLocation.ts` |
+| Drag handle icon | `front-ends/front-end-cursor/src/components/DragHandleIcon.tsx` |
 | Message stack UI | `front-ends/front-end-cursor/src/components/MessageStack.tsx` |
 | Message provider / API | `front-ends/front-end-cursor/src/context/MessageProvider.tsx` |
 | `useMessages` hook | `front-ends/front-end-cursor/src/hooks/useMessages.ts` |
@@ -86,9 +98,20 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 
 ### App roles
 
-Seven roles from `user_app_role` (included in login JWT `app_roles`):
+Ten roles from `user_app_role` (included in login JWT `app_roles`):
 
-`admin`, `staff`, `judge`, `headjudge`, `registration`, `floorcoordinator`, `competitor`
+| Code | Label |
+|------|-------|
+| `admin` | Admin |
+| `staff` | Staff |
+| `judge` | Judge |
+| `headjudge` | Head Judge |
+| `registration` | Registration |
+| `floorparent` | Floor Parent |
+| `ballroomcoordinator` | Ballroom Coordinator |
+| `dj` | DJ |
+| `eventcoordinator` | Event Coordinator |
+| `competitor` | Competitor |
 
 ### `ProtectedRoute` behavior
 
@@ -100,7 +123,7 @@ Seven roles from `user_app_role` (included in login JWT `app_roles`):
 
 | Route | Required role(s) |
 |-------|------------------|
-| `/home`, `/account`, `/changepassword` | Any signed-in user |
+| `/home`, `/account`, `/changepassword`, `/secret-questions` | Any signed-in user |
 | `/staff`, `/judging` | `staff` (or `admin`) |
 | `/competitor` | `competitor` (or `admin`) |
 | `/adminhome`, `/admin/event-details`, `/admin/contests`, `/admin/contests/contest`, `/admin/competitors`, `/admin/competition-entries` | `admin` |
@@ -123,7 +146,19 @@ Seven roles from `user_app_role` (included in login JWT `app_roles`):
 
 - Shows signed-in **username**.
 - **Change Password** navigates to `/changepassword`.
+- **Password Recovery** navigates to `/secret-questions`.
 - **Back to Home** returns to `/home`.
+
+### Secret questions (`/secret-questions`)
+
+- Protected route; opened from **Account → Password Recovery**.
+- Title: **Password Recovery**; same centered card layout as Register (`Container maxWidth="sm"`, `Paper`, `centeredContentStackSx`).
+- On load, calls RPC **`get_password_recovery_setup`** with session `user_id` to pre-select the user's three saved question ids (answers are not returned).
+- Renders **`SecretQuestionsSelector`** (full 3-slot form with save button).
+- Save calls RPC **`update_password_recovery`** with three `{ secret_question_id, answer }` pairs; answers are bcrypt-hashed server-side.
+- On success: success message and navigate to **`/account`**.
+- **Back to Account** returns to `/account`.
+- Slot labels **Question 1**, **Question 2**, **Question 3** are shown (`showSlotLabels` defaults to `true` on this page).
 
 ### Change password (`/changepassword`)
 
@@ -153,9 +188,61 @@ Login page links: **Forgot password?** and **Register**.
 - **First name** and **last name** are required.
 - Optional address: **city**, **state** (`static_list` → `US_STATES`), and **country** (`static_list` → `COUNTRIES`) only — no street line on this form (`addresses_json.line1` is `null` when an address row is saved).
 - Phone uses three numeric US segments (area, prefix, line).
-- Before submit, user must complete **three secret password-recovery questions** (answers bcrypt-hashed via `api.hash_password_recovery_answers`, stored in `password_recovery_json`).
+- Before submit, user must complete **three secret password-recovery questions** in the **`PasswordRecoveryDialog`** (opened from the register form).
+- Dialog uses the same shared slot components as `/secret-questions` (see **Secret question UI** below); slot labels are **not** shown in the dialog.
+- Answers are bcrypt-hashed via RPC **`api.hash_password_recovery_answers`** (`auth: omit`) and stored in `password_recovery_json` on submit.
 - Submit calls **`api.register_user`**; on success navigates to login.
 - **Login** and **Register** call `clearMessages()` on mount.
+
+---
+
+## Secret question UI
+
+Shared React components for choosing three secret questions and answers. Used on **Register** (`PasswordRecoveryDialog`) and **Account → Password Recovery** (`SecretQuestionsPage` → `SecretQuestionsSelector`).
+
+### Component hierarchy
+
+| Component | File | Role |
+|-----------|------|------|
+| **`SecretQuestionsSelector`** | `SecretQuestionsSelector.tsx` | Full 3-slot form: loads question list, manages slots, validates, save button. |
+| **`SecretQuestionSlot`** | `SecretQuestionSlot.tsx` | Bordered wrapper around one slot; optional **Question N** label. Border: `divider`, 1px, rounded, responsive padding. |
+| **`SecretQuestionAndAnswer`** | `SecretQuestionAndAnswer.tsx` | One slot's picker + answer field; content centered via `centeredContentStackSx`. **No border** (border lives in `SecretQuestionSlot`). |
+| **`SecretQuestionPicker`** | exported from `SecretQuestionsSelector.tsx` | Desktop: MUI select dropdown (`aria-label="Secret question"`, no visible field label). Mobile: **`SecretQuestionCarousel`**. |
+| **`SecretQuestionCarousel`** | `SecretQuestionCarousel.tsx` | Mobile carousel; arrow buttons to browse questions. |
+| **`PasswordRecoveryDialog`** | `PasswordRecoveryDialog.tsx` | Register modal; maps three slots as `SecretQuestionSlot` → `SecretQuestionAndAnswer`. |
+| **`PasswordRecoverySetupForm`** | `PasswordRecoverySetupForm.tsx` | Thin re-export of `SecretQuestionsSelector` (legacy import path). |
+
+Typical slot markup:
+
+```tsx
+<SecretQuestionSlot label={showSlotLabels ? `Question ${index + 1}` : undefined}>
+  <SecretQuestionAndAnswer ... />
+</SecretQuestionSlot>
+```
+
+### Mobile vs desktop picker
+
+- **`useIsMobileDevice`** chooses the picker:
+  - **Desktop:** `AppTextField` select with all questions; already-selected questions in other slots are **disabled**.
+  - **Mobile:** `SecretQuestionCarousel` with left/right arrows.
+- Same behavior on Register dialog and `/secret-questions`.
+
+### Validation (both flows)
+
+- All three slots must have a selected question and a non-blank answer (trimmed).
+- Each question id may be used **once** across the three slots.
+- Register dialog may highlight empty answer fields on failed submit; `SecretQuestionsSelector` shows a single inline error message.
+
+### API
+
+| Call | When | Auth |
+|------|------|------|
+| `fetchSecretQuestions()` → `GET /secret_question_lu` | Load question list | `omit` (public lookup) |
+| `hash_password_recovery_answers` | Register submit (pre-hash answers) | `omit` |
+| `get_password_recovery_setup` | `/secret-questions` load | bearer |
+| `update_password_recovery` | `/secret-questions` save | bearer |
+
+Forgot-password flow uses a separate stepper on **`/forgot-password`** (user answers two of their saved questions); it does **not** reuse these picker components.
 
 ---
 
@@ -726,6 +813,90 @@ Most pages use the same centered card pattern:
 
 ---
 
+## Multi-section admin form pages (Add Event pattern)
+
+Reference implementation: **`/create-event`** (`AdminAddEventPage.tsx`). Use this pattern when a long admin workflow should be split into accordion panels with per-section progress.
+
+### Page shell
+
+- Same centered card as other admin pages: **`Container maxWidth="md"`**, **`Paper elevation={3}`**, `py: 6`, responsive paper padding `{ xs: 2, sm: 4 }`.
+- Page title: centered **`Typography variant="h4"`** (e.g. **Add Event for {event_group_code}** when a group is known).
+- Optional subtitle line under the title (e.g. event group **full name** from PostgREST).
+- Bottom navigation: one **Back** outlined button in **`centeredContentStackSx`** (360px column).
+
+### Accordion sections
+
+- Each logical block is an outlined MUI **`Accordion`** (`disableGutters`, `elevation={0}`, full width).
+- **Only one** top-level accordion may be expanded at a time (`expandedSection` state).
+- Section metadata is a stable **`id`**, **`title`**, and optional **`description`** (shown when the section has no custom content yet).
+- Field UI belongs in dedicated **`AddEvent*Section.tsx`** components (or the equivalent prefix for another page). The page component owns **cross-section shared state** (e.g. event dates consumed by Schedule).
+- Sections are **reorderable** via **`@dnd-kit`**:
+  - Wrap the list in **`DndContext`** + **`SortableContext`** (`verticalListSortingStrategy`).
+  - Each row uses **`useSortable`** (see **`AddEventSortableSectionAccordion.tsx`**).
+  - A **`DragHandleIcon`** on the **left** of the summary row is the **only** drag target (`listeners` / `attributes` on the handle, not the whole summary).
+  - Call **`stopPropagation`** on handle click so expand/collapse still works on the title/chevron.
+  - Use **`PointerSensor`** with **`activationConstraint: { distance: 8 }`** to avoid accidental drags.
+  - Persist order in page state (`sectionOrder`); reorder with **`arrayMove`** on drag end.
+- **Inner** accordions (e.g. Schedule **Day 1**, **Day 2**, …) are independent: they may each expand/collapse without closing sibling day panels.
+
+### Section status (per panel)
+
+Every top-level accordion panel includes a **3-way toggle** at the bottom (**`AddEventSectionStatusToggle`**):
+
+| Status | Behavior |
+|--------|----------|
+| **Not Started** | Default; no header icon |
+| **In Progress** | Set automatically on the **first field edit** in that section (`onFieldEdit` callback from section components) |
+| **Finalized** | **Only** when the user clicks that toggle — never set automatically |
+
+- Editing a field after **Finalized** moves the section back to **In Progress**.
+- Read-only / derived fields (e.g. **Number of Days**) must **not** call `onFieldEdit`.
+- Header row (right-aligned): **TaskAlt** icon (amber) = In Progress; **CheckCircle** (green) = Finalized (`AddEventSectionStatusIcon`; uses **`@mui/icons-material`**).
+- Section-specific gating is allowed: e.g. **Schedule** disables **In Progress** and **Finalized** until **Date(s)** has valid day(s); clearing dates resets Schedule to **Not Started**.
+
+### Form fields and layout
+
+- Text, select, and date/time inputs: **`AppTextField`** (inherits **360px** max width from **`muiFormTheme`**).
+- **`datetime-local`** for event start/end; **Single Day** vs **Multi-Day** toggle controls whether the end picker is shown.
+- Multi-day day count is **inclusive calendar days** (any time on a day counts that day); helpers live in **`lib/eventDates.ts`** / **`lib/eventDuration.ts`**.
+- Static-list dropdowns (e.g. US states, countries): load in the section with loading spinner and inline error text.
+- Phone fields: **`AppPhoneNumberField`** where applicable.
+- Venue vs online contact: separate accordion panels (e.g. **Location/Venue** vs **Contact Venue**), each with its own status state.
+
+### Schedule panel rules
+
+- When **Date(s)** has no valid range, show a **`severity="warning"`** `Alert` asking the user to enter dates — do **not** show a placeholder **Day 1** accordion.
+- When dates exist, render one inner accordion per event day (**`scheduleTimeBlocks`**, titled **Day 1**, **Day 2**, …).
+
+### Event group context (`/create-event`)
+
+| Item | Rule |
+|------|------|
+| Route | **`CREATE_EVENT_PATH`** = `/create-event`; legacy `/add-event` redirects |
+| Group code | From navigation `state.eventGroupCode`, else **`sessionStorage`** (`lib/eventGroupSession.ts`) |
+| **Add Event** button | Shared **`AddEventButton`** on all `/event-groups/:eventGroupCode` pages; remembers group code on navigate |
+| Back button | Returns to `/event-groups/:code` when a group is known, else `/event-groups` |
+
+### Dark skin: date/time picker icons
+
+Native **`::-webkit-calendar-picker-indicator`** icons are black by default and are hard to see on dark backgrounds. Fix in **both**:
+
+1. **`theme/muiFormTheme.ts`** — `MuiOutlinedInput` **root** overrides for `date`, `datetime-local`, and `time` inputs when `palette.mode === 'dark'`.
+2. **`index.css`** — same rules scoped to **`[data-app-skin='dark']`** (set on the wrapper in **`AppThemeProvider`**).
+
+Use **`filter: brightness(0) invert(1)`** and **`opacity: 0.87`** on the calendar indicator so it matches body text.
+
+### Suggested file layout for a new multi-section page
+
+| File | Role |
+|------|------|
+| `pages/Admin…Page.tsx` | Section order, shared state, DnD, status map, routing |
+| `components/…Section.tsx` | One component per accordion panel |
+| `components/…SortableSectionAccordion.tsx` | Reusable accordion + drag handle + status chrome (copy/adapt from Add Event) |
+| `lib/…ts` | Pure helpers for derived state shared across panels |
+
+---
+
 ## Environment variables (front-end)
 
 From `front-ends/front-end-cursor/.env.example`:
@@ -800,8 +971,8 @@ Login JWT payload includes:
 
 1. Terminate connections to `event_system_pro`
 2. `DROP DATABASE` + `CREATE DATABASE`
-3. Apply **`database/event-system-pro/evp_schema_postgresql.sql`** (baseline)
-4. Apply **`database/migrations/*.sql`** in sorted order (skips superseded: `005`, `006`, `007`, `015`, `027`, `030`)
+3. Apply **`database/event-system-pro/evp_schema_postgresql.sql`** then **`baseline_reference_data.sql`** (baseline bundle)
+4. Apply **`database/migrations/*.sql`** in sorted order (skips patterns in **`database/superseded-by-baseline.manifest`**)
 5. Apply dev **seeds** listed in **`database/seeds/dev.manifest`** (order matters; currently `002`–`014`)
 6. Print verification counts (tables, views, users, events)
 
@@ -901,13 +1072,15 @@ Prefer **`jsonb`** for new columns that will be queried or merged.
 
 ## Lookup table (`_lu`) seeds
 
-Reference/lookup tables (`country_lu`, `us_state_lu`, `event_type_lu`, `secret_question_lu`, etc.) use audit columns like other tables. Baseline and migration `024` expect **`created_by = 'c-agent'`** on `_lu` seed rows with **`modified_by` / `modified_date` NULL**.
+Reference/lookup tables (`event_type_lu`, `secret_question_lu`, etc.) use audit columns like other tables. Baseline and migration `024` expect **`created_by = 'c-agent'`** on `_lu` seed rows with **`modified_by` / `modified_date` NULL**.
+
+Countries and US states are stored in **`static_list`** (`COUNTRIES`, `US_STATES`); the obsolete `country_lu` / `us_state_lu` tables were removed in migration `069`.
 
 ---
 
 ## Owner dev account
 
-Seed **`004_user_carlos.sql`** creates **`dancingevilgenius`** (project owner). Default password: **`ChangeMeOnFirstLogin!`** (reset via `scripts/reset_dancingevilgenius_password.sql`). Seed **`007`** grants **all seven app roles** to that user.
+Seed **`004_user_carlos.sql`** creates **`dancingevilgenius`** (project owner). Default password: **`ChangeMeFool!`** (reset via `scripts/reset_dancingevilgenius_password.sql`). Seed **`007`** grants **all ten app roles** to that user.
 
 ---
 
@@ -942,7 +1115,7 @@ Example logins: **`superman`** / **`superman`**, **`batman`** / **`batman`**.
 - Files live in **`database/migrations/`** as **`NNN_short_description.sql`** (three-digit prefix, sorted lexically).
 - Each file should be idempotent where practical (`IF NOT EXISTS`, `CREATE OR REPLACE`).
 - End migrations that change the API with **`NOTIFY pgrst, 'reload schema';`** when PostgREST is running.
-- After folding a migration into **`evp_schema_postgresql.sql`**, mark it **superseded** in `rebuild-local-database.ps1` (`Test-MigrationSupersededByBaseline`).
+- After folding a migration into the baseline bundle (`evp_schema_postgresql.sql` and/or `baseline_reference_data.sql`), add its filename pattern to **`database/superseded-by-baseline.manifest`** (read by `migrate.sh` and `rebuild-local-database.ps1`). See **`database/BASELINE-REBASELINE-CHECKLIST.md`**.
 
 ### Agent-written SQL updates
 
@@ -972,6 +1145,6 @@ Optional **`contests_json`** on **`attendee`** (`json`, default `NULL`) holds pe
 
 ## Technical constraints
 
-- **No `@mui/icons-material`** — icons are local SVGs (`CloseIcon`, `PaletteOutlinedIcon`, etc.).
+- **Icons:** Prefer local SVG components (`CloseIcon`, `PaletteOutlinedIcon`, `DragHandleIcon`, etc.). **`@mui/icons-material`** is allowed for small status/decorative icons (e.g. Add Event section status).
 - Judging entries are generated once per page load; random data does not change until the page is reloaded.
 - Score digit dropdown interactions must not propagate to the accordion header.

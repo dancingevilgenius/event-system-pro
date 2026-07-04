@@ -11,6 +11,7 @@ import {
   bumpActivityExpiry,
   getActivityExpiresAt,
   isActivityExpired,
+  isInactivityLogoutDisabled,
   setActivityExpiresAt,
 } from '../lib/session';
 
@@ -30,6 +31,10 @@ function parseServerExpiresAt(value: unknown): number | null {
   return Number.isNaN(expiresAt) ? null : expiresAt;
 }
 
+function isInactiveLogout(status: { ok?: boolean; active?: boolean }): boolean {
+  return status.ok !== false && status.active === false;
+}
+
 export default function ActivityMonitor() {
   const { session, logout } = useAuth();
   const { showWarning } = useMessages();
@@ -40,9 +45,10 @@ export default function ActivityMonitor() {
   const loggingOutRef = useRef(false);
   const prevPathnameRef = useRef<string | null>(null);
   const sessionUserIdRef = useRef<number | null>(null);
+  const inactivityDisabled = isInactivityLogoutDisabled();
 
   const forceInactiveLogout = useCallback(() => {
-    if (!session || loggingOutRef.current) {
+    if (inactivityDisabled || !session || loggingOutRef.current) {
       return;
     }
 
@@ -51,11 +57,15 @@ export default function ActivityMonitor() {
     showWarning(INACTIVITY_LOGOUT_MESSAGE);
     logout();
     navigate('/', { replace: true });
-  }, [logout, navigate, session, showWarning]);
+  }, [inactivityDisabled, logout, navigate, session, showWarning]);
 
   const applyServerStatus = useCallback(
     async     (status: Awaited<ReturnType<typeof sessionStatus>>) => {
-      if (status.active === false) {
+      if (inactivityDisabled) {
+        return false;
+      }
+
+      if (isInactiveLogout(status)) {
         forceInactiveLogout();
         return true;
       }
@@ -70,11 +80,11 @@ export default function ActivityMonitor() {
 
       return false;
     },
-    [forceInactiveLogout],
+    [forceInactiveLogout, inactivityDisabled],
   );
 
   const refreshExpiryFromServer = useCallback(async () => {
-    if (!session) {
+    if (inactivityDisabled || !session) {
       return;
     }
 
@@ -84,11 +94,11 @@ export default function ActivityMonitor() {
     } catch {
       // Fall back to the front-end timer when the server is unreachable.
     }
-  }, [applyServerStatus, session]);
+  }, [applyServerStatus, inactivityDisabled, session]);
 
   const syncActivityToServer = useCallback(
     async (force = false) => {
-      if (!session || syncingRef.current) {
+      if (inactivityDisabled || !session || syncingRef.current) {
         return;
       }
 
@@ -102,7 +112,7 @@ export default function ActivityMonitor() {
         const result = await touchLastActivity();
         lastSyncRef.current = Date.now();
 
-        if (result.active === false) {
+        if (isInactiveLogout(result)) {
           forceInactiveLogout();
         }
       } catch {
@@ -111,23 +121,27 @@ export default function ActivityMonitor() {
         syncingRef.current = false;
       }
     },
-    [forceInactiveLogout, session],
+    [forceInactiveLogout, inactivityDisabled, session],
   );
 
   const recordActivity = useCallback(() => {
+    if (inactivityDisabled) {
+      return;
+    }
+
     bumpActivityExpiry();
     void syncActivityToServer();
-  }, [syncActivityToServer]);
+  }, [inactivityDisabled, syncActivityToServer]);
 
   const checkLocalExpiry = useCallback(() => {
-    if (!session) {
+    if (inactivityDisabled || !session) {
       return;
     }
 
     if (isActivityExpired()) {
       forceInactiveLogout();
     }
-  }, [forceInactiveLogout, session]);
+  }, [forceInactiveLogout, inactivityDisabled, session]);
 
   useEffect(() => {
     loggingOutRef.current = false;
@@ -137,6 +151,10 @@ export default function ActivityMonitor() {
     if (!session) {
       sessionUserIdRef.current = null;
       prevPathnameRef.current = null;
+      return;
+    }
+
+    if (inactivityDisabled) {
       return;
     }
 
@@ -164,10 +182,10 @@ export default function ActivityMonitor() {
         }
       }
     })();
-  }, [applyServerStatus, location.pathname, session]);
+  }, [applyServerStatus, inactivityDisabled, location.pathname, session]);
 
   useEffect(() => {
-    if (!session) {
+    if (inactivityDisabled || !session) {
       return;
     }
 
@@ -180,10 +198,10 @@ export default function ActivityMonitor() {
       prevPathnameRef.current = location.pathname;
       recordActivity();
     }
-  }, [location.pathname, recordActivity, session]);
+  }, [inactivityDisabled, location.pathname, recordActivity, session]);
 
   useEffect(() => {
-    if (!session) {
+    if (inactivityDisabled || !session) {
       return;
     }
 
@@ -209,10 +227,10 @@ export default function ActivityMonitor() {
       document.removeEventListener('click', onClick, true);
       document.removeEventListener('keydown', onKeyDown, true);
     };
-  }, [recordActivity, session]);
+  }, [inactivityDisabled, recordActivity, session]);
 
   useEffect(() => {
-    if (!session) {
+    if (inactivityDisabled || !session) {
       return;
     }
 
@@ -238,7 +256,7 @@ export default function ActivityMonitor() {
       window.clearInterval(serverSyncId);
       document.removeEventListener('visibilitychange', onVisibilityChange);
     };
-  }, [checkLocalExpiry, refreshExpiryFromServer, session]);
+  }, [checkLocalExpiry, inactivityDisabled, refreshExpiryFromServer, session]);
 
   return null;
 }

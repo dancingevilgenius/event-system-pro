@@ -1,5 +1,6 @@
 import { Button, Container, Paper, Stack, Typography } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
+import AddEventButton from '../components/AddEventButton';
 import { centeredContentStackSx } from '../constants/layout';
 import { eventDetailPath } from '../constants/eventRoutes';
 
@@ -17,7 +18,8 @@ export default function AdminEventSectionPlaceholderPage({
   }>();
 
   const parsedEventId = Number.parseInt(eventId, 10);
-  const eventBasePath = eventDetailPath(decodeURIComponent(eventGroupCode), parsedEventId);
+  const decodedGroupCode = decodeURIComponent(eventGroupCode);
+  const eventBasePath = eventDetailPath(decodedGroupCode, parsedEventId);
 
   return (
     <Container maxWidth="md" sx={{ py: 6 }}>
@@ -30,6 +32,7 @@ export default function AdminEventSectionPlaceholderPage({
         </Typography>
 
         <Stack spacing={2} sx={centeredContentStackSx}>
+          {decodedGroupCode && <AddEventButton eventGroupCode={decodedGroupCode} />}
           <Button variant="outlined" fullWidth onClick={() => navigate(eventBasePath)}>
             Back to Event
           </Button>

@@ -102,6 +102,7 @@ services:
         VITE_MAILER_URL: ${VITE_MAILER_URL:-http://localhost:8090/mailer}
         VITE_REALTIME_WS_URL: ${VITE_REALTIME_WS_URL:-ws://localhost:8090/realtime/ws}
         GIT_COMMIT: ${GIT_COMMIT:-unknown}
+        GIT_COMMIT_MESSAGE: ${GIT_COMMIT_MESSAGE:-unknown}
         GIT_BRANCH: ${GIT_BRANCH:-local}
         GITHUB_REPOSITORY: ${GITHUB_REPOSITORY:-unknown}
         BUILD_DATE: ${BUILD_DATE:-}

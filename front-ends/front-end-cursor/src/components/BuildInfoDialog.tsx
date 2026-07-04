@@ -1,12 +1,15 @@
 import {
   Button,
   CircularProgress,
+  Collapse,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   IconButton,
   Stack,
+  TextField,
   Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
@@ -14,6 +17,13 @@ import { fetchDeploymentInfo, type DeploymentInfo } from '../api/postgrest';
 import CloseIcon from './CloseIcon';
 import { formatBuildTimestamp, getGitHubBuildInfo } from '../lib/buildInfo';
 import { CONTENT_MAX_WIDTH } from '../constants/layout';
+
+const BUILD_INFO_LABEL_SX = {
+  fontWeight: 700,
+  color: 'text.primary',
+} as const;
+
+const COMMIT_MESSAGE_PREVIEW_CHARS = 30;
 
 type BuildInfoDialogProps = {
   open: boolean;
@@ -28,12 +38,75 @@ type InfoRowProps = {
 function InfoRow({ label, value }: InfoRowProps) {
   return (
     <Stack spacing={0.5}>
-      <Typography variant="subtitle2" color="text.secondary">
+      <Typography variant="subtitle1" sx={BUILD_INFO_LABEL_SX}>
         {label}
       </Typography>
       <Typography variant="body1" sx={{ wordBreak: 'break-word' }}>
         {value}
       </Typography>
+    </Stack>
+  );
+}
+
+type CommitMessageRowProps = {
+  message: string;
+  dialogOpen: boolean;
+};
+
+function CommitMessageRow({ message, dialogOpen }: CommitMessageRowProps) {
+  const [expanded, setExpanded] = useState(false);
+  const isLong =
+    message !== 'Not available' && message.length > COMMIT_MESSAGE_PREVIEW_CHARS;
+  const preview = isLong ? `${message.slice(0, COMMIT_MESSAGE_PREVIEW_CHARS)}…` : message;
+
+  useEffect(() => {
+    if (!dialogOpen) {
+      setExpanded(false);
+    }
+  }, [dialogOpen]);
+
+  return (
+    <Stack spacing={0.5}>
+      <Typography variant="subtitle1" sx={BUILD_INFO_LABEL_SX}>
+        Commit message
+      </Typography>
+      {!isLong ? (
+        <Typography variant="body1" sx={{ wordBreak: 'break-word' }}>
+          {message}
+        </Typography>
+      ) : (
+        <Stack spacing={1}>
+          {!expanded && (
+            <Typography variant="body1" sx={{ wordBreak: 'break-word' }}>
+              {preview}
+            </Typography>
+          )}
+          <Button
+            variant="text"
+            size="small"
+            onClick={() => setExpanded((value) => !value)}
+            aria-expanded={expanded}
+            sx={{ alignSelf: 'flex-start', px: 0, minWidth: 0 }}
+          >
+            {expanded ? 'Show less' : 'Show full message (more text)'}
+          </Button>
+          <Collapse in={expanded}>
+            <TextField
+              value={message}
+              multiline
+              fullWidth
+              minRows={2}
+              maxRows={8}
+              slotProps={{
+                input: {
+                  readOnly: true,
+                  'aria-label': 'Full commit message',
+                },
+              }}
+            />
+          </Collapse>
+        </Stack>
+      )}
     </Stack>
   );
 }
@@ -105,17 +178,13 @@ export default function BuildInfoDialog({ open, onClose }: BuildInfoDialogProps)
 
       <DialogContent sx={{ pt: 1 }}>
         <Stack spacing={2.5} sx={{ width: '100%', maxWidth: CONTENT_MAX_WIDTH, mx: 'auto' }}>
-          <Typography variant="subtitle1" color="text.secondary">
-            GitHub
-          </Typography>
           <InfoRow label="Repository" value={buildInfo.repository} />
           <InfoRow label="Branch" value={buildInfo.branch} />
           <InfoRow label="Commit" value={buildInfo.commit} />
+          <CommitMessageRow message={buildInfo.commitMessage} dialogOpen={open} />
           <InfoRow label="Build date" value={formatBuildTimestamp(buildInfo.buildDate)} />
 
-          <Typography variant="subtitle1" color="text.secondary" sx={{ pt: 1 }}>
-            Dokploy
-          </Typography>
+          <Divider sx={{ pt: 0.5 }} />
 
           {loadingDeployment && (
             <Stack sx={{ py: 2, alignItems: 'center' }}>

@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   CircularProgress,
   Dialog,
@@ -11,10 +10,13 @@ import {
   Typography,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { fetchSecretQuestions, type SecretQuestion } from '../api/postgrest';
-import { questionTextForId } from '../utils/secretQuestions';
-import AppTextField from './AppTextField';
+import { useMessages } from '../hooks/useMessages';
+import { useSecretQuestions } from '../hooks/useSecretQuestions';
 import CloseIcon from './CloseIcon';
+import InfoMessageBox from './InfoMessageBox';
+import SecretQuestionAndAnswer from './SecretQuestionAndAnswer';
+import SecretQuestionSlot from './SecretQuestionSlot';
+import { initialQuestionIdsForSlots } from './SecretQuestionCarousel';
 import { CONTENT_MAX_WIDTH } from '../constants/layout';
 
 export type PasswordRecoveryAnswer = {
@@ -30,7 +32,6 @@ type PasswordRecoverySlot = {
 type PasswordRecoveryDialogProps = {
   open: boolean;
   initialQuestionIds: number[];
-  assignedQuestionIds: number[];
   onClose: () => void;
   onSave: (answers: PasswordRecoveryAnswer[]) => Promise<void>;
 };
@@ -45,6 +46,45 @@ function isBlankAnswer(value: string): boolean {
   return value.trim().length === 0;
 }
 
+type AnswerFieldFeedback = 'filled' | 'empty';
+
+function buildAnswerValidationMessage(slots: PasswordRecoverySlot[]): string {
+  const emptyCount = slots.filter((slot) => isBlankAnswer(slot.answer)).length;
+  const filledCount = slots.length - emptyCount;
+
+  if (emptyCount === slots.length) {
+    return 'All three answers are required.';
+  }
+
+  return `${filledCount} answered. ${emptyCount} empty.`;
+}
+
+function applyAnswerFieldFeedback(
+  slots: PasswordRecoverySlot[],
+): Record<number, AnswerFieldFeedback> {
+  const feedback: Record<number, AnswerFieldFeedback> = {};
+
+  slots.forEach((slot, index) => {
+    feedback[index] = isBlankAnswer(slot.answer) ? 'empty' : 'filled';
+  });
+
+  return feedback;
+}
+
+function secretAnswerFieldSx(feedback: AnswerFieldFeedback | undefined) {
+  if (feedback === 'filled') {
+    return {
+      '& .MuiOutlinedInput-root': {
+        '& fieldset': { borderColor: 'success.main', borderWidth: 2 },
+        '&:hover fieldset': { borderColor: 'success.dark' },
+        '&.Mui-focused fieldset': { borderColor: 'success.main' },
+      },
+    };
+  }
+
+  return undefined;
+}
+
 function slotsFromQuestionIds(questionIds: number[]): PasswordRecoverySlot[] {
   const slots = EMPTY_SLOTS.map((slot) => ({ ...slot }));
   questionIds.slice(0, 3).forEach((questionId, index) => {
@@ -56,55 +96,44 @@ function slotsFromQuestionIds(questionIds: number[]): PasswordRecoverySlot[] {
   return slots;
 }
 
-function activeQuestionIds(
-  initialQuestionIds: number[],
-  assignedQuestionIds: number[],
-): number[] {
-  if (initialQuestionIds.length === 3) {
-    return initialQuestionIds;
-  }
-
-  return assignedQuestionIds;
-}
-
 export default function PasswordRecoveryDialog({
   open,
   initialQuestionIds,
-  assignedQuestionIds,
   onClose,
   onSave,
 }: PasswordRecoveryDialogProps) {
-  const [questions, setQuestions] = useState<SecretQuestion[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { clearMessages, showProblem } = useMessages();
+  const { questions, loading, error: fetchError } = useSecretQuestions(open);
   const [saving, setSaving] = useState(false);
-  const [loadError, setLoadError] = useState<string | null>(null);
   const [slots, setSlots] = useState<PasswordRecoverySlot[]>(EMPTY_SLOTS);
-  const [validationError, setValidationError] = useState<string | null>(null);
+  const [answerFeedback, setAnswerFeedback] = useState<Record<number, AnswerFieldFeedback>>({});
+  const initialQuestionIdsKey = initialQuestionIds.join(',');
+  const loadError =
+    fetchError ??
+    (!loading && open && questions.length > 0 && questions.length < 3
+      ? 'At least three secret questions must be configured.'
+      : null);
 
   useEffect(() => {
     if (!open) {
       return;
     }
 
-    const questionIds = activeQuestionIds(initialQuestionIds, assignedQuestionIds);
-    setSlots(slotsFromQuestionIds(questionIds));
-    setValidationError(null);
-    setLoadError(null);
-    setLoading(true);
+    clearMessages();
+    setSlots(EMPTY_SLOTS);
+    setAnswerFeedback({});
+  }, [open, clearMessages]);
 
-    fetchSecretQuestions()
-      .then((items) => {
-        setQuestions(items);
-        const resolvedIds = activeQuestionIds(initialQuestionIds, assignedQuestionIds);
-        if (resolvedIds.length === 3) {
-          setSlots(slotsFromQuestionIds(resolvedIds));
-        }
-      })
-      .catch((error) => {
-        setLoadError(error instanceof Error ? error.message : 'Unable to load secret questions.');
-      })
-      .finally(() => setLoading(false));
-  }, [open, initialQuestionIds, assignedQuestionIds]);
+  useEffect(() => {
+    if (!open || loading || loadError || questions.length < 3) {
+      return;
+    }
+
+    const questionIds = initialQuestionIdsKey
+      ? initialQuestionIdsKey.split(',').map((id) => Number.parseInt(id, 10))
+      : [];
+    setSlots(slotsFromQuestionIds(initialQuestionIdsForSlots(questions, questionIds)));
+  }, [open, loading, loadError, questions, initialQuestionIdsKey]);
 
   const updateSlot = (index: number, patch: Partial<PasswordRecoverySlot>) => {
     setSlots((current) =>
@@ -112,21 +141,35 @@ export default function PasswordRecoveryDialog({
         slotIndex === index ? { ...slot, ...patch } : slot,
       ),
     );
-    setValidationError(null);
+
+    if ('answer' in patch) {
+      setAnswerFeedback((current) => {
+        if (current[index] === undefined) {
+          return current;
+        }
+
+        const next = { ...current };
+        delete next[index];
+        return next;
+      });
+    }
   };
 
+  const selectedQuestionIds = slots
+    .map((slot) => slot.secretQuestionId)
+    .filter((id): id is number => id !== '');
+
   const handleSave = async () => {
-    const incomplete = slots.some(
-      (slot) => slot.secretQuestionId === '' || isBlankAnswer(slot.answer),
-    );
+    const incomplete = slots.some((slot) => isBlankAnswer(slot.answer));
     if (incomplete) {
-      setValidationError('Each answer must contain non-whitespace characters.');
+      setAnswerFeedback(applyAnswerFieldFeedback(slots));
+      showProblem(buildAnswerValidationMessage(slots));
       return;
     }
 
     const ids = slots.map((slot) => Number(slot.secretQuestionId));
     if (new Set(ids).size !== ids.length) {
-      setValidationError('Each secret question can only be used once.');
+      showProblem('Each secret question can only be used once.');
       return;
     }
 
@@ -136,11 +179,11 @@ export default function PasswordRecoveryDialog({
     }));
 
     setSaving(true);
-    setValidationError(null);
+    setAnswerFeedback({});
     try {
       await onSave(answers);
     } catch (error) {
-      setValidationError(
+      showProblem(
         error instanceof Error ? error.message : 'Unable to save password recovery answers.',
       );
     } finally {
@@ -151,11 +194,23 @@ export default function PasswordRecoveryDialog({
   const readyToShowQuestions =
     !loading &&
     !loadError &&
-    slots.every((slot) => slot.secretQuestionId !== '') &&
-    questions.length > 0;
+    questions.length >= 3 &&
+    slots.every((slot) => slot.secretQuestionId !== '');
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth="sm"
+      slotProps={{ paper: { sx: { position: 'relative' } } }}
+    >
+      {open && (
+        <InfoMessageBox overlay>
+          Choose three secret questions and answers. On mobile, use the arrows to browse questions.
+          Answers are encrypted on save.
+        </InfoMessageBox>
+      )}
       <DialogTitle
         sx={{
           textAlign: 'center',
@@ -180,12 +235,7 @@ export default function PasswordRecoveryDialog({
         </IconButton>
       </DialogTitle>
 
-      <DialogContent sx={{ pt: 1 }}>
-        <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', mb: 2 }}>
-          Answer three randomly selected secret questions. You can use these later to reset your
-          password. Answers are encrypted on save.
-        </Typography>
-
+      <DialogContent sx={{ pt: 1, px: { xs: 2, sm: 3 } }}>
         {loading && (
           <Stack sx={{ py: 3, alignItems: 'center' }}>
             <CircularProgress size={28} />
@@ -198,47 +248,26 @@ export default function PasswordRecoveryDialog({
           </Typography>
         )}
 
-        {!loading && !loadError && assignedQuestionIds.length < 3 && initialQuestionIds.length < 3 && (
-          <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
-            Loading secret questions…
-          </Typography>
-        )}
-
         {readyToShowQuestions && (
-          <Stack spacing={2.5} sx={{ width: '100%', maxWidth: CONTENT_MAX_WIDTH, mx: 'auto' }}>
+          <Stack spacing={2.5} sx={{ width: '100%' }}>
             {slots.map((slot, index) => (
-              <Box
-                key={index}
-                sx={{
-                  border: 1,
-                  borderColor: 'divider',
-                  borderRadius: 1,
-                  p: 2,
-                }}
-              >
-                <Typography variant="subtitle2" sx={{ mb: 1.5 }}>
-                  Question {index + 1}
-                </Typography>
-                <Stack spacing={1.5}>
-                  <Typography variant="body1">
-                    {questionTextForId(questions, slot.secretQuestionId)}
-                  </Typography>
-                  <AppTextField
-                    label="Your answer"
-                    value={slot.answer}
-                    onChange={(event) => updateSlot(index, { answer: event.target.value })}
-                    fullWidth
-                    autoComplete="off"
-                  />
-                </Stack>
-              </Box>
+              <SecretQuestionSlot key={index}>
+                <SecretQuestionAndAnswer
+                  questions={questions}
+                  selectedQuestionId={slot.secretQuestionId}
+                  excludedQuestionIds={selectedQuestionIds.filter(
+                    (questionId) => questionId !== slot.secretQuestionId,
+                  )}
+                  answer={slot.answer}
+                  onQuestionChange={(questionId) =>
+                    updateSlot(index, { secretQuestionId: questionId })
+                  }
+                  onAnswerChange={(answer) => updateSlot(index, { answer })}
+                  answerError={answerFeedback[index] === 'empty'}
+                  answerFieldSx={secretAnswerFieldSx(answerFeedback[index])}
+                />
+              </SecretQuestionSlot>
             ))}
-
-            {validationError && (
-              <Typography variant="body2" color="error" sx={{ textAlign: 'center' }}>
-                {validationError}
-              </Typography>
-            )}
           </Stack>
         )}
       </DialogContent>

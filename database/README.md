@@ -27,6 +27,8 @@ PostgREST Docker still uses the `authenticator` role password in `back-ends/post
 
 **Audit columns:** All tables use `created_date`, `created_by`, `modified_date`, `modified_by`. On insert, `modified_date` and `modified_by` are NULL; no epoch (`1970`/`1969`) column defaults. Agent-written SQL uses `c-agent` for `created_by` on insert (see `.cursor/rules/database-audit-columns.mdc` and migration `024_unify_audit_columns.sql`).
 
+**Readable timestamps:** When saving human-readable timestamps to text/JSON, use `api.format_activity_timestamp(date_trunc('second', ...))` — format `Jul 3, 2026, 2:56:58 PM CDT` (see `.cursor/rules/database-timestamp-format.mdc` and migration `077_standard_timestamp_format.sql`).
+
 ## Apply schema
 
 ```powershell

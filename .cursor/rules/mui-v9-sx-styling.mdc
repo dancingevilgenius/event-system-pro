@@ -1,0 +1,35 @@
+---
+description: MUI v9 — put layout and typography styles in sx, not legacy system props
+globs: "**/*.{tsx,jsx}"
+alwaysApply: false
+---
+
+# MUI v9 styling (`sx` prop)
+
+This project uses **@mui/material v9** with strict TypeScript types. Layout and typography **system props** on `Typography`, `Stack`, `Box`, etc. often cause **`TS2769: No overload matches`** and fail `tsc -b` in CI/Docker builds.
+
+## Rule
+
+When generating or editing MUI components, put **visual and flex layout styles in `sx`**, not as top-level props.
+
+**Still OK as direct props** (when the component supports them): `variant`, `color` (palette keys like `text.primary`), `direction`, `spacing`, `component`, `onClick`, `children`, `disabled`, etc.
+
+**Put in `sx`**: `fontWeight`, `fontSize`, `lineHeight`, `alignItems`, `justifyContent`, `flexWrap`, `gap` (when not `Stack spacing`), `width`, `height`, `padding`, `margin`, `display`, `minWidth`, `maxWidth`, and other CSS-like values.
+
+## Examples
+
+```tsx
+// BAD — breaks tsc on MUI v9
+<Typography variant="subtitle1" fontWeight={700} color="text.primary">
+<Stack direction="row" alignItems="center" spacing={1}>
+
+// GOOD
+<Typography variant="subtitle1" color="text.primary" sx={{ fontWeight: 700 }}>
+<Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+```
+
+Merge with existing `sx`: `sx={{ width: '100%', alignItems: 'center', fontWeight: 700 }}`.
+
+## Before finishing UI changes
+
+Run `npm run build` in the front-end package (or ensure `tsc -b` passes) when touching MUI components.

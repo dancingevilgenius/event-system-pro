@@ -1,4 +1,5 @@
-.git
+# Included in web image build context so Dockerfile can read HEAD commit message (Dokploy).
+# .git
 .gitignore
 **/.env
 **/node_modules

@@ -23,6 +23,11 @@ const messageStyles: Record<
     color: '#b71c1c',
     borderColor: '#c62828',
   },
+  info: {
+    bgcolor: '#e3f2fd',
+    color: '#0d47a1',
+    borderColor: '#0288d1',
+  },
 };
 
 const SLIDE_TRANSITION = { duration: 0.35, ease: [0.4, 0, 0.2, 1] as const };
@@ -104,7 +109,9 @@ function MessageItem({
             ? 'error'
             : message.type === 'warning'
               ? 'warning'
-              : 'success'
+              : message.type === 'info'
+                ? 'info'
+                : 'success'
         }
         variant="outlined"
         sx={{

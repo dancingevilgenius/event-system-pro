@@ -194,7 +194,8 @@ def build_pdf() -> None:
 
     pdf.section_title("Roles and route guards")
     pdf.body_text(
-        "Seven roles: admin, staff, judge, headjudge, registration, floorcoordinator, competitor."
+        "Ten app roles: admin, staff, judge, headjudge, registration, floorparent, "
+        "ballroomcoordinator, dj, eventcoordinator, competitor."
     )
     for item in [
         "ProtectedRoute: no session -> /; missing role -> /home.",
@@ -591,6 +592,48 @@ def build_pdf() -> None:
     ]:
         pdf.bullet(item)
 
+    pdf.section_title("Multi-section admin form pages (Add Event pattern)")
+    pdf.body_text(
+        "Reference: /create-event (AdminAddEventPage.tsx). Use for long admin workflows "
+        "split into accordion panels with per-section progress."
+    )
+    pdf.subsection_title("Page shell")
+    for item in [
+        "Container maxWidth md, Paper elevation 3, centered h4 title (e.g. Add Event for {event_group_code}).",
+        "Optional subtitle (event group full name); single Back outlined button at bottom.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("Accordion sections")
+    for item in [
+        "Outlined MUI Accordion per logical block; only one top-level panel expanded at a time.",
+        "Field UI in dedicated AddEvent*Section.tsx components; page owns cross-section shared state.",
+        "Reorderable via @dnd-kit: DndContext + SortableContext; drag handle (DragHandleIcon) on left of summary only.",
+        "stopPropagation on handle click; PointerSensor activation distance 8px; sectionOrder state + arrayMove.",
+        "Inner accordions (e.g. Schedule Day 1, Day 2) expand independently.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("Section status")
+    for item in [
+        "3-way toggle at bottom: Not Started (default), In Progress, Finalized.",
+        "First field edit auto-sets In Progress (onFieldEdit); Finalized only via user toggle.",
+        "Header icons: TaskAlt amber = In Progress; CheckCircle green = Finalized.",
+        "Read-only fields must not call onFieldEdit. Schedule gates In Progress/Finalized until Date(s) valid.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("Form fields, schedule, and event group context")
+    for item in [
+        "AppTextField for text/select/datetime-local; 360px max via muiFormTheme.",
+        "Single Day vs Multi-Day toggle; inclusive calendar-day count in lib/eventDates.ts.",
+        "Schedule: warning Alert when no dates; inner day accordions when dates exist.",
+        "Route /create-event; event_group_code from navigation state or sessionStorage.",
+        "AddEventButton on all /event-groups/:code pages.",
+        "Dark skin: lighten native calendar picker icons in muiFormTheme.ts and index.css [data-app-skin=dark].",
+    ]:
+        pdf.bullet(item)
+
     pdf.section_title("Environment variables (front-end)")
     for item in [
         "VITE_POSTGREST_URL (default http://localhost:3000).",
@@ -648,7 +691,7 @@ def build_pdf() -> None:
     pdf.section_title("Lookup tables and owner account")
     for item in [
         "_lu tables: created_by = c-agent on seed rows; modified_* NULL.",
-        "dancingevilgenius dev account (seed 004); default password ChangeMeOnFirstLogin!",
+        "dancingevilgenius dev account (seed 004); default password ChangeMeFool!",
         "Seed 007 grants all seven app roles to dancingevilgenius.",
     ]:
         pdf.bullet(item)
@@ -673,7 +716,7 @@ def build_pdf() -> None:
 
     pdf.section_title("Technical constraints (implicit but enforced)")
     for item in [
-        "No @mui/icons-material - icons are local SVGs (CloseIcon, PaletteOutlinedIcon, etc.).",
+        "Prefer local SVG icons (CloseIcon, DragHandleIcon, etc.); @mui/icons-material allowed for small status icons.",
         "Judging entries are generated once per page load (random bib numbers and names are fixed for that visit).",
         "Score digit dropdown clicks must not toggle the accordion (stopPropagation).",
     ]:

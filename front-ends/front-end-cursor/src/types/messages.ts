@@ -1,4 +1,4 @@
-export type MessageType = 'success' | 'warning' | 'problem';
+export type MessageType = 'success' | 'warning' | 'problem' | 'info';
 
 export type AppMessage = {
   id: string;

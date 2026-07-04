@@ -34,6 +34,7 @@ import {
   formatStaticListAge,
   staticListFieldLabel,
   staticListHasJsonField,
+  truncateStaticListDescription,
   type StaticListJsonField,
 } from '../lib/staticList';
 
@@ -97,7 +98,12 @@ export default function StaticListDetailsPage() {
     () => staticListHasJsonField(entries, 'max-age'),
     [entries],
   );
-  const columnCount = 2 + (showMinAgeColumn ? 1 : 0) + (showMaxAgeColumn ? 1 : 0);
+  const showDescriptionColumn = useMemo(
+    () => staticListHasJsonField(entries, 'description'),
+    [entries],
+  );
+  const columnCount =
+    2 + (showMinAgeColumn ? 1 : 0) + (showMaxAgeColumn ? 1 : 0) + (showDescriptionColumn ? 1 : 0);
 
   const valueColumnWidth = useMemo(() => valueButtonWidth(entries), [entries]);
   const valueColumnSx = useMemo(
@@ -151,6 +157,8 @@ export default function StaticListDetailsPage() {
 
     if (field === 'label') {
       setEditValue(entry.label);
+    } else if (field === 'description') {
+      setEditValue(entry.description ?? '');
     } else if (field === 'min-age') {
       setEditValue(entry.minAge === undefined ? '' : String(entry.minAge));
     } else {
@@ -191,6 +199,16 @@ export default function StaticListDetailsPage() {
 
       nextEntries = entries.map((row, rowIndex) =>
         rowIndex === index ? { ...row, label: trimmedValue } : row,
+      );
+    } else if (field === 'description') {
+      const trimmedValue = editValue.trim();
+      if (trimmedValue === '') {
+        showProblem('Description cannot be empty.');
+        return;
+      }
+
+      nextEntries = entries.map((row, rowIndex) =>
+        rowIndex === index ? { ...row, description: trimmedValue } : row,
       );
     } else {
       const trimmedValue = editValue.trim();
@@ -265,6 +283,31 @@ export default function StaticListDetailsPage() {
     return displayText;
   };
 
+  const renderDescriptionCell = (index: number, description: string | undefined) => {
+    const displayText = description?.trim() ? truncateStaticListDescription(description) : '—';
+
+    if (!isAdmin || description === undefined) {
+      return displayValue(description ?? '');
+    }
+
+    return (
+      <Button
+        variant="outlined"
+        size="small"
+        onClick={() => handleOpenEdit(index, 'description')}
+        sx={{
+          textTransform: 'none',
+          justifyContent: 'flex-start',
+          textAlign: 'left',
+          whiteSpace: 'normal',
+          maxWidth: 360,
+        }}
+      >
+        {displayText}
+      </Button>
+    );
+  };
+
   return (
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Paper elevation={3} sx={{ p: { xs: 2, sm: 4 } }}>
@@ -305,6 +348,9 @@ export default function StaticListDetailsPage() {
                   <TableCell>Value</TableCell>
                   {showMinAgeColumn && <TableCell>{staticListFieldLabel('min-age')}</TableCell>}
                   {showMaxAgeColumn && <TableCell>{staticListFieldLabel('max-age')}</TableCell>}
+                  {showDescriptionColumn && (
+                    <TableCell>{staticListFieldLabel('description')}</TableCell>
+                  )}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -343,6 +389,9 @@ export default function StaticListDetailsPage() {
                       )}
                       {showMaxAgeColumn && (
                         <TableCell>{renderAgeCell(index, 'max-age', entry.maxAge)}</TableCell>
+                      )}
+                      {showDescriptionColumn && (
+                        <TableCell>{renderDescriptionCell(index, entry.description)}</TableCell>
                       )}
                     </TableRow>
                   ))
@@ -391,9 +440,15 @@ export default function StaticListDetailsPage() {
             fullWidth
             autoFocus
             disabled={saving}
-            type={editTarget?.field === 'label' ? 'text' : 'number'}
+            multiline={editTarget?.field === 'description'}
+            minRows={editTarget?.field === 'description' ? 6 : undefined}
+            type={
+              editTarget?.field === 'label' || editTarget?.field === 'description'
+                ? 'text'
+                : 'number'
+            }
             slotProps={
-              editTarget?.field === 'label'
+              editTarget?.field === 'label' || editTarget?.field === 'description'
                 ? undefined
                 : { htmlInput: { inputMode: 'numeric', min: 0, step: 1 } }
             }

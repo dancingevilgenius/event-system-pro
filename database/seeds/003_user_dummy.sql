@@ -53,7 +53,8 @@ SELECT
   }'::json,
   '{
     "notes": "Seed user for Event System Pro demos.",
-    "preferred_contact": "email"
+    "preferred_contact": "email",
+    "demo": true
   }'::json,
   '[
     {
@@ -117,7 +118,8 @@ SELECT
   '{}'::json,
   '{
     "notes": "Second seed user with a Florida address.",
-    "preferred_contact": "phone"
+    "preferred_contact": "phone",
+    "demo": true
   }'::json,
   '[
     {
@@ -193,7 +195,8 @@ SELECT
   }'::json,
   '{
     "notes": "Third seed user for agent automation test.",
-    "preferred_contact": "email"
+    "preferred_contact": "email",
+    "demo": true
   }'::json,
   '[
     {

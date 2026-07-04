@@ -3,10 +3,13 @@ import ActivityMonitor from './components/ActivityMonitor';
 import LoginFlashHandler from './components/LoginFlashHandler';
 import ProtectedRoute from './components/ProtectedRoute';
 import AccountPage from './pages/AccountPage';
+import AdminAuditLogPage from './pages/AdminAuditLogPage';
 import AdminCompetitorsPage from './pages/AdminCompetitorsPage';
 import AdminContestResultsPage from './pages/AdminContestResultsPage';
 import AdminContestsPage from './pages/AdminContestsPage';
+import AdminAddEventPage from './pages/AdminAddEventPage';
 import AdminEventAttendeesPage from './pages/AdminEventAttendeesPage';
+import AdminEventContestsPage from './pages/AdminEventContestsPage';
 import AdminEventGroupPage from './pages/AdminEventGroupPage';
 import AdminEventPage from './pages/AdminEventPage';
 import AdminEventSectionPlaceholderPage from './pages/AdminEventSectionPlaceholderPage';
@@ -17,14 +20,19 @@ import ChangePasswordPage from './pages/ChangePasswordPage';
 import CompetitorPage from './pages/CompetitorPage';
 import EventHomePage from './pages/EventHomePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import PublicHomePage from './pages/PublicHomePage';
+import DemoPage from './pages/DemoPage';
+import GoverningBodyPage from './pages/GoverningBodyPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import JudgingPage from './pages/JudgingPage';
+import SecretQuestionsPage from './pages/SecretQuestionsPage';
 import StaffPage from './pages/StaffPage';
 import StaticListDetailsPage from './pages/StaticListDetailsPage';
 import StaticListsPage from './pages/StaticListsPage';
-import { EVENT_HOME_PATH, EVENT_GROUPS_PATH, EVENTS_PATH } from './constants/eventRoutes';
+import TournamentBracketDemoPage from './pages/TournamentBracketDemoPage';
+import { CREATE_EVENT_PATH, EVENT_HOME_PATH, EVENT_GROUPS_PATH, EVENTS_PATH } from './constants/eventRoutes';
 
 export default function App() {
   return (
@@ -32,8 +40,12 @@ export default function App() {
       <ActivityMonitor />
       <LoginFlashHandler />
       <Routes>
-      <Route path="/" element={<LoginPage />} />
+      <Route path="/" element={<PublicHomePage />} />
+      <Route path="/home-page" element={<PublicHomePage />} />
+      <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/demo" element={<DemoPage />} />
+      <Route path="/tournament-bracket-demo" element={<TournamentBracketDemoPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route
         path="/home"
@@ -60,6 +72,14 @@ export default function App() {
         }
       />
       <Route
+        path="/secret-questions"
+        element={
+          <ProtectedRoute>
+            <SecretQuestionsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/static-lists"
         element={
           <ProtectedRoute>
@@ -72,6 +92,22 @@ export default function App() {
         element={
           <ProtectedRoute>
             <StaticListDetailsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/governing-body"
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <GoverningBodyPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/audit-log"
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <AdminAuditLogPage />
           </ProtectedRoute>
         }
       />
@@ -112,6 +148,15 @@ export default function App() {
         }
       />
       <Route
+        path={CREATE_EVENT_PATH}
+        element={
+          <ProtectedRoute roles={['admin']}>
+            <AdminAddEventPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/add-event" element={<Navigate to={CREATE_EVENT_PATH} replace />} />
+      <Route
         path={`${EVENT_GROUPS_PATH}/:eventGroupCode/:eventId/attendees`}
         element={
           <ProtectedRoute roles={['admin']}>
@@ -131,7 +176,7 @@ export default function App() {
         path={`${EVENT_GROUPS_PATH}/:eventGroupCode/:eventId/contests`}
         element={
           <ProtectedRoute roles={['admin']}>
-            <AdminEventSectionPlaceholderPage title="Contests" />
+            <AdminEventContestsPage />
           </ProtectedRoute>
         }
       />
@@ -186,6 +231,10 @@ export default function App() {
             <AdminPlaceholderPage title="Competition Entries" />
           </ProtectedRoute>
         }
+      />
+      <Route
+        path="/admin/tournament-bracket-demo"
+        element={<Navigate to="/tournament-bracket-demo" replace />}
       />
       <Route
         path="/staff"

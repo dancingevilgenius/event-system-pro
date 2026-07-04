@@ -2,29 +2,31 @@ import {
   Box,
   Button,
   Container,
-  MenuItem,
   Paper,
   Stack,
   Typography,
 } from '@mui/material';
-import { type ChangeEvent, type ClipboardEvent, type FormEvent, type KeyboardEvent, useEffect, useState } from 'react';
+import {
+  type ChangeEvent,
+  type FormEvent,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   hashPasswordRecoveryAnswers,
   registerUser,
-  fetchCountries,
-  fetchSecretQuestions,
-  fetchUsStatesStaticList,
   type PasswordRecoveryJson,
-  type StaticListEntry,
 } from '../api/postgrest';
 import PasswordRecoveryDialog, {
   type PasswordRecoveryAnswer,
 } from '../components/PasswordRecoveryDialog';
+import AppPhoneNumberField from '../components/AppPhoneNumberField';
 import AppTextField from '../components/AppTextField';
 import { centeredContentStackSx } from '../constants/layout';
 import { useMessages } from '../hooks/useMessages';
-import { pickRandomQuestionIds } from '../utils/secretQuestions';
+import { buildPhoneNumbersJson, hasCompletePhone } from '../utils/phoneNumbers';
 
 type RegisterForm = {
   username: string;
@@ -33,12 +35,7 @@ type RegisterForm = {
   confirmPassword: string;
   firstName: string;
   lastName: string;
-  city: string;
-  state: string;
-  country: string;
-  phoneArea: string;
-  phonePrefix: string;
-  phoneLine: string;
+  phone: string;
   passwordRecoveryJson: PasswordRecoveryJson | null;
 };
 
@@ -49,49 +46,14 @@ const initialForm: RegisterForm = {
   confirmPassword: '',
   firstName: '',
   lastName: '',
-  city: '',
-  state: '',
-  country: '',
-  phoneArea: '',
-  phonePrefix: '',
-  phoneLine: '',
+  phone: '',
   passwordRecoveryJson: null,
 };
 
-function digitsOnly(value: string, maxLength: number): string {
-  return value.replace(/\D/g, '').slice(0, maxLength);
-}
+const RECOVERY_HELP_MESSAGE =
+  'For password recovery help, provide at least two of: email, phone number, and secret question answers.';
 
-function isPhoneControlKey(key: string): boolean {
-  return (
-    key === 'Backspace' ||
-    key === 'Delete' ||
-    key === 'Tab' ||
-    key === 'ArrowLeft' ||
-    key === 'ArrowRight' ||
-    key === 'Home' ||
-    key === 'End'
-  );
-}
-
-function phoneInputSlotProps(maxLength: number) {
-  return {
-    htmlInput: {
-      inputMode: 'numeric' as const,
-      maxLength,
-      pattern: '[0-9]*',
-      onKeyDown: (event: KeyboardEvent<HTMLInputElement>) => {
-        if (event.ctrlKey || event.metaKey || isPhoneControlKey(event.key)) {
-          return;
-        }
-
-        if (!/^\d$/.test(event.key)) {
-          event.preventDefault();
-        }
-      },
-    },
-  };
-}
+const SAVED_QUESTION_IDS_EMPTY: number[] = [];
 
 function buildNameJson(firstName: string, lastName: string) {
   const first = firstName.trim();
@@ -108,38 +70,43 @@ function buildNameJson(firstName: string, lastName: string) {
   };
 }
 
-function buildPhoneNumbersJson(phoneArea: string, phonePrefix: string, phoneLine: string) {
-  const number = `${phoneArea}${phonePrefix}${phoneLine}`;
-  if (number.length !== 10) {
-    return [];
-  }
-
-  return [
-    {
-      type: 'mobile',
-      country_code: '1',
-      number,
-      primary: true,
-    },
-  ];
+function hasEmail(email: string): boolean {
+  return email.trim().length > 0;
 }
 
-function buildAddressesJson(city: string, state: string, country: string) {
-  if (!city.trim() && !state.trim() && !country.trim()) {
-    return [];
+function hasSecretQuestions(passwordRecoveryJson: PasswordRecoveryJson | null): boolean {
+  return (
+    passwordRecoveryJson?.method === 'secret_questions' &&
+    passwordRecoveryJson.questions.length === 3
+  );
+}
+
+function countRecoveryMethods(form: RegisterForm): number {
+  let count = 0;
+
+  if (hasEmail(form.email)) {
+    count += 1;
+  }
+  if (hasCompletePhone(form.phone)) {
+    count += 1;
+  }
+  if (hasSecretQuestions(form.passwordRecoveryJson)) {
+    count += 1;
   }
 
-  return [
-    {
-      label: 'home',
-      line1: null,
-      line2: null,
-      city: city.trim() || null,
-      state_or_province: state.trim() || null,
-      postal_code: null,
-      country_code: country.trim() || null,
-    },
-  ];
+  return count;
+}
+
+function isRegisterFormComplete(form: RegisterForm): boolean {
+  if (!form.username.trim() || !form.firstName.trim() || !form.lastName.trim()) {
+    return false;
+  }
+
+  if (form.password.length < 8 || form.password !== form.confirmPassword) {
+    return false;
+  }
+
+  return countRecoveryMethods(form) >= 2;
 }
 
 export default function RegisterPage() {
@@ -148,89 +115,21 @@ export default function RegisterPage() {
   const [form, setForm] = useState<RegisterForm>(initialForm);
   const [recoveryOpen, setRecoveryOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [assignedQuestionIds, setAssignedQuestionIds] = useState<number[]>([]);
-  const [countries, setCountries] = useState<StaticListEntry[]>([]);
-  const [states, setStates] = useState<StaticListEntry[]>([]);
-  const [loadingCountries, setLoadingCountries] = useState(true);
-  const [loadingStates, setLoadingStates] = useState(true);
+
+  const canCreateAccount = useMemo(() => isRegisterFormComplete(form), [form]);
 
   useEffect(() => {
     clearMessages();
   }, [clearMessages]);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    Promise.all([fetchCountries(), fetchUsStatesStaticList()])
-      .then(([countryItems, stateItems]) => {
-        if (cancelled) {
-          return;
-        }
-        setCountries(countryItems);
-        setStates(stateItems);
-      })
-      .catch((error) => {
-        if (!cancelled) {
-          showProblem(
-            error instanceof Error ? error.message : 'Unable to load countries or states.',
-          );
-        }
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setLoadingCountries(false);
-          setLoadingStates(false);
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    fetchSecretQuestions()
-      .then((items) => {
-        if (cancelled || items.length < 3) {
-          return;
-        }
-
-        setAssignedQuestionIds(pickRandomQuestionIds(items, 3));
-      })
-      .catch(() => {
-        // Dialog surfaces load errors when opened.
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   const updateField =
     (field: keyof RegisterForm) => (event: ChangeEvent<HTMLInputElement>) => {
       setForm((current) => ({ ...current, [field]: event.target.value }));
     };
 
-  const updatePhoneField =
-    (field: 'phoneArea' | 'phonePrefix' | 'phoneLine', maxLength: number) =>
-    (event: ChangeEvent<HTMLInputElement>) => {
-      setForm((current) => ({
-        ...current,
-        [field]: digitsOnly(event.target.value, maxLength),
-      }));
-    };
-
-  const pastePhoneField =
-    (field: 'phoneArea' | 'phonePrefix' | 'phoneLine', maxLength: number) =>
-    (event: ClipboardEvent<HTMLInputElement>) => {
-      event.preventDefault();
-      setForm((current) => ({
-        ...current,
-        [field]: digitsOnly(event.clipboardData.getData('text'), maxLength),
-      }));
-    };
+  const updatePhone = (phone: string) => {
+    setForm((current) => ({ ...current, phone }));
+  };
 
   const handleSavePasswordRecovery = async (answers: PasswordRecoveryAnswer[]) => {
     if (
@@ -262,8 +161,8 @@ export default function RegisterPage() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!form.username.trim() || !form.email.trim() || !form.password.trim()) {
-      showProblem('Username, email, and password are required.');
+    if (!form.username.trim()) {
+      showProblem('Username is required.');
       return;
     }
 
@@ -282,8 +181,8 @@ export default function RegisterPage() {
       return;
     }
 
-    if (!form.passwordRecoveryJson) {
-      showProblem('Set up three password recovery secret questions before creating your account.');
+    if (countRecoveryMethods(form) < 2) {
+      showProblem(RECOVERY_HELP_MESSAGE);
       return;
     }
 
@@ -291,15 +190,11 @@ export default function RegisterPage() {
     try {
       const result = await registerUser({
         username: form.username.trim(),
-        email: form.email.trim(),
+        email: hasEmail(form.email) ? form.email.trim() : undefined,
         password: form.password,
         nameJson: buildNameJson(form.firstName, form.lastName),
-        phoneNumbersJson: buildPhoneNumbersJson(
-          form.phoneArea,
-          form.phonePrefix,
-          form.phoneLine,
-        ),
-        addressesJson: buildAddressesJson(form.city, form.state, form.country),
+        phoneNumbersJson: buildPhoneNumbersJson(form.phone),
+        addressesJson: [],
         passwordRecoveryJson: form.passwordRecoveryJson,
       });
 
@@ -317,8 +212,13 @@ export default function RegisterPage() {
     }
   };
 
-  const savedQuestionIds =
-    form.passwordRecoveryJson?.questions.map((question) => question.secret_question_id) ?? [];
+  const savedQuestionIds = useMemo(
+    () =>
+      form.passwordRecoveryJson?.questions.map(
+        (question) => question.secret_question_id,
+      ) ?? SAVED_QUESTION_IDS_EMPTY,
+    [form.passwordRecoveryJson],
+  );
 
   return (
     <Container maxWidth="sm" sx={{ py: 6 }}>
@@ -327,7 +227,7 @@ export default function RegisterPage() {
           Register
         </Typography>
         <Typography variant="body1" color="text.secondary" align="center" sx={{ mb: 3 }}>
-          Create your account with contact information.
+          Provide at least two recovery options: email, phone, or secret questions.
         </Typography>
 
         <Box component="form" onSubmit={(event) => void handleSubmit(event)} noValidate>
@@ -382,87 +282,18 @@ export default function RegisterPage() {
               required
               autoComplete="family-name"
             />
-            <AppTextField
-              label="City"
-              value={form.city}
-              onChange={updateField('city')}
-              fullWidth
-              autoComplete="address-level2"
-            />
-            <AppTextField
-              select
-              label="State"
-              value={form.state}
-              onChange={updateField('state')}
-              fullWidth
-              disabled={loadingStates}
-              autoComplete="address-level1"
-            >
-              <MenuItem value="">
-                <em>Select a state</em>
-              </MenuItem>
-              {states.map((state) => (
-                <MenuItem key={state.key} value={state.key}>
-                  {state.label}
-                </MenuItem>
-              ))}
-            </AppTextField>
-            <AppTextField
-              select
-              label="Country"
-              value={form.country}
-              onChange={updateField('country')}
-              fullWidth
-              disabled={loadingCountries}
-              autoComplete="country-name"
-            >
-              <MenuItem value="">
-                <em>Select a country</em>
-              </MenuItem>
-              <MenuItem value="UNL">Unlisted</MenuItem>
-              {countries.map((country) => (
-                <MenuItem key={country.key} value={country.key}>
-                  {country.label}
-                </MenuItem>
-              ))}
-            </AppTextField>
 
-            <Typography variant="subtitle2" color="text.secondary">
-              Phone (US)
-            </Typography>
-            <Stack direction="row" spacing={1} sx={{ width: '100%' }}>
-              <AppTextField
-                placeholder="Area"
-                value={form.phoneArea}
-                onChange={updatePhoneField('phoneArea', 3)}
-                onPaste={pastePhoneField('phoneArea', 3)}
-                slotProps={phoneInputSlotProps(3)}
-                fullWidth
-                autoComplete="tel-area-code"
-              />
-              <AppTextField
-                placeholder="Middle part"
-                value={form.phonePrefix}
-                onChange={updatePhoneField('phonePrefix', 3)}
-                onPaste={pastePhoneField('phonePrefix', 3)}
-                slotProps={phoneInputSlotProps(3)}
-                fullWidth
-              />
-              <AppTextField
-                placeholder="Last part"
-                value={form.phoneLine}
-                onChange={updatePhoneField('phoneLine', 4)}
-                onPaste={pastePhoneField('phoneLine', 4)}
-                slotProps={phoneInputSlotProps(4)}
-                fullWidth
-              />
-            </Stack>
+            <AppPhoneNumberField
+              label="Phone"
+              value={form.phone}
+              onChange={(phone) => updatePhone(phone)}
+              autoComplete="tel"
+            />
 
             <Button
               variant="outlined"
               size="large"
               fullWidth
-              disabled={assignedQuestionIds.length < 3 && savedQuestionIds.length < 3}
               onClick={() => setRecoveryOpen(true)}
             >
               Password Recovery
@@ -479,7 +310,7 @@ export default function RegisterPage() {
                 variant="contained"
                 size="large"
                 fullWidth
-                disabled={submitting}
+                disabled={submitting || !canCreateAccount}
               >
                 {submitting ? 'Creating Account…' : 'Create Account'}
               </Button>
@@ -494,7 +325,6 @@ export default function RegisterPage() {
       <PasswordRecoveryDialog
         open={recoveryOpen}
         initialQuestionIds={savedQuestionIds}
-        assignedQuestionIds={assignedQuestionIds}
         onClose={() => setRecoveryOpen(false)}
         onSave={handleSavePasswordRecovery}
       />

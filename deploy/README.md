@@ -28,7 +28,7 @@ docker compose -f deploy/docker-compose.yml --env-file deploy/.env up --build
 |-----------|---------|
 | http://localhost:8025 | Mailpit (dev email inbox) |
 
-First boot runs `deploy/scripts/migrate.sh`: baseline schema + migrations tracked in `public.schema_migrations`. Migrations `005`, `006`, `007`, and `015` are skipped on fresh installs because the current baseline already includes those changes.
+First boot runs `deploy/scripts/migrate.sh`: baseline schema + reference static lists + migrations tracked in `public.schema_migrations`. Migrations listed in `database/superseded-by-baseline.manifest` are skipped on fresh installs because the baseline bundle already includes those changes. See `database/BASELINE-REBASELINE-CHECKLIST.md`.
 
 Re-running `docker compose up` skips already-applied SQL files.
 

@@ -1,0 +1,43 @@
+---
+description: Canonical readable timestamp format when saving to the database
+globs: database/**/*
+alwaysApply: false
+---
+
+# Database timestamp format
+
+When persisting **human-readable** timestamps (text / JSON fields, audit payloads, activity strings), use the project standard format:
+
+**Example:** `Jul 3, 2026, 2:56:58 PM CDT`
+
+- Abbreviated month, day, year, comma, 12-hour time with seconds, AM/PM, and timezone abbreviation
+- **No milliseconds**
+- **No ISO-8601** (`2026-07-03T14:56:58.123-05:00`) in stored user-facing fields
+
+## PostgreSQL
+
+Use `api.format_activity_timestamp(date_trunc('second', p_ts))` — do not hand-roll `to_char` patterns.
+
+```sql
+-- TIMESTAMPTZ column (normal row audit / ORM-style)
+modified_date := date_trunc('second', CURRENT_TIMESTAMP);
+
+-- Text or JSON value shown to users
+additional_info_json := jsonb_set(
+  COALESCE(additional_info_json, '{}'::jsonb),
+  '{last-activity}',
+  to_jsonb(api.format_activity_timestamp(date_trunc('second', v_now)))
+);
+```
+
+Parse stored values with `api.parse_activity_timestamp(text)` (supports ISO, new format, and legacy `... at ...` strings).
+
+## Frontend
+
+When writing readable timestamp strings to the API or formatting audit/activity display, use `formatReadableDateTime()` from `front-ends/front-end-cursor/src/utils/auditTimestamps.ts` — same visual format as the SQL helper.
+
+## Do not
+
+- Store raw `NOW()` / `CURRENT_TIMESTAMP` cast to text in JSON
+- Use `toLocaleString()` ad hoc with different options
+- Include fractional seconds in saved values

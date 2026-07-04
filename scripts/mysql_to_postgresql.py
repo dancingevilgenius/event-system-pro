@@ -11,7 +11,7 @@ TABLE_RENAMES = {
 }
 
 TABLE_ORDER = [
-    "competitor_type_lu", "country_lu", "us_state_lu", "secret_question_lu",
+    "competitor_type_lu", "secret_question_lu",
     "skill_level_lu", "event_type_lu", "fight_event_group", "fight_event",
     "club", "user", "contact", "image", "system_config", "contest",
     "competitor", "contest_heat", "event_staff_pool", "user_preference",
@@ -211,8 +211,6 @@ DROP TABLE IF EXISTS event_group CASCADE;
 DROP TABLE IF EXISTS event_type_lu CASCADE;
 DROP TABLE IF EXISTS skill_level_lu CASCADE;
 DROP TABLE IF EXISTS secret_question_lu CASCADE;
-DROP TABLE IF EXISTS us_state_lu CASCADE;
-DROP TABLE IF EXISTS country_lu CASCADE;
 DROP TABLE IF EXISTS competitor_type_lu CASCADE;
 
 """
@@ -228,7 +226,7 @@ for table in TABLE_ORDER:
         parts.extend(inserts[table])
 
 parts.append("\n-- Align identity sequences with seeded primary keys\n")
-for table, col in [("country_lu","country_id"),("us_state_lu","id"),("secret_question_lu","secret_question_id"),("fight_event","event_id")]:
+for table, col in [("secret_question_lu","secret_question_id"),("fight_event","event_id")]:
     pg_table = pg_table_name(table)
     parts.append(
         f"SELECT setval(pg_get_serial_sequence('{pg_table}', '{col}'), COALESCE((SELECT MAX({col}) FROM {quote_pg_identifier(pg_table)}), 1));"

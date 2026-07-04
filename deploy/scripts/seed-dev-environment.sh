@@ -54,16 +54,6 @@ apply_seed_file() {
     return 0
   fi
 
-  if [ "$seed" = "002_event_type_lu_seed.sql" ]; then
-    has_types="$(psql -h "$PGHOST" -U "$PGUSER" -d "$PGDATABASE" -tAc \
-      "SELECT count(*) FROM public.event_type_lu")"
-    if [ "${has_types:-0}" -gt 0 ]; then
-      echo "Skip seed (event_type_lu already populated): ${seed}"
-      record_seed "$seed"
-      return 0
-    fi
-  fi
-
   echo "Applying seed: ${seed}"
   psql_cmd -f "$file"
   record_seed "$seed"

@@ -22,7 +22,10 @@ export default function LoginPage() {
   const { showProblem, showSuccess } = useMessages();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
+
+  const passwordInputType = showPassword ? 'text' : 'password';
 
   const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -79,13 +82,21 @@ export default function LoginPage() {
             />
             <AppTextField
               label="Password"
-              type="password"
+              type={passwordInputType}
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               fullWidth
               autoComplete="current-password"
               required
             />
+            <Button
+              type="button"
+              variant="outlined"
+              fullWidth
+              onClick={() => setShowPassword((visible) => !visible)}
+            >
+              {showPassword ? 'Hide password' : 'Show password'}
+            </Button>
             <Stack spacing={2} sx={centeredContentStackSx}>
               <Button
                 type="submit"
@@ -117,6 +128,9 @@ export default function LoginPage() {
             onClick={() => navigate('/register')}
           >
             Register
+          </Button>
+          <Button variant="text" fullWidth onClick={() => navigate('/home-page')}>
+            Back to Home
           </Button>
         </Stack>
       </Paper>

@@ -14,8 +14,10 @@ import {
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchDemoEventGroupsWithAttendees, type EventGroupListRow } from '../api/postgrest';
+import { fetchEventGroups, type EventGroupListRow } from '../api/postgrest';
+import AddEventGroupDialog from '../components/AddEventGroupDialog';
 import { EVENT_HOME_PATH, eventGroupDetailPath } from '../constants/eventRoutes';
+import { useMessages } from '../hooks/useMessages';
 
 function displayValue(value: string): string {
   return value.trim() === '' ? '—' : value;
@@ -23,16 +25,18 @@ function displayValue(value: string): string {
 
 export default function AdminEventsPage() {
   const navigate = useNavigate();
+  const { showSuccess } = useMessages();
   const [rows, setRows] = useState<EventGroupListRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
 
   const loadEventGroups = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const eventGroups = await fetchDemoEventGroupsWithAttendees();
+      const eventGroups = await fetchEventGroups();
       setRows(eventGroups);
     } catch (loadError) {
       setRows([]);
@@ -53,8 +57,14 @@ export default function AdminEventsPage() {
           Event Groups
         </Typography>
         <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 2 }}>
-          Demo event groups with attendees ({rows.length})
+          Event groups ({rows.length})
         </Typography>
+
+        <Stack direction="row" sx={{ mb: 2, justifyContent: 'center' }}>
+          <Button variant="contained" onClick={() => setAddDialogOpen(true)}>
+            Add Event Group
+          </Button>
+        </Stack>
 
         {loading && (
           <Stack sx={{ py: 6, alignItems: 'center' }}>
@@ -70,7 +80,7 @@ export default function AdminEventsPage() {
 
         {!loading && !error && (
           <TableContainer sx={{ overflowX: 'auto' }}>
-            <Table size="small" aria-label="Demo event groups table">
+            <Table size="small" aria-label="Event groups table">
               <TableHead>
                 <TableRow>
                   <TableCell>Event Group Code</TableCell>
@@ -82,7 +92,7 @@ export default function AdminEventsPage() {
                 {rows.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={3} align="center">
-                      No demo event groups with attendees found. Try Generate Attendees on Admin home.
+                      No event groups found.
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -115,6 +125,15 @@ export default function AdminEventsPage() {
           </Button>
         </Stack>
       </Paper>
+
+      <AddEventGroupDialog
+        open={addDialogOpen}
+        onClose={() => setAddDialogOpen(false)}
+        onCreated={() => {
+          showSuccess('Event group created.');
+          void loadEventGroups();
+        }}
+      />
     </Container>
   );
 }

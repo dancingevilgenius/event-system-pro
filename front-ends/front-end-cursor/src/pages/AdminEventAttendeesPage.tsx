@@ -13,6 +13,7 @@ import {
   fetchEventGroupByCode,
   type EventAttendeeListRow,
 } from '../api/postgrest';
+import AddEventButton from '../components/AddEventButton';
 import { useIsMobileDevice } from '../hooks/useIsMobileDevice';
 import { eventDetailPath } from '../constants/eventRoutes';
 import { formatEventMonthYear } from '../lib/eventDisplay';
@@ -439,6 +440,7 @@ export default function AdminEventAttendeesPage() {
         )}
 
         <Stack spacing={2} sx={{ mt: 3, alignItems: 'center' }}>
+          {decodedGroupCode && <AddEventButton eventGroupCode={decodedGroupCode} fullWidth={false} />}
           <Button variant="outlined" onClick={() => navigate(eventBasePath)} sx={{ minWidth: 200 }}>
             Back to Event
           </Button>

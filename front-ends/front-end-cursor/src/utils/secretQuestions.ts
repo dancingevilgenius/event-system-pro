@@ -1,4 +1,16 @@
-import type { SecretQuestion } from '../api/postgrest';
+import type { SecretQuestion, StaticListEntry } from '../api/postgrest';
+
+export function secretQuestionsFromStaticListEntries(
+  entries: StaticListEntry[],
+): SecretQuestion[] {
+  return [...entries]
+    .sort((a, b) => Number.parseInt(a.key, 10) - Number.parseInt(b.key, 10))
+    .map((entry) => ({
+      secret_question_id: Number.parseInt(entry.key, 10),
+      question: entry.label,
+      created_date: '',
+    }));
+}
 
 export function pickRandomQuestionIds(
   questions: SecretQuestion[],

@@ -1,7 +1,6 @@
--- Add event_code (varchar 64, unique) as the new primary key on public."event".
--- event_code = event_group_code + YYYY + MMM from start_date (UTC).
--- event_id remains a surrogate identity column with a unique constraint for existing FKs.
--- Run: psql -U postgres -d event_system_pro -f database/migrations/072_event_code_primary_key.sql
+-- Refactor all event_code values to event_group_code + YYYY + MMM from start_date.
+-- Safe to run after 072 when rows already use the previous name-based codes.
+-- Run: psql -U postgres -d event_system_pro -f database/migrations/073_refactor_event_code_from_start_date.sql
 
 \connect event_system_pro
 
@@ -24,9 +23,6 @@ AS $$
 $$;
 
 DROP VIEW IF EXISTS api.event;
-
-ALTER TABLE public."event"
-  ADD COLUMN IF NOT EXISTS event_code varchar(64);
 
 UPDATE public."event"
 SET event_code = 'TMP_' || event_id::text;
@@ -54,28 +50,6 @@ SET event_code = left(
 )
 FROM numbered AS n
 WHERE e.event_id = n.event_id;
-
-ALTER TABLE public."event"
-  ALTER COLUMN event_code SET NOT NULL;
-
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1
-    FROM pg_constraint
-    WHERE conname = 'event_event_id_unique'
-      AND conrelid = 'public.event'::regclass
-  ) THEN
-    ALTER TABLE public."event"
-      ADD CONSTRAINT event_event_id_unique UNIQUE (event_id);
-  END IF;
-END $$;
-
-ALTER TABLE public."event"
-  DROP CONSTRAINT IF EXISTS event_pkey;
-
-ALTER TABLE public."event"
-  ADD CONSTRAINT event_pkey PRIMARY KEY (event_code);
 
 CREATE OR REPLACE FUNCTION public.event_assign_event_code()
 RETURNS trigger

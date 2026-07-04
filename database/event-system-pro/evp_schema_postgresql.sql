@@ -146,33 +146,18 @@ CONSTRAINT fk_event_event_group FOREIGN KEY (event_group_code) REFERENCES event_
 
 CREATE OR REPLACE FUNCTION public.derive_event_code(
   p_event_group_code text,
-  p_name text
+  p_start_date timestamptz
 )
 RETURNS varchar(64)
 LANGUAGE sql
 IMMUTABLE
 AS $$
   SELECT left(
-    upper(
-      regexp_replace(
-        regexp_replace(
-          trim(both '_' from regexp_replace(
-            trim(coalesce(nullif(p_event_group_code, ''), 'EVENT'))
-            || '_'
-            || trim(coalesce(nullif(p_name, ''), 'UNNAMED')),
-            '[^A-Za-z0-9]+',
-            '_',
-            'g'
-          )),
-          '_+',
-          '_',
-          'g'
-        ),
-        '^_+|_+$',
-        '',
-        'g'
-      )
-    ),
+    upper(btrim(coalesce(nullif(p_event_group_code, ''), 'EVENT')))
+    || '_'
+    || coalesce(to_char(timezone('UTC', p_start_date), 'YYYY'), '0000')
+    || '_'
+    || coalesce(upper(to_char(timezone('UTC', p_start_date), 'Mon')), 'UNK'),
     64
   );
 $$;
@@ -189,7 +174,7 @@ BEGIN
     RETURN NEW;
   END IF;
 
-  v_base_code := public.derive_event_code(NEW.event_group_code, NEW.name);
+  v_base_code := public.derive_event_code(NEW.event_group_code, NEW.start_date);
 
   IF NEW.event_id IS NOT NULL THEN
     NEW.event_code := left(v_base_code, 64);
@@ -210,7 +195,7 @@ END;
 $$;
 
 CREATE TRIGGER trg_event_assign_event_code
-  BEFORE INSERT OR UPDATE OF event_group_code, name, event_code
+  BEFORE INSERT OR UPDATE OF event_group_code, start_date, event_code
   ON public."event"
   FOR EACH ROW
   EXECUTE FUNCTION public.event_assign_event_code();

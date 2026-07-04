@@ -1,4 +1,5 @@
 import { loadSession, type AppRole } from '../lib/session';
+import { parseEventMerchandiseJson, type EventMerchandiseJson } from '../lib/eventMerchandise';
 import {
   NOT_APPLICABLE_INT,
   COUNTRIES_LIST_CODE,
@@ -600,9 +601,13 @@ type ApiEventGroupRecord = {
   full_name: string;
 };
 
-async function fetchJson<T>(url: string, errorMessage: string): Promise<T> {
+async function fetchJson<T>(
+  url: string,
+  errorMessage: string,
+  auth: RequestAuthMode = 'include',
+): Promise<T> {
   const response = await fetch(url, {
-    headers: buildAuthHeaders(),
+    headers: buildAuthHeaders(undefined, auth),
   });
 
   if (!response.ok) {
@@ -1358,4 +1363,82 @@ export function registerUser(params: {
     },
     'omit',
   );
+}
+
+type ApiEventMerchandiseRecord = {
+  event_code: string;
+  merchandise_json: unknown;
+  next_receipt_seq: number;
+};
+
+export type EventMerchandiseDetail = {
+  eventCode: string;
+  merchandise: EventMerchandiseJson;
+  nextReceiptSeq: number;
+};
+
+export async function fetchEventMerchandiseByCode(
+  eventCode: string,
+  auth: RequestAuthMode = 'include',
+): Promise<EventMerchandiseDetail | null> {
+  const params = new URLSearchParams({
+    select: 'event_code,merchandise_json,next_receipt_seq',
+  });
+  params.append('event_code', `eq.${eventCode}`);
+
+  const rows = await fetchJson<ApiEventMerchandiseRecord[]>(
+    `${POSTGREST_URL}/event_merchandise?${params.toString()}`,
+    'Unable to load event merchandise',
+    auth,
+  );
+
+  const row = rows[0];
+  if (!row) {
+    return null;
+  }
+
+  return {
+    eventCode: row.event_code,
+    merchandise: parseEventMerchandiseJson(row.merchandise_json),
+    nextReceiptSeq: row.next_receipt_seq,
+  };
+}
+
+type ApiEventByCodeRecord = {
+  event_code: string;
+  name: string;
+  location_json: string | null;
+};
+
+export type EventPosContext = {
+  eventCode: string;
+  name: string;
+  locationLabel: string | null;
+};
+
+export async function fetchEventPosContextByCode(
+  eventCode: string,
+  auth: RequestAuthMode = 'include',
+): Promise<EventPosContext | null> {
+  const params = new URLSearchParams({
+    select: 'event_code,name,location_json',
+  });
+  params.append('event_code', `eq.${eventCode}`);
+
+  const rows = await fetchJson<ApiEventByCodeRecord[]>(
+    `${POSTGREST_URL}/event?${params.toString()}`,
+    'Unable to load event',
+    auth,
+  );
+
+  const row = rows[0];
+  if (!row) {
+    return null;
+  }
+
+  return {
+    eventCode: row.event_code,
+    name: row.name,
+    locationLabel: row.location_json,
+  };
 }

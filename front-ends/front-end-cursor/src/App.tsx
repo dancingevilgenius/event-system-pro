@@ -22,6 +22,7 @@ import EventHomePage from './pages/EventHomePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import PublicHomePage from './pages/PublicHomePage';
 import DemoPage from './pages/DemoPage';
+import EventMerchandisePosDemoPage from './pages/EventMerchandisePosDemoPage';
 import GoverningBodyPage from './pages/GoverningBodyPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -45,6 +46,7 @@ export default function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route path="/demo" element={<DemoPage />} />
+      <Route path="/event-merchandise-pos-demo" element={<EventMerchandisePosDemoPage />} />
       <Route path="/tournament-bracket-demo" element={<TournamentBracketDemoPage />} />
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route

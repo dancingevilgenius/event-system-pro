@@ -54,8 +54,9 @@ Existing DBs already recorded these migrations; edited files apply only on fresh
 
 ### 5. Keep tooling in sync
 
-- [ ] `deploy/scripts/migrate.sh` reads `database/superseded-by-baseline.manifest`
+- [ ] `deploy/scripts/migrate.sh` reads `database/superseded-by-baseline.manifest` (strips `\r` from patterns for CRLF-safe matching on Linux)
 - [ ] `scripts/rebuild-local-database.ps1` reads the same manifest
+- [ ] Manifest and SQL use **LF** line endings (see root `.gitattributes`)
 - [ ] Update verification queries in rebuild script (check `static_list`, not dropped `_lu` tables)
 - [ ] Update `deploy/README.md` and `docs/cursor/application-rules.md` if the workflow changed
 

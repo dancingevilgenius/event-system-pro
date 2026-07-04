@@ -1,1 +1,3 @@
 *.sh text eol=lf
+database/superseded-by-baseline.manifest text eol=lf
+database/**/*.sql text eol=lf

@@ -3,6 +3,10 @@
 
 \connect event_system_pro
 
+-- Drop the old 7-role check before renaming (floorparent is not in migration 018).
+ALTER TABLE public.user_app_role
+  DROP CONSTRAINT IF EXISTS user_app_role_role_code_check;
+
 DELETE FROM public.user_app_role old
 WHERE old.role_code = 'floorcoordinator'
   AND EXISTS (
@@ -20,9 +24,6 @@ UPDATE public."user"
 SET volunteer_json = replace(volunteer_json::text, 'floorcoordinator', 'floorparent')::json
 WHERE volunteer_json IS NOT NULL
   AND volunteer_json::text LIKE '%floorcoordinator%';
-
-ALTER TABLE public.user_app_role
-  DROP CONSTRAINT IF EXISTS user_app_role_role_code_check;
 
 ALTER TABLE public.user_app_role
   ADD CONSTRAINT user_app_role_role_code_check

@@ -52,7 +52,7 @@ function Test-MigrationSupersededByBaseline {
     }
 
     $patterns = Get-Content $manifestPath | ForEach-Object {
-        ($_ -replace '#.*', '').Trim()
+        ($_ -replace '#.*', '').Trim().Trim("`r")
     } | Where-Object { $_ -ne '' }
 
     foreach ($pattern in $patterns) {

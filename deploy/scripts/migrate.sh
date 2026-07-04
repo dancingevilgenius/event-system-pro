@@ -111,10 +111,11 @@ skip_superseded_by_baseline() {
     esac
   fi
   while IFS= read -r pattern || [ -n "$pattern" ]; do
+    pattern=$(printf '%s' "$pattern" | tr -d '\r')
     case "$pattern" in
       ''|\#*) continue ;;
     esac
-    if echo "$base" | grep -Eq "$pattern"; then
+    if printf '%s' "$base" | grep -Eq "$pattern"; then
       return 0
     fi
   done < "$manifest"

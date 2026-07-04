@@ -1,24 +1,34 @@
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Button,
   Container,
   Paper,
   Stack,
   Typography,
 } from '@mui/material';
-import { type SyntheticEvent, useEffect, useState } from 'react';
+import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { type SyntheticEvent, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { fetchEventGroupByCode } from '../api/postgrest';
 import AddEventDatesSection from '../components/AddEventDatesSection';
 import AddEventLocationSection from '../components/AddEventLocationSection';
 import AddEventOnlineLinksSection from '../components/AddEventOnlineLinksSection';
 import AddEventScheduleSection from '../components/AddEventScheduleSection';
-import AddEventSectionStatusIcon from '../components/AddEventSectionStatusIcon';
-import AddEventSectionStatusToggle, {
-  type AddEventSectionStatus,
-} from '../components/AddEventSectionStatusToggle';
+import AddEventSortableSectionAccordion from '../components/AddEventSortableSectionAccordion';
+import { type AddEventSectionStatus } from '../components/AddEventSectionStatusToggle';
 import { centeredContentStackSx } from '../constants/layout';
 import { EVENT_GROUPS_PATH, eventGroupDetailPath } from '../constants/eventRoutes';
 import {
@@ -37,6 +47,7 @@ type AddEventSectionId =
   | 'dates'
   | 'location'
   | 'online_links'
+  | 'important_contacts'
   | 'contests'
   | 'schedule'
   | 'staff'
@@ -61,6 +72,11 @@ const ADD_EVENT_SECTIONS: AddEventSection[] = [
     description: '',
   },
   {
+    id: 'important_contacts',
+    title: 'Important Contacts',
+    description: 'Key event contacts and roles will be configured here.',
+  },
+  {
     id: 'contests',
     title: 'Contests',
     description: 'Contest divisions, skill levels, and contest names will be configured here.',
@@ -82,17 +98,11 @@ const ADD_EVENT_SECTIONS: AddEventSection[] = [
   },
 ];
 
-const accordionSummarySx = {
-  px: 2,
-  minHeight: 48,
-  '& .MuiAccordionSummary-content': {
-    my: 1,
-    display: 'flex',
-    alignItems: 'center',
-    gap: 1,
-    minWidth: 0,
-  },
-} as const;
+const DEFAULT_SECTION_ORDER = ADD_EVENT_SECTIONS.map((section) => section.id);
+
+const ADD_EVENT_SECTIONS_BY_ID = Object.fromEntries(
+  ADD_EVENT_SECTIONS.map((section) => [section.id, section]),
+) as Record<AddEventSectionId, AddEventSection>;
 
 const DEFAULT_SECTION_STATUS: AddEventSectionStatus = 'not_started';
 
@@ -101,6 +111,7 @@ function createInitialSectionStatuses(): Record<AddEventSectionId, AddEventSecti
     dates: DEFAULT_SECTION_STATUS,
     location: DEFAULT_SECTION_STATUS,
     online_links: DEFAULT_SECTION_STATUS,
+    important_contacts: DEFAULT_SECTION_STATUS,
     contests: DEFAULT_SECTION_STATUS,
     schedule: DEFAULT_SECTION_STATUS,
     staff: DEFAULT_SECTION_STATUS,
@@ -162,7 +173,18 @@ export default function AdminAddEventPage() {
   const [eventGroupName, setEventGroupName] = useState('');
   const [expandedSection, setExpandedSection] = useState<AddEventSectionId | false>('dates');
   const [sectionStatuses, setSectionStatuses] = useState(createInitialSectionStatuses);
+  const [sectionOrder, setSectionOrder] = useState<AddEventSectionId[]>(DEFAULT_SECTION_ORDER);
   const [eventDates, setEventDates] = useState<EventDatesFormState>(EMPTY_EVENT_DATES);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  const orderedSections = useMemo(
+    () => sectionOrder.map((sectionId) => ADD_EVENT_SECTIONS_BY_ID[sectionId]),
+    [sectionOrder],
+  );
 
   const scheduleDatesSelected = hasEventDatesForSchedule(eventDates);
 
@@ -223,6 +245,19 @@ export default function AdminAddEventPage() {
       setExpandedSection(isExpanded ? sectionId : false);
     };
 
+  const handleSectionDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    setSectionOrder((current) => {
+      const oldIndex = current.indexOf(active.id as AddEventSectionId);
+      const newIndex = current.indexOf(over.id as AddEventSectionId);
+      return arrayMove(current, oldIndex, newIndex);
+    });
+  };
+
   return (
     <Container maxWidth="md" sx={{ py: 6 }}>
       <Paper elevation={3} sx={{ p: { xs: 2, sm: 4 } }}>
@@ -236,64 +271,44 @@ export default function AdminAddEventPage() {
         )}
 
         <Stack spacing={1.5} sx={{ mb: 3, width: '100%' }}>
-          {ADD_EVENT_SECTIONS.map((section) => {
-            const sectionContent = renderSectionContent(
-              section.id,
-              () => handleSectionFieldEdit(section.id),
-              eventDates,
-              setEventDates,
-            );
-            const sectionStatus = sectionStatuses[section.id];
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleSectionDragEnd}
+          >
+            <SortableContext items={sectionOrder} strategy={verticalListSortingStrategy}>
+              <Stack spacing={1.5}>
+                {orderedSections.map((section) => {
+                  const sectionContent = renderSectionContent(
+                    section.id,
+                    () => handleSectionFieldEdit(section.id),
+                    eventDates,
+                    setEventDates,
+                  );
+                  const sectionStatus = sectionStatuses[section.id];
 
-            return (
-              <Accordion
-                key={section.id}
-                expanded={expandedSection === section.id}
-                onChange={handleAccordionChange(section.id)}
-                disableGutters
-                elevation={0}
-                variant="outlined"
-                sx={{ width: '100%', overflow: 'hidden' }}
-              >
-                <AccordionSummary
-                  aria-controls={`${section.id}-content`}
-                  id={`${section.id}-header`}
-                  sx={accordionSummarySx}
-                >
-                  <Typography
-                    variant="subtitle1"
-                    component="span"
-                    sx={{ fontWeight: 600, minWidth: 0 }}
-                  >
-                    {section.title}
-                  </Typography>
-                  <AddEventSectionStatusIcon
-                    status={sectionStatus}
-                    sectionTitle={section.title}
-                  />
-                </AccordionSummary>
-                <AccordionDetails sx={{ px: 2, pb: 2, pt: 0 }}>
-                  <Stack spacing={2}>
-                    {sectionContent ?? (
-                      <Typography variant="body2" color="text.secondary">
-                        {section.description}
-                      </Typography>
-                    )}
-                    <AddEventSectionStatusToggle
-                      value={sectionStatuses[section.id]}
-                      onChange={handleSectionStatusChange(section.id)}
+                  return (
+                    <AddEventSortableSectionAccordion
+                      key={section.id}
+                      sectionId={section.id}
+                      sectionTitle={section.title}
+                      sectionDescription={section.description}
+                      expanded={expandedSection === section.id}
+                      onAccordionChange={handleAccordionChange(section.id)}
+                      sectionContent={sectionContent}
+                      sectionStatus={sectionStatus}
+                      onStatusChange={handleSectionStatusChange(section.id)}
                       disabledStatuses={
                         section.id === 'schedule' && !scheduleDatesSelected
                           ? ['in_progress', 'finalized']
                           : undefined
                       }
-                      aria-label={`${section.title} status`}
                     />
-                  </Stack>
-                </AccordionDetails>
-              </Accordion>
-            );
-          })}
+                  );
+                })}
+              </Stack>
+            </SortableContext>
+          </DndContext>
         </Stack>
 
         <Stack spacing={2} sx={centeredContentStackSx}>

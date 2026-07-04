@@ -39,6 +39,11 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 | Duplicate score dialog | `front-ends/front-end-cursor/src/components/DuplicateScoreDialog.tsx` |
 | Progress bar | `front-ends/front-end-cursor/src/components/PercentCompleteBar.tsx` |
 | Layout constants | `front-ends/front-end-cursor/src/constants/layout.ts` |
+| Event admin routes | `front-ends/front-end-cursor/src/constants/eventRoutes.ts` |
+| Add Event page | `front-ends/front-end-cursor/src/pages/AdminAddEventPage.tsx` |
+| Add Event sections | `front-ends/front-end-cursor/src/components/AddEvent*Section.tsx`, `AddEventSortableSectionAccordion.tsx` |
+| Add Event shared helpers | `front-ends/front-end-cursor/src/lib/eventDates.ts`, `eventGroupSession.ts`, `eventLocation.ts` |
+| Drag handle icon | `front-ends/front-end-cursor/src/components/DragHandleIcon.tsx` |
 | Message stack UI | `front-ends/front-end-cursor/src/components/MessageStack.tsx` |
 | Message provider / API | `front-ends/front-end-cursor/src/context/MessageProvider.tsx` |
 | `useMessages` hook | `front-ends/front-end-cursor/src/hooks/useMessages.ts` |
@@ -797,6 +802,90 @@ Most pages use the same centered card pattern:
 
 ---
 
+## Multi-section admin form pages (Add Event pattern)
+
+Reference implementation: **`/create-event`** (`AdminAddEventPage.tsx`). Use this pattern when a long admin workflow should be split into accordion panels with per-section progress.
+
+### Page shell
+
+- Same centered card as other admin pages: **`Container maxWidth="md"`**, **`Paper elevation={3}`**, `py: 6`, responsive paper padding `{ xs: 2, sm: 4 }`.
+- Page title: centered **`Typography variant="h4"`** (e.g. **Add Event for {event_group_code}** when a group is known).
+- Optional subtitle line under the title (e.g. event group **full name** from PostgREST).
+- Bottom navigation: one **Back** outlined button in **`centeredContentStackSx`** (360px column).
+
+### Accordion sections
+
+- Each logical block is an outlined MUI **`Accordion`** (`disableGutters`, `elevation={0}`, full width).
+- **Only one** top-level accordion may be expanded at a time (`expandedSection` state).
+- Section metadata is a stable **`id`**, **`title`**, and optional **`description`** (shown when the section has no custom content yet).
+- Field UI belongs in dedicated **`AddEvent*Section.tsx`** components (or the equivalent prefix for another page). The page component owns **cross-section shared state** (e.g. event dates consumed by Schedule).
+- Sections are **reorderable** via **`@dnd-kit`**:
+  - Wrap the list in **`DndContext`** + **`SortableContext`** (`verticalListSortingStrategy`).
+  - Each row uses **`useSortable`** (see **`AddEventSortableSectionAccordion.tsx`**).
+  - A **`DragHandleIcon`** on the **left** of the summary row is the **only** drag target (`listeners` / `attributes` on the handle, not the whole summary).
+  - Call **`stopPropagation`** on handle click so expand/collapse still works on the title/chevron.
+  - Use **`PointerSensor`** with **`activationConstraint: { distance: 8 }`** to avoid accidental drags.
+  - Persist order in page state (`sectionOrder`); reorder with **`arrayMove`** on drag end.
+- **Inner** accordions (e.g. Schedule **Day 1**, **Day 2**, …) are independent: they may each expand/collapse without closing sibling day panels.
+
+### Section status (per panel)
+
+Every top-level accordion panel includes a **3-way toggle** at the bottom (**`AddEventSectionStatusToggle`**):
+
+| Status | Behavior |
+|--------|----------|
+| **Not Started** | Default; no header icon |
+| **In Progress** | Set automatically on the **first field edit** in that section (`onFieldEdit` callback from section components) |
+| **Finalized** | **Only** when the user clicks that toggle — never set automatically |
+
+- Editing a field after **Finalized** moves the section back to **In Progress**.
+- Read-only / derived fields (e.g. **Number of Days**) must **not** call `onFieldEdit`.
+- Header row (right-aligned): **TaskAlt** icon (amber) = In Progress; **CheckCircle** (green) = Finalized (`AddEventSectionStatusIcon`; uses **`@mui/icons-material`**).
+- Section-specific gating is allowed: e.g. **Schedule** disables **In Progress** and **Finalized** until **Date(s)** has valid day(s); clearing dates resets Schedule to **Not Started**.
+
+### Form fields and layout
+
+- Text, select, and date/time inputs: **`AppTextField`** (inherits **360px** max width from **`muiFormTheme`**).
+- **`datetime-local`** for event start/end; **Single Day** vs **Multi-Day** toggle controls whether the end picker is shown.
+- Multi-day day count is **inclusive calendar days** (any time on a day counts that day); helpers live in **`lib/eventDates.ts`** / **`lib/eventDuration.ts`**.
+- Static-list dropdowns (e.g. US states, countries): load in the section with loading spinner and inline error text.
+- Phone fields: **`AppPhoneNumberField`** where applicable.
+- Venue vs online contact: separate accordion panels (e.g. **Location/Venue** vs **Contact Venue**), each with its own status state.
+
+### Schedule panel rules
+
+- When **Date(s)** has no valid range, show a **`severity="warning"`** `Alert` asking the user to enter dates — do **not** show a placeholder **Day 1** accordion.
+- When dates exist, render one inner accordion per event day (**`scheduleTimeBlocks`**, titled **Day 1**, **Day 2**, …).
+
+### Event group context (`/create-event`)
+
+| Item | Rule |
+|------|------|
+| Route | **`CREATE_EVENT_PATH`** = `/create-event`; legacy `/add-event` redirects |
+| Group code | From navigation `state.eventGroupCode`, else **`sessionStorage`** (`lib/eventGroupSession.ts`) |
+| **Add Event** button | Shared **`AddEventButton`** on all `/event-groups/:eventGroupCode` pages; remembers group code on navigate |
+| Back button | Returns to `/event-groups/:code` when a group is known, else `/event-groups` |
+
+### Dark skin: date/time picker icons
+
+Native **`::-webkit-calendar-picker-indicator`** icons are black by default and are hard to see on dark backgrounds. Fix in **both**:
+
+1. **`theme/muiFormTheme.ts`** — `MuiOutlinedInput` **root** overrides for `date`, `datetime-local`, and `time` inputs when `palette.mode === 'dark'`.
+2. **`index.css`** — same rules scoped to **`[data-app-skin='dark']`** (set on the wrapper in **`AppThemeProvider`**).
+
+Use **`filter: brightness(0) invert(1)`** and **`opacity: 0.87`** on the calendar indicator so it matches body text.
+
+### Suggested file layout for a new multi-section page
+
+| File | Role |
+|------|------|
+| `pages/Admin…Page.tsx` | Section order, shared state, DnD, status map, routing |
+| `components/…Section.tsx` | One component per accordion panel |
+| `components/…SortableSectionAccordion.tsx` | Reusable accordion + drag handle + status chrome (copy/adapt from Add Event) |
+| `lib/…ts` | Pure helpers for derived state shared across panels |
+
+---
+
 ## Environment variables (front-end)
 
 From `front-ends/front-end-cursor/.env.example`:
@@ -1045,6 +1134,6 @@ Optional **`contests_json`** on **`attendee`** (`json`, default `NULL`) holds pe
 
 ## Technical constraints
 
-- **No `@mui/icons-material`** — icons are local SVGs (`CloseIcon`, `PaletteOutlinedIcon`, etc.).
+- **Icons:** Prefer local SVG components (`CloseIcon`, `PaletteOutlinedIcon`, `DragHandleIcon`, etc.). **`@mui/icons-material`** is allowed for small status/decorative icons (e.g. Add Event section status).
 - Judging entries are generated once per page load; random data does not change until the page is reloaded.
 - Score digit dropdown interactions must not propagate to the accordion header.

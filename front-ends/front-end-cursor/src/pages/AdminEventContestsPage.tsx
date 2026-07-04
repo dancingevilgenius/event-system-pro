@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchEventById, fetchEventGroupByCode } from '../api/postgrest';
 import SwingDanceContestSet from '../components/SwingDanceContestSet';
+import AddEventButton from '../components/AddEventButton';
 import { centeredContentStackSx } from '../constants/layout';
 import { eventDetailPath } from '../constants/eventRoutes';
 import { formatEventMonthYear } from '../lib/eventDisplay';
@@ -88,6 +89,7 @@ export default function AdminEventContestsPage() {
         {!loading && !error && <SwingDanceContestSet />}
 
         <Stack spacing={2} sx={{ mt: 4, ...centeredContentStackSx }}>
+          {decodedGroupCode && <AddEventButton eventGroupCode={decodedGroupCode} />}
           <Button variant="outlined" fullWidth onClick={() => navigate(eventBasePath)}>
             Back to Event
           </Button>

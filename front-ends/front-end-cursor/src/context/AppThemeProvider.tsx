@@ -49,8 +49,10 @@ export default function AppThemeProvider({ children }: AppThemeProviderProps) {
   return (
     <AppThemeContext.Provider value={value}>
       <ThemeProvider theme={theme}>
-        <CssBaseline />
-        {children}
+        <div data-app-skin={skinId}>
+          <CssBaseline />
+          {children}
+        </div>
       </ThemeProvider>
     </AppThemeContext.Provider>
   );

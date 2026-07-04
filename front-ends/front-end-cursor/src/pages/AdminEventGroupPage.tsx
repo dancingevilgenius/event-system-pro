@@ -13,8 +13,9 @@ import {
   fetchEventsForEventGroup,
   type EventListRow,
 } from '../api/postgrest';
+import AddEventButton from '../components/AddEventButton';
 import { centeredContentStackSx } from '../constants/layout';
-import { ADD_EVENT_PATH, EVENT_GROUPS_PATH, eventDetailPath } from '../constants/eventRoutes';
+import { EVENT_GROUPS_PATH, eventDetailPath } from '../constants/eventRoutes';
 import { formatEventMonthYear } from '../lib/eventDisplay';
 
 export default function AdminEventGroupPage() {
@@ -103,16 +104,12 @@ export default function AdminEventGroupPage() {
                 </Button>
               ))
             )}
-            <Button
-              variant="outlined"
-              size="large"
-              fullWidth
-              onClick={() =>
-                navigate(ADD_EVENT_PATH, { state: { eventGroupCode: decodedGroupCode } })
-              }
-            >
-              Add Event
-            </Button>
+          </Stack>
+        )}
+
+        {decodedGroupCode && (
+          <Stack spacing={2} sx={{ mb: 3, ...centeredContentStackSx }}>
+            <AddEventButton eventGroupCode={decodedGroupCode} />
           </Stack>
         )}
 

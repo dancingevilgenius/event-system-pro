@@ -32,7 +32,7 @@ import StaffPage from './pages/StaffPage';
 import StaticListDetailsPage from './pages/StaticListDetailsPage';
 import StaticListsPage from './pages/StaticListsPage';
 import TournamentBracketDemoPage from './pages/TournamentBracketDemoPage';
-import { ADD_EVENT_PATH, EVENT_HOME_PATH, EVENT_GROUPS_PATH, EVENTS_PATH } from './constants/eventRoutes';
+import { CREATE_EVENT_PATH, EVENT_HOME_PATH, EVENT_GROUPS_PATH, EVENTS_PATH } from './constants/eventRoutes';
 
 export default function App() {
   return (
@@ -148,13 +148,14 @@ export default function App() {
         }
       />
       <Route
-        path={ADD_EVENT_PATH}
+        path={CREATE_EVENT_PATH}
         element={
           <ProtectedRoute roles={['admin']}>
             <AdminAddEventPage />
           </ProtectedRoute>
         }
       />
+      <Route path="/add-event" element={<Navigate to={CREATE_EVENT_PATH} replace />} />
       <Route
         path={`${EVENT_GROUPS_PATH}/:eventGroupCode/:eventId/attendees`}
         element={

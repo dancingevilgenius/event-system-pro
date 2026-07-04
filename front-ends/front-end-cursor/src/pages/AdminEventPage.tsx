@@ -2,6 +2,7 @@ import { Button, CircularProgress, Container, Paper, Stack, Typography } from '@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchEventById, fetchEventGroupByCode } from '../api/postgrest';
+import AddEventButton from '../components/AddEventButton';
 import { centeredContentStackSx } from '../constants/layout';
 import { eventDetailPath, eventGroupDetailPath } from '../constants/eventRoutes';
 import { formatEventMonthYear } from '../lib/eventDisplay';
@@ -107,6 +108,7 @@ export default function AdminEventPage() {
         )}
 
         <Stack spacing={2} sx={centeredContentStackSx}>
+          {decodedGroupCode && <AddEventButton eventGroupCode={decodedGroupCode} />}
           <Button variant="outlined" fullWidth onClick={() => navigate(groupBasePath)}>
             Back to {groupFullName || 'Group'}
           </Button>

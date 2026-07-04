@@ -26,12 +26,14 @@ const toggleGroupSx = {
 type AddEventSectionStatusToggleProps = {
   value: AddEventSectionStatus;
   onChange: (status: AddEventSectionStatus) => void;
+  disabledStatuses?: AddEventSectionStatus[];
   'aria-label'?: string;
 };
 
 export default function AddEventSectionStatusToggle({
   value,
   onChange,
+  disabledStatuses,
   'aria-label': ariaLabel = 'Section status',
 }: AddEventSectionStatusToggleProps) {
   const handleChange = (
@@ -57,6 +59,7 @@ export default function AddEventSectionStatusToggle({
           key={option.value}
           value={option.value}
           aria-label={option.label}
+          disabled={disabledStatuses?.includes(option.value)}
         >
           {option.label}
         </ToggleButton>

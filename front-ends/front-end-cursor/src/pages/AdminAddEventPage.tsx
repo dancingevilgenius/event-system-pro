@@ -14,12 +14,20 @@ import { fetchEventGroupByCode } from '../api/postgrest';
 import AddEventDatesSection from '../components/AddEventDatesSection';
 import AddEventLocationSection from '../components/AddEventLocationSection';
 import AddEventOnlineLinksSection from '../components/AddEventOnlineLinksSection';
+import AddEventScheduleSection from '../components/AddEventScheduleSection';
 import AddEventSectionStatusIcon from '../components/AddEventSectionStatusIcon';
 import AddEventSectionStatusToggle, {
   type AddEventSectionStatus,
 } from '../components/AddEventSectionStatusToggle';
 import { centeredContentStackSx } from '../constants/layout';
 import { EVENT_GROUPS_PATH, eventGroupDetailPath } from '../constants/eventRoutes';
+import {
+  EMPTY_EVENT_DATES,
+  type EventDatesFormState,
+  getScheduleTimeBlockDays,
+  hasEventDatesForSchedule,
+} from '../lib/eventDates';
+import { resolveEventGroupCode } from '../lib/eventGroupSession';
 
 type AddEventLocationState = {
   eventGroupCode?: string;
@@ -60,7 +68,7 @@ const ADD_EVENT_SECTIONS: AddEventSection[] = [
   {
     id: 'schedule',
     title: 'Schedule',
-    description: 'Daily schedule blocks and session timing will be configured here.',
+    description: '',
   },
   {
     id: 'staff',
@@ -111,9 +119,20 @@ function promoteSectionToInProgress(
   return { ...current, [sectionId]: 'in_progress' };
 }
 
-function renderSectionContent(sectionId: AddEventSectionId, onFieldEdit: () => void) {
+function renderSectionContent(
+  sectionId: AddEventSectionId,
+  onFieldEdit: () => void,
+  eventDates: EventDatesFormState,
+  onEventDatesChange: (dates: EventDatesFormState) => void,
+) {
   if (sectionId === 'dates') {
-    return <AddEventDatesSection onFieldEdit={onFieldEdit} />;
+    return (
+      <AddEventDatesSection
+        dates={eventDates}
+        onDatesChange={onEventDatesChange}
+        onFieldEdit={onFieldEdit}
+      />
+    );
   }
 
   if (sectionId === 'location') {
@@ -124,16 +143,28 @@ function renderSectionContent(sectionId: AddEventSectionId, onFieldEdit: () => v
     return <AddEventOnlineLinksSection onFieldEdit={onFieldEdit} />;
   }
 
+  if (sectionId === 'schedule') {
+    return (
+      <AddEventScheduleSection
+        scheduleTimeBlocks={getScheduleTimeBlockDays(eventDates)}
+      />
+    );
+  }
+
   return null;
 }
 
 export default function AdminAddEventPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const eventGroupCode = (location.state as AddEventLocationState | null)?.eventGroupCode?.trim();
+  const eventGroupCode =
+    resolveEventGroupCode(location.state as AddEventLocationState | null) ?? '';
   const [eventGroupName, setEventGroupName] = useState('');
   const [expandedSection, setExpandedSection] = useState<AddEventSectionId | false>('dates');
   const [sectionStatuses, setSectionStatuses] = useState(createInitialSectionStatuses);
+  const [eventDates, setEventDates] = useState<EventDatesFormState>(EMPTY_EVENT_DATES);
+
+  const scheduleDatesSelected = hasEventDatesForSchedule(eventDates);
 
   const backPath = eventGroupCode ? eventGroupDetailPath(eventGroupCode) : EVENT_GROUPS_PATH;
   const backLabel = eventGroupCode ? 'Back to Event Group' : 'Back to Event Groups';
@@ -163,6 +194,20 @@ export default function AdminAddEventPage() {
     };
   }, [eventGroupCode]);
 
+  useEffect(() => {
+    if (scheduleDatesSelected) {
+      return;
+    }
+
+    setSectionStatuses((current) => {
+      if (current.schedule === 'not_started') {
+        return current;
+      }
+
+      return { ...current, schedule: 'not_started' };
+    });
+  }, [scheduleDatesSelected]);
+
   const handleSectionStatusChange =
     (sectionId: AddEventSectionId) => (status: AddEventSectionStatus) => {
       setSectionStatuses((current) => ({ ...current, [sectionId]: status }));
@@ -182,7 +227,7 @@ export default function AdminAddEventPage() {
     <Container maxWidth="md" sx={{ py: 6 }}>
       <Paper elevation={3} sx={{ p: { xs: 2, sm: 4 } }}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
-          Add Event
+          {eventGroupCode ? `Add Event for ${eventGroupCode}` : 'Add Event'}
         </Typography>
         {eventGroupName && (
           <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 3 }}>
@@ -192,8 +237,11 @@ export default function AdminAddEventPage() {
 
         <Stack spacing={1.5} sx={{ mb: 3, width: '100%' }}>
           {ADD_EVENT_SECTIONS.map((section) => {
-            const sectionContent = renderSectionContent(section.id, () =>
-              handleSectionFieldEdit(section.id),
+            const sectionContent = renderSectionContent(
+              section.id,
+              () => handleSectionFieldEdit(section.id),
+              eventDates,
+              setEventDates,
             );
             const sectionStatus = sectionStatuses[section.id];
 
@@ -234,6 +282,11 @@ export default function AdminAddEventPage() {
                     <AddEventSectionStatusToggle
                       value={sectionStatuses[section.id]}
                       onChange={handleSectionStatusChange(section.id)}
+                      disabledStatuses={
+                        section.id === 'schedule' && !scheduleDatesSelected
+                          ? ['in_progress', 'finalized']
+                          : undefined
+                      }
                       aria-label={`${section.title} status`}
                     />
                   </Stack>

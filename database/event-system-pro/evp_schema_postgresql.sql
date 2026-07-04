@@ -405,32 +405,8 @@ CONSTRAINT user_preference_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (user_
 );
 CREATE INDEX IF NOT EXISTS fk_up_user_id ON user_preference (user_id);
 
--- Seed data
+-- Seed data (legacy event groups / events; reference static_list rows are in baseline_reference_data.sql)
 
-INSERT INTO secret_question_lu VALUES ('1', 'Favorite place to visit as a child?', '2018-12-01 16:57:23');
-INSERT INTO secret_question_lu VALUES ('2', 'Favorite actor?', '2018-12-01 16:57:23');
-INSERT INTO secret_question_lu VALUES ('3', 'Favorite musician?', '2018-12-01 16:57:23');
-INSERT INTO secret_question_lu VALUES ('4', 'Name of your pet as a child?', '2018-12-01 16:57:23');
-INSERT INTO secret_question_lu VALUES ('5', 'In what city were you born?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('6', 'Favorite movie?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('7', 'What street did you grow up on?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('8', 'Color of your first car?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('9', 'Father''s middle name?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('10', 'Mother''s maiden name?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('11', 'First name of your first kiss?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('12', 'Guilty pleasure?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('13', 'Name of best friend in high school', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('14', 'You have 99 problems. What ain''t one of them?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('15', 'Name of your elementary school?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('16', 'Childhood nickname?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('17', 'Make and model of your first car?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('18', 'Name of your first employer?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('19', 'First concert you attended?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('20', 'Favorite food as a child?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('21', 'Name of your favorite teacher?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('22', 'First album you bought?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('23', 'Town where your parents met?', '2018-12-01 16:57:24');
-INSERT INTO secret_question_lu VALUES ('24', 'Name of your childhood toy?', '2018-12-01 16:57:24');
 INSERT INTO event_group (event_group_code, full_name, short_name, created_date, created_by) VALUES ('TSL_ARMAGEDDON', 'Armageddon', 'Armageddon', '2021-04-04 06:16:45', 'ceg');
 INSERT INTO event_group (event_group_code, full_name, short_name, created_date, created_by) VALUES ('TSL_AWAKENING', 'Awakening', 'Awakening', '2021-04-04 06:16:45', 'ceg');
 INSERT INTO event_group (event_group_code, full_name, short_name, created_date, created_by) VALUES ('TSL_BATTLEGROUND', 'Battleground', 'Battleground', '2021-04-04 06:16:45', 'ceg');
@@ -499,5 +475,4 @@ INSERT INTO "event" VALUES ('47', 'TSL_WORLDS', 'TSL World Championships V', NUL
 
 -- Align identity sequences with seeded primary keys
 
-SELECT setval(pg_get_serial_sequence('secret_question_lu', 'secret_question_id'), COALESCE((SELECT MAX(secret_question_id) FROM secret_question_lu), 1));
 SELECT setval(pg_get_serial_sequence('event', 'event_id'), COALESCE((SELECT MAX(event_id) FROM "event"), 1));

@@ -100,13 +100,50 @@ apply_sql() {
 }
 
 skip_superseded_by_baseline() {
-  case "$1" in
-    migrations/005_*|migrations/006_*|migrations/007_*|migrations/015_*|migrations/017_*|migrations/027_*|migrations/030_*|migrations/051_*|migrations/052_*|migrations/053_*) return 0 ;;
-    *) return 1 ;;
-  esac
+  name="$1"
+  base="${name#migrations/}"
+  base="${base%.sql}"
+  manifest="/sql/superseded-by-baseline.manifest"
+  if [ ! -f "$manifest" ]; then
+    case "$name" in
+      migrations/005_*|migrations/006_*|migrations/007_*|migrations/015_*|migrations/017_*|migrations/027_*|migrations/030_*|migrations/051_*|migrations/052_*|migrations/053_*) return 0 ;;
+      *) return 1 ;;
+    esac
+  fi
+  while IFS= read -r pattern || [ -n "$pattern" ]; do
+    case "$pattern" in
+      ''|\#*) continue ;;
+    esac
+    if echo "$base" | grep -Eq "$pattern"; then
+      return 0
+    fi
+  done < "$manifest"
+  return 1
 }
 
-apply_sql "baseline/evp_schema_postgresql.sql" "$BASELINE"
+apply_baseline() {
+  if migration_applied "baseline/evp_schema_postgresql.sql"; then
+    echo "Skip (already applied): baseline/evp_schema_postgresql.sql"
+    return 0
+  fi
+
+  LAST_STEP="apply baseline/evp_schema_postgresql.sql"
+  echo "Applying: baseline/evp_schema_postgresql.sql"
+  psql_cmd -f "$BASELINE"
+
+  ref="/sql/event-system-pro/baseline_reference_data.sql"
+  if [ ! -f "$ref" ]; then
+    fail 2 "baseline reference data not found at ${ref}. Rebuild the migrate image (Deploy in Dokploy)."
+  fi
+
+  LAST_STEP="apply baseline/baseline_reference_data.sql"
+  echo "Applying: baseline/baseline_reference_data.sql"
+  psql_cmd -f "$ref"
+
+  record_migration "baseline/evp_schema_postgresql.sql"
+}
+
+apply_baseline
 
 for file in /sql/migrations/*.sql; do
   [ -f "$file" ] || continue

@@ -1,0 +1,32 @@
+# Migrations folded into evp_schema_postgresql.sql and/or baseline_reference_data.sql.
+# Matched against the migration filename (not the migrations/ prefix).
+# One extended-regex pattern per line; # comments and blank lines ignored.
+# Keep deploy/scripts/migrate.sh and scripts/rebuild-local-database.ps1 in sync with this file.
+
+^001_event_type
+^002_event_type
+^005_user_table
+^006_user_json
+^007_competitor
+^014_remove_drone
+^015_rename_fight
+^017_remove_aland
+^027_event_group
+^030_rename_event_staff
+^051_us_states
+^052_countries
+^053_wakanda
+^064_fix_secret
+^065_add_secret
+^067_secret_question_truncated
+^068_shorten_secret
+^069_drop_country
+^078_event_types
+^079_motorsports
+^080_robotics
+^081_drop_event_type
+^082_secret_questions
+^083_rename_wsdc_levels
+^085_drop_skill_level
+^086_rename_wsdc_swing
+^087_wsdc_custom

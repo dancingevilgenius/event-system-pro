@@ -35,10 +35,6 @@ GRANT authenticated TO authenticator;
 CREATE SCHEMA IF NOT EXISTS api;
 GRANT USAGE ON SCHEMA api TO anon, authenticated;
 
-CREATE OR REPLACE VIEW api.event_type_lu AS
-SELECT event_type_code, description_json, created_date, created_by
-FROM public.event_type_lu;
-
 CREATE OR REPLACE VIEW api.governing_body AS
 SELECT
   governing_body_code,
@@ -62,14 +58,6 @@ FROM public.static_list;
 CREATE OR REPLACE VIEW api.competitor_type_lu AS
 SELECT competitor_type_id, description
 FROM public.competitor_type_lu;
-
-CREATE OR REPLACE VIEW api.skill_level_lu AS
-SELECT skill_level_id, full_name, abbr_name, skill_level_group_id, ranking
-FROM public.skill_level_lu;
-
-CREATE OR REPLACE VIEW api.secret_question_lu AS
-SELECT secret_question_id, question, created_date
-FROM public.secret_question_lu;
 
 CREATE OR REPLACE VIEW api.event_group AS
 SELECT

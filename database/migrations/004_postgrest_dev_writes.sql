@@ -14,12 +14,9 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA api
 
 -- Underlying tables (views are security invoker in PG15+; anon needs base-table rights too).
 GRANT INSERT, UPDATE, DELETE ON
-  public.event_type_lu,
   public.governing_body,
   public.static_list,
   public.competitor_type_lu,
-  public.skill_level_lu,
-  public.secret_question_lu,
   public.event_group,
   public."event",
   public.contest,

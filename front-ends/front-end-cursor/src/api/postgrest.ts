@@ -1387,8 +1387,8 @@ export async function fetchMerchandiseByCode(
   params.append('event_code', `eq.${eventCode}`);
 
   const rows = await fetchJson<ApiMerchandiseRecord[]>(
-    `${POSTGREST_URL}/merchandise?${params.toString()}`,
-    'Unable to load merchandise',
+    `${POSTGREST_URL}/merchandise_sales?${params.toString()}`,
+    'Unable to load merchandise sales',
     auth,
   );
 

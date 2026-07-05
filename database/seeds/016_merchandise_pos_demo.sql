@@ -3,7 +3,7 @@
 
 \connect event_system_pro
 
-INSERT INTO public.merchandise (event_code, merchandise_json, created_by)
+INSERT INTO public.merchandise_sales (event_code, merchandise_json, created_by)
 SELECT
   e.event_code,
   json_build_object(

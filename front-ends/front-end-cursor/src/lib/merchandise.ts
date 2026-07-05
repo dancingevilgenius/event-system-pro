@@ -1,6 +1,6 @@
 export type MerchandiseGender = 'Men' | 'Women';
 
-export type EventMerchandiseItem = {
+export type MerchandiseItem = {
   sku: string;
   gender: MerchandiseGender;
   size: string;
@@ -9,17 +9,17 @@ export type EventMerchandiseItem = {
   unit_price: number;
 };
 
-export type EventMerchandiseJson = {
-  items: EventMerchandiseItem[];
+export type MerchandiseJson = {
+  items: MerchandiseItem[];
 };
 
-export type EventMerchandiseCartLine = EventMerchandiseItem & {
+export type MerchandiseCartLine = MerchandiseItem & {
   quantity: number;
 };
 
 const MAX_DESCRIPTION_LENGTH = 256;
 
-export function parseEventMerchandiseJson(value: unknown): EventMerchandiseJson {
+export function parseMerchandiseJson(value: unknown): MerchandiseJson {
   if (!value || typeof value !== 'object' || !('items' in value)) {
     return { items: [] };
   }
@@ -29,7 +29,7 @@ export function parseEventMerchandiseJson(value: unknown): EventMerchandiseJson 
     return { items: [] };
   }
 
-  const items: EventMerchandiseItem[] = [];
+  const items: MerchandiseItem[] = [];
 
   for (const entry of record.items) {
     if (!entry || typeof entry !== 'object') {
@@ -67,11 +67,11 @@ export function parseEventMerchandiseJson(value: unknown): EventMerchandiseJson 
   return { items };
 }
 
-export function merchandiseLineTotal(item: EventMerchandiseItem, quantity: number): number {
+export function merchandiseLineTotal(item: MerchandiseItem, quantity: number): number {
   return Math.round(item.unit_price * quantity * 100) / 100;
 }
 
-export function summarizeCart(lines: EventMerchandiseCartLine[]): {
+export function summarizeCart(lines: MerchandiseCartLine[]): {
   subtotal: number;
   itemCount: number;
 } {

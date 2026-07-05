@@ -1,5 +1,5 @@
 import { loadSession, type AppRole } from '../lib/session';
-import { parseEventMerchandiseJson, type EventMerchandiseJson } from '../lib/eventMerchandise';
+import { parseMerchandiseJson, type MerchandiseJson } from '../lib/merchandise';
 import {
   NOT_APPLICABLE_INT,
   COUNTRIES_LIST_CODE,
@@ -1365,30 +1365,30 @@ export function registerUser(params: {
   );
 }
 
-type ApiEventMerchandiseRecord = {
+type ApiMerchandiseRecord = {
   event_code: string;
   merchandise_json: unknown;
   next_receipt_seq: number;
 };
 
-export type EventMerchandiseDetail = {
+export type MerchandiseDetail = {
   eventCode: string;
-  merchandise: EventMerchandiseJson;
+  merchandise: MerchandiseJson;
   nextReceiptSeq: number;
 };
 
-export async function fetchEventMerchandiseByCode(
+export async function fetchMerchandiseByCode(
   eventCode: string,
   auth: RequestAuthMode = 'include',
-): Promise<EventMerchandiseDetail | null> {
+): Promise<MerchandiseDetail | null> {
   const params = new URLSearchParams({
     select: 'event_code,merchandise_json,next_receipt_seq',
   });
   params.append('event_code', `eq.${eventCode}`);
 
-  const rows = await fetchJson<ApiEventMerchandiseRecord[]>(
-    `${POSTGREST_URL}/event_merchandise?${params.toString()}`,
-    'Unable to load event merchandise',
+  const rows = await fetchJson<ApiMerchandiseRecord[]>(
+    `${POSTGREST_URL}/merchandise?${params.toString()}`,
+    'Unable to load merchandise',
     auth,
   );
 
@@ -1399,7 +1399,7 @@ export async function fetchEventMerchandiseByCode(
 
   return {
     eventCode: row.event_code,
-    merchandise: parseEventMerchandiseJson(row.merchandise_json),
+    merchandise: parseMerchandiseJson(row.merchandise_json),
     nextReceiptSeq: row.next_receipt_seq,
   };
 }

@@ -20,20 +20,19 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  fetchEventMerchandiseByCode,
+  fetchMerchandiseByCode,
   fetchEventPosContextByCode,
-  type EventMerchandiseDetail,
+  type MerchandiseDetail,
   type EventPosContext,
 } from '../api/postgrest';
 import SalesTransactionReceiptView from '../components/SalesTransactionReceipt';
 import {
   merchandiseLineTotal,
-  parseEventMerchandiseJson,
   summarizeCart,
-  type EventMerchandiseCartLine,
-  type EventMerchandiseItem,
+  type MerchandiseCartLine,
+  type MerchandiseItem,
   type MerchandiseGender,
-} from '../lib/eventMerchandise';
+} from '../lib/merchandise';
 import {
   formatReceiptCurrency,
   formatReceiptId,
@@ -64,7 +63,7 @@ function formatLocationLabel(locationJson: string | null): string | null {
 }
 
 function buildReceipt(
-  cart: EventMerchandiseCartLine[],
+  cart: MerchandiseCartLine[],
   event: EventPosContext,
   nextReceiptSeq: number,
 ): SalesTransactionReceipt {
@@ -114,8 +113,8 @@ function ProductCard({
   item,
   onAdd,
 }: {
-  item: EventMerchandiseItem;
-  onAdd: (item: EventMerchandiseItem) => void;
+  item: MerchandiseItem;
+  onAdd: (item: MerchandiseItem) => void;
 }) {
   return (
     <Paper variant="outlined" sx={{ p: 2, height: '100%' }}>
@@ -149,9 +148,9 @@ export default function EventMerchandisePosDemoPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [eventContext, setEventContext] = useState<EventPosContext | null>(null);
-  const [merchandise, setMerchandise] = useState<EventMerchandiseDetail | null>(null);
+  const [merchandise, setMerchandise] = useState<MerchandiseDetail | null>(null);
   const [genderFilter, setGenderFilter] = useState<GenderFilter>('All');
-  const [cart, setCart] = useState<EventMerchandiseCartLine[]>([]);
+  const [cart, setCart] = useState<MerchandiseCartLine[]>([]);
   const [receiptOpen, setReceiptOpen] = useState(false);
   const [completedReceipt, setCompletedReceipt] = useState<SalesTransactionReceipt | null>(null);
   const [demoReceiptSeq, setDemoReceiptSeq] = useState(1);
@@ -161,7 +160,7 @@ export default function EventMerchandisePosDemoPage() {
 
     Promise.all([
       fetchEventPosContextByCode(DEMO_EVENT_CODE, 'omit'),
-      fetchEventMerchandiseByCode(DEMO_EVENT_CODE, 'omit'),
+      fetchMerchandiseByCode(DEMO_EVENT_CODE, 'omit'),
     ])
       .then(([event, merch]) => {
         if (cancelled) {
@@ -169,12 +168,12 @@ export default function EventMerchandisePosDemoPage() {
         }
 
         if (!event) {
-          setError(`Event ${DEMO_EVENT_CODE} was not found. Run seeds and migration 093.`);
+          setError(`Event ${DEMO_EVENT_CODE} was not found. Run dev seeds (011, then 016).`);
           return;
         }
 
         if (!merch || merch.merchandise.items.length === 0) {
-          setError(`No merchandise inventory for ${DEMO_EVENT_CODE}. Apply migration 093.`);
+          setError(`No merchandise inventory for ${DEMO_EVENT_CODE}. Run seed 016_merchandise_pos_demo.sql.`);
           return;
         }
 
@@ -210,7 +209,7 @@ export default function EventMerchandisePosDemoPage() {
   const taxTotal = Math.round(subtotal * DEMO_TAX_RATE * 100) / 100;
   const total = Math.round((subtotal + taxTotal) * 100) / 100;
 
-  const addToCart = (item: EventMerchandiseItem) => {
+  const addToCart = (item: MerchandiseItem) => {
     setCart((current) => {
       const existing = current.find((line) => line.sku === item.sku);
       if (existing) {

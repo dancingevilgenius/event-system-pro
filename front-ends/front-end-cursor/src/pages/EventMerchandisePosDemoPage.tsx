@@ -45,23 +45,6 @@ const DEMO_TAX_RATE = 0.08;
 
 type GenderFilter = 'All' | MerchandiseGender;
 
-function formatLocationLabel(locationJson: string | null): string | null {
-  if (!locationJson) {
-    return null;
-  }
-
-  try {
-    const parsed = JSON.parse(locationJson) as Record<string, unknown>;
-    const venue = typeof parsed.venue === 'string' ? parsed.venue : null;
-    const city = typeof parsed.city === 'string' ? parsed.city : null;
-    const state = typeof parsed.state === 'string' ? parsed.state : null;
-    const parts = [venue, [city, state].filter(Boolean).join(', ')].filter(Boolean);
-    return parts.length > 0 ? parts.join(' · ') : null;
-  } catch {
-    return null;
-  }
-}
-
 function buildReceipt(
   cart: MerchandiseCartLine[],
   event: EventPosContext,

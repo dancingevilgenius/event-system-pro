@@ -6,6 +6,44 @@
 ALTER TABLE public.user_app_role
   DROP CONSTRAINT IF EXISTS user_app_role_role_code_check;
 
+-- Avoid PK conflicts when multiple legacy codes map to the same uppercase role
+-- (e.g. floorcoordinator + floorparent -> FLOOR_PARENT).
+WITH mapped AS (
+  SELECT
+    ctid,
+    user_id,
+    CASE role_code
+      WHEN 'admin' THEN 'ADMIN'
+      WHEN 'staff' THEN 'STAFF'
+      WHEN 'judge' THEN 'JUDGE'
+      WHEN 'headjudge' THEN 'HEAD_JUDGE'
+      WHEN 'registration' THEN 'REGISTRATION'
+      WHEN 'floorcoordinator' THEN 'FLOOR_PARENT'
+      WHEN 'floorparent' THEN 'FLOOR_PARENT'
+      WHEN 'ballroomcoordinator' THEN 'BALLROOM_COORDINATOR'
+      WHEN 'dj' THEN 'DJ'
+      WHEN 'eventcoordinator' THEN 'EVENT_COORDINATOR'
+      WHEN 'competitor' THEN 'COMPETITOR'
+      ELSE role_code
+    END AS target_code
+  FROM public.user_app_role
+  WHERE role_code IN (
+    'admin', 'staff', 'judge', 'headjudge', 'registration',
+    'floorcoordinator', 'floorparent', 'ballroomcoordinator',
+    'dj', 'eventcoordinator', 'competitor'
+  )
+)
+DELETE FROM public.user_app_role AS old
+USING mapped AS m
+WHERE old.ctid = m.ctid
+  AND EXISTS (
+    SELECT 1
+    FROM mapped AS keeper
+    WHERE keeper.user_id = m.user_id
+      AND keeper.target_code = m.target_code
+      AND keeper.ctid < m.ctid
+  );
+
 -- Avoid PK conflicts if a row was partially migrated.
 DELETE FROM public.user_app_role old
 WHERE old.role_code IN (

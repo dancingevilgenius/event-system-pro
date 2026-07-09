@@ -585,10 +585,47 @@ export function changePassword(
   });
 }
 
+export type EventGroupDirector = {
+  username: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+};
+
 export type EventGroupListRow = {
   eventGroupCode: string;
   fullName: string;
+  directors: EventGroupDirector[];
 };
+
+type ApiEventGroupDirector = {
+  username?: string | null;
+  firstname?: string | null;
+  lastname?: string | null;
+  email?: string | null;
+};
+
+type ApiEventGroupRecord = {
+  event_group_code: string;
+  full_name: string;
+  directors_json?: ApiEventGroupDirector[] | null;
+};
+
+function parseEventGroupDirectors(value: unknown): EventGroupDirector[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .filter((entry): entry is ApiEventGroupDirector => Boolean(entry) && typeof entry === 'object')
+    .map((entry) => ({
+      username: typeof entry.username === 'string' ? entry.username.trim() : '',
+      firstname: typeof entry.firstname === 'string' ? entry.firstname.trim() : '',
+      lastname: typeof entry.lastname === 'string' ? entry.lastname.trim() : '',
+      email: typeof entry.email === 'string' ? entry.email.trim() : '',
+    }))
+    .filter((entry) => entry.username !== '');
+}
 
 type ApiEventWithAttendees = {
   event_id: number;
@@ -596,10 +633,13 @@ type ApiEventWithAttendees = {
   attendee: Array<{ attendee_id: number }>;
 };
 
-type ApiEventGroupRecord = {
-  event_group_code: string;
-  full_name: string;
-};
+function mapEventGroupRow(row: ApiEventGroupRecord): EventGroupListRow {
+  return {
+    eventGroupCode: row.event_group_code,
+    fullName: row.full_name,
+    directors: parseEventGroupDirectors(row.directors_json),
+  };
+}
 
 async function fetchJson<T>(
   url: string,
@@ -636,7 +676,7 @@ export async function fetchDemoEventGroupsWithAttendees(): Promise<EventGroupLis
   }
 
   const params = new URLSearchParams({
-    select: 'event_group_code,full_name',
+    select: 'event_group_code,full_name,directors_json',
     order: 'full_name',
   });
   params.append('event_group_code', `in.(${eventGroupCodes.join(',')})`);
@@ -647,16 +687,109 @@ export async function fetchDemoEventGroupsWithAttendees(): Promise<EventGroupLis
     'Unable to load event groups',
   );
 
-  return eventGroups.map((row) => ({
-    eventGroupCode: row.event_group_code,
-    fullName: row.full_name,
-  }));
+  return eventGroups.map(mapEventGroupRow);
+}
+
+export type DirectorSearchUser = {
+  username: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+};
+
+type ApiUserSearchRecord = {
+  username: string;
+  name_json: ApiUserRecord['name_json'];
+  email: string | null;
+};
+
+function mapUserToDirectorSearch(row: ApiUserSearchRecord): DirectorSearchUser {
+  return {
+    username: row.username?.trim() ?? '',
+    firstname: row.name_json?.first?.trim() ?? '',
+    lastname: row.name_json?.last?.trim() ?? '',
+    email: row.email?.trim() ?? '',
+  };
+}
+
+/** Search users by first name, last name, or email (admin user listing). */
+export async function searchUsersByNameOrEmail(
+  query: string,
+  limit = 25,
+): Promise<DirectorSearchUser[]> {
+  const trimmed = query.trim();
+  if (!trimmed) {
+    return [];
+  }
+
+  const escaped = escapePostgrestFilterValue(trimmed);
+  const params = new URLSearchParams({
+    select: 'username,name_json,email',
+    limit: String(limit),
+    order: 'name_json->>last.asc,name_json->>first.asc',
+  });
+  params.append(
+    'or',
+    `(name_json->>first.ilike.*${escaped}*,name_json->>last.ilike.*${escaped}*,email.ilike.*${escaped}*)`,
+  );
+
+  const records = await fetchJson<ApiUserSearchRecord[]>(
+    `${POSTGREST_URL}/user?${params.toString()}`,
+    'Unable to search users',
+  );
+
+  return records.map(mapUserToDirectorSearch).filter((user) => user.username !== '');
+}
+
+export async function updateEventGroupDirectors(
+  eventGroupCode: string,
+  directors: EventGroupDirector[],
+): Promise<EventGroupListRow> {
+  const params = new URLSearchParams();
+  params.append('event_group_code', `eq.${eventGroupCode}`);
+
+  const response = await fetch(`${POSTGREST_URL}/event_group?${params.toString()}`, {
+    method: 'PATCH',
+    headers: buildAuthHeaders({
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation',
+    }),
+    body: JSON.stringify({
+      directors_json: directors.map((director) => ({
+        username: director.username,
+        firstname: director.firstname,
+        lastname: director.lastname,
+        email: director.email,
+      })),
+    }),
+  });
+
+  if (!response.ok) {
+    let message = `Unable to update event group directors (${response.status})`;
+    try {
+      const errorBody = (await response.json()) as RpcErrorBody;
+      if (errorBody.message) {
+        message = errorBody.message;
+      }
+    } catch {
+      // Keep default message when body is not JSON.
+    }
+    throw new Error(message);
+  }
+
+  const rows = (await response.json()) as ApiEventGroupRecord[];
+  const row = rows[0];
+  if (!row) {
+    throw new Error('Event group directors update returned no rows.');
+  }
+
+  return mapEventGroupRow(row);
 }
 
 /** All event groups ordered by full name. */
 export async function fetchEventGroups(): Promise<EventGroupListRow[]> {
   const params = new URLSearchParams({
-    select: 'event_group_code,full_name',
+    select: 'event_group_code,full_name,directors_json',
     order: 'full_name',
   });
 
@@ -665,10 +798,7 @@ export async function fetchEventGroups(): Promise<EventGroupListRow[]> {
     'Unable to load event groups',
   );
 
-  return eventGroups.map((row) => ({
-    eventGroupCode: row.event_group_code,
-    fullName: row.full_name,
-  }));
+  return eventGroups.map(mapEventGroupRow);
 }
 
 export type CreateEventGroupInput = {
@@ -711,10 +841,7 @@ export async function createEventGroup(input: CreateEventGroupInput): Promise<Ev
     throw new Error('Event group create returned no rows.');
   }
 
-  return {
-    eventGroupCode: row.event_group_code,
-    fullName: row.full_name,
-  };
+  return mapEventGroupRow(row);
 }
 
 export type EventListRow = {

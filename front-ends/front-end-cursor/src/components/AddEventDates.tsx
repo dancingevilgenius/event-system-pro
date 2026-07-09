@@ -22,19 +22,19 @@ const dateModeToggleSx = {
   },
 } as const;
 
-export type EventDatesFormProps = {
+export type AddEventDatesProps = {
   dates: EventDatesFormState;
   onDatesChange: (dates: EventDatesFormState) => void;
   onFieldEdit?: () => void;
   onValidityChange?: (isEventDateValid: boolean) => void;
 };
 
-export default function EventDatesForm({
+export default function AddEventDates({
   dates,
   onDatesChange,
   onFieldEdit,
   onValidityChange,
-}: EventDatesFormProps) {
+}: AddEventDatesProps) {
   const isEventDateValid = useMemo(() => isEventDatesValid(dates), [dates]);
 
   useEffect(() => {

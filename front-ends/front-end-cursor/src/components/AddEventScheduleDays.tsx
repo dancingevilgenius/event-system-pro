@@ -21,19 +21,19 @@ const innerAccordionSummarySx = {
   },
 } as const;
 
-export type EventScheduleDaysProps = {
+export type AddEventScheduleDaysProps = {
   scheduleTimeBlocks: ScheduleTimeBlockDay[];
   status: AddEventSectionStatus;
   onStatusChange: (status: AddEventSectionStatus) => void;
   disabledStatuses?: AddEventSectionStatus[];
 };
 
-export default function EventScheduleDays({
+export default function AddEventScheduleDays({
   scheduleTimeBlocks,
   status,
   onStatusChange,
   disabledStatuses,
-}: EventScheduleDaysProps) {
+}: AddEventScheduleDaysProps) {
   const [expandedDayId, setExpandedDayId] = useState<string | false>(false);
 
   useEffect(() => {

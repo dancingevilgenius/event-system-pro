@@ -29,11 +29,11 @@ import EventPassSortableAccordion from './EventPassSortableAccordion';
 
 const passFieldsColumnSx = mobileColumnSx;
 
-type EventPassesProps = {
+type AddEventPassesProps = {
   onFieldEdit?: () => void;
 };
 
-export default function EventPasses({ onFieldEdit }: EventPassesProps) {
+export default function AddEventPasses({ onFieldEdit }: AddEventPassesProps) {
   const [passes, setPasses] = useState<EventPassFormState[]>(() => [createDefaultEventPass()]);
   const [expandedPassId, setExpandedPassId] = useState<string | false>(
     () => passes[0]?.id ?? false,

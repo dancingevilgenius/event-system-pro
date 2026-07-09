@@ -23,12 +23,17 @@ import {
 import { type SyntheticEvent, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { fetchEventGroupByCode } from '../api/postgrest';
-import EventDatesForm from '../components/EventDatesForm';
-import AddEventLocationSection from '../components/AddEventLocationSection';
-import AddEventOnlineLinksSection from '../components/AddEventOnlineLinksSection';
-import EventEarlyBirdDates from '../components/EventEarlyBirdDates';
-import EventPasses from '../components/EventPasses';
-import EventScheduleDays from '../components/EventScheduleDays';
+import AddEventDates from '../components/AddEventDates';
+import AddEventLocation from '../components/AddEventLocation';
+import AddEventOnlineLinks from '../components/AddEventOnlineLinks';
+import AddEventEarlyBirdDates from '../components/AddEventEarlyBirdDates';
+import AddEventPasses from '../components/AddEventPasses';
+import AddEventScheduleDays from '../components/AddEventScheduleDays';
+import AddEventRoles from '../components/AddEventRoles';
+import AddEventImportantContacts from '../components/AddEventImportantContacts';
+import AddEventContests from '../components/AddEventContests';
+import AddEventStaff from '../components/AddEventStaff';
+import AddEventVolunteers from '../components/AddEventVolunteers';
 import AddEventSortableSectionAccordion from '../components/AddEventSortableSectionAccordion';
 import { type AddEventSectionStatus } from '../components/AddEventSectionStatusToggle';
 import { centeredContentStackSx } from '../constants/layout';
@@ -48,6 +53,7 @@ type AddEventLocationState = {
 type AddEventSectionId =
   | 'dates'
   | 'passes'
+  | 'roles'
   | 'early_bird_dates'
   | 'location'
   | 'online_links'
@@ -66,6 +72,7 @@ type AddEventSection = {
 const ADD_EVENT_SECTIONS: AddEventSection[] = [
   { id: 'dates', title: 'Date(s)', description: '' },
   { id: 'passes', title: 'Passes', description: '' },
+  { id: 'roles', title: 'Roles', description: '' },
   { id: 'early_bird_dates', title: 'Early Bird Dates', description: '' },
   {
     id: 'location',
@@ -80,12 +87,12 @@ const ADD_EVENT_SECTIONS: AddEventSection[] = [
   {
     id: 'important_contacts',
     title: 'Important Contacts',
-    description: 'Key event contacts and roles will be configured here.',
+    description: '',
   },
   {
     id: 'contests',
     title: 'Contests',
-    description: 'Contest divisions, skill levels, and contest names will be configured here.',
+    description: '',
   },
   {
     id: 'schedule',
@@ -95,12 +102,12 @@ const ADD_EVENT_SECTIONS: AddEventSection[] = [
   {
     id: 'staff',
     title: 'Staff',
-    description: 'Event staff roles and assignments will be configured here.',
+    description: '',
   },
   {
     id: 'volunteers',
     title: 'Volunteers',
-    description: 'Volunteer roles and signup details will be configured here.',
+    description: '',
   },
 ];
 
@@ -116,6 +123,7 @@ function createInitialSectionStatuses(): Record<AddEventSectionId, AddEventSecti
   return {
     dates: DEFAULT_SECTION_STATUS,
     passes: DEFAULT_SECTION_STATUS,
+    roles: DEFAULT_SECTION_STATUS,
     early_bird_dates: DEFAULT_SECTION_STATUS,
     location: DEFAULT_SECTION_STATUS,
     online_links: DEFAULT_SECTION_STATUS,
@@ -149,7 +157,7 @@ function renderSectionContent(
 ) {
   if (sectionId === 'dates') {
     return (
-      <EventDatesForm
+      <AddEventDates
         dates={eventDates}
         onDatesChange={onEventDatesChange}
         onFieldEdit={onFieldEdit}
@@ -158,24 +166,36 @@ function renderSectionContent(
   }
 
   if (sectionId === 'location') {
-    return <AddEventLocationSection onFieldEdit={onFieldEdit} />;
+    return <AddEventLocation onFieldEdit={onFieldEdit} />;
   }
 
   if (sectionId === 'passes') {
-    return <EventPasses onFieldEdit={onFieldEdit} />;
+    return <AddEventPasses onFieldEdit={onFieldEdit} />;
+  }
+
+  if (sectionId === 'roles') {
+    return <AddEventRoles onFieldEdit={onFieldEdit} />;
   }
 
   if (sectionId === 'early_bird_dates') {
-    return <EventEarlyBirdDates onFieldEdit={onFieldEdit} />;
+    return <AddEventEarlyBirdDates onFieldEdit={onFieldEdit} />;
   }
 
   if (sectionId === 'online_links') {
-    return <AddEventOnlineLinksSection onFieldEdit={onFieldEdit} />;
+    return <AddEventOnlineLinks onFieldEdit={onFieldEdit} />;
+  }
+
+  if (sectionId === 'important_contacts') {
+    return <AddEventImportantContacts onFieldEdit={onFieldEdit} />;
+  }
+
+  if (sectionId === 'contests') {
+    return <AddEventContests onFieldEdit={onFieldEdit} />;
   }
 
   if (sectionId === 'schedule') {
     return (
-      <EventScheduleDays
+      <AddEventScheduleDays
         scheduleTimeBlocks={getScheduleTimeBlockDays(eventDates)}
         status={scheduleSectionStatus}
         onStatusChange={onScheduleSectionStatusChange}
@@ -184,6 +204,14 @@ function renderSectionContent(
         }
       />
     );
+  }
+
+  if (sectionId === 'staff') {
+    return <AddEventStaff onFieldEdit={onFieldEdit} />;
+  }
+
+  if (sectionId === 'volunteers') {
+    return <AddEventVolunteers onFieldEdit={onFieldEdit} />;
   }
 
   return null;

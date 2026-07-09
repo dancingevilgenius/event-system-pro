@@ -23,13 +23,13 @@ const contactFieldsInnerStackSx = {
   width: '100%',
 } as const;
 
-type AddEventOnlineLinksSectionProps = {
+type AddEventOnlineLinksProps = {
   onFieldEdit?: () => void;
 };
 
-export default function AddEventOnlineLinksSection({
+export default function AddEventOnlineLinks({
   onFieldEdit,
-}: AddEventOnlineLinksSectionProps) {
+}: AddEventOnlineLinksProps) {
   const [contact, setContact] = useState(EMPTY_EVENT_VENUE_CONTACT);
 
   const updateContactField = (field: keyof EventVenueContactJson, value: string) => {

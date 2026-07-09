@@ -34,11 +34,11 @@ function FieldGroup({ title, children }: FieldGroupProps) {
   );
 }
 
-type AddEventLocationSectionProps = {
+type AddEventLocationProps = {
   onFieldEdit?: () => void;
 };
 
-export default function AddEventLocationSection({ onFieldEdit }: AddEventLocationSectionProps) {
+export default function AddEventLocation({ onFieldEdit }: AddEventLocationProps) {
   const [location, setLocation] = useState(EMPTY_EVENT_LOCATION);
   const [stateOptions, setStateOptions] = useState<StaticListEntry[]>([]);
   const [countryOptions, setCountryOptions] = useState<StaticListEntry[]>([]);

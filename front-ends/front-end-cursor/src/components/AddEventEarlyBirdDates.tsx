@@ -48,11 +48,11 @@ const earlyBirdTableSx = {
   },
 } as const;
 
-type EventEarlyBirdDatesProps = {
+type AddEventEarlyBirdDatesProps = {
   onFieldEdit?: () => void;
 };
 
-export default function EventEarlyBirdDates({ onFieldEdit }: EventEarlyBirdDatesProps) {
+export default function AddEventEarlyBirdDates({ onFieldEdit }: AddEventEarlyBirdDatesProps) {
   const [mode, setMode] = useState<EarlyBirdDatesMode>('none');
   const [windows, setWindows] = useState<EarlyBirdWindow[]>(() => createInitialEarlyBirdWindows());
 

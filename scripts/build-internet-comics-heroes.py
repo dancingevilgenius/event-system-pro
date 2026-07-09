@@ -31,6 +31,7 @@ BLOCKED_LAST_NAMES = {
     "ashford",
     "blackwood",
     "chambers",
+    "character",
     "donovan",
     "caldwell",
     "holloway",
@@ -78,12 +79,12 @@ def split_full_name(full_name: str, codename: str) -> tuple[str, str]:
         if len(parts) >= 2:
             return parts[0], " ".join(parts[1:])
         if len(parts) == 1:
-            return parts[0], codename.split()[-1] if " " in codename else "Character"
+            return parts[0], codename.replace("-", " ").split()[-1] if " " in codename else parts[0]
 
     parts = codename.replace("-", " ").split()
     if len(parts) >= 2:
         return parts[0], " ".join(parts[1:])
-    return codename, "Character"
+    return codename, codename
 
 
 def map_gender(raw: str | None) -> str | None:
@@ -114,7 +115,7 @@ def wiki_name_parts(title: str) -> tuple[str, str]:
     parts = title.split()
     if len(parts) >= 2:
         return parts[0], " ".join(parts[1:])
-    return title, "Character"
+    return title, title
 
 
 def fetch_json(url: str) -> object:
@@ -165,7 +166,7 @@ def fetch_akabab_rows() -> list[HeroRow]:
 
         biography = hero.get("biography", {})
         first, last = split_full_name(biography.get("fullName", ""), codename)
-        if last.lower() in BLOCKED_LAST_NAMES:
+        if last.lower() in BLOCKED_LAST_NAMES or last.strip().lower() == "character":
             continue
 
         appearance = hero.get("appearance", {})
@@ -190,7 +191,7 @@ def fetch_wiki_rows() -> list[HeroRow]:
             if not codename:
                 continue
             first, last = wiki_name_parts(codename)
-            if last.lower() in BLOCKED_LAST_NAMES:
+            if last.lower() in BLOCKED_LAST_NAMES or last.strip().lower() == "character":
                 continue
             rows.append((codename, first, last, publisher, None, None, None))
     return rows

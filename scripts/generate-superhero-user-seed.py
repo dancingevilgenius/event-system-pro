@@ -12,6 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from female_follower_heroes import FEMALE_FOLLOWERS
 from image_comics_heroes import IMAGE_HEROES
+from replacement_dc_heroes import prefixed_replacement_heroes
 from internet_comics_heroes import INTERNET_COMICS_HEROES
 from superhero_locations import build_address
 
@@ -20,6 +21,7 @@ BLOCKED_LAST_NAMES = {
     "ashford",
     "blackwood",
     "chambers",
+    "character",
     "donovan",
     "caldwell",
     "holloway",
@@ -305,7 +307,11 @@ HEROES: list[tuple[str, str, str, str, str | None, str | None, str | None]] = [
 def iter_curated_heroes() -> list[tuple[str, str, str, str, str | None, str | None, str | None]]:
     rows = list(HEROES)
     rows.extend(IMAGE_HEROES)
-    rows.extend(INTERNET_COMICS_HEROES)
+    rows.extend(prefixed_replacement_heroes())
+    for codename, first, last, publisher, sex, color1, color2 in INTERNET_COMICS_HEROES:
+        if last.strip().lower() == "character":
+            continue
+        rows.append((codename, first, last, publisher, sex, color1, color2))
     rows.extend(
         (username, first, last, publisher, "female", color1, color2)
         for username, first, last, publisher, color1, color2 in FEMALE_FOLLOWERS

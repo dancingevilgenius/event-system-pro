@@ -5,11 +5,11 @@ alwaysApply: true
 
 # Demo attendee ID reservation
 
-`public.attendee.attendee_id` values **1 through 3000** are reserved for **demo seed data**.
+`public.attendee.attendee_id` values **1 through 10000** are reserved for **demo seed data** (50 demo events × 200 attendees for current_year and current_year - 1).
 
 ## Rules
 
-- **Never** insert production or real-world attendee rows with `attendee_id <= 3000`.
+- **Never** insert production or real-world attendee rows with `attendee_id <= 10000`.
 - Application code, migrations, and manual SQL must allocate new attendees **above** the reserved range (identity sequence is bumped after the demo seed runs).
 - Demo content in the reserved range may change on each seed run (events, users, dates); the **ID slots** stay fixed.
 
@@ -17,9 +17,9 @@ alwaysApply: true
 
 - **Safe to re-run** at any time (calls `api.generate_demo_attendees_core()`).
 - **Admin UI:** Admin home **Generate Attendees** button calls `api.generate_demo_attendees()` (requires admin JWT).
-- Deletes only `attendee_id <= 3000`, then inserts exactly **3000** demo rows (`attendee_id` 1–3000).
-- Does **not** truncate the table and does **not** delete rows with `attendee_id > 3000`.
-- After insert, resets the identity sequence to `GREATEST(3000, MAX(attendee_id))` so the next production insert continues above real data.
+- Deletes only `attendee_id <=` the reserved total, then inserts demo rows (`attendee_id` **1–10000** when all 50 recent-year demo events are present).
+- Does **not** truncate the table and does **not** delete rows above the reserved range.
+- After insert, resets the identity sequence to `GREATEST(reserved_max, MAX(attendee_id))` so the next production insert continues above real data.
 
 ## Marking demo rows
 
@@ -30,10 +30,10 @@ alwaysApply: true
 
 ```sql
 -- Demo attendees only (reserved range)
-SELECT * FROM attendee WHERE attendee_id <= 3000;
+SELECT * FROM attendee WHERE attendee_id <= 10000;
 
 -- Production attendees only
-SELECT * FROM attendee WHERE attendee_id > 3000;
+SELECT * FROM attendee WHERE attendee_id > 10000;
 
 -- Demo flag (any id)
 SELECT * FROM attendee WHERE (more_json->>'demo')::boolean = true;

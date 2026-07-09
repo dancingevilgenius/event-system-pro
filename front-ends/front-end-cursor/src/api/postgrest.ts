@@ -910,6 +910,7 @@ export type GenerateDemoAttendeesResult = {
   message: string;
   inserted?: number;
   events?: number;
+  preserved_above_reserve?: number;
   preserved_above_3000?: number;
   event_groups?: string[];
 };

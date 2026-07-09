@@ -102,31 +102,31 @@ Ten roles from `user_app_role` (included in login JWT `app_roles`):
 
 | Code | Label |
 |------|-------|
-| `admin` | Admin |
-| `staff` | Staff |
-| `judge` | Judge |
-| `headjudge` | Head Judge |
-| `registration` | Registration |
-| `floorparent` | Floor Parent |
-| `ballroomcoordinator` | Ballroom Coordinator |
-| `dj` | DJ |
-| `eventcoordinator` | Event Coordinator |
-| `competitor` | Competitor |
+| `ADMIN` | Admin |
+| `STAFF` | Staff |
+| `JUDGE` | Judge |
+| `HEAD_JUDGE` | Head Judge |
+| `REGISTRATION` | Registration |
+| `FLOOR_PARENT` | Floor Parent |
+| `BALLROOM_COORDINATOR` | Ballroom Coordinator |
+| `DJ` | DJ |
+| `EVENT_COORDINATOR` | Event Coordinator |
+| `COMPETITOR` | Competitor |
 
 ### `ProtectedRoute` behavior
 
 - No session → redirect to **`/`** (login).
 - Session present but missing required role → redirect to **`/home`**.
-- Users with the **`admin`** role pass **any** role check (admin can open staff, competitor, and admin routes).
+- Users with the **`ADMIN`** role pass **any** role check (admin can open staff, competitor, and admin routes).
 
 ### Route access
 
 | Route | Required role(s) |
 |-------|------------------|
 | `/home`, `/account`, `/changepassword`, `/secret-questions` | Any signed-in user |
-| `/staff`, `/judging` | `staff` (or `admin`) |
-| `/competitor` | `competitor` (or `admin`) |
-| `/adminhome`, `/admin/event-details`, `/admin/contests`, `/admin/contests/contest`, `/admin/competitors`, `/admin/competition-entries` | `admin` |
+| `/staff`, `/judging` | `STAFF` (or `ADMIN`) |
+| `/competitor` | `COMPETITOR` (or `ADMIN`) |
+| `/adminhome`, `/admin/event-details`, `/admin/contests`, `/admin/contests/contest`, `/admin/competitors`, `/admin/competition-entries` | `ADMIN` |
 
 ---
 
@@ -730,11 +730,11 @@ The **`attendee`** table links a `user_id` to an `event_id` with optional JSON f
 
 ### Reserved `attendee_id` range
 
-**`attendee_id` 1 through 3000** are reserved for **demo seed data**.
+**`attendee_id` 1 through 10000** are reserved for **demo seed data** (when all recent-year demo events are present).
 
-- **Never** insert production or real-world attendee rows with `attendee_id <= 3000`.
+- **Never** insert production or real-world attendee rows with `attendee_id <= 10000`.
 - Demo **content** in that range may change on each seed run; the **ID slots** stay fixed.
-- Production attendees must use `attendee_id > 3000` (identity sequence is bumped after demo seed runs).
+- Production attendees must use `attendee_id > 10000` (identity sequence is bumped after demo seed runs).
 
 ### Demo seed behavior
 
@@ -742,11 +742,11 @@ Implemented in **`api.generate_demo_attendees_core()`** (called by seed `012_att
 
 | Rule | Value |
 |------|--------|
-| Events selected | **5** random demo `event_group` trios (3 consecutive-year instances each → **15** events) |
-| Attendees per event | **200** random users (pool needs **≥ 200** active users; dev seed provides **1000** superheroes) |
-| Total demo rows | **3000** (`attendee_id` **1–3000**) |
+| Events selected | Every `event` with `more_json.demo = true` in **current_year** and **current_year - 1** (America/Chicago) |
+| Attendees per event | **200** random active users (pool needs **≥ 200** users; dev seed provides **1000** superheroes) |
+| Total demo rows | **events × 200** (`attendee_id` **1–10000** for 50 events) |
 | `created_date` | **1–90 days before** that event's `start_date` (America/Chicago calendar math); same **calendar year** as the event |
-| Re-run safety | Deletes only `attendee_id <= 3000`; **does not** delete rows above 3000 |
+| Re-run safety | Deletes only `attendee_id <=` reserved total; **does not** delete rows above the reserved range |
 | Demo marking | `more_json.demo = true`, `created_by = 'c-agent'` |
 
 ### Admin UI and RPC

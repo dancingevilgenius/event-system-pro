@@ -80,7 +80,7 @@ export default function StaticListDetailsPage() {
   const decodedListCode = decodeURIComponent(listCode);
   const { hasAnyRole } = useAuth();
   const { showSuccess, showProblem } = useMessages();
-  const isAdmin = hasAnyRole(['admin']);
+  const isAdmin = hasAnyRole(['ADMIN']);
 
   const [record, setRecord] = useState<StaticListRecord | null>(null);
   const [entries, setEntries] = useState<StaticListEntry[]>([]);

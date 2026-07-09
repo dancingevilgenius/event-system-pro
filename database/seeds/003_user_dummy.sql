@@ -44,7 +44,7 @@ SELECT
   }'::json,
   '{
     "interested": true,
-    "roles": ["registration", "score_table"],
+    "roles": ["REGISTRATION", "score_table"],
     "availability": "weekends"
   }'::json,
   '{

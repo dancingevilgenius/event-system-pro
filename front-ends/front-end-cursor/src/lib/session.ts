@@ -14,16 +14,16 @@ export function isInactivityLogoutDisabled(): boolean {
 }
 
 export type AppRole =
-  | 'admin'
-  | 'staff'
-  | 'judge'
-  | 'headjudge'
-  | 'registration'
-  | 'floorparent'
-  | 'ballroomcoordinator'
-  | 'dj'
-  | 'eventcoordinator'
-  | 'competitor';
+  | 'ADMIN'
+  | 'STAFF'
+  | 'JUDGE'
+  | 'HEAD_JUDGE'
+  | 'REGISTRATION'
+  | 'FLOOR_PARENT'
+  | 'BALLROOM_COORDINATOR'
+  | 'DJ'
+  | 'EVENT_COORDINATOR'
+  | 'COMPETITOR';
 
 export type UserSession = {
   user_id: number;
@@ -34,16 +34,16 @@ export type UserSession = {
 };
 
 const APP_ROLES: AppRole[] = [
-  'admin',
-  'staff',
-  'judge',
-  'headjudge',
-  'registration',
-  'floorparent',
-  'ballroomcoordinator',
-  'dj',
-  'eventcoordinator',
-  'competitor',
+  'ADMIN',
+  'STAFF',
+  'JUDGE',
+  'HEAD_JUDGE',
+  'REGISTRATION',
+  'FLOOR_PARENT',
+  'BALLROOM_COORDINATOR',
+  'DJ',
+  'EVENT_COORDINATOR',
+  'COMPETITOR',
 ];
 
 function isAppRole(value: unknown): value is AppRole {
@@ -138,7 +138,7 @@ export function clearSession(): void {
 }
 
 export function sessionHasAnyRole(session: UserSession, requiredRoles: AppRole[]): boolean {
-  if (session.roles.includes('admin')) {
+  if (session.roles.includes('ADMIN')) {
     return true;
   }
 

@@ -15,16 +15,16 @@ CREATE TABLE IF NOT EXISTS public.user_app_role (
     FOREIGN KEY (user_id) REFERENCES public."user" (user_id) ON DELETE CASCADE,
   CONSTRAINT user_app_role_role_code_check
     CHECK (role_code IN (
-      'admin',
-      'staff',
-      'judge',
-      'headjudge',
-      'registration',
-      'floorparent',
-      'ballroomcoordinator',
-      'dj',
-      'eventcoordinator',
-      'competitor'
+      'ADMIN',
+      'STAFF',
+      'JUDGE',
+      'HEAD_JUDGE',
+      'REGISTRATION',
+      'FLOOR_PARENT',
+      'BALLROOM_COORDINATOR',
+      'DJ',
+      'EVENT_COORDINATOR',
+      'COMPETITOR'
     ))
 );
 
@@ -36,16 +36,16 @@ SELECT u.user_id, r.role_code
 FROM public."user" u
 CROSS JOIN (
   VALUES
-    ('admin'),
-    ('staff'),
-    ('judge'),
-    ('headjudge'),
-    ('registration'),
-    ('floorparent'),
-    ('ballroomcoordinator'),
-    ('dj'),
-    ('eventcoordinator'),
-    ('competitor')
+    ('ADMIN'),
+    ('STAFF'),
+    ('JUDGE'),
+    ('HEAD_JUDGE'),
+    ('REGISTRATION'),
+    ('FLOOR_PARENT'),
+    ('BALLROOM_COORDINATOR'),
+    ('DJ'),
+    ('EVENT_COORDINATOR'),
+    ('COMPETITOR')
 ) AS r(role_code)
 WHERE u.username = 'dancingevilgenius'
 ON CONFLICT DO NOTHING;
@@ -55,7 +55,7 @@ SET
   volunteer_json = jsonb_set(
     COALESCE(u.volunteer_json::jsonb, '{}'::jsonb),
     '{roles}',
-    '["admin", "staff", "judge", "headjudge", "registration", "floorparent", "ballroomcoordinator", "dj", "eventcoordinator", "competitor"]'::jsonb
+    '["ADMIN", "STAFF", "JUDGE", "HEAD_JUDGE", "REGISTRATION", "FLOOR_PARENT", "BALLROOM_COORDINATOR", "DJ", "EVENT_COORDINATOR", "COMPETITOR"]'::jsonb
   )::json
 WHERE u.username = 'dancingevilgenius';
 

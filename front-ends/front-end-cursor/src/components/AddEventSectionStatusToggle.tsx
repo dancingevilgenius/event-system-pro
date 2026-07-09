@@ -1,6 +1,6 @@
 import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { type MouseEvent } from 'react';
-import { CONTENT_MAX_WIDTH } from '../constants/layout';
+import { mobileColumnSx } from '../constants/layout';
 
 export type AddEventSectionStatus = 'not_started' | 'in_progress' | 'finalized';
 
@@ -11,8 +11,7 @@ const STATUS_OPTIONS: { value: AddEventSectionStatus; label: string }[] = [
 ];
 
 const toggleGroupSx = {
-  width: '100%',
-  maxWidth: CONTENT_MAX_WIDTH,
+  ...mobileColumnSx,
   '& .MuiToggleButton-root': {
     flex: 1,
     py: 1,

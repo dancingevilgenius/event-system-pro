@@ -4,7 +4,7 @@ import {
   EMPTY_EVENT_VENUE_CONTACT,
   type EventVenueContactJson,
 } from '../lib/eventLocation';
-import { CONTENT_MAX_WIDTH } from '../constants/layout';
+import { mobileColumnSx } from '../constants/layout';
 import AppPhoneNumberField from './AppPhoneNumberField';
 import AppTextField from './AppTextField';
 
@@ -14,11 +14,7 @@ const contactFieldRowSx = {
   boxSizing: 'border-box',
 } as const;
 
-const contactFieldsColumnSx = {
-  width: '100%',
-  maxWidth: CONTENT_MAX_WIDTH,
-  boxSizing: 'border-box',
-} as const;
+const contactFieldsColumnSx = mobileColumnSx;
 
 const contactFieldsInnerStackSx = {
   display: 'grid',

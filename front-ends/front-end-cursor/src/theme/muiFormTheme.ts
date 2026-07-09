@@ -1,9 +1,12 @@
 import type { Theme } from '@mui/material/styles';
-import { CONTENT_MAX_WIDTH } from '../constants/layout';
+import { CONTENT_MAX_WIDTH, MOBILE_LAYOUT_MIN_WIDTH } from '../constants/layout';
 
 const fieldMaxWidth = {
-  maxWidth: CONTENT_MAX_WIDTH,
   width: '100%',
+  maxWidth: CONTENT_MAX_WIDTH,
+  [`@media (min-width: ${MOBILE_LAYOUT_MIN_WIDTH}px)`]: {
+    maxWidth: '100%',
+  },
 };
 
 const dateTimeInputTypes = ['date', 'datetime-local', 'time'] as const;

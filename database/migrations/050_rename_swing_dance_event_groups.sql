@@ -1,4 +1,4 @@
-﻿-- Rename vague dance demo event_group codes to swing-themed names.
+-- Rename vague dance demo event_group codes to swing-themed names.
 -- Run: psql -U postgres -d event_system_pro -f database/migrations/050_rename_swing_dance_event_groups.sql
 
 \connect event_system_pro
@@ -26,6 +26,7 @@ WHERE event_group_code IN (
   'MARIGLEN_INVITATIONAL',
   'SELWICK_CONGRESS'
 );
+
 CREATE OR REPLACE FUNCTION api.generate_demo_attendees_core()
 RETURNS json
 LANGUAGE plpgsql
@@ -224,7 +225,7 @@ BEGIN
     RETURN json_build_object(
       'ok', false,
       'message', format(
-        'Reserved range invalid: %s rows, %s events, attendee_id %sâ€“%s.',
+        'Reserved range invalid: %s rows, %s events, attendee_id %s-%s.',
         row_count, event_count, id_min, id_max
       )
     );
@@ -259,7 +260,7 @@ BEGIN
   RETURN json_build_object(
     'ok', true,
     'message', format(
-      'Generated %s demo attendees (attendee_id 1â€“%s).',
+      'Generated %s demo attendees (attendee_id 1-%s).',
       demo_attendee_reserve,
       demo_attendee_reserve
     ),
@@ -270,5 +271,5 @@ BEGIN
   );
 END;
 $$;
-NOTIFY pgrst, 'reload schema';
 
+NOTIFY pgrst, 'reload schema';

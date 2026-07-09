@@ -26,6 +26,7 @@ import { fetchEventGroupByCode } from '../api/postgrest';
 import EventDatesForm from '../components/EventDatesForm';
 import AddEventLocationSection from '../components/AddEventLocationSection';
 import AddEventOnlineLinksSection from '../components/AddEventOnlineLinksSection';
+import EventEarlyBirdDates from '../components/EventEarlyBirdDates';
 import EventPasses from '../components/EventPasses';
 import EventScheduleDays from '../components/EventScheduleDays';
 import AddEventSortableSectionAccordion from '../components/AddEventSortableSectionAccordion';
@@ -47,6 +48,7 @@ type AddEventLocationState = {
 type AddEventSectionId =
   | 'dates'
   | 'passes'
+  | 'early_bird_dates'
   | 'location'
   | 'online_links'
   | 'important_contacts'
@@ -64,6 +66,7 @@ type AddEventSection = {
 const ADD_EVENT_SECTIONS: AddEventSection[] = [
   { id: 'dates', title: 'Date(s)', description: '' },
   { id: 'passes', title: 'Passes', description: '' },
+  { id: 'early_bird_dates', title: 'Early Bird Dates', description: '' },
   {
     id: 'location',
     title: 'Location/Venue',
@@ -113,6 +116,7 @@ function createInitialSectionStatuses(): Record<AddEventSectionId, AddEventSecti
   return {
     dates: DEFAULT_SECTION_STATUS,
     passes: DEFAULT_SECTION_STATUS,
+    early_bird_dates: DEFAULT_SECTION_STATUS,
     location: DEFAULT_SECTION_STATUS,
     online_links: DEFAULT_SECTION_STATUS,
     important_contacts: DEFAULT_SECTION_STATUS,
@@ -159,6 +163,10 @@ function renderSectionContent(
 
   if (sectionId === 'passes') {
     return <EventPasses onFieldEdit={onFieldEdit} />;
+  }
+
+  if (sectionId === 'early_bird_dates') {
+    return <EventEarlyBirdDates onFieldEdit={onFieldEdit} />;
   }
 
   if (sectionId === 'online_links') {

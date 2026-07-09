@@ -1,6 +1,6 @@
 import { Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import { type MouseEvent, useEffect, useMemo } from 'react';
-import { CONTENT_MAX_WIDTH } from '../constants/layout';
+import { mobileColumnSx } from '../constants/layout';
 import {
   type EventDateMode,
   type EventDatesFormState,
@@ -11,8 +11,7 @@ import { parseDateTimeLocalValue } from '../lib/eventDuration';
 import AppTextField from './AppTextField';
 
 const dateModeToggleSx = {
-  width: '100%',
-  maxWidth: CONTENT_MAX_WIDTH,
+  ...mobileColumnSx,
   '& .MuiToggleButton-root': {
     flex: 1,
     py: 1,

@@ -1,42 +1,55 @@
 import {
   Box,
   Button,
-  IconButton,
   Stack,
-  Typography,
 } from '@mui/material';
-import { useState } from 'react';
-import { CONTENT_MAX_WIDTH } from '../constants/layout';
 import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { type SyntheticEvent, useState } from 'react';
+import { mobileColumnSx } from '../constants/layout';
+import {
+  createDefaultEventPass,
   createEmptyEventPass,
-  sanitizePassCostInput,
   type EventPassFormState,
 } from '../lib/eventPasses';
-import AppTextField from './AppTextField';
-import DeleteIcon from './DeleteIcon';
+import EventPassSortableAccordion from './EventPassSortableAccordion';
 
-const passFieldsColumnSx = {
-  width: '100%',
-  maxWidth: CONTENT_MAX_WIDTH,
-  boxSizing: 'border-box',
-} as const;
-
-const fieldGroupSx = {
-  border: 1,
-  borderColor: 'divider',
-  borderRadius: 1,
-  p: { xs: 1.5, sm: 2 },
-  width: '100%',
-} as const;
+const passFieldsColumnSx = mobileColumnSx;
 
 type EventPassesProps = {
   onFieldEdit?: () => void;
 };
 
 export default function EventPasses({ onFieldEdit }: EventPassesProps) {
-  const [passes, setPasses] = useState<EventPassFormState[]>([createEmptyEventPass()]);
+  const [passes, setPasses] = useState<EventPassFormState[]>(() => [createDefaultEventPass()]);
+  const [expandedPassId, setExpandedPassId] = useState<string | false>(
+    () => passes[0]?.id ?? false,
+  );
 
-  const updatePass = (id: string, patch: Partial<Pick<EventPassFormState, 'name' | 'cost'>>) => {
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  const passIds = passes.map((pass) => pass.id);
+
+  const updatePass = (
+    id: string,
+    patch: Partial<Pick<EventPassFormState, 'name' | 'cost' | 'description'>>,
+  ) => {
     setPasses((current) =>
       current.map((pass) => (pass.id === id ? { ...pass, ...patch } : pass)),
     );
@@ -44,70 +57,53 @@ export default function EventPasses({ onFieldEdit }: EventPassesProps) {
   };
 
   const handleAddPass = () => {
-    setPasses((current) => [...current, createEmptyEventPass()]);
+    const nextPass = createEmptyEventPass();
+    setPasses((current) => [...current, nextPass]);
+    setExpandedPassId(nextPass.id);
     onFieldEdit?.();
   };
 
-  const handleRemovePass = (id: string) => {
-    setPasses((current) => {
-      if (current.length <= 1) {
-        return current;
-      }
+  const handleAccordionChange =
+    (passId: string) => (_event: SyntheticEvent, isExpanded: boolean) => {
+      setExpandedPassId(isExpanded ? passId : false);
+    };
 
-      return current.filter((pass) => pass.id !== id);
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) {
+      return;
+    }
+
+    setPasses((current) => {
+      const oldIndex = current.findIndex((pass) => pass.id === active.id);
+      const newIndex = current.findIndex((pass) => pass.id === over.id);
+      return arrayMove(current, oldIndex, newIndex);
     });
     onFieldEdit?.();
   };
 
   return (
     <Box sx={passFieldsColumnSx}>
-      <Stack spacing={2}>
-        {passes.map((pass, index) => (
-          <Box key={pass.id} sx={fieldGroupSx}>
-            <Stack
-              direction="row"
-              sx={{ alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}
-            >
-              <Typography variant="subtitle2">
-                Pass {index + 1}
-              </Typography>
-              {passes.length > 1 ? (
-                <IconButton
-                  size="small"
-                  aria-label={`Remove pass ${index + 1}`}
-                  onClick={() => handleRemovePass(pass.id)}
-                >
-                  <DeleteIcon fontSize="small" />
-                </IconButton>
-              ) : null}
+      <Stack spacing={1.5}>
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext items={passIds} strategy={verticalListSortingStrategy}>
+            <Stack spacing={1.5}>
+              {passes.map((pass) => (
+                <EventPassSortableAccordion
+                  key={pass.id}
+                  pass={pass}
+                  expanded={expandedPassId === pass.id}
+                  onAccordionChange={handleAccordionChange(pass.id)}
+                  onChange={updatePass}
+                />
+              ))}
             </Stack>
-            <Stack spacing={2}>
-              <AppTextField
-                label="Name"
-                value={pass.name}
-                onChange={(event) => updatePass(pass.id, { name: event.target.value })}
-                fullWidth
-              />
-              <AppTextField
-                label="Cost"
-                value={pass.cost}
-                onChange={(event) =>
-                  updatePass(pass.id, { cost: sanitizePassCostInput(event.target.value) })
-                }
-                fullWidth
-                slotProps={{
-                  htmlInput: {
-                    inputMode: 'decimal',
-                  },
-                }}
-              />
-            </Stack>
-          </Box>
-        ))}
+          </SortableContext>
+        </DndContext>
 
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
           <Button variant="outlined" onClick={handleAddPass}>
-            Add another
+            Add new pass
           </Button>
         </Box>
       </Stack>

@@ -1,4 +1,5 @@
--- Rename merchandise table and API view to merchandise_sales (upgrade from 094).
+-- Upgrade: merchandise -> merchandise_sales (after 094).
+-- Fresh installs: 091 creates merchandise_sales directly; view refresh only.
 -- Run: psql -U postgres -d event_system_pro -f database/migrations/095_rename_merchandise_to_merchandise_sales.sql
 
 \connect event_system_pro
@@ -35,19 +36,30 @@ $$;
 DROP VIEW IF EXISTS api.merchandise;
 DROP VIEW IF EXISTS api.merchandise_sales;
 
-CREATE OR REPLACE VIEW api.merchandise_sales AS
-SELECT
-  event_code,
-  merchandise_json,
-  next_receipt_seq,
-  created_date,
-  created_by,
-  modified_date,
-  modified_by
-FROM public.merchandise_sales;
+DO $$
+BEGIN
+  IF to_regclass('public.merchandise_sales') IS NULL THEN
+    RAISE NOTICE '095: public.merchandise_sales not present; skipping api.merchandise_sales view.';
+    RETURN;
+  END IF;
 
-GRANT SELECT ON api.merchandise_sales TO anon, authenticated;
-GRANT INSERT, UPDATE, DELETE ON public.merchandise_sales TO anon, authenticated;
-GRANT INSERT, UPDATE, DELETE ON api.merchandise_sales TO anon, authenticated;
+  EXECUTE $sql$
+    CREATE OR REPLACE VIEW api.merchandise_sales AS
+    SELECT
+      event_code,
+      merchandise_json,
+      next_receipt_seq,
+      created_date,
+      created_by,
+      modified_date,
+      modified_by
+    FROM public.merchandise_sales
+  $sql$;
+
+  GRANT SELECT ON api.merchandise_sales TO anon, authenticated;
+  GRANT INSERT, UPDATE, DELETE ON public.merchandise_sales TO anon, authenticated;
+  GRANT INSERT, UPDATE, DELETE ON api.merchandise_sales TO anon, authenticated;
+END
+$$;
 
 NOTIFY pgrst, 'reload schema';

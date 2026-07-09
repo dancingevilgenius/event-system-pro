@@ -1,4 +1,4 @@
-﻿-- event_type_lu: description (varchar) -> description_json (jsonb)
+-- event_type_lu: description (varchar) -> description_json (jsonb)
 
 DO $$
 BEGIN

@@ -7,7 +7,7 @@ import {
   Typography,
 } from '@mui/material';
 import { type SyntheticEvent, useEffect, useState } from 'react';
-import { CONTENT_MAX_WIDTH } from '../constants/layout';
+import { mobileColumnSx } from '../constants/layout';
 import { type ScheduleTimeBlockDay } from '../lib/eventDates';
 import AddEventSectionStatusToggle, {
   type AddEventSectionStatus,
@@ -55,7 +55,7 @@ export default function EventScheduleDays({
   return (
     <Stack spacing={2}>
       {scheduleTimeBlocks.length === 0 ? (
-        <Alert severity="warning" sx={{ width: '100%', maxWidth: CONTENT_MAX_WIDTH }}>
+        <Alert severity="warning" sx={mobileColumnSx}>
           Enter a day or dates for the event in the Date(s) accordion panel.
         </Alert>
       ) : (

@@ -11,27 +11,24 @@ export PGPASSWORD="$SCHEDULER_DB_PASSWORD"
 
 echo "scheduler: waiting for PostgreSQL at ${PGHOST} (db=${POSTGRES_DB}, user=${SCHEDULER_DB_USER})..."
 i=0
+CRONTAB_BODY=""
 while [ "$i" -lt 60 ]; do
-  if psql -h "$PGHOST" -U "$SCHEDULER_DB_USER" -d "$POSTGRES_DB" -v ON_ERROR_STOP=1 -t -A \
-    -c "SELECT 1 FROM maintenance.job_definition LIMIT 1;" >/dev/null 2>&1; then
+  set +e
+  CRONTAB_BODY="$(
+    psql -h "$PGHOST" -U "$SCHEDULER_DB_USER" -d "$POSTGRES_DB" -v ON_ERROR_STOP=1 -t -A \
+      -c "SELECT api.scheduler_crontab();" 2>/dev/null
+  )"
+  PSQL_EXIT=$?
+  set -e
+  if [ "$PSQL_EXIT" -eq 0 ] && [ -n "$(printf '%s' "$CRONTAB_BODY" | tr -d '[:space:]')" ]; then
     break
   fi
   i=$((i + 1))
   sleep 2
 done
 
-if [ "$i" -ge 60 ]; then
-  echo "scheduler: ERROR timed out waiting for maintenance.job_definition" >&2
-  exit 1
-fi
-
-CRONTAB_BODY="$(
-  psql -h "$PGHOST" -U "$SCHEDULER_DB_USER" -d "$POSTGRES_DB" -v ON_ERROR_STOP=1 -t -A \
-    -c "SELECT api.scheduler_crontab();"
-)"
-
-if [ -z "$(printf '%s' "$CRONTAB_BODY" | tr -d '[:space:]')" ]; then
-  echo "scheduler: ERROR api.scheduler_crontab() returned empty body" >&2
+if [ "$i" -ge 60 ] || [ -z "$(printf '%s' "$CRONTAB_BODY" | tr -d '[:space:]')" ]; then
+  echo "scheduler: ERROR timed out waiting for api.scheduler_crontab()" >&2
   exit 1
 fi
 

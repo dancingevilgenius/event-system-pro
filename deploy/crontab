@@ -1,0 +1,5 @@
+# Maintenance job schedule for the scheduler container (Alpine busybox crond).
+# Times use the container TZ (default America/Chicago).
+MAILTO=""
+*/5 * * * * /inactivity-logout.sh
+0 0 * * * /nightly-cleanup.sh

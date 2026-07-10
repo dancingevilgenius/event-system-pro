@@ -1,0 +1,15 @@
+# Bakes maintenance scripts + crontab into the image so Dokploy redeploys
+# do not rely on bind-mounting deploy/scripts from the cloned repo.
+FROM postgres:18-alpine
+
+COPY deploy/scripts/nightly-cleanup.sh /nightly-cleanup.sh
+COPY deploy/scripts/inactivity-logout.sh /inactivity-logout.sh
+COPY deploy/crontab /etc/crontabs/root
+
+RUN sed -i 's/\r$//' /nightly-cleanup.sh /inactivity-logout.sh /etc/crontabs/root \
+  && chmod +x /nightly-cleanup.sh /inactivity-logout.sh \
+  && chmod 0600 /etc/crontabs/root
+
+ENV TZ=America/Chicago
+
+CMD ["crond", "-f", "-l", "2"]

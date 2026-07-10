@@ -63,6 +63,13 @@ export default defineConfig({
         ws: true,
         rewrite: (path) => path.replace(/^\/realtime/, ''),
       },
+      '/wsdc-registry': {
+        target: 'https://worldsdc.com',
+        changeOrigin: true,
+        secure: true,
+        rewrite: (path) =>
+          path.replace(/^\/wsdc-registry/, '/wp-json/wsdcregistry/v1'),
+      },
     },
   },
 })

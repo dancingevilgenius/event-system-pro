@@ -1,4 +1,17 @@
-import { Box, Button, Container, Paper, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Paper,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from '@mui/material';
 import {
   DataGrid,
   GridLogicOperator,
@@ -11,10 +24,15 @@ import {
   fetchEventAttendeesForEvent,
   fetchEventById,
   fetchEventGroupByCode,
+  setUserWsdcId,
   type EventAttendeeListRow,
 } from '../api/postgrest';
+import type { WsdcDancerProfile } from '../api/wsdcRegistry';
+import { buildStoredWsdcInfo } from '../api/wsdcRegistry';
 import AddEventButton from '../components/AddEventButton';
+import WsdcFindDancerSection from '../components/WsdcFindDancerSection';
 import { useIsMobileDevice } from '../hooks/useIsMobileDevice';
+import { useMessages } from '../hooks/useMessages';
 import { eventDetailPath } from '../constants/eventRoutes';
 import { formatEventMonthYear } from '../lib/eventDisplay';
 
@@ -252,15 +270,19 @@ const ATTENDEE_CONTACT_COLUMNS: Record<MobileContactColumn, GridColDef<AttendeeG
   },
 };
 
-const ATTENDEE_COLUMNS: GridColDef<AttendeeGridRow>[] = [
-  ...ATTENDEE_NAME_COLUMNS,
-  ATTENDEE_CONTACT_COLUMNS.phone,
-  ATTENDEE_CONTACT_COLUMNS.email,
-];
+const ATTENDEE_WSDC_COLUMN: GridColDef<AttendeeGridRow> = {
+  field: 'wsdcId',
+  headerName: 'WSDC #',
+  flex: 0.7,
+  minWidth: 100,
+  filterable: true,
+  valueFormatter: (value: string) => value || '—',
+};
 
 export default function AdminEventAttendeesPage() {
   const navigate = useNavigate();
   const isMobile = useIsMobileDevice();
+  const { showProblem, showSuccess } = useMessages();
   const defaultPageSize = isMobile ? MOBILE_PAGE_SIZE : DESKTOP_PAGE_SIZE;
 
   const { eventGroupCode = '', eventId = '' } = useParams<{
@@ -276,15 +298,26 @@ export default function AdminEventAttendeesPage() {
   const [headerLabel, setHeaderLabel] = useState('');
   const [filterPanelAnchorEl, setFilterPanelAnchorEl] = useState<HTMLElement | null>(null);
   const [mobileContactColumn, setMobileContactColumn] = useState<MobileContactColumn>('phone');
+  const [lookupRow, setLookupRow] = useState<AttendeeGridRow | null>(null);
+  const [savingWsdc, setSavingWsdc] = useState(false);
 
   const eventBasePath = eventDetailPath(decodedGroupCode, parsedEventId);
 
   const gridColumns = useMemo(() => {
     if (!isMobile) {
-      return ATTENDEE_COLUMNS;
+      return [
+        ...ATTENDEE_NAME_COLUMNS,
+        ATTENDEE_CONTACT_COLUMNS.phone,
+        ATTENDEE_CONTACT_COLUMNS.email,
+        ATTENDEE_WSDC_COLUMN,
+      ];
     }
 
-    return [...ATTENDEE_NAME_COLUMNS, ATTENDEE_CONTACT_COLUMNS[mobileContactColumn]];
+    return [
+      ...ATTENDEE_NAME_COLUMNS,
+      ATTENDEE_CONTACT_COLUMNS[mobileContactColumn],
+      ATTENDEE_WSDC_COLUMN,
+    ];
   }, [isMobile, mobileContactColumn]);
 
   const gridRows = useMemo<AttendeeGridRow[]>(
@@ -355,6 +388,38 @@ export default function AdminEventAttendeesPage() {
     };
   }, [filterPanelAnchorEl]);
 
+  const handleConfirmWsdc = async (wsdcId: string, profile: WsdcDancerProfile) => {
+    if (!lookupRow?.userId) {
+      showProblem('This attendee has no linked user account.');
+      return;
+    }
+
+    setSavingWsdc(true);
+    try {
+      const result = await setUserWsdcId({
+        userId: lookupRow.userId,
+        wsdcId,
+        wsdcInfo: buildStoredWsdcInfo(wsdcId, profile),
+      });
+      if (!result.ok) {
+        showProblem(result.message);
+        return;
+      }
+
+      setRows((current) =>
+        current.map((row) =>
+          row.attendeeId === lookupRow.attendeeId ? { ...row, wsdcId } : row,
+        ),
+      );
+      setLookupRow((current) => (current ? { ...current, wsdcId } : current));
+      showSuccess(result.message);
+    } catch (saveError) {
+      showProblem(saveError instanceof Error ? saveError.message : 'Unable to save WSDC ID.');
+    } finally {
+      setSavingWsdc(false);
+    }
+  };
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Paper
@@ -386,6 +451,9 @@ export default function AdminEventAttendeesPage() {
           </Typography>
           <Typography variant="body2" color="text.secondary" align="center">
             {headerLabel || 'Event attendees'} ({rows.length})
+          </Typography>
+          <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 0.5 }}>
+            Click a row to look up and save a WSDC #.
           </Typography>
         </Box>
 
@@ -424,6 +492,7 @@ export default function AdminEventAttendeesPage() {
             columns={gridColumns}
             loading={loading}
             disableRowSelectionOnClick
+            onRowClick={(params) => setLookupRow(params.row)}
             slots={{ toolbar: GridToolbar }}
             slotProps={dataGridSlotProps}
             initialState={{
@@ -432,7 +501,10 @@ export default function AdminEventAttendeesPage() {
               },
             }}
             pageSizeOptions={[10, 25, 50, 100]}
-            sx={ATTENDEE_DATA_GRID_SX}
+            sx={{
+              ...ATTENDEE_DATA_GRID_SX,
+              '& .MuiDataGrid-row': { cursor: 'pointer' },
+            }}
             localeText={{
               noRowsLabel: 'No attendees found for this event.',
             }}
@@ -446,6 +518,36 @@ export default function AdminEventAttendeesPage() {
           </Button>
         </Stack>
       </Paper>
+
+      <Dialog
+        open={Boolean(lookupRow)}
+        onClose={() => setLookupRow(null)}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>
+          WSDC lookup
+          {lookupRow ? ` — ${lookupRow.firstName} ${lookupRow.lastName}`.trim() : ''}
+        </DialogTitle>
+        <DialogContent dividers>
+          {lookupRow && (
+            <WsdcFindDancerSection
+              key={`${lookupRow.attendeeId}-${lookupRow.wsdcId}`}
+              title=""
+              description={undefined}
+              initialQuery={[lookupRow.firstName, lookupRow.lastName].filter(Boolean).join(' ')}
+              initialWsdcId={lookupRow.wsdcId || null}
+              enableDirectLink={false}
+              confirmLabel="Save WSDC # to user"
+              confirming={savingWsdc}
+              onConfirmWsdcId={handleConfirmWsdc}
+            />
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setLookupRow(null)}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }

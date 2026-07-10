@@ -14,6 +14,7 @@ const ADMIN_BUTTONS = [
   { label: 'Contests', path: '/admin/contests' },
   { label: 'Competitors', path: '/admin/competitors' },
   { label: 'Competition Entries', path: '/admin/competition-entries' },
+  { label: 'WSDC Find Dancer', path: '/wsdc-find-dancer' },
   { label: 'Governing Bodies', path: '/governing-body' },
   { label: 'Audit Log', path: '/admin/audit-log' },
   { label: 'Static Lists', path: '/static-lists' },

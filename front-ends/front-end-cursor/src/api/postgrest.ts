@@ -857,10 +857,12 @@ export type EventGroupDetail = {
 
 export type EventAttendeeListRow = {
   attendeeId: number;
+  userId: number | null;
   firstName: string;
   lastName: string;
   phone: string;
   email: string;
+  wsdcId: string;
 };
 
 type ApiEventRecord = {
@@ -942,11 +944,28 @@ export async function fetchEventById(
 type ApiAttendeeWithUser = {
   attendee_id: number;
   user: {
+    user_id: number;
     name_json: ApiUserRecord['name_json'];
     email: string | null;
     phone_numbers_json: unknown;
+    additional_info_json: Record<string, unknown> | null;
   } | null;
 };
+
+function wsdcIdFromAdditionalInfo(info: Record<string, unknown> | null | undefined): string {
+  const grouped =
+    info?.wsdc && typeof info.wsdc === 'object' && !Array.isArray(info.wsdc)
+      ? (info.wsdc as Record<string, unknown>)
+      : null;
+  const raw = grouped?.wsdc_id ?? grouped?.dancer_wsdcid ?? info?.wsdc_id;
+  if (typeof raw === 'number' && Number.isFinite(raw)) {
+    return String(raw);
+  }
+  if (typeof raw === 'string' && raw.trim()) {
+    return raw.replace(/\D/g, '');
+  }
+  return '';
+}
 
 type PhoneNumberJson = {
   number?: string | null;
@@ -985,10 +1004,12 @@ function primaryPhone(phoneNumbersJson: unknown): string {
 function mapAttendeeToListRow(row: ApiAttendeeWithUser): EventAttendeeListRow {
   return {
     attendeeId: row.attendee_id,
+    userId: row.user?.user_id ?? null,
     firstName: row.user?.name_json?.first?.trim() ?? '',
     lastName: row.user?.name_json?.last?.trim() ?? '',
     phone: primaryPhone(row.user?.phone_numbers_json ?? null),
     email: row.user?.email?.trim() ?? '',
+    wsdcId: wsdcIdFromAdditionalInfo(row.user?.additional_info_json),
   };
 }
 
@@ -998,7 +1019,7 @@ export async function fetchEventAttendeesPage(
   limit: number,
 ): Promise<{ attendees: EventAttendeeListRow[]; total: number }> {
   const params = new URLSearchParams({
-    select: 'attendee_id,user(name_json,email,phone_numbers_json)',
+    select: 'attendee_id,user(user_id,name_json,email,phone_numbers_json,additional_info_json)',
     order: 'attendee_id',
     offset: String(offset),
     limit: String(limit),
@@ -1477,6 +1498,7 @@ export function registerUser(params: {
   phoneNumbersJson: unknown[];
   addressesJson: unknown[];
   passwordRecoveryJson?: PasswordRecoveryJson | null;
+  wsdcId?: string | null;
 }) {
   return callRpc<RegisterUserResult>(
     'register_user',
@@ -1488,9 +1510,45 @@ export function registerUser(params: {
       p_phone_numbers_json: params.phoneNumbersJson,
       p_addresses_json: params.addressesJson,
       p_password_recovery_json: params.passwordRecoveryJson ?? null,
+      p_wsdc_id: params.wsdcId?.trim() || null,
     },
     'omit',
   );
+}
+
+export type SetUserWsdcIdResult = {
+  ok: boolean;
+  message: string;
+  user_id?: number;
+  wsdc_id?: string | null;
+  wsdc?: Record<string, unknown> | null;
+};
+
+export function setUserWsdcId(params: {
+  userId?: number | null;
+  wsdcId: string | null;
+  wsdcInfo?: Record<string, unknown> | null;
+}) {
+  return callRpc<SetUserWsdcIdResult>('set_user_wsdc_id', {
+    p_user_id: params.userId ?? null,
+    p_wsdc_id: params.wsdcId,
+    p_wsdc_info: params.wsdcInfo ?? null,
+  });
+}
+
+export async function fetchUserWsdcId(userId: number): Promise<string | null> {
+  const params = new URLSearchParams({
+    select: 'additional_info_json',
+  });
+  params.append('user_id', `eq.${userId}`);
+
+  const rows = await fetchJson<Array<{ additional_info_json: Record<string, unknown> | null }>>(
+    `${POSTGREST_URL}/user?${params.toString()}`,
+    'Unable to load WSDC ID',
+  );
+
+  const id = wsdcIdFromAdditionalInfo(rows[0]?.additional_info_json);
+  return id || null;
 }
 
 type ApiMerchandiseRecord = {

@@ -19,11 +19,13 @@ import {
   registerUser,
   type PasswordRecoveryJson,
 } from '../api/postgrest';
+import { normalizeWsdcId, type WsdcDancerProfile } from '../api/wsdcRegistry';
 import PasswordRecoveryDialog, {
   type PasswordRecoveryAnswer,
 } from '../components/PasswordRecoveryDialog';
 import AppPhoneNumberField from '../components/AppPhoneNumberField';
 import AppTextField from '../components/AppTextField';
+import WsdcFindDancerSection from '../components/WsdcFindDancerSection';
 import { centeredContentStackSx } from '../constants/layout';
 import { useMessages } from '../hooks/useMessages';
 import { buildPhoneNumbersJson, hasCompletePhone } from '../utils/phoneNumbers';
@@ -36,6 +38,7 @@ type RegisterForm = {
   firstName: string;
   lastName: string;
   phone: string;
+  wsdcId: string;
   passwordRecoveryJson: PasswordRecoveryJson | null;
 };
 
@@ -47,6 +50,7 @@ const initialForm: RegisterForm = {
   firstName: '',
   lastName: '',
   phone: '',
+  wsdcId: '',
   passwordRecoveryJson: null,
 };
 
@@ -117,6 +121,10 @@ export default function RegisterPage() {
   const [submitting, setSubmitting] = useState(false);
 
   const canCreateAccount = useMemo(() => isRegisterFormComplete(form), [form]);
+  const nameQuery = useMemo(
+    () => [form.firstName.trim(), form.lastName.trim()].filter(Boolean).join(' '),
+    [form.firstName, form.lastName],
+  );
 
   useEffect(() => {
     clearMessages();
@@ -129,6 +137,13 @@ export default function RegisterPage() {
 
   const updatePhone = (phone: string) => {
     setForm((current) => ({ ...current, phone }));
+  };
+
+  const handleWsdcProfileChange = (profile: WsdcDancerProfile | null) => {
+    setForm((current) => ({
+      ...current,
+      wsdcId: profile ? normalizeWsdcId(profile.dancer_wsdcid) : current.wsdcId,
+    }));
   };
 
   const handleSavePasswordRecovery = async (answers: PasswordRecoveryAnswer[]) => {
@@ -196,6 +211,7 @@ export default function RegisterPage() {
         phoneNumbersJson: buildPhoneNumbersJson(form.phone),
         addressesJson: [],
         passwordRecoveryJson: form.passwordRecoveryJson,
+        wsdcId: form.wsdcId.trim() || null,
       });
 
       if (!result.ok) {
@@ -289,6 +305,30 @@ export default function RegisterPage() {
               onChange={(phone) => updatePhone(phone)}
               autoComplete="tel"
             />
+
+            <AppTextField
+              label="WSDC # (optional)"
+              value={form.wsdcId}
+              onChange={(event) =>
+                setForm((current) => ({
+                  ...current,
+                  wsdcId: normalizeWsdcId(event.target.value),
+                }))
+              }
+              fullWidth
+              autoComplete="off"
+              helperText="Enter a known WSDC number, or look up below."
+            />
+
+            <Box sx={{ width: '100%' }}>
+              <WsdcFindDancerSection
+                title="Look up WSDC points"
+                description="Enter a known WSDC number above, or search here. Finding a dancer fills the WSDC # field."
+                initialQuery={nameQuery}
+                enableDirectLink
+                onProfileChange={handleWsdcProfileChange}
+              />
+            </Box>
 
             <Button
               variant="outlined"

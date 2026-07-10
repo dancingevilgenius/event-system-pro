@@ -34,8 +34,7 @@ echo "job=${JOB_NAME} status=starting started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ 2
 set +e
 RESULT="$(
   psql -h "$PGHOST" -U "$SCHEDULER_DB_USER" -d "$POSTGRES_DB" -v ON_ERROR_STOP=1 -t -A \
-    -v job_name="$JOB_NAME" \
-    -c "SELECT api.run_maintenance_job(:'job_name');" 2>&1
+    -c "SELECT api.run_maintenance_job('${JOB_NAME}');" 2>&1
 )"
 PSQL_EXIT=$?
 set -e

@@ -59,7 +59,7 @@ export default function HomePage() {
           </Button>
         </Stack>
 
-        <Stack spacing={2} sx={{ mb: 3, alignItems: 'center', width: '100%' }}>
+        <Stack spacing={2} sx={{ mb: 3, ...centeredContentStackSx }}>
           <ThemeSwitcher fullWidth />
         </Stack>
 

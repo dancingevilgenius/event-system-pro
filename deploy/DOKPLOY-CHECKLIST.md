@@ -212,7 +212,7 @@ Test from phone or laptop:
 | https://imake.wtf/api/ | PostgREST OpenAPI JSON |
 | https://imake.wtf/mailer/health | `{"ok":true}` |
 | https://imake.wtf/realtime/health | `{"ok":true}` |
-| https://imake.wtf/adminhome | `counter: …` ticking every 5s (admin login required) |
+| https://imake.wtf/adminhome | `POC counter (10s): …` ticking via scheduler job (admin login required) |
 
 - [ ] Site loads over HTTPS
 - [ ] API responds
@@ -448,7 +448,7 @@ In **General**, application type must be **Docker Compose**, not **Stack**. Stac
 | Scheduler health stale | `SELECT api.scheduler_health();` as scheduler role. Inspect `maintenance.job_run` / `job_definition`. |
 | Site doesn't load | DNS A record for imake.wtf → VPS IP; ports 80/443 open |
 | API returns 502 | Check `postgrest` logs; verify `PGRST_AUTHENTICATOR_PASSWORD` |
-| Counter stuck | Check `realtime` logs; verify `REALTIME_DB_PASSWORD`; test `/realtime/health` |
+| Counter stuck | Check **scheduler** logs for `poc_counter_tick`; confirm job enabled in `maintenance.job_definition`. Realtime only broadcasts NOTIFY. |
 | Login works but API fails in browser | `CORS_ORIGINS` must be exactly `https://imake.wtf` |
 | Counter doesn't update live | `VITE_REALTIME_WS_URL` must be `wss://imake.wtf/realtime/ws`; rebuild web image |
 | eventsystem.pro broke | You edited the wrong Dokploy app — restore EventSystemPro domain binding |

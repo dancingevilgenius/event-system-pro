@@ -111,8 +111,9 @@ The **`scheduler`** service (`deploy/Dockerfile.scheduler`) generates crontab at
 
 | Job | Default schedule (TZ `America/Chicago`) |
 |-----|------------------------------------------|
-| `inactivity_logout` | Every 5 minutes |
-| `nightly_cleanup` | Daily at midnight |
+| `inactivity_logout` | Every 5 minutes (cron) |
+| `nightly_cleanup` | Daily at midnight (cron) |
+| `poc_counter_tick` | Every 10 seconds (interval loop) |
 
 Each run writes a `maintenance.job_run` row and one structured log line (`job=… status=ok|error|skipped duration_ms=…`). Overlapping invocations are skipped via advisory locks. To add a job, insert into `job_definition` and recreate the scheduler container (see `deploy/README.md`).
 

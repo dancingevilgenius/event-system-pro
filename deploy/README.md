@@ -35,20 +35,26 @@ The **`scheduler`** service starts with `/scheduler-entrypoint.sh`, which builds
 
 | Job name | Default schedule (TZ `America/Chicago`) | RPC |
 |----------|------------------------------------------|-----|
-| `inactivity_logout` | `*/5 * * * *` | `api.inactivity_logout()` |
-| `nightly_cleanup` | `0 0 * * *` | `api.nightly_cleanup()` |
+| `inactivity_logout` | cron `*/5 * * * *` | `api.inactivity_logout()` |
+| `nightly_cleanup` | cron `0 0 * * *` | `api.nightly_cleanup()` |
+| `poc_counter_tick` | interval **10 seconds** | `api.poc_counter_tick()` |
 
-Cron lines call `/run-maintenance-job.sh <job_name>` → `api.run_maintenance_job()` (looks up the registry, records `maintenance.job_run`, dispatches the RPC). Underlying RPCs use transaction-scoped advisory locks so overlapping runs return `skipped`.
+Cron lines call `/run-maintenance-job.sh <job_name>` → `api.run_maintenance_job()` (looks up the registry, records `maintenance.job_run`, dispatches the RPC). Interval jobs are started as background sleep loops by `/scheduler-entrypoint.sh` (Alpine cron cannot fire sub-minute). Underlying RPCs use transaction-scoped advisory locks so overlapping runs return `skipped`.
 
 Jobs connect as the limited Postgres role **`scheduler`** (migration `104`; inherits `maintenance` EXECUTE grants). Set `SCHEDULER_DB_PASSWORD` to match the role password (dev default: `scheduler_dev_password`).
 
 `deploy/crontab` is documentation / image fallback only — the live schedule comes from the DB.
 
+The admin-home **POC counter** is ticked by `poc_counter_tick`; the **realtime** service only listens for `NOTIFY` and pushes WebSocket updates to the browser.
+
 #### Adding a new maintenance job
 
 1. Create a no-arg `SECURITY DEFINER` RPC in `api` that returns `json`, calls `api.set_audit_actor('maintenance')`, uses `pg_try_advisory_xact_lock(901001, hashtext('<job_name>'))`, and is granted only to `maintenance` (revoke `PUBLIC`).
-2. Insert a row into `maintenance.job_definition` (`job_name`, `rpc_schema`, `rpc_name`, `schedule_cron`, `enabled`, `stale_after_interval`, `description`, `created_by = 'c-agent'`).
-3. Redeploy / recreate the **`scheduler`** container so entrypoint regenerates crontab.
+2. Insert a row into `maintenance.job_definition`:
+   - **Cron job:** set `schedule_cron` (5 fields), leave `interval_seconds` NULL.
+   - **Sub-minute job:** set `interval_seconds` (e.g. `10`), leave `schedule_cron` NULL.
+   - Also set `enabled`, `stale_after_interval`, `description`, `created_by = 'c-agent'`.
+3. Redeploy / recreate the **`scheduler`** container so entrypoint regenerates crontab / interval loops.
 4. Manual test: `docker compose … exec scheduler /run-maintenance-job.sh <job_name>`
 
 #### Idempotency

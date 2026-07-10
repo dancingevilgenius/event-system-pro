@@ -6,7 +6,6 @@ import { WebSocketServer } from 'ws';
 const {
   PORT = '3002',
   DATABASE_URL,
-  COUNTER_INTERVAL_MS = '5000',
   POC_COUNTER_LABEL = 'poc_counter',
 } = process.env;
 
@@ -16,7 +15,6 @@ if (!DATABASE_URL) {
 
 const pool = new pg.Pool({ connectionString: DATABASE_URL });
 const clients = new Set();
-let lastHour = new Date().getHours();
 
 function broadcastCounter(value) {
   const payload = JSON.stringify({ type: 'poc_counter', value });
@@ -38,65 +36,6 @@ async function readCounterValue(client = pool) {
   );
 
   return rows[0]?.value ?? '0';
-}
-
-async function resetCounter() {
-  const client = await pool.connect();
-  try {
-    await client.query(
-      `UPDATE public.system_config
-       SET value = '0',
-           modified_by = 'realtime',
-           modified_date = CURRENT_TIMESTAMP
-       WHERE label = $1`,
-      [POC_COUNTER_LABEL],
-    );
-  } finally {
-    client.release();
-  }
-}
-
-async function incrementCounter() {
-  const client = await pool.connect();
-  try {
-    await client.query(
-      `UPDATE public.system_config
-       SET value = (COALESCE(NULLIF(value, ''), '0')::int + 1)::text,
-           modified_by = 'realtime',
-           modified_date = CURRENT_TIMESTAMP
-       WHERE label = $1
-         AND active IS NOT FALSE`,
-      [POC_COUNTER_LABEL],
-    );
-  } finally {
-    client.release();
-  }
-}
-
-async function tickCounter() {
-  const now = new Date();
-  const currentHour = now.getHours();
-
-  if (currentHour !== lastHour) {
-    lastHour = currentHour;
-    await resetCounter();
-    return;
-  }
-
-  await incrementCounter();
-}
-
-async function startCounterScheduler() {
-  const intervalMs = Number(COUNTER_INTERVAL_MS);
-  if (!Number.isFinite(intervalMs) || intervalMs <= 0) {
-    throw new Error('COUNTER_INTERVAL_MS must be a positive number');
-  }
-
-  setInterval(() => {
-    void tickCounter().catch((error) => {
-      console.error('counter tick failed:', error);
-    });
-  }, intervalMs);
 }
 
 async function startNotifyListener() {
@@ -149,12 +88,10 @@ webSocketServer.on('connection', (socket) => {
 server.listen(Number(PORT), () => {
   console.log(`Realtime listening on http://localhost:${PORT}`);
   console.log(`WebSocket path: /ws`);
-  console.log(`Counter interval: ${COUNTER_INTERVAL_MS}ms`);
+  console.log('Counter ticks are driven by the maintenance scheduler (poc_counter_tick).');
 });
 
 void startNotifyListener().catch((error) => {
   console.error('failed to start notify listener:', error);
   process.exit(1);
 });
-
-void startCounterScheduler();

@@ -129,6 +129,14 @@ jobs:
             exec -T scheduler /inactivity-logout.sh
           docker compose -f deploy/docker-compose.yml --env-file deploy/.env \
             exec -T scheduler /nightly-cleanup.sh
+          docker compose -f deploy/docker-compose.yml --env-file deploy/.env \
+            exec -T scheduler sh -c \
+            'export PGPASSWORD="$SCHEDULER_DB_PASSWORD"; psql -h postgres -U scheduler -d event_system_pro -v ON_ERROR_STOP=1 -c "SELECT api.scheduler_health();"'
+          docker compose -f deploy/docker-compose.yml --env-file deploy/.env \
+            exec -T postgres \
+            psql -U postgres -d event_system_pro -v ON_ERROR_STOP=1 -t -A \
+            -c "SELECT COUNT(*) FROM maintenance.job_run WHERE status IN ('ok','skipped');" \
+            | grep -Eq '^[1-9][0-9]*$'
 
       - name: Tear down
         if: always()

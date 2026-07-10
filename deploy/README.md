@@ -33,18 +33,45 @@ docker compose -f deploy/docker-compose.yml --env-file deploy/.env up --build
 
 The **`scheduler`** service runs Alpine `crond` with jobs from `deploy/crontab`:
 
-| Schedule (TZ `America/Chicago`) | Script | RPC |
-|---------------------------------|--------|-----|
-| Every 5 minutes | `inactivity-logout.sh` | `api.inactivity_logout()` |
-| Daily at midnight | `nightly-cleanup.sh` | `api.nightly_cleanup()` |
+| Schedule (TZ `America/Chicago`) | Script | Job name |
+|---------------------------------|--------|----------|
+| Every 5 minutes | `inactivity-logout.sh` | `inactivity_logout` |
+| Daily at midnight | `nightly-cleanup.sh` | `nightly_cleanup` |
+
+Scripts call `api.run_maintenance_job(job_name)` via `/run-maintenance-job.sh` (structured stdout logs + `maintenance.job_run` history). Underlying RPCs use transaction-scoped advisory locks so overlapping runs return `skipped` instead of double-applying work.
 
 Jobs connect as the limited Postgres role **`scheduler`** (migration `104`; inherits `maintenance` EXECUTE grants). Set `SCHEDULER_DB_PASSWORD` to match the role password (dev default: `scheduler_dev_password`).
+
+#### Idempotency
+
+| Job | Re-run behavior |
+|-----|-----------------|
+| `inactivity_logout` | Safe to re-run. Marks currently stale active sessions; already-marked sessions are skipped by `user_session_is_active`. |
+| `nightly_cleanup` | **Not** idempotent within the same calendar day — each successful run shifts demo event dates forward one day. Overlap is blocked by advisory lock; do not invoke manually unless you intend another shift. |
+
+#### Health check
+
+```powershell
+docker compose -f deploy/docker-compose.yml --env-file deploy/.env exec scheduler `
+  sh -c 'export PGPASSWORD="$SCHEDULER_DB_PASSWORD"; psql -h postgres -U scheduler -d event_system_pro -c "SELECT api.scheduler_health();"'
+```
+
+`api.scheduler_health()` reports stale when `inactivity_logout` has no ok/skipped finish within **15 minutes**, or `nightly_cleanup` within **25 hours** (also stale on last `error` / never run).
+
+**Note:** Client `session_status` already treats stale activity as inactive without the cron (migration `035`). Keep the 5-minute `inactivity_logout` job to stamp `inactive_logout_at` for users who never hit the API again.
 
 Manual one-shot from a running stack:
 
 ```powershell
 docker compose -f deploy/docker-compose.yml --env-file deploy/.env exec scheduler /inactivity-logout.sh
 docker compose -f deploy/docker-compose.yml --env-file deploy/.env exec scheduler /nightly-cleanup.sh
+```
+
+Inspect recent runs:
+
+```powershell
+docker compose -f deploy/docker-compose.yml --env-file deploy/.env exec postgres \
+  psql -U postgres -d event_system_pro -c "SELECT job_run_id, job_name, status, started_at, finished_at FROM maintenance.job_run ORDER BY job_run_id DESC LIMIT 10;"
 ```
 
 If you rotate the password after the database already exists:

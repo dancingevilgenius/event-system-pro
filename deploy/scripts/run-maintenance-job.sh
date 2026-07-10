@@ -1,9 +1,9 @@
 #!/bin/sh
 # Shared maintenance job runner for cron and manual ops.
 # Usage: run-maintenance-job.sh <job_name>
-#   job_name: nightly_cleanup | inactivity_logout
 #
-# Connects as the limited `scheduler` role and calls api.run_maintenance_job().
+# Job names must exist in maintenance.job_definition (validated by
+# api.run_maintenance_job). Connects as the limited `scheduler` role.
 # Logs one structured line to stdout for Docker log capture.
 set -eu
 
@@ -13,13 +13,10 @@ if [ -z "$JOB_NAME" ]; then
   exit 1
 fi
 
-case "$JOB_NAME" in
-  nightly_cleanup|inactivity_logout) ;;
-  *)
-    echo "job=${JOB_NAME} status=error error_message=unknown_job_name" >&2
-    exit 1
-    ;;
-esac
+if ! printf '%s' "$JOB_NAME" | grep -Eq '^[a-z][a-z0-9_]*$'; then
+  echo "job=${JOB_NAME} status=error error_message=invalid_job_name" >&2
+  exit 1
+fi
 
 : "${PGHOST:=postgres}"
 : "${POSTGRES_DB:=event_system_pro}"

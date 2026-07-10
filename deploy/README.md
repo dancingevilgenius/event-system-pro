@@ -23,10 +23,37 @@ docker compose -f deploy/docker-compose.yml --env-file deploy/.env up --build
 | `/` | React app (nginx) |
 | `/api/*` | PostgREST |
 | `/mailer/*` | Mailer service |
+| `/realtime/*` | Realtime WebSocket POC |
 
 | Other URL | Service |
 |-----------|---------|
 | http://localhost:8025 | Mailpit (dev email inbox) |
+
+### Scheduler (maintenance cron)
+
+The **`scheduler`** service runs Alpine `crond` with jobs from `deploy/crontab`:
+
+| Schedule (TZ `America/Chicago`) | Script | RPC |
+|---------------------------------|--------|-----|
+| Every 5 minutes | `inactivity-logout.sh` | `api.inactivity_logout()` |
+| Daily at midnight | `nightly-cleanup.sh` | `api.nightly_cleanup()` |
+
+Jobs connect as the limited Postgres role **`scheduler`** (migration `104`; inherits `maintenance` EXECUTE grants). Set `SCHEDULER_DB_PASSWORD` to match the role password (dev default: `scheduler_dev_password`).
+
+Manual one-shot from a running stack:
+
+```powershell
+docker compose -f deploy/docker-compose.yml --env-file deploy/.env exec scheduler /inactivity-logout.sh
+docker compose -f deploy/docker-compose.yml --env-file deploy/.env exec scheduler /nightly-cleanup.sh
+```
+
+If you rotate the password after the database already exists:
+
+```sql
+ALTER ROLE scheduler WITH PASSWORD 'your-new-password';
+```
+
+Then update `SCHEDULER_DB_PASSWORD` and recreate the scheduler container.
 
 First boot runs `deploy/scripts/migrate.sh`: baseline schema + reference static lists + migrations tracked in `public.schema_migrations`. Migrations listed in `database/superseded-by-baseline.manifest` are skipped on fresh installs because the baseline bundle already includes those changes. See `database/BASELINE-REBASELINE-CHECKLIST.md`.
 
@@ -69,8 +96,8 @@ Workflow: `.github/workflows/ci.yml`
 | Job | When | What it does |
 |-----|------|----------------|
 | **frontend** | Every push / PR to `main` | `npm ci`, `npm run lint`, `npm run build` |
-| **docker** | Every push / PR to `main` | Builds web + mailer images; validates `docker-compose.yml` |
-| **stack-smoke** | Push to `main` only | Starts full stack, curls `/`, `/api/`, `/mailer/health` |
+| **docker** | Every push / PR to `main` | Builds web + mailer + realtime + scheduler images; validates both compose files |
+| **stack-smoke** | Push to `main` only | Starts full stack, curls `/`, `/api/`, `/mailer/health`, `/realtime/health`; runs one scheduler job |
 
 Trigger manually from GitHub: **Actions → CI → Run workflow**.
 

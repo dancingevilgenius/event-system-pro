@@ -1,4 +1,4 @@
-# Dokploy full stack (postgres + migrate + PostgREST + mailer + web + Caddy proxy).
+# Dokploy full stack (postgres + migrate + PostgREST + mailer + scheduler + web + Caddy proxy).
 # Dev/test email: Mailpit captures SMTP; optional UI on host port MAILPIT_UI_PORT (8025).
 #
 # Dokploy UI:
@@ -108,6 +108,24 @@ services:
         condition: service_completed_successfully
       mailpit:
         condition: service_started
+
+  scheduler:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.scheduler
+    image: event-system-pro-scheduler:latest
+    restart: unless-stopped
+    environment:
+      PGHOST: postgres
+      POSTGRES_DB: ${POSTGRES_DB:-event_system_pro}
+      SCHEDULER_DB_USER: scheduler
+      SCHEDULER_DB_PASSWORD: ${SCHEDULER_DB_PASSWORD:-scheduler_dev_password}
+      TZ: ${TZ:-America/Chicago}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
 
   web:
     build:

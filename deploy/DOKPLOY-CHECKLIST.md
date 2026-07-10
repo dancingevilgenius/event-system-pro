@@ -21,6 +21,7 @@ Phone/browser → https://imake.wtf (Dokploy HTTPS)
                  /mailer/*   → mailer (password-reset email)
                  /realtime/* → WebSocket counter POC
 
+scheduler (internal): crond → api.inactivity_logout / api.nightly_cleanup
 Mailpit (dev/test): SMTP on mailpit:1025 inside stack; optional UI on VPS :8025
 ```
 
@@ -115,6 +116,7 @@ POSTGRES_DB=event_system_pro
 PGRST_AUTHENTICATOR_PASSWORD=change-me-long-random-postgrest
 MAILER_DB_PASSWORD=change-me-long-random-mailer
 REALTIME_DB_PASSWORD=change-me-long-random-realtime
+SCHEDULER_DB_PASSWORD=change-me-long-random-scheduler
 
 PGRST_JWT_SECRET=change-me-long-random-jwt-secret-min-32-chars
 
@@ -138,6 +140,7 @@ Migrations create DB roles with **dev defaults** on a fresh database:
 | `authenticator` | `postgrest_dev_password` |
 | `mailer` | `mailer_dev_password` |
 | `realtime` | `realtime_dev_password` |
+| `scheduler` | `scheduler_dev_password` |
 
 **Easiest first deploy:** set env vars to match those defaults, deploy successfully, then rotate later:
 
@@ -145,6 +148,7 @@ Migrations create DB roles with **dev defaults** on a fresh database:
 PGRST_AUTHENTICATOR_PASSWORD=postgrest_dev_password
 MAILER_DB_PASSWORD=mailer_dev_password
 REALTIME_DB_PASSWORD=realtime_dev_password
+SCHEDULER_DB_PASSWORD=scheduler_dev_password
 ```
 
 - [ ] Password env vars match what PostgreSQL roles expect (or roles altered after migrate)
@@ -439,6 +443,8 @@ In **General**, application type must be **Docker Compose**, not **Stack**. Stac
 | Code sent but no email in Mailpit | Check **mailer** logs for SMTP errors; confirm `mailpit` service is up |
 | HTTP works but HTTPS returns 404 | Traefik **websecure** router missing or broken. Remove Domains-tab entry; use compose Traefik labels + `APP_DOMAIN`; Deploy + Reload Traefik. Or fix certificate type to Let's Encrypt in Domains tab. |
 | Realtime password authentication failed | Set `REALTIME_DB_PASSWORD=realtime_dev_password` (migration default), redeploy. |
+| Scheduler password authentication failed | Set `SCHEDULER_DB_PASSWORD=scheduler_dev_password` (migration 104 default), redeploy. Or `ALTER ROLE scheduler WITH PASSWORD ...` if rotated. |
+| Scheduler not running / jobs never fire | Confirm **`scheduler`** service is up in Dokploy; check Logs. Manual: `docker compose … exec scheduler /inactivity-logout.sh` |
 | Site doesn't load | DNS A record for imake.wtf → VPS IP; ports 80/443 open |
 | API returns 502 | Check `postgrest` logs; verify `PGRST_AUTHENTICATOR_PASSWORD` |
 | Counter stuck | Check `realtime` logs; verify `REALTIME_DB_PASSWORD`; test `/realtime/health` |

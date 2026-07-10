@@ -1,7 +1,8 @@
 # Deploy to Dokploy (imake.wtf — test)
 
-Full stack: **PostgreSQL + migrations + PostgREST + mailer + Mailpit + web + Caddy proxy**.  
+Full stack: **PostgreSQL + migrations + PostgREST + mailer + Mailpit + scheduler + web + Caddy proxy**.  
 Forgot-password **Send verification code** uses the mailer — captured by **Mailpit** on test deploys (no real SMTP required).
+Maintenance cron (`inactivity_logout`, `nightly_cleanup`) runs in the **`scheduler`** service.
 
 ## Two repos, two domains
 
@@ -16,7 +17,7 @@ Use a **separate Dokploy application** for event-system-pro. Do not repoint the 
 
 EventSystemPro uses a **single root `Dockerfile`** because it is one container (Vite dev server).
 
-event-system-pro needs **postgres, migrate, PostgREST, mailer, mailpit, web, and proxy**. In Dokploy:
+event-system-pro needs **postgres, migrate, PostgREST, mailer, mailpit, scheduler, web, and proxy**. In Dokploy:
 
 | Dokploy setting | Value |
 |-----------------|--------|
@@ -47,6 +48,8 @@ The root `Dockerfile` builds the production React app (nginx). Compose orchestra
 | https://imake.wtf/mailer/health | Mailer health check |
 | https://imake.wtf/realtime/health | Realtime POC health |
 | http://YOUR_VPS_IP:8025 | Mailpit inbox UI (dev/test; optional firewall) |
+
+Scheduler has no public URL — check Dokploy **Logs** → service **`scheduler`**, or exec a one-shot job (see below).
 
 ## Local smoke test (before Dokploy)
 
@@ -100,6 +103,32 @@ If you change `MAILER_DB_PASSWORD` after the database already exists:
 
 ```sql
 ALTER ROLE mailer WITH PASSWORD 'your-new-password';
+```
+
+## Scheduler (maintenance cron)
+
+The **`scheduler`** service (`deploy/Dockerfile.scheduler`) runs Alpine `crond` with `deploy/crontab`:
+
+| Schedule (TZ `America/Chicago`) | Job |
+|---------------------------------|-----|
+| Every 5 minutes | `api.inactivity_logout()` |
+| Daily at midnight | `api.nightly_cleanup()` |
+
+| Variable | Purpose |
+|----------|---------|
+| `SCHEDULER_DB_PASSWORD` | Postgres `scheduler` role (migration 104 default: `scheduler_dev_password`) |
+
+**Easiest first deploy:** keep `SCHEDULER_DB_PASSWORD=scheduler_dev_password` to match the migration default, then rotate later:
+
+```sql
+ALTER ROLE scheduler WITH PASSWORD 'your-new-password';
+```
+
+Manual one-shot (Dokploy / compose):
+
+```bash
+docker compose -f deploy/docker-compose.dokploy.yml exec scheduler /inactivity-logout.sh
+docker compose -f deploy/docker-compose.dokploy.yml exec scheduler /nightly-cleanup.sh
 ```
 
 ### Read verification codes (test)

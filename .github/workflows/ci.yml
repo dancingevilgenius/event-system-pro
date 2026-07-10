@@ -74,8 +74,14 @@ jobs:
       - name: Build realtime image
         run: docker build -t event-system-pro-realtime back-ends/realtime
 
-      - name: Validate compose file
-        run: docker compose -f deploy/docker-compose.yml config --quiet
+      - name: Build scheduler image
+        run: docker build -f deploy/Dockerfile.scheduler -t event-system-pro-scheduler .
+
+      - name: Validate compose files
+        run: |
+          docker compose -f deploy/docker-compose.yml config --quiet
+          docker compose -f deploy/docker-compose.dokploy.yml \
+            --env-file deploy/.env.dokploy.example config --quiet
 
   stack-smoke:
     name: Full stack smoke test
@@ -108,6 +114,21 @@ jobs:
           docker compose -f deploy/docker-compose.yml --env-file deploy/.env ps
           docker compose -f deploy/docker-compose.yml --env-file deploy/.env logs --no-color
           exit 1
+
+      - name: Verify scheduler
+        run: |
+          set -euo pipefail
+          docker compose -f deploy/docker-compose.yml --env-file deploy/.env ps scheduler
+          status="$(docker compose -f deploy/docker-compose.yml --env-file deploy/.env ps --status running --services | grep -x scheduler || true)"
+          if [ "$status" != "scheduler" ]; then
+            echo "scheduler service is not running"
+            docker compose -f deploy/docker-compose.yml --env-file deploy/.env logs --no-color scheduler
+            exit 1
+          fi
+          docker compose -f deploy/docker-compose.yml --env-file deploy/.env \
+            exec -T scheduler /inactivity-logout.sh
+          docker compose -f deploy/docker-compose.yml --env-file deploy/.env \
+            exec -T scheduler /nightly-cleanup.sh
 
       - name: Tear down
         if: always()

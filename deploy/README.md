@@ -31,16 +31,25 @@ docker compose -f deploy/docker-compose.yml --env-file deploy/.env up --build
 
 ### Scheduler (maintenance cron)
 
-The **`scheduler`** service runs Alpine `crond` with jobs from `deploy/crontab`:
+The **`scheduler`** service starts with `/scheduler-entrypoint.sh`, which builds `/etc/crontabs/root` from **`maintenance.job_definition`** (`api.scheduler_crontab()`), then runs Alpine `crond`.
 
-| Schedule (TZ `America/Chicago`) | Script | Job name |
-|---------------------------------|--------|----------|
-| Every 5 minutes | `inactivity-logout.sh` | `inactivity_logout` |
-| Daily at midnight | `nightly-cleanup.sh` | `nightly_cleanup` |
+| Job name | Default schedule (TZ `America/Chicago`) | RPC |
+|----------|------------------------------------------|-----|
+| `inactivity_logout` | `*/5 * * * *` | `api.inactivity_logout()` |
+| `nightly_cleanup` | `0 0 * * *` | `api.nightly_cleanup()` |
 
-Scripts call `api.run_maintenance_job(job_name)` via `/run-maintenance-job.sh` (structured stdout logs + `maintenance.job_run` history). Underlying RPCs use transaction-scoped advisory locks so overlapping runs return `skipped` instead of double-applying work.
+Cron lines call `/run-maintenance-job.sh <job_name>` → `api.run_maintenance_job()` (looks up the registry, records `maintenance.job_run`, dispatches the RPC). Underlying RPCs use transaction-scoped advisory locks so overlapping runs return `skipped`.
 
 Jobs connect as the limited Postgres role **`scheduler`** (migration `104`; inherits `maintenance` EXECUTE grants). Set `SCHEDULER_DB_PASSWORD` to match the role password (dev default: `scheduler_dev_password`).
+
+`deploy/crontab` is documentation / image fallback only — the live schedule comes from the DB.
+
+#### Adding a new maintenance job
+
+1. Create a no-arg `SECURITY DEFINER` RPC in `api` that returns `json`, calls `api.set_audit_actor('maintenance')`, uses `pg_try_advisory_xact_lock(901001, hashtext('<job_name>'))`, and is granted only to `maintenance` (revoke `PUBLIC`).
+2. Insert a row into `maintenance.job_definition` (`job_name`, `rpc_schema`, `rpc_name`, `schedule_cron`, `enabled`, `stale_after_interval`, `description`, `created_by = 'c-agent'`).
+3. Redeploy / recreate the **`scheduler`** container so entrypoint regenerates crontab.
+4. Manual test: `docker compose … exec scheduler /run-maintenance-job.sh <job_name>`
 
 #### Idempotency
 
@@ -56,21 +65,23 @@ docker compose -f deploy/docker-compose.yml --env-file deploy/.env exec schedule
   sh -c 'export PGPASSWORD="$SCHEDULER_DB_PASSWORD"; psql -h postgres -U scheduler -d event_system_pro -c "SELECT api.scheduler_health();"'
 ```
 
-`api.scheduler_health()` reports stale when `inactivity_logout` has no ok/skipped finish within **15 minutes**, or `nightly_cleanup` within **25 hours** (also stale on last `error` / never run).
+`api.scheduler_health()` uses each job’s `stale_after_interval` from `job_definition` (defaults: inactivity **15 minutes**, nightly **25 hours**). Disabled jobs are not treated as stale.
 
 **Note:** Client `session_status` already treats stale activity as inactive without the cron (migration `035`). Keep the 5-minute `inactivity_logout` job to stamp `inactive_logout_at` for users who never hit the API again.
 
 Manual one-shot from a running stack:
 
 ```powershell
-docker compose -f deploy/docker-compose.yml --env-file deploy/.env exec scheduler /inactivity-logout.sh
-docker compose -f deploy/docker-compose.yml --env-file deploy/.env exec scheduler /nightly-cleanup.sh
+docker compose -f deploy/docker-compose.yml --env-file deploy/.env exec scheduler /run-maintenance-job.sh inactivity_logout
+docker compose -f deploy/docker-compose.yml --env-file deploy/.env exec scheduler /run-maintenance-job.sh nightly_cleanup
 ```
 
-Inspect recent runs:
+Inspect registry and recent runs:
 
 ```powershell
-docker compose -f deploy/docker-compose.yml --env-file deploy/.env exec postgres \
+docker compose -f deploy/docker-compose.yml --env-file deploy/.env exec postgres `
+  psql -U postgres -d event_system_pro -c "SELECT job_name, schedule_cron, enabled, stale_after_interval FROM maintenance.job_definition ORDER BY job_name;"
+docker compose -f deploy/docker-compose.yml --env-file deploy/.env exec postgres `
   psql -U postgres -d event_system_pro -c "SELECT job_run_id, job_name, status, started_at, finished_at FROM maintenance.job_run ORDER BY job_run_id DESC LIMIT 10;"
 ```
 

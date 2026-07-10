@@ -1,5 +1,8 @@
-# Maintenance job schedule for the scheduler container (Alpine busybox crond).
-# Times use the container TZ (default America/Chicago).
+# Fallback / documentation only. The live scheduler container generates
+# /etc/crontabs/root from maintenance.job_definition via api.scheduler_crontab()
+# at startup (see deploy/scripts/scheduler-entrypoint.sh).
+#
+# Keep these lines in sync with the seed rows in migration 106.
 MAILTO=""
-*/5 * * * * /inactivity-logout.sh
-0 0 * * * /nightly-cleanup.sh
+*/5 * * * * /run-maintenance-job.sh inactivity_logout
+0 0 * * * /run-maintenance-job.sh nightly_cleanup

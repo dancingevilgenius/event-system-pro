@@ -21,7 +21,7 @@ Phone/browser → https://imake.wtf (Dokploy HTTPS)
                  /mailer/*   → mailer (password-reset email)
                  /realtime/* → WebSocket counter POC
 
-scheduler (internal): crond → api.run_maintenance_job → job_run history
+scheduler (internal): entrypoint → job_definition crontab → run_maintenance_job → job_run
 Mailpit (dev/test): SMTP on mailpit:1025 inside stack; optional UI on VPS :8025
 ```
 
@@ -444,8 +444,8 @@ In **General**, application type must be **Docker Compose**, not **Stack**. Stac
 | HTTP works but HTTPS returns 404 | Traefik **websecure** router missing or broken. Remove Domains-tab entry; use compose Traefik labels + `APP_DOMAIN`; Deploy + Reload Traefik. Or fix certificate type to Let's Encrypt in Domains tab. |
 | Realtime password authentication failed | Set `REALTIME_DB_PASSWORD=realtime_dev_password` (migration default), redeploy. |
 | Scheduler password authentication failed | Set `SCHEDULER_DB_PASSWORD=scheduler_dev_password` (migration 104 default), redeploy. Or `ALTER ROLE scheduler WITH PASSWORD ...` if rotated. |
-| Scheduler not running / jobs never fire | Confirm **`scheduler`** service is up in Dokploy; check Logs for `job=… status=`. Manual: `docker compose … exec scheduler /inactivity-logout.sh` |
-| Scheduler health stale | `SELECT api.scheduler_health();` as scheduler role. Inspect `maintenance.job_run` for last status/error. |
+| Scheduler not running / jobs never fire | Confirm **`scheduler`** service is up; Logs should show `installed crontab from maintenance.job_definition`. Manual: `exec scheduler /run-maintenance-job.sh inactivity_logout` |
+| Scheduler health stale | `SELECT api.scheduler_health();` as scheduler role. Inspect `maintenance.job_run` / `job_definition`. |
 | Site doesn't load | DNS A record for imake.wtf → VPS IP; ports 80/443 open |
 | API returns 502 | Check `postgrest` logs; verify `PGRST_AUTHENTICATOR_PASSWORD` |
 | Counter stuck | Check `realtime` logs; verify `REALTIME_DB_PASSWORD`; test `/realtime/health` |

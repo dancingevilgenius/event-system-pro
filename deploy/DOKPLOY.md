@@ -107,14 +107,14 @@ ALTER ROLE mailer WITH PASSWORD 'your-new-password';
 
 ## Scheduler (maintenance cron)
 
-The **`scheduler`** service (`deploy/Dockerfile.scheduler`) runs Alpine `crond` with `deploy/crontab`:
+The **`scheduler`** service (`deploy/Dockerfile.scheduler`) generates crontab at startup from **`maintenance.job_definition`** via `api.scheduler_crontab()`, then runs Alpine `crond`.
 
-| Schedule (TZ `America/Chicago`) | Job |
-|---------------------------------|-----|
-| Every 5 minutes | `inactivity_logout` via `api.run_maintenance_job` |
-| Daily at midnight | `nightly_cleanup` via `api.run_maintenance_job` |
+| Job | Default schedule (TZ `America/Chicago`) |
+|-----|------------------------------------------|
+| `inactivity_logout` | Every 5 minutes |
+| `nightly_cleanup` | Daily at midnight |
 
-Each run writes a `maintenance.job_run` row and one structured log line (`job=… status=ok|error|skipped duration_ms=…`). Overlapping invocations are skipped via advisory locks.
+Each run writes a `maintenance.job_run` row and one structured log line (`job=… status=ok|error|skipped duration_ms=…`). Overlapping invocations are skipped via advisory locks. To add a job, insert into `job_definition` and recreate the scheduler container (see `deploy/README.md`).
 
 | Variable | Purpose |
 |----------|---------|
@@ -129,8 +129,8 @@ ALTER ROLE scheduler WITH PASSWORD 'your-new-password';
 Manual one-shot (Dokploy / compose):
 
 ```bash
-docker compose -f deploy/docker-compose.dokploy.yml exec scheduler /inactivity-logout.sh
-docker compose -f deploy/docker-compose.dokploy.yml exec scheduler /nightly-cleanup.sh
+docker compose -f deploy/docker-compose.dokploy.yml exec scheduler /run-maintenance-job.sh inactivity_logout
+docker compose -f deploy/docker-compose.dokploy.yml exec scheduler /run-maintenance-job.sh nightly_cleanup
 docker compose -f deploy/docker-compose.dokploy.yml exec scheduler \
   sh -c 'export PGPASSWORD="$SCHEDULER_DB_PASSWORD"; psql -h postgres -U scheduler -d event_system_pro -c "SELECT api.scheduler_health();"'
 ```

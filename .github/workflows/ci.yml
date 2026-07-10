@@ -126,17 +126,29 @@ jobs:
             exit 1
           fi
           docker compose -f deploy/docker-compose.yml --env-file deploy/.env \
-            exec -T scheduler /inactivity-logout.sh
+            exec -T scheduler /run-maintenance-job.sh inactivity_logout
           docker compose -f deploy/docker-compose.yml --env-file deploy/.env \
-            exec -T scheduler /nightly-cleanup.sh
+            exec -T scheduler /run-maintenance-job.sh nightly_cleanup
           docker compose -f deploy/docker-compose.yml --env-file deploy/.env \
             exec -T scheduler sh -c \
             'export PGPASSWORD="$SCHEDULER_DB_PASSWORD"; psql -h postgres -U scheduler -d event_system_pro -v ON_ERROR_STOP=1 -c "SELECT api.scheduler_health();"'
+          docker compose -f deploy/docker-compose.yml --env-file deploy/.env \
+            exec -T scheduler sh -c \
+            'export PGPASSWORD="$SCHEDULER_DB_PASSWORD"; psql -h postgres -U scheduler -d event_system_pro -v ON_ERROR_STOP=1 -t -A -c "SELECT api.scheduler_crontab();"' \
+            | grep -q 'run-maintenance-job.sh inactivity_logout'
+          docker compose -f deploy/docker-compose.yml --env-file deploy/.env \
+            exec -T postgres \
+            psql -U postgres -d event_system_pro -v ON_ERROR_STOP=1 -t -A \
+            -c "SELECT COUNT(*) FROM maintenance.job_definition WHERE enabled;" \
+            | grep -Eq '^[1-9][0-9]*$'
           docker compose -f deploy/docker-compose.yml --env-file deploy/.env \
             exec -T postgres \
             psql -U postgres -d event_system_pro -v ON_ERROR_STOP=1 -t -A \
             -c "SELECT COUNT(*) FROM maintenance.job_run WHERE status IN ('ok','skipped');" \
             | grep -Eq '^[1-9][0-9]*$'
+          docker compose -f deploy/docker-compose.yml --env-file deploy/.env \
+            exec -T scheduler cat /etc/crontabs/root \
+            | grep -q 'run-maintenance-job.sh nightly_cleanup'
 
       - name: Tear down
         if: always()

@@ -111,8 +111,10 @@ The **`scheduler`** service (`deploy/Dockerfile.scheduler`) runs Alpine `crond` 
 
 | Schedule (TZ `America/Chicago`) | Job |
 |---------------------------------|-----|
-| Every 5 minutes | `api.inactivity_logout()` |
-| Daily at midnight | `api.nightly_cleanup()` |
+| Every 5 minutes | `inactivity_logout` via `api.run_maintenance_job` |
+| Daily at midnight | `nightly_cleanup` via `api.run_maintenance_job` |
+
+Each run writes a `maintenance.job_run` row and one structured log line (`job=… status=ok|error|skipped duration_ms=…`). Overlapping invocations are skipped via advisory locks.
 
 | Variable | Purpose |
 |----------|---------|
@@ -129,6 +131,8 @@ Manual one-shot (Dokploy / compose):
 ```bash
 docker compose -f deploy/docker-compose.dokploy.yml exec scheduler /inactivity-logout.sh
 docker compose -f deploy/docker-compose.dokploy.yml exec scheduler /nightly-cleanup.sh
+docker compose -f deploy/docker-compose.dokploy.yml exec scheduler \
+  sh -c 'export PGPASSWORD="$SCHEDULER_DB_PASSWORD"; psql -h postgres -U scheduler -d event_system_pro -c "SELECT api.scheduler_health();"'
 ```
 
 ### Read verification codes (test)

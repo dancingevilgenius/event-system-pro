@@ -329,7 +329,11 @@ export default function WsdcLookup({
   return (
     <Stack spacing={1.5}>
       <Box sx={{ position: 'relative' }}>
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems={{ sm: 'flex-start' }}>
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={1}
+          sx={{ alignItems: { sm: 'flex-start' } }}
+        >
           <Box sx={{ flex: 1, position: 'relative', width: '100%' }}>
             <AppTextField
               label="Search by Name or WSDC #"
@@ -393,7 +397,7 @@ export default function WsdcLookup({
       </Box>
 
       {loading && (
-        <Stack direction="row" spacing={1} alignItems="center" justifyContent="center" sx={{ py: 1 }}>
+        <Stack direction="row" spacing={1} sx={{ py: 1, alignItems: 'center', justifyContent: 'center' }}>
           <CircularProgress size={20} />
           <Typography variant="body2" color="text.secondary">
             Looking up WSDC registry…

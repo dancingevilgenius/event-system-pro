@@ -87,7 +87,6 @@ services:
     restart: unless-stopped
     environment:
       DATABASE_URL: postgres://realtime:${REALTIME_DB_PASSWORD:-realtime_dev_password}@postgres:5432/${POSTGRES_DB:-event_system_pro}
-      COUNTER_INTERVAL_MS: "5000"
       POC_COUNTER_LABEL: poc_counter
     depends_on:
       migrate:

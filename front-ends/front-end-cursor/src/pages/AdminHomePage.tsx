@@ -70,7 +70,7 @@ export default function AdminHomePage() {
         </Typography>
 
         <Typography variant="body1" sx={{ mb: 2 }}>
-          realtime counter:{' '}
+          POC counter (10s):{' '}
           {counterError
             ? 'unavailable'
             : counter === null

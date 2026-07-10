@@ -1,16 +1,18 @@
 # Realtime service (POC)
 
-Small Node service for the `system_config.poc_counter` proof of concept:
+Broadcast-only Node service for the `system_config.poc_counter` proof of concept:
 
-- Increments `poc_counter` every 5 seconds
-- Resets the counter to `0` at the start of each hour
 - Listens for PostgreSQL `NOTIFY` on counter changes
 - Broadcasts updates to WebSocket clients at `/ws`
+
+Counter **ticks** are driven by the maintenance scheduler job `poc_counter_tick`
+(every 10 seconds via `api.poc_counter_tick()`). This service does not increment
+the counter itself.
 
 ## Local development
 
 ```bash
-# Apply migration 029 first, then:
+# Apply migrations through 107 first, then:
 cd back-ends/realtime
 cp .env.example .env
 npm install

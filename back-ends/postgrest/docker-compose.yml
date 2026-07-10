@@ -62,7 +62,6 @@ services:
     environment:
       PORT: "3002"
       DATABASE_URL: postgres://realtime:realtime_dev_password@host.docker.internal:5432/event_system_pro
-      COUNTER_INTERVAL_MS: ${COUNTER_INTERVAL_MS:-5000}
       POC_COUNTER_LABEL: poc_counter
     extra_hosts:
       - "host.docker.internal:host-gateway"

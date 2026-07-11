@@ -32,6 +32,7 @@ import { buildStoredWsdcInfo } from '../api/wsdcRegistry';
 import AddEventButton from '../components/AddEventButton';
 import WsdcFindDancerSection from '../components/WsdcFindDancerSection';
 import { useIsMobileDevice } from '../hooks/useIsMobileDevice';
+import { useEventAttendeeRealtime } from '../hooks/useEventAttendeeRealtime';
 import { useMessages } from '../hooks/useMessages';
 import { eventDetailPath } from '../constants/eventRoutes';
 import { formatEventMonthYear } from '../lib/eventDisplay';
@@ -325,14 +326,18 @@ export default function AdminEventAttendeesPage() {
     [rows],
   );
 
-  const loadAttendees = useCallback(async () => {
+  const loadAttendees = useCallback(async (options?: { silent?: boolean }) => {
+    const silent = options?.silent === true;
+
     if (!decodedGroupCode || !Number.isFinite(parsedEventId)) {
       setError('Event not specified.');
       setLoading(false);
       return;
     }
 
-    setLoading(true);
+    if (!silent) {
+      setLoading(true);
+    }
     setError(null);
 
     try {
@@ -354,13 +359,22 @@ export default function AdminEventAttendeesPage() {
       setRows([]);
       setError(loadError instanceof Error ? loadError.message : 'Unable to load attendees.');
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
     }
   }, [decodedGroupCode, parsedEventId]);
 
   useEffect(() => {
     void loadAttendees();
   }, [loadAttendees]);
+
+  useEventAttendeeRealtime(
+    Number.isFinite(parsedEventId) ? parsedEventId : null,
+    () => {
+      void loadAttendees({ silent: true });
+    },
+  );
 
   const dataGridSlotProps = useMemo(() => {
     if (!filterPanelAnchorEl) {

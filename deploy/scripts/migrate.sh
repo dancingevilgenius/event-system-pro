@@ -95,7 +95,9 @@ apply_sql() {
 
   LAST_STEP="apply ${name}"
   echo "Applying: ${name}"
-  psql_cmd -f "$file"
+  if ! psql_cmd -f "$file"; then
+    fail 3 "SQL failed while applying ${name}. See psql error output above."
+  fi
   record_migration "$name"
 }
 

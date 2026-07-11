@@ -1,6 +1,9 @@
 -- Event judging pool RPCs and judges_json jsonb for event_staff_pool.
 -- Run: psql -U postgres -d event_system_pro -f database/migrations/116_event_judging_pool_rpc.sql
 
+-- Drop dependent view before any column type change.
+DROP VIEW IF EXISTS api.event_staff_pool;
+
 DO $$
 BEGIN
   IF EXISTS (
@@ -11,19 +14,23 @@ BEGIN
       AND column_name = 'judges_json'
       AND udt_name <> 'jsonb'
   ) THEN
-    ALTER TABLE public.event_staff_pool
-      ALTER COLUMN judges_json DROP DEFAULT;
+    EXECUTE $sql$
+      ALTER TABLE public.event_staff_pool
+        ALTER COLUMN judges_json DROP DEFAULT
+    $sql$;
 
-    ALTER TABLE public.event_staff_pool
-      ALTER COLUMN judges_json TYPE jsonb
-      USING (
-        CASE
-          WHEN judges_json IS NULL OR btrim(judges_json::text) = '' THEN '[]'::jsonb
-          WHEN pg_input_is_valid(btrim(judges_json::text), 'jsonb')
-            THEN btrim(judges_json::text)::jsonb
-          ELSE '[]'::jsonb
-        END
-      );
+    EXECUTE $sql$
+      ALTER TABLE public.event_staff_pool
+        ALTER COLUMN judges_json TYPE jsonb
+        USING (
+          CASE
+            WHEN judges_json IS NULL OR btrim(judges_json::text) = '' THEN '[]'::jsonb
+            WHEN pg_input_is_valid(btrim(judges_json::text), 'jsonb')
+              THEN btrim(judges_json::text)::jsonb
+            ELSE '[]'::jsonb
+          END
+        )
+    $sql$;
   END IF;
 END
 $$;
@@ -31,8 +38,41 @@ $$;
 ALTER TABLE public.event_staff_pool
   ALTER COLUMN judges_json SET DEFAULT '[]'::jsonb;
 
-ALTER TABLE public.event_staff_pool
-  ALTER COLUMN modified_by DROP NOT NULL;
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'event_staff_pool'
+      AND column_name = 'modified_by'
+      AND is_nullable = 'NO'
+  ) THEN
+    ALTER TABLE public.event_staff_pool
+      ALTER COLUMN modified_by DROP NOT NULL;
+  END IF;
+END
+$$;
+
+CREATE OR REPLACE VIEW api.event_staff_pool AS
+SELECT
+  event_staff_pool_id,
+  event_id,
+  event_code,
+  event_group_code,
+  head_judges_json,
+  judges_json,
+  volunteers_json,
+  additional_staff_pools_json,
+  contact_id,
+  is_active,
+  created_date,
+  created_by,
+  modified_date,
+  modified_by
+FROM public.event_staff_pool;
+
+GRANT SELECT ON api.event_staff_pool TO anon, authenticated;
 
 CREATE OR REPLACE FUNCTION api.get_event_judging_pool(p_event_code text)
 RETURNS json
@@ -165,7 +205,7 @@ BEGIN
       v_event_group_code,
       v_judges,
       1,
-      v_actor
+      left(v_actor, 32)
     );
   ELSE
     UPDATE public.event_staff_pool AS esp
@@ -173,7 +213,7 @@ BEGIN
       event_id = v_event_id,
       event_group_code = v_event_group_code,
       judges_json = v_judges,
-      modified_by = v_actor,
+      modified_by = left(v_actor, 32),
       modified_date = CURRENT_TIMESTAMP
     WHERE esp.event_staff_pool_id = v_pool_id;
   END IF;

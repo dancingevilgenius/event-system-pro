@@ -17,6 +17,7 @@ import BuildInfoDialog from '../components/BuildInfoDialog';
 import { centeredContentStackSx } from '../constants/layout';
 import { useMessages } from '../hooks/useMessages';
 import { usePocCounter } from '../hooks/usePocCounter';
+import { formatReadableDateTime } from '../utils/auditTimestamps';
 
 import { EVENT_HOME_PATH } from '../constants/eventRoutes';
 
@@ -113,16 +114,22 @@ export default function AdminHomePage() {
         return;
       }
 
-      const names = (result.events ?? []).map((event) => event.name).join(', ');
-      const windowLabel =
-        result.window_start && result.window_end
-          ? ` Window: ${result.window_start} through ${result.window_end}.`
-          : '';
-      const eventsLabel = names ? ` Updated: ${names}.` : '';
+      const alteredEvents = result.events ?? [];
+
+      if (alteredEvents.length === 0) {
+        showInfo('No current-year Hollowfen or Jitterbug events were updated.');
+        return;
+      }
 
       showSuccess(
-        `Demo event active window refreshed (${result.events_updated ?? 0} event(s)).${windowLabel}${eventsLabel}`,
+        `Demo event active window refreshed (${result.events_updated ?? alteredEvents.length} event(s)).`,
       );
+
+      for (const event of alteredEvents) {
+        showInfo(
+          `${event.name}: start ${formatReadableDateTime(event.start_date)}, end ${formatReadableDateTime(event.end_date)}`,
+        );
+      }
     } catch (error) {
       showProblem(
         error instanceof Error

@@ -986,8 +986,10 @@ Applied by **`rebuild-local-database.ps1`** locally and by **`deploy/scripts/see
 | `005` + `005a` | **1000** superhero/supervillain users (see below) |
 | `007` | App roles for `dancingevilgenius` |
 | `008`–`011` | Fictional demo event groups and instances |
-| `012` | Demo attendees (`api.generate_demo_attendees_core`) |
+| `012` | Demo attendees (`api.generate_demo_attendees_core` — all demo groups in recent years) |
+| `017` | Re-run attendee generation for deploys that applied `012` before robot/kart were included |
 | `013`–`014` | Governing body and static list |
+| `015`–`016` | Local deployment info, merchandise POS demo |
 
 Legacy **`006_user_superhero_followers.sql`** is **not** in the manifest (superseded by the 1000-user `005` seed).
 

@@ -14,6 +14,7 @@
 011_event_fictional_instances.sql
 016_merchandise_pos_demo.sql
 012_attendee_seed.sql
+017_attendee_seed_include_robot_kart.sql
 013_governing_body_seed.sql
 014_static_list_seed.sql
 015_local_deployment_info.sql

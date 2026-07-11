@@ -28,13 +28,21 @@ export PGPASSWORD="$SCHEDULER_DB_PASSWORD"
 START_EPOCH="$(date +%s 2>/dev/null || echo 0)"
 echo "job=${JOB_NAME} status=starting started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || echo unknown)"
 
-set +e
-RESULT="$(
-  psql -h "$PGHOST" -U "$SCHEDULER_DB_USER" -d "$POSTGRES_DB" -v ON_ERROR_STOP=1 -t -A \
-    -c "SELECT api.run_maintenance_job('${JOB_NAME}');" 2>&1
-)"
-PSQL_EXIT=$?
-set -e
+# WSDC refresh needs outbound HTTP to worldsdc.com (handled by a dedicated script).
+if [ "$JOB_NAME" = "wsdc_attendee_refresh" ] && [ -x /wsdc-attendee-refresh.sh ]; then
+  set +e
+  RESULT="$(/wsdc-attendee-refresh.sh 2>&1)"
+  PSQL_EXIT=$?
+  set -e
+else
+  set +e
+  RESULT="$(
+    psql -h "$PGHOST" -U "$SCHEDULER_DB_USER" -d "$POSTGRES_DB" -v ON_ERROR_STOP=1 -t -A \
+      -c "SELECT api.run_maintenance_job('${JOB_NAME}');" 2>&1
+  )"
+  PSQL_EXIT=$?
+  set -e
+fi
 
 END_EPOCH="$(date +%s 2>/dev/null || echo 0)"
 if [ "$START_EPOCH" -gt 0 ] 2>/dev/null && [ "$END_EPOCH" -gt 0 ] 2>/dev/null; then

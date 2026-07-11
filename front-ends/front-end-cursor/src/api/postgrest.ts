@@ -1089,6 +1089,28 @@ export function generateDemoAttendees() {
   return callRpc<GenerateDemoAttendeesResult>('generate_demo_attendees', {});
 }
 
+export type WsdcRefreshTarget = {
+  user_id: number;
+  username?: string;
+  wsdc_id: string;
+};
+
+export type PrepareWsdcAttendeeRefreshResult = {
+  ok: boolean;
+  message?: string;
+  events_count?: number;
+  attendees_added?: number;
+  target_count?: number;
+  seed_user_id?: number;
+  seed_username?: string;
+  targets?: WsdcRefreshTarget[];
+};
+
+/** Admin: ensure seed attendee rows and list users with WSDC # to refresh. */
+export function prepareWsdcAttendeeRefresh() {
+  return callRpc<PrepareWsdcAttendeeRefreshResult>('prepare_wsdc_attendee_refresh', {});
+}
+
 export type StaticListEntry = {
   key: string;
   label: string;

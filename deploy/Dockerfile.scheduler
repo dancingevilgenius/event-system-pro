@@ -6,19 +6,23 @@ FROM postgres:18-alpine
 COPY deploy/scripts/run-maintenance-job.sh /run-maintenance-job.sh
 COPY deploy/scripts/nightly-cleanup.sh /nightly-cleanup.sh
 COPY deploy/scripts/inactivity-logout.sh /inactivity-logout.sh
+COPY deploy/scripts/wsdc-attendee-refresh.sh /wsdc-attendee-refresh.sh
 COPY deploy/scripts/scheduler-entrypoint.sh /scheduler-entrypoint.sh
 COPY deploy/crontab /crontab.fallback
 
-RUN sed -i 's/\r$//' \
+RUN apk add --no-cache curl jq \
+  && sed -i 's/\r$//' \
       /run-maintenance-job.sh \
       /nightly-cleanup.sh \
       /inactivity-logout.sh \
+      /wsdc-attendee-refresh.sh \
       /scheduler-entrypoint.sh \
       /crontab.fallback \
   && chmod +x \
       /run-maintenance-job.sh \
       /nightly-cleanup.sh \
       /inactivity-logout.sh \
+      /wsdc-attendee-refresh.sh \
       /scheduler-entrypoint.sh
 
 ENV TZ=America/Chicago

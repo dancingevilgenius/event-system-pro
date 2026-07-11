@@ -38,6 +38,7 @@ The **`scheduler`** service starts with `/scheduler-entrypoint.sh`, which builds
 | `inactivity_logout` | cron `*/5 * * * *` | `api.inactivity_logout()` |
 | `nightly_cleanup` | cron `0 0 * * *` | `api.nightly_cleanup()` |
 | `poc_counter_tick` | interval **10 seconds** | `api.poc_counter_tick()` |
+| `wsdc_attendee_refresh` | cron `0 3 * * *` | shell `/wsdc-attendee-refresh.sh` (HTTP to WSDC registry + SQL apply) |
 | `robot_riot_attendee_churn` | **ephemeral** interval **60 seconds** (Admin-started, ~10 minutes) | `api.robot_riot_attendee_churn()` |
 
 Cron lines call `/run-maintenance-job.sh <job_name>` → `api.run_maintenance_job()` (looks up the registry, records `maintenance.job_run`, dispatches the RPC). Interval jobs are started as background sleep loops by `/scheduler-entrypoint.sh` (Alpine cron cannot fire sub-minute). Underlying RPCs use transaction-scoped advisory locks so overlapping runs return `skipped`.
@@ -65,6 +66,7 @@ The admin-home **POC counter** is ticked by `poc_counter_tick`; the **realtime**
 | `inactivity_logout` | Safe to re-run. Marks currently stale active sessions; already-marked sessions are skipped by `user_session_is_active`. |
 | `nightly_cleanup` | **Not** idempotent within the same calendar day — each successful run shifts demo event dates forward one day. Overlap is blocked by advisory lock; do not invoke manually unless you intend another shift. |
 | `robot_riot_attendee_churn` | Admin starts via **Rotate Robot Riot Attendees (10 min)** (`api.start_robot_riot_attendee_churn`). Runs immediately, then every 60s until the window ends; then deletes its `job_definition` row and clears the until timestamp. Safe to re-run / re-start (resets the window). |
+| `wsdc_attendee_refresh` | Safe to re-run. Ensures `dancingevilgenius` is on in-progress / next-3-month event attendee lists, then re-fetches WSDC registry profiles for attendees that already have a WSDC #. Admin can run immediately via **Refresh WSDC Attendee Info**. |
 
 Interval loops are refreshed by `scheduler-entrypoint.sh` about every 15 seconds so Admin-started ephemeral jobs are picked up without recreating the container. Loops stop when the job row is removed.
 

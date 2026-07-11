@@ -1,7 +1,17 @@
 import { useState } from 'react';
 import { Button, Container, Paper, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { generateDemoAttendees, startRobotRiotAttendeeChurn } from '../api/postgrest';
+import {
+  generateDemoAttendees,
+  prepareWsdcAttendeeRefresh,
+  setUserWsdcId,
+  startRobotRiotAttendeeChurn,
+} from '../api/postgrest';
+import {
+  buildStoredWsdcInfo,
+  findWsdcDancerById,
+  isWsdcDancerProfile,
+} from '../api/wsdcRegistry';
 import BuildInfoDialog from '../components/BuildInfoDialog';
 import { centeredContentStackSx } from '../constants/layout';
 import { useMessages } from '../hooks/useMessages';
@@ -27,6 +37,7 @@ export default function AdminHomePage() {
   const { counter, error: counterError } = usePocCounter();
   const [generatingAttendees, setGeneratingAttendees] = useState(false);
   const [startingChurn, setStartingChurn] = useState(false);
+  const [refreshingWsdc, setRefreshingWsdc] = useState(false);
   const [buildInfoOpen, setBuildInfoOpen] = useState(false);
 
   const handleTestMessages = () => {
@@ -88,6 +99,71 @@ export default function AdminHomePage() {
     }
   };
 
+  const handleRefreshWsdcAttendees = async () => {
+    clearMessages();
+    setRefreshingWsdc(true);
+
+    try {
+      const prepared = await prepareWsdcAttendeeRefresh();
+      if (!prepared.ok) {
+        showProblem(prepared.message ?? 'Unable to prepare WSDC attendee refresh.');
+        return;
+      }
+
+      const targets = prepared.targets ?? [];
+      let usersUpdated = 0;
+      let usersFailed = 0;
+      let usersSkipped = 0;
+
+      for (const target of targets) {
+        const wsdcId = String(target.wsdc_id ?? '').trim();
+        if (!target.user_id || !wsdcId) {
+          usersSkipped += 1;
+          continue;
+        }
+
+        try {
+          const profile = await findWsdcDancerById(wsdcId);
+          if (!isWsdcDancerProfile(profile)) {
+            usersSkipped += 1;
+            continue;
+          }
+
+          const saved = await setUserWsdcId({
+            userId: target.user_id,
+            wsdcId,
+            wsdcInfo: buildStoredWsdcInfo(wsdcId, profile),
+          });
+
+          if (saved.ok) {
+            usersUpdated += 1;
+          } else {
+            usersFailed += 1;
+          }
+        } catch {
+          usersFailed += 1;
+        }
+      }
+
+      const events = prepared.events_count ?? 0;
+      const added = prepared.attendees_added ?? 0;
+      showSuccess(
+        `WSDC attendee refresh finished. Updated ${usersUpdated} user(s)` +
+          ` across ${events} event(s)` +
+          (added > 0 ? ` (added dancingevilgenius to ${added} event(s))` : '') +
+          (usersFailed > 0 ? `. Failed: ${usersFailed}` : '') +
+          (usersSkipped > 0 ? `. Skipped: ${usersSkipped}` : '') +
+          '.',
+      );
+    } catch (error) {
+      showProblem(
+        error instanceof Error ? error.message : 'Unable to run WSDC attendee refresh.',
+      );
+    } finally {
+      setRefreshingWsdc(false);
+    }
+  };
+
   return (
     <Container maxWidth="md" sx={{ py: 6 }}>
       <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
@@ -136,6 +212,14 @@ export default function AdminHomePage() {
             {startingChurn
               ? 'Starting Robot Riot Rotation…'
               : 'Rotate Robot Riot Attendees (10 min)'}
+          </Button>
+          <Button
+            variant="outlined"
+            fullWidth
+            disabled={refreshingWsdc}
+            onClick={() => void handleRefreshWsdcAttendees()}
+          >
+            {refreshingWsdc ? 'Refreshing WSDC Info…' : 'Refresh WSDC Attendee Info'}
           </Button>
           <Button variant="outlined" fullWidth onClick={handleTestMessages}>
             Test Message Boxes

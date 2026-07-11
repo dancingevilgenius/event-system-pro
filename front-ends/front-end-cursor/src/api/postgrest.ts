@@ -1546,6 +1546,30 @@ export type SetUserWsdcIdResult = {
   wsdc?: Record<string, unknown> | null;
 };
 
+export type SaveWsdcForMatchingUserResult = SetUserWsdcIdResult & {
+  username?: string;
+  display_name?: string | null;
+  match_by?: 'wsdc_id' | 'name' | string;
+  match_count?: number;
+  match_user_ids?: number[];
+};
+
+export type FindUserForWsdcMatchResult = {
+  ok: boolean;
+  matched: boolean;
+  ambiguous?: boolean;
+  message?: string;
+  match_count?: number;
+  match_user_ids?: number[];
+  user_id?: number;
+  username?: string;
+  display_name?: string | null;
+  match_by?: 'wsdc_id' | 'name' | string;
+  wsdc_id?: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
+};
+
 export function setUserWsdcId(params: {
   userId?: number | null;
   wsdcId: string | null;
@@ -1555,6 +1579,34 @@ export function setUserWsdcId(params: {
     p_user_id: params.userId ?? null,
     p_wsdc_id: params.wsdcId,
     p_wsdc_info: params.wsdcInfo ?? null,
+  });
+}
+
+/** Admin: find ESP user matching WSDC #, else exact first+last name. */
+export function findUserForWsdcMatch(params: {
+  wsdcId?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+}) {
+  return callRpc<FindUserForWsdcMatchResult>('find_user_for_wsdc_match', {
+    p_wsdc_id: params.wsdcId?.trim() || null,
+    p_first_name: params.firstName?.trim() || null,
+    p_last_name: params.lastName?.trim() || null,
+  });
+}
+
+/** Admin: save WSDC info to the user matching WSDC #, else exact first+last name. */
+export function saveWsdcForMatchingUser(params: {
+  wsdcId: string;
+  wsdcInfo: Record<string, unknown>;
+  firstName?: string;
+  lastName?: string;
+}) {
+  return callRpc<SaveWsdcForMatchingUserResult>('save_wsdc_for_matching_user', {
+    p_wsdc_id: params.wsdcId,
+    p_wsdc_info: params.wsdcInfo,
+    p_first_name: params.firstName ?? null,
+    p_last_name: params.lastName ?? null,
   });
 }
 

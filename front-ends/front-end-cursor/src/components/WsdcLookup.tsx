@@ -39,6 +39,8 @@ export type WsdcLookupProps = {
   /** Show Confirm button when a dancer profile is loaded. */
   onConfirmWsdcId?: (wsdcId: string, profile: WsdcDancerProfile) => void | Promise<void>;
   confirmLabel?: string;
+  /** Disable Confirm even when a profile is loaded (e.g. no matching ESP user). */
+  confirmDisabled?: boolean;
   /** Called whenever a profile is selected (without requiring Confirm). */
   onProfileChange?: (profile: WsdcDancerProfile | null) => void;
   confirming?: boolean;
@@ -76,6 +78,7 @@ export default function WsdcLookup({
   enableDirectLink = false,
   onConfirmWsdcId,
   confirmLabel = 'Save WSDC #',
+  confirmDisabled = false,
   onProfileChange,
   confirming = false,
 }: WsdcLookupProps) {
@@ -463,7 +466,7 @@ export default function WsdcLookup({
             {onConfirmWsdcId && (
               <Button
                 variant="contained"
-                disabled={confirming}
+                disabled={confirming || confirmDisabled}
                 onClick={() => void handleConfirm()}
               >
                 {confirming ? 'Saving…' : confirmLabel}

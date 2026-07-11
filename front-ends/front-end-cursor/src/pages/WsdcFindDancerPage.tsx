@@ -19,11 +19,17 @@ export default function WsdcFindDancerPage() {
   const [canConfirmSave, setCanConfirmSave] = useState(false);
   const [noAccountWarning, setNoAccountWarning] = useState<string | null>(null);
   const [matchNote, setMatchNote] = useState<string | null>(null);
+  const [storedWsdcNote, setStoredWsdcNote] = useState<string | null>(null);
+
+  const buildStoredWsdcNote = useCallback((firstName: string, lastUpdate: string) => {
+    return `We have WSDC# info for ${firstName} from ${lastUpdate}`;
+  }, []);
 
   const resetMatchState = useCallback(() => {
     setCanConfirmSave(false);
     setNoAccountWarning(null);
     setMatchNote(null);
+    setStoredWsdcNote(null);
     setCheckingMatch(false);
   }, []);
 
@@ -42,6 +48,7 @@ export default function WsdcFindDancerPage() {
       setCanConfirmSave(false);
       setNoAccountWarning(null);
       setMatchNote(null);
+      setStoredWsdcNote(null);
 
       void findUserForWsdcMatch({
         wsdcId,
@@ -52,6 +59,7 @@ export default function WsdcFindDancerPage() {
           if (!result.ok) {
             setCanConfirmSave(false);
             setNoAccountWarning(null);
+            setStoredWsdcNote(null);
             setMatchNote(result.message ?? 'Unable to check for a matching account.');
             return;
           }
@@ -67,10 +75,19 @@ export default function WsdcFindDancerPage() {
                   ? 'first and last name'
                   : String(result.match_by ?? 'match');
             setMatchNote(`Matched Event System Pro account: ${who} (by ${how}).`);
+
+            if (result.has_stored_wsdc && result.stored_last_update_datetime) {
+              const storedFirst =
+                result.stored_dancer_first?.trim() || firstName || who.split(/\s+/)[0] || 'this dancer';
+              setStoredWsdcNote(buildStoredWsdcNote(storedFirst, result.stored_last_update_datetime));
+            } else {
+              setStoredWsdcNote(null);
+            }
             return;
           }
 
           setCanConfirmSave(false);
+          setStoredWsdcNote(null);
           if (result.ambiguous) {
             setNoAccountWarning(null);
             setMatchNote(result.message ?? 'Multiple matching accounts found.');
@@ -85,6 +102,7 @@ export default function WsdcFindDancerPage() {
         .catch((error) => {
           setCanConfirmSave(false);
           setNoAccountWarning(null);
+          setStoredWsdcNote(null);
           setMatchNote(
             error instanceof Error ? error.message : 'Unable to check for a matching account.',
           );
@@ -93,7 +111,7 @@ export default function WsdcFindDancerPage() {
           setCheckingMatch(false);
         });
     },
-    [resetMatchState],
+    [buildStoredWsdcNote, resetMatchState],
   );
 
   const handleConfirmAndSave = async (wsdcId: string, profile: WsdcDancerProfile) => {
@@ -114,6 +132,17 @@ export default function WsdcFindDancerPage() {
         return;
       }
       showSuccess(result.message);
+
+      const saved = result.wsdc;
+      const lastUpdate =
+        typeof saved?.last_update_datetime === 'string' ? saved.last_update_datetime.trim() : '';
+      if (lastUpdate) {
+        const storedFirst =
+          (typeof saved?.dancer_first === 'string' && saved.dancer_first.trim()) ||
+          profile.dancer_first?.trim() ||
+          'this dancer';
+        setStoredWsdcNote(buildStoredWsdcNote(storedFirst, lastUpdate));
+      }
     } catch (error) {
       showProblem(error instanceof Error ? error.message : 'Unable to save WSDC info.');
     } finally {
@@ -156,6 +185,12 @@ export default function WsdcFindDancerPage() {
         {!checkingMatch && matchNote && !noAccountWarning && (
           <Alert severity={canConfirmSave ? 'info' : 'warning'} sx={{ mt: 2 }}>
             {matchNote}
+          </Alert>
+        )}
+
+        {!checkingMatch && storedWsdcNote && (
+          <Alert severity="info" sx={{ mt: 2 }}>
+            {storedWsdcNote}
           </Alert>
         )}
 

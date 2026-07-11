@@ -1568,6 +1568,9 @@ export type FindUserForWsdcMatchResult = {
   wsdc_id?: string | null;
   first_name?: string | null;
   last_name?: string | null;
+  has_stored_wsdc?: boolean;
+  stored_dancer_first?: string | null;
+  stored_last_update_datetime?: string | null;
 };
 
 export function setUserWsdcId(params: {

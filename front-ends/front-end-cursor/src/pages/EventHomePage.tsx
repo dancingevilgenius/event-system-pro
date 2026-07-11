@@ -4,8 +4,8 @@ import { centeredContentStackSx } from '../constants/layout';
 import { EVENT_GROUPS_PATH, EVENTS_PATH } from '../constants/eventRoutes';
 
 const EVENT_HOME_BUTTONS = [
-  { label: 'Events', path: EVENTS_PATH },
   { label: 'Event Groups', path: EVENT_GROUPS_PATH },
+  { label: 'Events', path: EVENTS_PATH },
 ] as const;
 
 export default function EventHomePage() {

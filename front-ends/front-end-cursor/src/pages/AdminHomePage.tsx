@@ -11,6 +11,7 @@ import {
 import {
   buildStoredWsdcInfo,
   findWsdcDancerById,
+  formatWsdcFetchTimingMessage,
   isWsdcDancerProfile,
 } from '../api/wsdcRegistry';
 import BuildInfoDialog from '../components/BuildInfoDialog';
@@ -144,6 +145,7 @@ export default function AdminHomePage() {
   const handleRefreshWsdcAttendees = async () => {
     clearMessages();
     setRefreshingWsdc(true);
+    const startedAt = performance.now();
 
     try {
       const prepared = await prepareWsdcAttendeeRefresh();
@@ -197,6 +199,7 @@ export default function AdminHomePage() {
           (usersSkipped > 0 ? `. Skipped: ${usersSkipped}` : '') +
           '.',
       );
+      showInfo(formatWsdcFetchTimingMessage(performance.now() - startedAt, 'WSDC attendee refresh'));
     } catch (error) {
       showProblem(
         error instanceof Error ? error.message : 'Unable to run WSDC attendee refresh.',

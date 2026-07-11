@@ -139,6 +139,13 @@ export function formatWsdcFetchElapsed(elapsedMs: number): string {
   return seconds >= 10 ? `${Math.round(seconds)} s` : `${seconds.toFixed(1)} s`;
 }
 
+export function formatWsdcFetchTimingMessage(
+  elapsedMs: number,
+  action = 'WSDC lookup',
+): string {
+  return `${action} completed in ${formatWsdcFetchElapsed(elapsedMs)}.`;
+}
+
 export function formatWsdcLevelLine(
   roleLabel: string | undefined,
   required: string | undefined,

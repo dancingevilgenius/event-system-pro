@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   CircularProgress,
@@ -19,7 +20,7 @@ import {
   autocompleteWsdcDancers,
   findWsdcDancerById,
   findWsdcDancerByQuery,
-  formatWsdcFetchElapsed,
+  formatWsdcFetchTimingMessage,
   formatWsdcLevelLine,
   isWsdcDancerProfile,
   isWsdcNameList,
@@ -47,6 +48,8 @@ export type WsdcLookupProps = {
   onProfileChange?: (profile: WsdcDancerProfile | null) => void;
   /** Show fetch duration in the global message box when a lookup completes. */
   showFetchTiming?: boolean;
+  /** Called when a registry lookup finishes (with elapsed milliseconds). */
+  onFetchComplete?: (elapsedMs: number) => void;
   confirming?: boolean;
 };
 
@@ -85,10 +88,12 @@ export default function WsdcLookup({
   confirmDisabled = false,
   onProfileChange,
   showFetchTiming = true,
+  onFetchComplete,
   confirming = false,
 }: WsdcLookupProps) {
   const { showInfo } = useMessages();
   const [query, setQuery] = useState(initialQuery);
+  const [fetchTimingNote, setFetchTimingNote] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<WsdcSuggestion[]>([]);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [nameMatches, setNameMatches] = useState<WsdcNameMatch[]>([]);
@@ -103,13 +108,17 @@ export default function WsdcLookup({
 
   const reportFetchTiming = useCallback(
     (elapsedMs: number) => {
+      onFetchComplete?.(elapsedMs);
+
       if (!showFetchTiming) {
         return;
       }
 
-      showInfo(`WSDC lookup completed in ${formatWsdcFetchElapsed(elapsedMs)}.`);
+      const message = formatWsdcFetchTimingMessage(elapsedMs);
+      setFetchTimingNote(message);
+      showInfo(message);
     },
-    [showFetchTiming, showInfo],
+    [onFetchComplete, showFetchTiming, showInfo],
   );
 
   const applyProfile = useCallback(
@@ -135,6 +144,7 @@ export default function WsdcLookup({
       setError('');
       setNameMatches([]);
       setSuggestionsOpen(false);
+      setFetchTimingNote(null);
       const startedAt = performance.now();
 
       try {
@@ -193,6 +203,7 @@ export default function WsdcLookup({
       setError('');
       setNameMatches([]);
       setSuggestionsOpen(false);
+      setFetchTimingNote(null);
       const startedAt = performance.now();
       let skipFetchTiming = false;
 
@@ -351,6 +362,7 @@ export default function WsdcLookup({
     setSuggestionsOpen(false);
     setNameMatches([]);
     setError('');
+    setFetchTimingNote(null);
     applyProfile(null, true);
   };
 
@@ -431,6 +443,10 @@ export default function WsdcLookup({
             Looking up WSDC registry…
           </Typography>
         </Stack>
+      )}
+
+      {!loading && fetchTimingNote && (
+        <Alert severity="info">{fetchTimingNote}</Alert>
       )}
 
       {error && (

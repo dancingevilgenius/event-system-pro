@@ -38,6 +38,7 @@ The **`scheduler`** service starts with `/scheduler-entrypoint.sh`, which builds
 | `inactivity_logout` | cron `*/5 * * * *` | `api.inactivity_logout()` |
 | `nightly_cleanup` | cron `0 0 * * *` | `api.nightly_cleanup()` |
 | `poc_counter_tick` | interval **10 seconds** | `api.poc_counter_tick()` |
+| `robot_riot_attendee_churn` | **ephemeral** interval **60 seconds** (Admin-started, ~10 minutes) | `api.robot_riot_attendee_churn()` |
 
 Cron lines call `/run-maintenance-job.sh <job_name>` → `api.run_maintenance_job()` (looks up the registry, records `maintenance.job_run`, dispatches the RPC). Interval jobs are started as background sleep loops by `/scheduler-entrypoint.sh` (Alpine cron cannot fire sub-minute). Underlying RPCs use transaction-scoped advisory locks so overlapping runs return `skipped`.
 
@@ -63,6 +64,28 @@ The admin-home **POC counter** is ticked by `poc_counter_tick`; the **realtime**
 |-----|-----------------|
 | `inactivity_logout` | Safe to re-run. Marks currently stale active sessions; already-marked sessions are skipped by `user_session_is_active`. |
 | `nightly_cleanup` | **Not** idempotent within the same calendar day — each successful run shifts demo event dates forward one day. Overlap is blocked by advisory lock; do not invoke manually unless you intend another shift. |
+| `robot_riot_attendee_churn` | Admin starts via **Rotate Robot Riot Attendees (10 min)** (`api.start_robot_riot_attendee_churn`). Runs immediately, then every 60s until the window ends; then deletes its `job_definition` row and clears the until timestamp. Safe to re-run / re-start (resets the window). |
+
+Interval loops are refreshed by `scheduler-entrypoint.sh` about every 15 seconds so Admin-started ephemeral jobs are picked up without recreating the container. Loops stop when the job row is removed.
+
+#### Local Windows (host Postgres)
+
+When PostgREST points at local Postgres (`host.docker.internal:5432`), apply migrations `104`–`108` with `psql`, then either:
+
+```powershell
+# One-shot
+powershell -File scripts/robot-riot-attendee-churn.ps1
+
+# Or run the Docker scheduler against the host DB
+docker build -f deploy/Dockerfile.scheduler -t event-system-pro-scheduler:latest .
+docker run -d --name event-system-pro-scheduler --restart unless-stopped `
+  -e PGHOST=host.docker.internal `
+  -e POSTGRES_DB=event_system_pro `
+  -e SCHEDULER_DB_USER=scheduler `
+  -e SCHEDULER_DB_PASSWORD=scheduler_dev_password `
+  -e TZ=America/Chicago `
+  event-system-pro-scheduler:latest
+```
 
 #### Health check
 

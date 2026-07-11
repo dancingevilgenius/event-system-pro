@@ -479,6 +479,28 @@ export function touchLastActivity() {
   return callRpc<TouchActivityResult>('touch_last_activity', {});
 }
 
+export type StartRobotRiotAttendeeChurnResult = {
+  ok: boolean;
+  message?: string;
+  duration_minutes?: number;
+  until?: string;
+  first_run?: {
+    ok?: boolean;
+    skipped?: boolean;
+    reason?: string;
+    replaced?: number;
+    attendee_count?: number;
+    event_name?: string;
+  };
+};
+
+/** Admin: start timed Robot Riot 2026 attendee rotation (scheduler every 60s until expiry). */
+export function startRobotRiotAttendeeChurn(durationMinutes = 10) {
+  return callRpc<StartRobotRiotAttendeeChurnResult>('start_robot_riot_attendee_churn', {
+    p_duration_minutes: durationMinutes,
+  });
+}
+
 export function sessionStatus() {
   return callRpc<SessionStatusResult>('session_status', {});
 }

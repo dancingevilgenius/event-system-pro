@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Container, Paper, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { generateDemoAttendees } from '../api/postgrest';
+import { generateDemoAttendees, startRobotRiotAttendeeChurn } from '../api/postgrest';
 import BuildInfoDialog from '../components/BuildInfoDialog';
 import { centeredContentStackSx } from '../constants/layout';
 import { useMessages } from '../hooks/useMessages';
@@ -26,6 +26,7 @@ export default function AdminHomePage() {
   const { showSuccess, showWarning, showProblem, showInfo, clearMessages } = useMessages();
   const { counter, error: counterError } = usePocCounter();
   const [generatingAttendees, setGeneratingAttendees] = useState(false);
+  const [startingChurn, setStartingChurn] = useState(false);
   const [buildInfoOpen, setBuildInfoOpen] = useState(false);
 
   const handleTestMessages = () => {
@@ -59,6 +60,31 @@ export default function AdminHomePage() {
       );
     } finally {
       setGeneratingAttendees(false);
+    }
+  };
+
+  const handleStartRobotRiotChurn = async () => {
+    clearMessages();
+    setStartingChurn(true);
+
+    try {
+      const result = await startRobotRiotAttendeeChurn(10);
+
+      if (!result.ok) {
+        showProblem(result.message ?? 'Unable to start attendee rotation.');
+        return;
+      }
+
+      const replaced = result.first_run?.replaced;
+      const first =
+        typeof replaced === 'number' ? ` First tick replaced ${replaced} attendees.` : '';
+      showSuccess(`${result.message ?? 'Attendee rotation started.'}${first}`);
+    } catch (error) {
+      showProblem(
+        error instanceof Error ? error.message : 'Unable to start attendee rotation.',
+      );
+    } finally {
+      setStartingChurn(false);
     }
   };
 
@@ -100,6 +126,16 @@ export default function AdminHomePage() {
             onClick={() => void handleGenerateAttendees()}
           >
             {generatingAttendees ? 'Generating Attendees…' : 'Generate Attendees'}
+          </Button>
+          <Button
+            variant="outlined"
+            fullWidth
+            disabled={startingChurn}
+            onClick={() => void handleStartRobotRiotChurn()}
+          >
+            {startingChurn
+              ? 'Starting Robot Riot Rotation…'
+              : 'Rotate Robot Riot Attendees (10 min)'}
           </Button>
           <Button variant="outlined" fullWidth onClick={handleTestMessages}>
             Test Message Boxes

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   generateDemoAttendees,
   prepareWsdcAttendeeRefresh,
+  runDemoEventActiveWindow,
   setUserWsdcId,
   startRobotRiotAttendeeChurn,
 } from '../api/postgrest';
@@ -38,6 +39,7 @@ export default function AdminHomePage() {
   const [generatingAttendees, setGeneratingAttendees] = useState(false);
   const [startingChurn, setStartingChurn] = useState(false);
   const [refreshingWsdc, setRefreshingWsdc] = useState(false);
+  const [refreshingDemoEventWindow, setRefreshingDemoEventWindow] = useState(false);
   const [buildInfoOpen, setBuildInfoOpen] = useState(false);
 
   const handleTestMessages = () => {
@@ -96,6 +98,39 @@ export default function AdminHomePage() {
       );
     } finally {
       setStartingChurn(false);
+    }
+  };
+
+  const handleRefreshDemoEventWindow = async () => {
+    clearMessages();
+    setRefreshingDemoEventWindow(true);
+
+    try {
+      const result = await runDemoEventActiveWindow();
+
+      if (!result.ok) {
+        showProblem(result.message ?? 'Unable to refresh demo event active window.');
+        return;
+      }
+
+      const names = (result.events ?? []).map((event) => event.name).join(', ');
+      const windowLabel =
+        result.window_start && result.window_end
+          ? ` Window: ${result.window_start} through ${result.window_end}.`
+          : '';
+      const eventsLabel = names ? ` Updated: ${names}.` : '';
+
+      showSuccess(
+        `Demo event active window refreshed (${result.events_updated ?? 0} event(s)).${windowLabel}${eventsLabel}`,
+      );
+    } catch (error) {
+      showProblem(
+        error instanceof Error
+          ? error.message
+          : 'Unable to refresh demo event active window.',
+      );
+    } finally {
+      setRefreshingDemoEventWindow(false);
     }
   };
 
@@ -220,6 +255,16 @@ export default function AdminHomePage() {
             onClick={() => void handleRefreshWsdcAttendees()}
           >
             {refreshingWsdc ? 'Refreshing WSDC Info…' : 'Refresh WSDC Attendee Info'}
+          </Button>
+          <Button
+            variant="outlined"
+            fullWidth
+            disabled={refreshingDemoEventWindow}
+            onClick={() => void handleRefreshDemoEventWindow()}
+          >
+            {refreshingDemoEventWindow
+              ? 'Refreshing Demo Event Window…'
+              : 'Refresh Hollowfen & Jitterbug Active Window'}
           </Button>
           <Button variant="outlined" fullWidth onClick={handleTestMessages}>
             Test Message Boxes

@@ -1089,6 +1089,29 @@ export function generateDemoAttendees() {
   return callRpc<GenerateDemoAttendeesResult>('generate_demo_attendees', {});
 }
 
+export type DemoEventActiveWindowEvent = {
+  event_id: number;
+  event_group_code: string;
+  name: string;
+  start_date: string;
+  end_date: string;
+};
+
+export type RunDemoEventActiveWindowResult = {
+  ok: boolean;
+  message?: string;
+  current_year?: number;
+  window_start?: string;
+  window_end?: string;
+  events_updated?: number;
+  events?: DemoEventActiveWindowEvent[];
+};
+
+/** Admin: set Hollowfen Blade Congress and Jitterbug Jamboree (current year) in-progress dates. */
+export function runDemoEventActiveWindow() {
+  return callRpc<RunDemoEventActiveWindowResult>('run_demo_event_active_window', {});
+}
+
 export type WsdcRefreshTarget = {
   user_id: number;
   username?: string;

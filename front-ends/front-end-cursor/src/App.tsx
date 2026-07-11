@@ -34,6 +34,7 @@ import StaticListDetailsPage from './pages/StaticListDetailsPage';
 import StaticListsPage from './pages/StaticListsPage';
 import TournamentBracketDemoPage from './pages/TournamentBracketDemoPage';
 import WsdcFindDancerPage from './pages/WsdcFindDancerPage';
+import AdminSetEventJudgesPage from './pages/AdminSetEventJudgesPage';
 import { CREATE_EVENT_PATH, EVENT_HOME_PATH, EVENT_GROUPS_PATH, EVENTS_PATH } from './constants/eventRoutes';
 
 export default function App() {
@@ -127,6 +128,14 @@ export default function App() {
         element={
           <ProtectedRoute roles={['ADMIN']}>
             <WsdcFindDancerPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/set-event-judges"
+        element={
+          <ProtectedRoute roles={['ADMIN']}>
+            <AdminSetEventJudgesPage />
           </ProtectedRoute>
         }
       />

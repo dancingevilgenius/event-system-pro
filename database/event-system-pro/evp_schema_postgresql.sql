@@ -432,7 +432,7 @@ CREATE TABLE IF NOT EXISTS event_staff_pool (
   event_code varchar(64) DEFAULT NULL,
   event_group_code varchar(64) DEFAULT NULL,
   head_judges_json varchar(128) DEFAULT NULL,
-  judges_json varchar(1000) DEFAULT NULL,
+  judges_json jsonb DEFAULT '[]'::jsonb,
   volunteers_json varchar(1000) DEFAULT NULL,
   additional_staff_pools_json json DEFAULT NULL,
   contact_id INTEGER DEFAULT NULL,

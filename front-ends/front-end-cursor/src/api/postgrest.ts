@@ -174,6 +174,7 @@ export type RegisterUserResult = {
 export type ApiUserRecord = {
   user_id: number;
   username: string;
+  email?: string | null;
   name_json: {
     first?: string | null;
     last?: string | null;
@@ -868,8 +869,10 @@ export async function createEventGroup(input: CreateEventGroupInput): Promise<Ev
 
 export type EventListRow = {
   eventId: number;
+  eventCode: string;
   name: string;
   startDate: string | null;
+  endDate: string | null;
 };
 
 export type EventGroupDetail = {
@@ -889,10 +892,22 @@ export type EventAttendeeListRow = {
 
 type ApiEventRecord = {
   event_id: number;
+  event_code: string;
   name: string;
   start_date: string | null;
+  end_date: string | null;
   event_group_code: string | null;
 };
+
+function mapEventListRow(row: ApiEventRecord): EventListRow {
+  return {
+    eventId: row.event_id,
+    eventCode: row.event_code,
+    name: row.name,
+    startDate: row.start_date,
+    endDate: row.end_date,
+  };
+}
 
 export async function fetchEventGroupByCode(
   eventGroupCode: string,
@@ -920,7 +935,7 @@ export async function fetchEventGroupByCode(
 
 export async function fetchEventsForEventGroup(eventGroupCode: string): Promise<EventListRow[]> {
   const params = new URLSearchParams({
-    select: 'event_id,name,start_date',
+    select: 'event_id,event_code,name,start_date,end_date',
     order: 'start_date',
   });
   params.append('event_group_code', `eq.${eventGroupCode}`);
@@ -930,18 +945,14 @@ export async function fetchEventsForEventGroup(eventGroupCode: string): Promise<
     'Unable to load events',
   );
 
-  return rows.map((row) => ({
-    eventId: row.event_id,
-    name: row.name,
-    startDate: row.start_date,
-  }));
+  return rows.map(mapEventListRow);
 }
 
 export async function fetchEventById(
   eventId: number,
 ): Promise<(EventListRow & { eventGroupCode: string | null }) | null> {
   const params = new URLSearchParams({
-    select: 'event_id,name,start_date,event_group_code',
+    select: 'event_id,event_code,name,start_date,end_date,event_group_code',
   });
   params.append('event_id', `eq.${eventId}`);
 
@@ -956,9 +967,7 @@ export async function fetchEventById(
   }
 
   return {
-    eventId: row.event_id,
-    name: row.name,
-    startDate: row.start_date,
+    ...mapEventListRow(row),
     eventGroupCode: row.event_group_code,
   };
 }
@@ -1748,5 +1757,151 @@ export async function fetchEventPosContextByCode(
     eventCode: row.event_code,
     name: row.name,
     locationLabel: row.location_json,
+  };
+}
+
+export type JudgeSearchUser = {
+  userId: number;
+  username: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+};
+
+/** Search users by first and/or last name (admin judging pool). */
+export async function searchUsersByFirstAndLastName(
+  firstName: string,
+  lastName: string,
+  limit = 50,
+): Promise<JudgeSearchUser[]> {
+  const trimmedFirst = firstName.trim();
+  const trimmedLast = lastName.trim();
+
+  if (!trimmedFirst && !trimmedLast) {
+    return [];
+  }
+
+  const params = new URLSearchParams({
+    select: 'user_id,username,name_json,email',
+    limit: String(limit),
+    order: 'name_json->>last.asc,name_json->>first.asc',
+  });
+
+  appendIlikeFilter(params, 'name_json->>first', trimmedFirst);
+  appendIlikeFilter(params, 'name_json->>last', trimmedLast);
+
+  const records = await fetchJson<ApiUserRecord[]>(
+    `${POSTGREST_URL}/user?${params.toString()}`,
+    'Unable to search users',
+  );
+
+  return records
+    .map((row) => ({
+      userId: row.user_id,
+      username: row.username?.trim() ?? '',
+      firstName: row.name_json?.first?.trim() ?? '',
+      lastName: row.name_json?.last?.trim() ?? '',
+      email: row.email?.trim() ?? '',
+    }))
+    .filter((user) => user.userId > 0 && user.username !== '');
+}
+
+export type EventJudgePoolMember = {
+  userId: number;
+  username: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+};
+
+type ApiEventJudgePoolMember = {
+  user_id?: number | string | null;
+  username?: string | null;
+  firstname?: string | null;
+  lastname?: string | null;
+  email?: string | null;
+};
+
+function parseEventJudgePoolMembers(value: unknown): EventJudgePoolMember[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .filter((entry): entry is ApiEventJudgePoolMember => Boolean(entry) && typeof entry === 'object')
+    .map((entry) => ({
+      userId: Number(entry.user_id),
+      username: typeof entry.username === 'string' ? entry.username.trim() : '',
+      firstname: typeof entry.firstname === 'string' ? entry.firstname.trim() : '',
+      lastname: typeof entry.lastname === 'string' ? entry.lastname.trim() : '',
+      email: typeof entry.email === 'string' ? entry.email.trim() : '',
+    }))
+    .filter((entry) => Number.isFinite(entry.userId) && entry.userId > 0);
+}
+
+export type GetEventJudgingPoolResult = {
+  ok: boolean;
+  message?: string;
+  event_code?: string;
+  judges?: unknown;
+};
+
+export type SaveEventJudgingPoolResult = {
+  ok: boolean;
+  message: string;
+  event_code?: string;
+  judges?: EventJudgePoolMember[];
+};
+
+export function getEventJudgingPool(eventCode: string) {
+  return callRpc<GetEventJudgingPoolResult>('get_event_judging_pool', {
+    p_event_code: eventCode,
+  });
+}
+
+export function saveEventJudgingPool(eventCode: string, judges: EventJudgePoolMember[]) {
+  return callRpc<SaveEventJudgingPoolResult>('save_event_judging_pool', {
+    p_event_code: eventCode,
+    p_judges: judges.map((judge) => ({
+      user_id: judge.userId,
+      username: judge.username,
+      firstname: judge.firstname,
+      lastname: judge.lastname,
+      email: judge.email,
+    })),
+  });
+}
+
+export async function fetchEventJudgingPool(eventCode: string): Promise<EventJudgePoolMember[]> {
+  const result = await getEventJudgingPool(eventCode);
+  if (!result.ok) {
+    throw new Error(result.message ?? 'Unable to load judging pool.');
+  }
+
+  return parseEventJudgePoolMembers(result.judges);
+}
+
+export async function persistEventJudgingPool(
+  eventCode: string,
+  judges: EventJudgePoolMember[],
+): Promise<SaveEventJudgingPoolResult> {
+  const result = await saveEventJudgingPool(eventCode, judges);
+  if (result.ok && result.judges) {
+    return {
+      ...result,
+      judges: parseEventJudgePoolMembers(result.judges),
+    };
+  }
+
+  return result;
+}
+
+export function judgeSearchUserToPoolMember(user: JudgeSearchUser): EventJudgePoolMember {
+  return {
+    userId: user.userId,
+    username: user.username,
+    firstname: user.firstName,
+    lastname: user.lastName,
+    email: user.email,
   };
 }

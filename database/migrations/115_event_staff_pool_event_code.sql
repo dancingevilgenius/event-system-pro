@@ -1,8 +1,6 @@
 -- Add event_code to event_staff_pool with FK to public."event"(event_code).
 -- Run: psql -U postgres -d event_system_pro -f database/migrations/115_event_staff_pool_event_code.sql
 
-\connect event_system_pro
-
 ALTER TABLE public.event_staff_pool
   ADD COLUMN IF NOT EXISTS event_code varchar(64) DEFAULT NULL;
 

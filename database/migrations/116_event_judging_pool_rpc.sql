@@ -1,18 +1,38 @@
 -- Event judging pool RPCs and judges_json jsonb for event_staff_pool.
 -- Run: psql -U postgres -d event_system_pro -f database/migrations/116_event_judging_pool_rpc.sql
 
-\connect event_system_pro
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'event_staff_pool'
+      AND column_name = 'judges_json'
+      AND udt_name <> 'jsonb'
+  ) THEN
+    ALTER TABLE public.event_staff_pool
+      ALTER COLUMN judges_json DROP DEFAULT;
 
-ALTER TABLE public.event_staff_pool
-  ALTER COLUMN judges_json TYPE jsonb
-  USING CASE
-    WHEN judges_json IS NULL OR btrim(judges_json::text) = '' THEN '[]'::jsonb
-    WHEN judges_json::text ~ '^\s*\[' THEN judges_json::jsonb
-    ELSE '[]'::jsonb
-  END;
+    ALTER TABLE public.event_staff_pool
+      ALTER COLUMN judges_json TYPE jsonb
+      USING (
+        CASE
+          WHEN judges_json IS NULL OR btrim(judges_json::text) = '' THEN '[]'::jsonb
+          WHEN pg_input_is_valid(btrim(judges_json::text), 'jsonb')
+            THEN btrim(judges_json::text)::jsonb
+          ELSE '[]'::jsonb
+        END
+      );
+  END IF;
+END
+$$;
 
 ALTER TABLE public.event_staff_pool
   ALTER COLUMN judges_json SET DEFAULT '[]'::jsonb;
+
+ALTER TABLE public.event_staff_pool
+  ALTER COLUMN modified_by DROP NOT NULL;
 
 CREATE OR REPLACE FUNCTION api.get_event_judging_pool(p_event_code text)
 RETURNS json

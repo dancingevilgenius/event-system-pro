@@ -440,7 +440,7 @@ CREATE TABLE IF NOT EXISTS event_staff_pool (
   created_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   created_by varchar(32) NOT NULL,
   modified_date TIMESTAMPTZ NULL DEFAULT NULL,
-  modified_by varchar(32) NOT NULL,
+  modified_by varchar(32) NULL DEFAULT NULL,
 PRIMARY KEY (event_staff_pool_id),
 CONSTRAINT event_staff_pool_fk_event FOREIGN KEY (event_id) REFERENCES "event" (event_id) ON DELETE RESTRICT,
 CONSTRAINT event_staff_pool_fk_event_code FOREIGN KEY (event_code) REFERENCES "event" (event_code) ON DELETE RESTRICT ON UPDATE RESTRICT

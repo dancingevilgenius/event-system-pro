@@ -126,6 +126,19 @@ export function buildStoredWsdcInfo(
   };
 }
 
+export function formatWsdcFetchElapsed(elapsedMs: number): string {
+  if (!Number.isFinite(elapsedMs) || elapsedMs < 0) {
+    return '—';
+  }
+
+  if (elapsedMs < 1000) {
+    return `${Math.round(elapsedMs)} ms`;
+  }
+
+  const seconds = elapsedMs / 1000;
+  return seconds >= 10 ? `${Math.round(seconds)} s` : `${seconds.toFixed(1)} s`;
+}
+
 export function formatWsdcLevelLine(
   roleLabel: string | undefined,
   required: string | undefined,

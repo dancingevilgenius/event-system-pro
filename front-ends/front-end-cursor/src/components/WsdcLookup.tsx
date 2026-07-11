@@ -19,6 +19,7 @@ import {
   autocompleteWsdcDancers,
   findWsdcDancerById,
   findWsdcDancerByQuery,
+  formatWsdcFetchElapsed,
   formatWsdcLevelLine,
   isWsdcDancerProfile,
   isWsdcNameList,
@@ -28,6 +29,7 @@ import {
   type WsdcSuggestion,
 } from '../api/wsdcRegistry';
 import AppTextField from './AppTextField';
+import { useMessages } from '../hooks/useMessages';
 
 export type WsdcLookupProps = {
   /** Prefill search box (e.g. first + last name). */
@@ -43,6 +45,8 @@ export type WsdcLookupProps = {
   confirmDisabled?: boolean;
   /** Called whenever a profile is selected (without requiring Confirm). */
   onProfileChange?: (profile: WsdcDancerProfile | null) => void;
+  /** Show fetch duration in the global message box when a lookup completes. */
+  showFetchTiming?: boolean;
   confirming?: boolean;
 };
 
@@ -80,8 +84,10 @@ export default function WsdcLookup({
   confirmLabel = 'Save WSDC #',
   confirmDisabled = false,
   onProfileChange,
+  showFetchTiming = true,
   confirming = false,
 }: WsdcLookupProps) {
+  const { showInfo } = useMessages();
   const [query, setQuery] = useState(initialQuery);
   const [suggestions, setSuggestions] = useState<WsdcSuggestion[]>([]);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
@@ -94,6 +100,17 @@ export default function WsdcLookup({
   const findSeq = useRef(0);
   const mountedInitial = useRef(false);
   const lastLoadedInitialId = useRef<string>('');
+
+  const reportFetchTiming = useCallback(
+    (elapsedMs: number) => {
+      if (!showFetchTiming) {
+        return;
+      }
+
+      showInfo(`WSDC lookup completed in ${formatWsdcFetchElapsed(elapsedMs)}.`);
+    },
+    [showFetchTiming, showInfo],
+  );
 
   const applyProfile = useCallback(
     (next: WsdcDancerProfile | null, syncUrl: boolean) => {
@@ -118,6 +135,7 @@ export default function WsdcLookup({
       setError('');
       setNameMatches([]);
       setSuggestionsOpen(false);
+      const startedAt = performance.now();
 
       try {
         const result = await findWsdcDancerById(num);
@@ -150,10 +168,11 @@ export default function WsdcLookup({
       } finally {
         if (seq === findSeq.current) {
           setLoading(false);
+          reportFetchTiming(performance.now() - startedAt);
         }
       }
     },
-    [applyProfile],
+    [applyProfile, reportFetchTiming],
   );
 
   const loadByQuery = useCallback(
@@ -174,6 +193,8 @@ export default function WsdcLookup({
       setError('');
       setNameMatches([]);
       setSuggestionsOpen(false);
+      const startedAt = performance.now();
+      let skipFetchTiming = false;
 
       try {
         const result = await findWsdcDancerByQuery(q);
@@ -185,6 +206,7 @@ export default function WsdcLookup({
           applyProfile(null, false);
           setNameMatches(result.names);
           if (result.names.length === 1) {
+            skipFetchTiming = true;
             await loadById(String(result.names[0].wscid), true);
           }
         } else if (isWsdcDancerProfile(result)) {
@@ -208,10 +230,13 @@ export default function WsdcLookup({
       } finally {
         if (seq === findSeq.current) {
           setLoading(false);
+          if (!skipFetchTiming) {
+            reportFetchTiming(performance.now() - startedAt);
+          }
         }
       }
     },
-    [applyProfile, loadById],
+    [applyProfile, loadById, reportFetchTiming],
   );
 
   useEffect(() => {

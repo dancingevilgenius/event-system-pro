@@ -1,5 +1,4 @@
 import {
-  Alert,
   Box,
   Button,
   CircularProgress,
@@ -20,7 +19,6 @@ import {
   autocompleteWsdcDancers,
   findWsdcDancerById,
   findWsdcDancerByQuery,
-  formatWsdcFetchTimingMessage,
   formatWsdcLevelLine,
   isWsdcDancerProfile,
   isWsdcNameList,
@@ -30,7 +28,6 @@ import {
   type WsdcSuggestion,
 } from '../api/wsdcRegistry';
 import AppTextField from './AppTextField';
-import { useMessages } from '../hooks/useMessages';
 
 export type WsdcLookupProps = {
   /** Prefill search box (e.g. first + last name). */
@@ -46,8 +43,10 @@ export type WsdcLookupProps = {
   confirmDisabled?: boolean;
   /** Called whenever a profile is selected (without requiring Confirm). */
   onProfileChange?: (profile: WsdcDancerProfile | null) => void;
-  /** Show fetch duration in the global message box when a lookup completes. */
+  /** Report fetch duration to the parent (e.g. admin page footer message box). */
   showFetchTiming?: boolean;
+  /** Called when a registry lookup starts (clear prior timing notes). */
+  onFetchStart?: () => void;
   /** Called when a registry lookup finishes (with elapsed milliseconds). */
   onFetchComplete?: (elapsedMs: number) => void;
   confirming?: boolean;
@@ -87,13 +86,12 @@ export default function WsdcLookup({
   confirmLabel = 'Save WSDC #',
   confirmDisabled = false,
   onProfileChange,
-  showFetchTiming = true,
+  showFetchTiming = false,
+  onFetchStart,
   onFetchComplete,
   confirming = false,
 }: WsdcLookupProps) {
-  const { showInfo } = useMessages();
   const [query, setQuery] = useState(initialQuery);
-  const [fetchTimingNote, setFetchTimingNote] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<WsdcSuggestion[]>([]);
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
   const [nameMatches, setNameMatches] = useState<WsdcNameMatch[]>([]);
@@ -108,18 +106,18 @@ export default function WsdcLookup({
 
   const reportFetchTiming = useCallback(
     (elapsedMs: number) => {
-      onFetchComplete?.(elapsedMs);
-
       if (!showFetchTiming) {
         return;
       }
 
-      const message = formatWsdcFetchTimingMessage(elapsedMs);
-      setFetchTimingNote(message);
-      showInfo(message);
+      onFetchComplete?.(elapsedMs);
     },
-    [onFetchComplete, showFetchTiming, showInfo],
+    [onFetchComplete, showFetchTiming],
   );
+
+  const beginFetch = useCallback(() => {
+    onFetchStart?.();
+  }, [onFetchStart]);
 
   const applyProfile = useCallback(
     (next: WsdcDancerProfile | null, syncUrl: boolean) => {
@@ -144,7 +142,7 @@ export default function WsdcLookup({
       setError('');
       setNameMatches([]);
       setSuggestionsOpen(false);
-      setFetchTimingNote(null);
+      beginFetch();
       const startedAt = performance.now();
 
       try {
@@ -182,7 +180,7 @@ export default function WsdcLookup({
         }
       }
     },
-    [applyProfile, reportFetchTiming],
+    [applyProfile, beginFetch, reportFetchTiming],
   );
 
   const loadByQuery = useCallback(
@@ -203,7 +201,7 @@ export default function WsdcLookup({
       setError('');
       setNameMatches([]);
       setSuggestionsOpen(false);
-      setFetchTimingNote(null);
+      beginFetch();
       const startedAt = performance.now();
       let skipFetchTiming = false;
 
@@ -247,7 +245,7 @@ export default function WsdcLookup({
         }
       }
     },
-    [applyProfile, loadById, reportFetchTiming],
+    [applyProfile, beginFetch, loadById, reportFetchTiming],
   );
 
   useEffect(() => {
@@ -362,7 +360,6 @@ export default function WsdcLookup({
     setSuggestionsOpen(false);
     setNameMatches([]);
     setError('');
-    setFetchTimingNote(null);
     applyProfile(null, true);
   };
 
@@ -443,10 +440,6 @@ export default function WsdcLookup({
             Looking up WSDC registry…
           </Typography>
         </Stack>
-      )}
-
-      {!loading && fetchTimingNote && (
-        <Alert severity="info">{fetchTimingNote}</Alert>
       )}
 
       {error && (

@@ -4,15 +4,19 @@ import { useNavigate } from 'react-router-dom';
 import { findUserForWsdcMatch, saveWsdcForMatchingUser } from '../api/postgrest';
 import {
   buildStoredWsdcInfo,
+  formatWsdcFetchTimingMessage,
   normalizeWsdcId,
   type WsdcDancerProfile,
 } from '../api/wsdcRegistry';
 import WsdcFindDancerSection from '../components/WsdcFindDancerSection';
 import { centeredContentStackSx } from '../constants/layout';
+import { useAuth } from '../hooks/useAuth';
 import { useMessages } from '../hooks/useMessages';
 
 export default function WsdcFindDancerPage() {
   const navigate = useNavigate();
+  const { hasAnyRole } = useAuth();
+  const isAdmin = hasAnyRole(['ADMIN']);
   const { showProblem, showSuccess } = useMessages();
   const [saving, setSaving] = useState(false);
   const [checkingMatch, setCheckingMatch] = useState(false);
@@ -20,6 +24,7 @@ export default function WsdcFindDancerPage() {
   const [noAccountWarning, setNoAccountWarning] = useState<string | null>(null);
   const [matchNote, setMatchNote] = useState<string | null>(null);
   const [storedWsdcNote, setStoredWsdcNote] = useState<string | null>(null);
+  const [fetchTimingNote, setFetchTimingNote] = useState<string | null>(null);
 
   const buildStoredWsdcNote = useCallback((firstName: string, lastUpdate: string) => {
     return `We have WSDC# info for ${firstName} from ${lastUpdate}`;
@@ -30,7 +35,16 @@ export default function WsdcFindDancerPage() {
     setNoAccountWarning(null);
     setMatchNote(null);
     setStoredWsdcNote(null);
+    setFetchTimingNote(null);
     setCheckingMatch(false);
+  }, []);
+
+  const handleFetchStart = useCallback(() => {
+    setFetchTimingNote(null);
+  }, []);
+
+  const handleFetchComplete = useCallback((elapsedMs: number) => {
+    setFetchTimingNote(formatWsdcFetchTimingMessage(elapsedMs));
   }, []);
 
   const handleProfileChange = useCallback(
@@ -168,6 +182,9 @@ export default function WsdcFindDancerPage() {
           confirmDisabled={!canConfirmSave || checkingMatch}
           onConfirmWsdcId={handleConfirmAndSave}
           onProfileChange={handleProfileChange}
+          showFetchTiming={isAdmin}
+          onFetchStart={handleFetchStart}
+          onFetchComplete={handleFetchComplete}
         />
 
         {checkingMatch && (
@@ -191,6 +208,12 @@ export default function WsdcFindDancerPage() {
         {!checkingMatch && storedWsdcNote && (
           <Alert severity="info" sx={{ mt: 2 }}>
             {storedWsdcNote}
+          </Alert>
+        )}
+
+        {isAdmin && fetchTimingNote && (
+          <Alert severity="info" sx={{ mt: 2 }}>
+            {fetchTimingNote}
           </Alert>
         )}
 

@@ -66,7 +66,7 @@ The admin-home **POC counter** is ticked by `poc_counter_tick`; the **realtime**
 |-----|-----------------|
 | `inactivity_logout` | Safe to re-run. Marks currently stale active sessions; already-marked sessions are skipped by `user_session_is_active`. |
 | `nightly_cleanup` | **Not** idempotent within the same calendar day — each successful run shifts demo event dates forward one day. Overlap is blocked by advisory lock; do not invoke manually unless you intend another shift. |
-| `demo_event_active_window` | Idempotent for a given calendar day — sets Hollowfen Blade Congress and Jitterbug Jamboree (current year) to start two days ago and end two days ahead (America/Chicago). Admin can run immediately via **Refresh Hollowfen & Jitterbug Active Window**. |
+| `demo_event_active_window` | Idempotent for a given calendar day — sets Hollowfen Blade Congress and Jitterbug Jamboree (current year) to start two days ago and end two days ahead (America/Chicago). Writes one `audit_log` `UPDATE` row per changed event with old/new values for altered columns only. Admin can run immediately via **Refresh Hollowfen & Jitterbug Active Window**. |
 | `robot_riot_attendee_churn` | Admin starts via **Rotate Robot Riot Attendees (10 min)** (`api.start_robot_riot_attendee_churn`). Runs immediately, then every 60s until the window ends; then deletes its `job_definition` row and clears the until timestamp. Safe to re-run / re-start (resets the window). |
 | `wsdc_attendee_refresh` | Safe to re-run. Ensures `dancingevilgenius` is on in-progress / next-3-month event attendee lists, then re-fetches WSDC registry profiles for attendees that already have a WSDC #. Admin can run immediately via **Refresh WSDC Attendee Info**. |
 

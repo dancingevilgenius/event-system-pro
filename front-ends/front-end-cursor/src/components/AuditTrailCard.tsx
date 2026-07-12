@@ -2,6 +2,17 @@ import { Box, Divider, Paper, Stack, Typography } from '@mui/material';
 import type { SxProps, Theme } from '@mui/material/styles';
 import type { ReactNode } from 'react';
 
+const AUDIT_TRAIL_CELL_SX = {
+  minWidth: 0,
+  overflow: 'hidden',
+} as const;
+
+const AUDIT_TRAIL_CELL_TEXT_SX = {
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+} as const;
+
 export type AuditTrailCardField = {
   key?: string;
   label: string;
@@ -24,11 +35,16 @@ export type AuditTrailCardProps = {
 
 function AuditTrailCardFieldItem({ field }: { field: AuditTrailCardField }) {
   return (
-    <Box sx={{ minWidth: 0, gridColumn: field.columnSpan ? `span ${field.columnSpan}` : undefined }}>
-      <Typography variant="caption" color="text.secondary">
+    <Box
+      sx={{
+        ...AUDIT_TRAIL_CELL_SX,
+        gridColumn: field.columnSpan ? `span ${field.columnSpan}` : undefined,
+      }}
+    >
+      <Typography variant="caption" color="text.secondary" sx={AUDIT_TRAIL_CELL_TEXT_SX}>
         {field.label}
       </Typography>
-      <Typography variant="body2" sx={{ wordBreak: 'break-word', ...field.valueSx }}>
+      <Typography variant="body2" sx={{ ...AUDIT_TRAIL_CELL_TEXT_SX, ...field.valueSx }}>
         {field.value}
       </Typography>
     </Box>
@@ -66,8 +82,8 @@ export default function AuditTrailCard({
   ) : null;
 
   return (
-    <Paper variant="outlined" sx={{ p: 2, ...sx }}>
-      <Stack spacing={1.5}>
+    <Paper variant="outlined" sx={{ p: 2, overflowX: 'auto', ...sx }}>
+      <Stack spacing={1.5} sx={{ flexWrap: 'nowrap', minWidth: 'min-content' }}>
         {header}
 
         <Stack
@@ -76,6 +92,7 @@ export default function AuditTrailCard({
           sx={{
             alignItems: flexDirection === 'row' ? 'stretch' : undefined,
             justifyContent: flexDirection === 'row' && actionsOnRight ? 'space-between' : undefined,
+            flexWrap: 'nowrap',
           }}
         >
           <Box

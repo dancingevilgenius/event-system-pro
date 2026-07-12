@@ -16,6 +16,7 @@ import AdminEventSectionPlaceholderPage from './pages/AdminEventSectionPlacehold
 import AdminEventsPage from './pages/AdminEventsPage';
 import AdminHomePage from './pages/AdminHomePage';
 import AdminPlaceholderPage from './pages/AdminPlaceholderPage';
+import AdminScheduledTasksPage from './pages/AdminScheduledTasksPage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
 import CompetitorPage from './pages/CompetitorPage';
 import EventHomePage from './pages/EventHomePage';
@@ -112,6 +113,14 @@ export default function App() {
         element={
           <ProtectedRoute roles={['ADMIN']}>
             <AdminAuditLogPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/scheduled-tasks"
+        element={
+          <ProtectedRoute roles={['ADMIN']}>
+            <AdminScheduledTasksPage />
           </ProtectedRoute>
         }
       />

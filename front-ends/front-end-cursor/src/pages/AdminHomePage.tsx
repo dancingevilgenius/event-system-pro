@@ -31,6 +31,7 @@ const ADMIN_BUTTONS = [
   { label: 'Set Event Judges', path: '/admin/set-event-judges' },
   { label: 'Governing Bodies', path: '/governing-body' },
   { label: 'Audit Log', path: '/admin/audit-log' },
+  { label: 'Scheduled Tasks', path: '/admin/scheduled-tasks' },
   { label: 'Static Lists', path: '/static-lists' },
   { label: 'Staff', path: '/staff' },
 ] as const;

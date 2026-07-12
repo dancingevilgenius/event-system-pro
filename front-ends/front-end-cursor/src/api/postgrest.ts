@@ -1905,3 +1905,88 @@ export function judgeSearchUserToPoolMember(user: JudgeSearchUser): EventJudgePo
     email: user.email,
   };
 }
+
+export type ScheduledTaskRow = {
+  jobName: string;
+  description: string;
+  rpcSchema: string;
+  rpcName: string;
+  scheduleCron: string | null;
+  intervalSeconds: number | null;
+  scheduleLabel: string;
+  enabled: boolean;
+  lastJobRunId: number | null;
+  lastStatus: string | null;
+  lastStartedAt: string | null;
+  lastFinishedAt: string | null;
+  lastErrorMessage: string | null;
+  health: string;
+};
+
+type ApiScheduledTaskRow = {
+  job_name: string;
+  description: string | null;
+  rpc_schema: string;
+  rpc_name: string;
+  schedule_cron: string | null;
+  interval_seconds: number | null;
+  schedule_label: string;
+  enabled: boolean;
+  last_job_run_id: number | null;
+  last_status: string | null;
+  last_started_at: string | null;
+  last_finished_at: string | null;
+  last_error_message: string | null;
+  health: string;
+};
+
+function mapScheduledTaskRow(row: ApiScheduledTaskRow): ScheduledTaskRow {
+  return {
+    jobName: row.job_name,
+    description: row.description?.trim() ?? '',
+    rpcSchema: row.rpc_schema,
+    rpcName: row.rpc_name,
+    scheduleCron: row.schedule_cron,
+    intervalSeconds: row.interval_seconds,
+    scheduleLabel: row.schedule_label,
+    enabled: row.enabled,
+    lastJobRunId: row.last_job_run_id,
+    lastStatus: row.last_status,
+    lastStartedAt: row.last_started_at,
+    lastFinishedAt: row.last_finished_at,
+    lastErrorMessage: row.last_error_message,
+    health: row.health,
+  };
+}
+
+export type ListScheduledTasksResult = {
+  ok: boolean;
+  message?: string;
+  tasks?: ApiScheduledTaskRow[];
+};
+
+export async function fetchScheduledTasks(): Promise<ScheduledTaskRow[]> {
+  const result = await callRpc<ListScheduledTasksResult>('list_scheduled_tasks', {});
+
+  if (!result.ok) {
+    throw new Error(result.message ?? 'Unable to load scheduled tasks.');
+  }
+
+  return (result.tasks ?? []).map(mapScheduledTaskRow);
+}
+
+export type RunScheduledTaskResult = {
+  ok: boolean;
+  job_name?: string;
+  job_run_id?: number;
+  status?: string;
+  error_message?: string;
+  message?: string;
+  result?: Record<string, unknown>;
+  triggered_by?: string;
+  manual?: boolean;
+};
+
+export function runScheduledTask(jobName: string) {
+  return callRpc<RunScheduledTaskResult>('run_scheduled_task', { p_job_name: jobName });
+}

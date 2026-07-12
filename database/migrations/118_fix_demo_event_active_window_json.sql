@@ -23,7 +23,9 @@ BEGIN
   PERFORM api.set_audit_actor('maintenance');
 
   v_result := api.demo_event_active_window_core();
-  RETURN v_result || json_build_object('skipped', false);
+  RETURN (
+    v_result::jsonb || jsonb_build_object('skipped', false)
+  )::json;
 END;
 $$;
 

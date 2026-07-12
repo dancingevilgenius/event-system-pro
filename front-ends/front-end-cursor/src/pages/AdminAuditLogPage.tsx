@@ -1,9 +1,7 @@
 import {
-  Box,
   Button,
   CircularProgress,
   Container,
-  Divider,
   Paper,
   Stack,
   Table,
@@ -18,6 +16,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchAuditLogPage, type AuditLogRow } from '../api/postgrest';
 import AuditLogDetailDialog from '../components/AuditLogDetailDialog';
+import AuditTrailCard from '../components/AuditTrailCard';
 import { useIsMobileDevice } from '../hooks/useIsMobileDevice';
 import { formatReadableDateTime } from '../utils/auditTimestamps';
 
@@ -40,46 +39,28 @@ function MobileAuditLogCard({
   onView: (row: AuditLogRow) => void;
 }) {
   return (
-    <Paper variant="outlined" sx={{ p: 2 }}>
-      <Stack spacing={1}>
-        <Box>
-          <Typography variant="caption" color="text.secondary">
-            When
-          </Typography>
-          <Typography variant="body2">{formatOccurredAt(row.occurredAt)}</Typography>
-        </Box>
-        <Box>
-          <Typography variant="caption" color="text.secondary">
-            Action
-          </Typography>
-          <Typography variant="body2">{displayValue(row.action)}</Typography>
-        </Box>
-        <Box>
-          <Typography variant="caption" color="text.secondary">
-            Actor
-          </Typography>
-          <Typography variant="body2">{displayValue(row.actorUsername)}</Typography>
-        </Box>
-        <Box>
-          <Typography variant="caption" color="text.secondary">
-            Table
-          </Typography>
-          <Typography variant="body2">{displayValue(row.tableName)}</Typography>
-        </Box>
-        <Box>
-          <Typography variant="caption" color="text.secondary">
-            Record
-          </Typography>
-          <Typography variant="body2" sx={{ wordBreak: 'break-word' }}>
-            {displayValue(row.recordKey)}
-          </Typography>
-        </Box>
-        <Divider />
-        <Button variant="outlined" size="small" onClick={() => onView(row)} sx={{ alignSelf: 'flex-start' }}>
+    <AuditTrailCard
+      columns={2}
+      flexDirection="row"
+      actionsAlign="right"
+      fields={[
+        { key: 'when', label: 'When', value: formatOccurredAt(row.occurredAt) },
+        { key: 'action', label: 'Action', value: displayValue(row.action) },
+        { key: 'actor', label: 'Actor', value: displayValue(row.actorUsername) },
+        { key: 'table', label: 'Table', value: displayValue(row.tableName) },
+        {
+          key: 'record',
+          label: 'Record',
+          value: displayValue(row.recordKey),
+          columnSpan: 2,
+        },
+      ]}
+      actions={
+        <Button variant="outlined" size="small" onClick={() => onView(row)}>
           View
         </Button>
-      </Stack>
-    </Paper>
+      }
+    />
   );
 }
 

@@ -39,16 +39,33 @@ function displayValue(value: string): string {
   return value.trim() === '' ? '—' : value;
 }
 
+function formatEventStartDate(startDate: string | null): string {
+  if (!startDate?.trim()) {
+    return '—';
+  }
+
+  const date = new Date(startDate);
+  if (Number.isNaN(date.getTime())) {
+    return startDate;
+  }
+
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
+
 function formatEventDates(startDate: string | null, endDate: string | null): string {
-  const start = startDate ? formatReadableDateTime(startDate) : '—';
+  const start = formatEventStartDate(startDate);
   const end = endDate ? formatReadableDateTime(endDate) : '—';
   return `Start: ${start} · End: ${end}`;
 }
 
 function eventOptionLabel(event: EventListRow): string {
-  const dates = formatEventDates(event.startDate, event.endDate);
+  const startDate = formatEventStartDate(event.startDate);
   const name = event.name.trim();
-  return name ? `${event.eventCode} — ${name} (${dates})` : `${event.eventCode} (${dates})`;
+  return name ? `${name} (${startDate})` : startDate;
 }
 
 export default function AdminSetEventJudgesPage() {
@@ -320,7 +337,7 @@ export default function AdminSetEventJudgesPage() {
                 selectedEvent
                   ? formatEventDates(selectedEvent.startDate, selectedEvent.endDate)
                   : selectedGroupCode
-                    ? 'Select an event code'
+                    ? 'Select an event'
                     : 'Choose an event group first'
               }
             >

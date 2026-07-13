@@ -506,7 +506,7 @@ export default function WsdcLookup({
           />
           {(profile.dominate_role_highest_level || profile.non_dominate_role_highest_level) && (
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
-              Highest points — <strong>Primary:</strong> {profile.dominate_role_highest_level ?? '—'} (
+              <strong>Primary:</strong> {profile.dominate_role_highest_level ?? '—'} (
               {profile.dominate_role_highest_level_points ?? 0}) · <strong>Secondary:</strong>{' '}
               {profile.non_dominate_role_highest_level ?? '—'} (
               {profile.non_dominate_role_highest_level_points ?? 0})

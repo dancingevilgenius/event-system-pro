@@ -504,7 +504,7 @@ export default function AdminSetEventJudgesPage() {
 
               <Box>
                 <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                  Judging pool — {selectedEventCode}
+                  Judging pool — {eventOptionLabel(selectedEvent)}
                 </Typography>
                 <TableContainer sx={{ overflowX: 'auto' }}>
                   <Table size="small" aria-label="Event judging pool">

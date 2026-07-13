@@ -170,12 +170,9 @@ export default function WsdcFindDancerPage() {
         <Typography variant="h4" component="h1" gutterBottom align="center">
           WSDC Find Dancer
         </Typography>
-        <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 2 }}>
-          Confirm and Save writes to the user account with an exact WSDC # match, or else an exact
-          first and last name match.
-        </Typography>
 
         <WsdcFindDancerSection
+          title=""
           enableDirectLink
           confirmLabel="Confirm and Save"
           confirming={saving}

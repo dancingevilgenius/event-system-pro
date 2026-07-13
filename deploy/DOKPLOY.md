@@ -1,4 +1,4 @@
-# Deploy to Dokploy (imake.wtf — test)
+# Deploy to Dokploy (eventsystem.fun — test)
 
 Full stack: **PostgreSQL + migrations + PostgREST + mailer + Mailpit + scheduler + web + Caddy proxy**.  
 Forgot-password **Send verification code** uses the mailer — captured by **Mailpit** on test deploys (no real SMTP required).
@@ -9,7 +9,7 @@ Maintenance cron (`inactivity_logout`, `nightly_cleanup`) runs in the **`schedul
 | Domain | Repo | Dokploy type | Purpose |
 |--------|------|--------------|---------|
 | [eventsystem.pro](https://eventsystem.pro) | `dancingevilgenius/EventSystemPro` | Dockerfile (1 container) | **Production** — leave as-is |
-| [imake.wtf](https://imake.wtf) | `dancingevilgenius/event-system-pro` | Docker Compose | **Test** full stack |
+| [eventsystem.fun](https://eventsystem.fun) | `dancingevilgenius/event-system-pro` | Docker Compose | **Test** full stack |
 
 Use a **separate Dokploy application** for event-system-pro. Do not repoint the EventSystemPro app.
 
@@ -34,8 +34,8 @@ The root `Dockerfile` builds the production React app (nginx). Compose orchestra
 1. **New application** → type **Docker Compose** (not the EventSystemPro app)
 2. Connect GitHub repo `event-system-pro`, branch `main`
 3. **Compose path:** `deploy/docker-compose.dokploy.yml`
-4. **Environment variables:** copy from `deploy/.env.dokploy.example` (imake.wtf URLs) and replace all `change-me-*` values
-5. **Domain:** assign `imake.wtf` to service **`proxy`**, container port **80**
+4. **Environment variables:** copy from `deploy/.env.dokploy.example` (eventsystem.fun URLs) and replace all `change-me-*` values
+5. **Domain:** assign `eventsystem.fun` to service **`proxy`**, container port **80**
 6. Enable **HTTPS** in Dokploy (Let's Encrypt)
 7. Deploy / redeploy on push
 
@@ -43,10 +43,10 @@ The root `Dockerfile` builds the production React app (nginx). Compose orchestra
 
 | URL | Service |
 |-----|---------|
-| https://imake.wtf | React app |
-| https://imake.wtf/api/ | PostgREST |
-| https://imake.wtf/mailer/health | Mailer health check |
-| https://imake.wtf/realtime/health | Realtime POC health |
+| https://eventsystem.fun | React app |
+| https://eventsystem.fun/api/ | PostgREST |
+| https://eventsystem.fun/mailer/health | Mailer health check |
+| https://eventsystem.fun/realtime/health | Realtime POC health |
 | http://YOUR_VPS_IP:8025 | Mailpit inbox UI (dev/test; optional firewall) |
 
 Scheduler has no public URL — check Dokploy **Logs** → service **`scheduler`**, or exec a one-shot job (see below).
@@ -59,7 +59,7 @@ copy deploy\.env.dokploy.example deploy\.env.dokploy
 docker compose -f deploy/docker-compose.dokploy.yml --env-file deploy/.env.dokploy up --build
 ```
 
-Map `imake.wtf` to `127.0.0.1` in your hosts file for local HTTPS testing, or use http://localhost with a modified compose port mapping on `proxy`.
+Map `eventsystem.fun` to `127.0.0.1` in your hosts file for local HTTPS testing, or use http://localhost with a modified compose port mapping on `proxy`.
 
 ## After first deploy
 
@@ -79,9 +79,9 @@ The stack includes **mailer** (Node) and **Mailpit** (SMTP capture). Caddy route
 ### Flow
 
 1. User opens **Forgot password** → enters email or username → **Send verification code**
-2. Browser calls `POST https://imake.wtf/mailer/forgot-password/request`
+2. Browser calls `POST https://eventsystem.fun/mailer/forgot-password/request`
 3. Mailer calls `api.mailer_issue_password_reset()` in Postgres and sends a 6-digit code via SMTP
-4. On imake.wtf test deploys, Mailpit receives the message (not a real inbox)
+4. On eventsystem.fun test deploys, Mailpit receives the message (not a real inbox)
 
 ### Required env (Dokploy Environment)
 
@@ -90,8 +90,8 @@ Already in `deploy/.env.dokploy.example`:
 | Variable | Purpose |
 |----------|---------|
 | `MAILER_DB_PASSWORD` | Postgres `mailer` role (migration 010 default: `mailer_dev_password`) |
-| `VITE_MAILER_URL` | Baked into web at build: `https://imake.wtf/mailer` |
-| `CORS_ORIGINS` | Must include `https://imake.wtf` (mailer CORS) |
+| `VITE_MAILER_URL` | Baked into web at build: `https://eventsystem.fun/mailer` |
+| `CORS_ORIGINS` | Must include `https://eventsystem.fun` (mailer CORS) |
 
 Optional:
 
@@ -148,7 +148,7 @@ Use a seed user email (e.g. `@superhero.com` when `SEED_DEV_DATA=true`).
 ### Verify mailer is up
 
 ```text
-https://imake.wtf/mailer/health   →  {"ok":true}
+https://eventsystem.fun/mailer/health   →  {"ok":true}
 ```
 
 Redeploy **with rebuild** after changing `VITE_MAILER_URL` or editing `Caddyfile.dokploy` (proxy image bakes in Caddy config).
@@ -171,7 +171,7 @@ Set `SMTP_PASS` (and related vars) in Dokploy Environment. You can remove the `m
 
 | | EventSystemPro | event-system-pro |
 |---|----------------|------------------|
-| Domain | eventsystem.pro | imake.wtf (test) |
+| Domain | eventsystem.pro | eventsystem.fun (test) |
 | Dokploy type | Dockerfile (1 container) | **Docker Compose** (multi-service) |
 | Root Dockerfile | `npm run dev` | **`npm run build` + nginx** |
 | Database | None | PostgreSQL in compose |
@@ -179,4 +179,4 @@ Set `SMTP_PASS` (and related vars) in Dokploy Environment. You can remove the `m
 
 ## Future production cutover
 
-When imake.wtf is stable, migrating to eventsystem.pro is a deliberate swap: new env URLs, domain binding in Dokploy, and retiring or relocating EventSystemPro. See checklist “Not included yet” section.
+When eventsystem.fun is stable, migrating to eventsystem.pro is a deliberate swap: new env URLs, domain binding in Dokploy, and retiring or relocating EventSystemPro. See checklist “Not included yet” section.

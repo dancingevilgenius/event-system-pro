@@ -174,7 +174,7 @@ case "${SEED_DEV_DATA:-}" in
     /seed-dev-environment.sh
     ;;
   *)
-    echo "SEED_DEV_DATA not set — skipping dev seeds (set SEED_DEV_DATA=true for imake.wtf test deploys)."
+    echo "SEED_DEV_DATA not set — skipping dev seeds (set SEED_DEV_DATA=true for eventsystem.fun test deploys)."
     ;;
 esac
 

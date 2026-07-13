@@ -2,13 +2,13 @@
 #
 # Usage (from repo root):
 #   .\scripts\apply-remote-migration.ps1 -MigrationFile database\migrations\069_drop_country_and_us_state_lu.sql
-#   .\scripts\apply-remote-migration.ps1 -PostgresHost imake.wtf -EnvFile deploy\.env -MigrationFile database\migrations\069_drop_country_and_us_state_lu.sql
+#   .\scripts\apply-remote-migration.ps1 -PostgresHost eventsystem.fun -EnvFile deploy\.env -MigrationFile database\migrations\069_drop_country_and_us_state_lu.sql
 #
 # Credentials: POSTGRES_PASSWORD from -EnvFile (or current process env). Password is never printed.
 
 [CmdletBinding()]
 param(
-    [string]$PostgresHost = 'imake.wtf',
+    [string]$PostgresHost = 'eventsystem.fun',
     [string]$PostgresUser = 'postgres',
     [string]$PostgresDatabase = 'event_system_pro',
     [string]$EnvFile = (Join-Path $PSScriptRoot '..\deploy\.env'),

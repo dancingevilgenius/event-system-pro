@@ -75,7 +75,7 @@ Existing DBs already recorded these migrations; edited files apply only on fresh
 ### 7. Deploy
 
 - [ ] Commit and push
-- [ ] **Existing** imake/prod volumes: migrate applies only **new** migrations (unchanged)
+- [ ] **Existing** eventsystem.fun/prod volumes: migrate applies only **new** migrations (unchanged)
 - [ ] **Fresh** Dokploy volume: faster path via baseline + fewer migration runs
 - [ ] Manual deploy on prod when ready
 

@@ -978,7 +978,7 @@ Login JWT payload includes:
 
 ### Dev seed bundle (`dev.manifest`)
 
-Applied by **`rebuild-local-database.ps1`** locally and by **`deploy/scripts/seed-dev-environment.sh`** when **`SEED_DEV_DATA=true`** (Dokploy / imake.wtf test deploys; tracked in **`public.schema_seeds`**).
+Applied by **`rebuild-local-database.ps1`** locally and by **`deploy/scripts/seed-dev-environment.sh`** when **`SEED_DEV_DATA=true`** (Dokploy / eventsystem.fun test deploys; tracked in **`public.schema_seeds`**).
 
 | Seed | Purpose |
 |------|---------|

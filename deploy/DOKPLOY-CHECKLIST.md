@@ -1,20 +1,20 @@
-# Dokploy deploy checklist — imake.wtf (test)
+# Dokploy deploy checklist — eventsystem.fun (test)
 
 Use this checklist for **event-system-pro** test deploy on your Hostinger VPS with Dokploy.
 
-**Production stays separate:** [eventsystem.pro](https://eventsystem.pro) continues to run **EventSystemPro** (single Dockerfile). This checklist targets **imake.wtf** only.
+**Production stays separate:** [eventsystem.pro](https://eventsystem.pro) continues to run **EventSystemPro** (single Dockerfile). This checklist targets **eventsystem.fun** only.
 
 **Repo:** `dancingevilgenius/event-system-pro`  
 **Branch:** `main`  
 **Compose file:** `deploy/docker-compose.dokploy.yml`  
-**Test domain:** `https://imake.wtf`
+**Test domain:** `https://eventsystem.fun`
 
 ---
 
 ## Architecture
 
 ```text
-Phone/browser → https://imake.wtf (Dokploy HTTPS)
+Phone/browser → https://eventsystem.fun (Dokploy HTTPS)
               → proxy (Caddy, port 80 inside stack)
                  /           → web (React)
                  /api/*      → PostgREST
@@ -34,7 +34,7 @@ Dokploy terminates HTTPS at the edge. Caddy inside the stack routes by path.
 - [ ] Hostinger VPS with Ubuntu 22.04 or 24.04 (can be the same VPS as eventsystem.pro)
 - [ ] At least **2 GB RAM** (4 GB recommended if both apps run on one VPS)
 - [ ] Root SSH access to the VPS
-- [ ] Domain **imake.wtf** managed in Hostinger (or your registrar DNS panel)
+- [ ] Domain **eventsystem.fun** managed in Hostinger (or your registrar DNS panel)
 
 ---
 
@@ -49,7 +49,7 @@ Dokploy terminates HTTPS at the edge. Caddy inside the stack routes by path.
 - [ ] (Optional) A record for `www` points to VPS IP
 - [ ] Waited for DNS propagation (a few minutes to an hour)
 
-**Note:** If eventsystem.pro already points to this VPS, you only need to add DNS for **imake.wtf** — do not change eventsystem.pro records.
+**Note:** If eventsystem.pro already points to this VPS, you only need to add DNS for **eventsystem.fun** — do not change eventsystem.pro records.
 
 ---
 
@@ -107,7 +107,7 @@ Create a **new** Dokploy application — do not repoint the existing EventSystem
 In Dokploy → Application → **Environment**, add (from `deploy/.env.dokploy.example`):
 
 ```env
-APP_URL=https://imake.wtf
+APP_URL=https://eventsystem.fun
 
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=change-me-long-random-postgres
@@ -120,16 +120,16 @@ SCHEDULER_DB_PASSWORD=change-me-long-random-scheduler
 
 PGRST_JWT_SECRET=change-me-long-random-jwt-secret-min-32-chars
 
-VITE_POSTGREST_URL=https://imake.wtf/api
-VITE_MAILER_URL=https://imake.wtf/mailer
-VITE_REALTIME_WS_URL=wss://imake.wtf/realtime/ws
+VITE_POSTGREST_URL=https://eventsystem.fun/api
+VITE_MAILER_URL=https://eventsystem.fun/mailer
+VITE_REALTIME_WS_URL=wss://eventsystem.fun/realtime/ws
 
-CORS_ORIGINS=https://imake.wtf
+CORS_ORIGINS=https://eventsystem.fun
 ```
 
 - [ ] All `change-me-*` values replaced with strong random secrets
 - [ ] `PGRST_JWT_SECRET` is at least 32 characters
-- [ ] All URLs use **imake.wtf** (not eventsystem.pro)
+- [ ] All URLs use **eventsystem.fun** (not eventsystem.pro)
 
 ### Password note (first deploy)
 
@@ -160,15 +160,15 @@ SCHEDULER_DB_PASSWORD=scheduler_dev_password
 Traefik labels on service **`proxy`** in `deploy/docker-compose.dokploy.yml` handle HTTP → HTTPS and Let's Encrypt. Set in Environment:
 
 ```env
-APP_DOMAIN=imake.wtf
+APP_DOMAIN=eventsystem.fun
 ```
 
-**Important:** In Dokploy → **Domains**, **remove** any `imake.wtf` entry. Duplicate Domains-tab routers often cause **HTTP works, HTTPS 404**.
+**Important:** In Dokploy → **Domains**, **remove** any `eventsystem.fun` entry. Duplicate Domains-tab routers often cause **HTTP works, HTTPS 404**.
 
-- [ ] `APP_DOMAIN=imake.wtf` in Environment
+- [ ] `APP_DOMAIN=eventsystem.fun` in Environment
 - [ ] **No** domain entries in Domains tab (routing is in compose)
-- [ ] DNS A record for `imake.wtf` → VPS IP; ports 80/443 open
-- [ ] (Optional) `www.imake.wtf` — add a second Host rule in compose if needed later
+- [ ] DNS A record for `eventsystem.fun` → VPS IP; ports 80/443 open
+- [ ] (Optional) `www.eventsystem.fun` — add a second Host rule in compose if needed later
 - [ ] **eventsystem.pro** domain binding on EventSystemPro app left unchanged
 
 **Do not** expose `postgres` or `postgrest` directly to the internet.
@@ -177,7 +177,7 @@ APP_DOMAIN=imake.wtf
 
 Use **either** compose labels **or** the Domains tab, not both. If HTTPS fails while HTTP works:
 
-1. Domains → edit `imake.wtf` → Certificate type **Let's Encrypt** (not "None")
+1. Domains → edit `eventsystem.fun` → Certificate type **Let's Encrypt** (not "None")
 2. **Deploy**, then **Reload Traefik** in Dokploy
 3. SSH: `docker inspect <proxy> --format '{{json .Config.Labels}}' | jq` — confirm a router with `entrypoints=websecure` and `tls.certresolver=letsencrypt`
 
@@ -208,11 +208,11 @@ Test from phone or laptop:
 
 | URL | Expected result |
 |-----|-----------------|
-| https://imake.wtf | Login page (Event System Pro) |
-| https://imake.wtf/api/ | PostgREST OpenAPI JSON |
-| https://imake.wtf/mailer/health | `{"ok":true}` |
-| https://imake.wtf/realtime/health | `{"ok":true}` |
-| https://imake.wtf/adminhome | `POC counter (10s): …` ticking via scheduler job (admin login required) |
+| https://eventsystem.fun | Login page (Event System Pro) |
+| https://eventsystem.fun/api/ | PostgREST OpenAPI JSON |
+| https://eventsystem.fun/mailer/health | `{"ok":true}` |
+| https://eventsystem.fun/realtime/health | `{"ok":true}` |
+| https://eventsystem.fun/adminhome | `POC counter (10s): …` ticking via scheduler job (admin login required) |
 
 - [ ] Site loads over HTTPS
 - [ ] API responds
@@ -225,7 +225,7 @@ Test from phone or laptop:
 
 ## 8b. Verify forgot-password email (Mailpit)
 
-Test **Send verification code** on https://imake.wtf/forgot-password using a seed user (e.g. email ending in `@superhero.com` when `SEED_DEV_DATA=true`).
+Test **Send verification code** on https://eventsystem.fun/forgot-password using a seed user (e.g. email ending in `@superhero.com` when `SEED_DEV_DATA=true`).
 
 Read the 6-digit code from Mailpit:
 
@@ -238,7 +238,7 @@ Read the 6-digit code from Mailpit:
 - [ ] Code appears in Mailpit inbox
 - [ ] Code verifies on step 2 and password reset completes
 
-If mailer fails, check Dokploy **Logs** → service **`mailer`**. Common fixes: `MAILER_DB_PASSWORD` matches Postgres `mailer` role; `CORS_ORIGINS=https://imake.wtf`; redeploy with rebuild after `Caddyfile.dokploy` changes.
+If mailer fails, check Dokploy **Logs** → service **`mailer`**. Common fixes: `MAILER_DB_PASSWORD` matches Postgres `mailer` role; `CORS_ORIGINS=https://eventsystem.fun`; redeploy with rebuild after `Caddyfile.dokploy` changes.
 
 ---
 
@@ -251,7 +251,7 @@ In Dokploy → **this** application's settings:
 After this:
 
 ```text
-git push origin main  →  Dokploy rebuilds imake.wtf only
+git push origin main  →  Dokploy rebuilds eventsystem.fun only
 ```
 
 EventSystemPro auto-deploy (if enabled) is independent on its own Dokploy app.
@@ -260,7 +260,7 @@ EventSystemPro auto-deploy (if enabled) is independent on its own Dokploy app.
 
 ## 10. Dev seed data (automatic on fresh deploy)
 
-For **imake.wtf**, set in Environment:
+For **eventsystem.fun**, set in Environment:
 
 ```env
 SEED_DEV_DATA=true
@@ -293,7 +293,7 @@ Set `SEED_DEV_DATA=false` or omit it — migrate applies schema only, no demo us
 
 If dev seeds become too slow, you can `pg_dump` a fully seeded database and use it as a custom baseline for test deploys. Prefer the manifest approach while seeds still change often; snapshots drift from migrations and are harder to review in git.
 
-- [ ] `SEED_DEV_DATA=true` on imake.wtf
+- [ ] `SEED_DEV_DATA=true` on eventsystem.fun
 - [ ] Fresh deploy loads demo data without manual SQL
 
 ---
@@ -302,7 +302,7 @@ If dev seeds become too slow, you can `pg_dump` a fully seeded database and use 
 
 For pgAdmin, DBeaver, or local tools connecting to the VPS database.
 
-**Security:** Exposes Postgres to the internet. Use only on imake.wtf test deploy, with a strong `POSTGRES_PASSWORD`. Remove before any production cutover.
+**Security:** Exposes Postgres to the internet. Use only on eventsystem.fun test deploy, with a strong `POSTGRES_PASSWORD`. Remove before any production cutover.
 
 ### 1. Compose port mapping
 
@@ -333,7 +333,7 @@ sudo ufw status
 
 | Field | Value |
 |-------|--------|
-| Host | VPS public IP (same as eventsystem.pro / imake.wtf) |
+| Host | VPS public IP (same as eventsystem.pro / eventsystem.fun) |
 | Port | `5432` |
 | Database | `event_system_pro` |
 | User | `postgres` |
@@ -438,7 +438,7 @@ In **General**, application type must be **Docker Compose**, not **Stack**. Stac
 | `migrate` logs "baseline SQL not found" | Migrate image was not rebuilt — **Stop** → **Deploy** again. Confirm app type is **Docker Compose** (not Stack). |
 | Site loads but `/api/` or `/realtime/health` is 404 | Domain must target **`proxy`** port **80**. Redeploy after pulling latest (proxy uses `handle_path` in Caddy). SSH: `docker exec <proxy> wget -qO- http://127.0.0.1/realtime/health` — if that works, fix Traefik (see HTTPS row). |
 | `/mailer/health` is 404 | Redeploy with rebuild (proxy image includes `Caddyfile.dokploy`); confirm `mailer` service is running |
-| Forgot-password send fails (network/CORS) | `CORS_ORIGINS` must be exactly `https://imake.wtf`; `VITE_MAILER_URL=https://imake.wtf/mailer` (rebuild web if changed) |
+| Forgot-password send fails (network/CORS) | `CORS_ORIGINS` must be exactly `https://eventsystem.fun`; `VITE_MAILER_URL=https://eventsystem.fun/mailer` (rebuild web if changed) |
 | Mailer 500 / "Unable to send verification email" | Check **mailer** logs; verify `MAILER_DB_PASSWORD` matches Postgres `mailer` role (`ALTER ROLE mailer ...` if rotated) |
 | Code sent but no email in Mailpit | Check **mailer** logs for SMTP errors; confirm `mailpit` service is up |
 | HTTP works but HTTPS returns 404 | Traefik **websecure** router missing or broken. Remove Domains-tab entry; use compose Traefik labels + `APP_DOMAIN`; Deploy + Reload Traefik. Or fix certificate type to Let's Encrypt in Domains tab. |
@@ -446,11 +446,11 @@ In **General**, application type must be **Docker Compose**, not **Stack**. Stac
 | Scheduler password authentication failed | Set `SCHEDULER_DB_PASSWORD=scheduler_dev_password` (migration 104 default), redeploy. Or `ALTER ROLE scheduler WITH PASSWORD ...` if rotated. |
 | Scheduler not running / jobs never fire | Confirm **`scheduler`** service is up; Logs should show `installed crontab from maintenance.job_definition`. Manual: `exec scheduler /run-maintenance-job.sh inactivity_logout` |
 | Scheduler health stale | `SELECT api.scheduler_health();` as scheduler role. Inspect `maintenance.job_run` / `job_definition`. |
-| Site doesn't load | DNS A record for imake.wtf → VPS IP; ports 80/443 open |
+| Site doesn't load | DNS A record for eventsystem.fun → VPS IP; ports 80/443 open |
 | API returns 502 | Check `postgrest` logs; verify `PGRST_AUTHENTICATOR_PASSWORD` |
 | Counter stuck | Check **scheduler** logs for `poc_counter_tick`; confirm job enabled in `maintenance.job_definition`. Realtime only broadcasts NOTIFY. |
-| Login works but API fails in browser | `CORS_ORIGINS` must be exactly `https://imake.wtf` |
-| Counter doesn't update live | `VITE_REALTIME_WS_URL` must be `wss://imake.wtf/realtime/ws`; rebuild web image |
+| Login works but API fails in browser | `CORS_ORIGINS` must be exactly `https://eventsystem.fun` |
+| Counter doesn't update live | `VITE_REALTIME_WS_URL` must be `wss://eventsystem.fun/realtime/ws`; rebuild web image |
 | eventsystem.pro broke | You edited the wrong Dokploy app — restore EventSystemPro domain binding |
 
 ---
@@ -458,5 +458,5 @@ In **General**, application type must be **Docker Compose**, not **Stack**. Stac
 ## Related docs
 
 - `deploy/DOKPLOY.md` — overview and email / Mailpit setup
-- `deploy/.env.dokploy.example` — environment variable template (imake.wtf defaults)
+- `deploy/.env.dokploy.example` — environment variable template (eventsystem.fun defaults)
 - `deploy/docker-compose.dokploy.yml` — compose stack definition

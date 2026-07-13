@@ -58,8 +58,8 @@ services:
       PGRST_DB_POOL: "10"
       PGRST_SERVER_HOST: 0.0.0.0
       PGRST_SERVER_PORT: "3000"
-      PGRST_OPENAPI_SERVER_PROXY_URI: ${APP_URL:-https://imake.wtf}/api
-      PGRST_SERVER_CORS_ALLOWED_ORIGINS: ${CORS_ORIGINS:-https://imake.wtf}
+      PGRST_OPENAPI_SERVER_PROXY_URI: ${APP_URL:-https://eventsystem.fun}/api
+      PGRST_SERVER_CORS_ALLOWED_ORIGINS: ${CORS_ORIGINS:-https://eventsystem.fun}
       PGRST_JWT_SECRET: ${PGRST_JWT_SECRET:?Set PGRST_JWT_SECRET in Dokploy}
     depends_on:
       migrate:
@@ -99,9 +99,9 @@ services:
       SMTP_HOST: mailpit
       SMTP_PORT: "1025"
       SMTP_SECURE: "false"
-      EMAIL_FROM: Event System Pro <no-reply@imake.wtf>
+      EMAIL_FROM: Event System Pro <no-reply@eventsystem.fun>
       APP_NAME: Event System Pro
-      CORS_ORIGINS: ${CORS_ORIGINS:-https://imake.wtf}
+      CORS_ORIGINS: ${CORS_ORIGINS:-https://eventsystem.fun}
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -131,9 +131,9 @@ services:
       context: ..
       dockerfile: Dockerfile
       args:
-        VITE_POSTGREST_URL: ${VITE_POSTGREST_URL:-https://imake.wtf/api}
-        VITE_MAILER_URL: ${VITE_MAILER_URL:-https://imake.wtf/mailer}
-        VITE_REALTIME_WS_URL: ${VITE_REALTIME_WS_URL:-wss://imake.wtf/realtime/ws}
+        VITE_POSTGREST_URL: ${VITE_POSTGREST_URL:-https://eventsystem.fun/api}
+        VITE_MAILER_URL: ${VITE_MAILER_URL:-https://eventsystem.fun/mailer}
+        VITE_REALTIME_WS_URL: ${VITE_REALTIME_WS_URL:-wss://eventsystem.fun/realtime/ws}
         DOKPLOY_COMMIT_HASH: ${DOKPLOY_COMMIT_HASH:-}
         GIT_COMMIT: ${GIT_COMMIT:-unknown}
         DOKPLOY_COMMIT_MESSAGE: ${DOKPLOY_COMMIT_MESSAGE:-}
@@ -162,11 +162,11 @@ services:
       - traefik.docker.network=dokploy-network
       # Traefik routing (HTTP + HTTPS). If you use these labels, remove the same
       # domain from Dokploy Domains tab to avoid duplicate routers.
-      - traefik.http.routers.${APP_NAME:-esp-compose}-proxy-secure.rule=Host(`${APP_DOMAIN:-imake.wtf}`)
+      - traefik.http.routers.${APP_NAME:-esp-compose}-proxy-secure.rule=Host(`${APP_DOMAIN:-eventsystem.fun}`)
       - traefik.http.routers.${APP_NAME:-esp-compose}-proxy-secure.entrypoints=websecure
       - traefik.http.routers.${APP_NAME:-esp-compose}-proxy-secure.tls.certresolver=letsencrypt
       - traefik.http.routers.${APP_NAME:-esp-compose}-proxy-secure.service=${APP_NAME:-esp-compose}-proxy
-      - traefik.http.routers.${APP_NAME:-esp-compose}-proxy-web.rule=Host(`${APP_DOMAIN:-imake.wtf}`)
+      - traefik.http.routers.${APP_NAME:-esp-compose}-proxy-web.rule=Host(`${APP_DOMAIN:-eventsystem.fun}`)
       - traefik.http.routers.${APP_NAME:-esp-compose}-proxy-web.entrypoints=web
       - traefik.http.routers.${APP_NAME:-esp-compose}-proxy-web.middlewares=${APP_NAME:-esp-compose}-proxy-redirect
       - traefik.http.routers.${APP_NAME:-esp-compose}-proxy-web.service=${APP_NAME:-esp-compose}-proxy

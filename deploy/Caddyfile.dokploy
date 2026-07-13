@@ -1,7 +1,7 @@
-# Dokploy entry proxy: single public service (domain set in Dokploy, e.g. imake.wtf)
+# Dokploy entry proxy: single public service (domain set in Dokploy, e.g. eventsystem.fun)
 # Dokploy/Traefik terminates TLS; Caddy routes by path inside the stack.
 #
-# Dokploy Domains tab: imake.wtf -> service "proxy", container port 80 (NOT "web").
+# Dokploy Domains tab: eventsystem.fun -> service "proxy", container port 80 (NOT "web").
 #
 #   /api/*      -> postgrest:3000  (prefix stripped via handle_path)
 #   /mailer/*   -> mailer:3001     (prefix stripped via handle_path)

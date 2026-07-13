@@ -13,9 +13,9 @@ RUN npm ci
 COPY front-ends/front-end-cursor/ ./
 COPY .git /.git-metadata
 
-ARG VITE_POSTGREST_URL=https://imake.wtf/api
-ARG VITE_MAILER_URL=https://imake.wtf/mailer
-ARG VITE_REALTIME_WS_URL=wss://imake.wtf/realtime/ws
+ARG VITE_POSTGREST_URL=https://eventsystem.fun/api
+ARG VITE_MAILER_URL=https://eventsystem.fun/mailer
+ARG VITE_REALTIME_WS_URL=wss://eventsystem.fun/realtime/ws
 ARG DOKPLOY_COMMIT_HASH=
 ARG GIT_COMMIT=unknown
 ARG DOKPLOY_COMMIT_MESSAGE=

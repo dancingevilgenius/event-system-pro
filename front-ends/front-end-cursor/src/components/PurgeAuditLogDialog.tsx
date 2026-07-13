@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { purgeAuditLog } from '../api/postgrest';
-import { AUDIT_PURGE_SECRET_PREFIX, isValidAuditPurgeSecret } from '../lib/deployment';
+import { isValidAuditPurgeSecret } from '../lib/deployment';
 import CloseIcon from './CloseIcon';
 import { CONTENT_MAX_WIDTH } from '../constants/layout';
 
@@ -52,7 +52,7 @@ export default function PurgeAuditLogDialog({
     setError(null);
 
     if (!isValidAuditPurgeSecret(secret)) {
-      setError(`Secret must start with "${AUDIT_PURGE_SECRET_PREFIX}".`);
+      setError('Invalid confirmation secret.');
       return;
     }
 
@@ -110,8 +110,7 @@ export default function PurgeAuditLogDialog({
           </Typography>
 
           <Typography variant="body2" color="text.secondary">
-            Enter the confirmation secret to continue. It must begin with{' '}
-            <strong>{AUDIT_PURGE_SECRET_PREFIX}</strong>.
+            Enter the confirmation secret to continue.
           </Typography>
 
           <TextField

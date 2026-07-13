@@ -1530,6 +1530,18 @@ export async function fetchAuditLogPage(
   };
 }
 
+export type PurgeAuditLogResult = {
+  ok: boolean;
+  message: string;
+  deleted_count?: number;
+};
+
+export function purgeAuditLog(confirmationSecret: string) {
+  return callRpc<PurgeAuditLogResult>('admin_purge_audit_log', {
+    p_confirmation_secret: confirmationSecret,
+  });
+}
+
 export function hashPasswordRecoveryAnswers(
   answers: Array<{ secret_question_id: number; answer: string }>,
 ) {

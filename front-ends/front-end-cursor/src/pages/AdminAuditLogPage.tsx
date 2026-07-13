@@ -17,7 +17,9 @@ import { useNavigate } from 'react-router-dom';
 import { fetchAuditLogPage, type AuditLogRow } from '../api/postgrest';
 import AuditLogDetailDialog from '../components/AuditLogDetailDialog';
 import AuditTrailCard from '../components/AuditTrailCard';
+import PurgeAuditLogDialog from '../components/PurgeAuditLogDialog';
 import { useIsMobileDevice } from '../hooks/useIsMobileDevice';
+import { isEventsystemFunDeployment } from '../lib/deployment';
 import { formatReadableDateTime } from '../utils/auditTimestamps';
 
 const DESKTOP_PAGE_SIZE = 25;
@@ -75,6 +77,9 @@ export default function AdminAuditLogPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [detailRow, setDetailRow] = useState<AuditLogRow | null>(null);
+  const [purgeDialogOpen, setPurgeDialogOpen] = useState(false);
+  const [purgeSuccessMessage, setPurgeSuccessMessage] = useState<string | null>(null);
+  const showPurgeAuditLog = isEventsystemFunDeployment();
 
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const safePage = Math.min(page, totalPages - 1);
@@ -125,6 +130,28 @@ export default function AdminAuditLogPage() {
         <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 2 }}>
           {totalCount} events
         </Typography>
+
+        {purgeSuccessMessage && (
+          <Typography variant="body2" color="success.main" align="center" sx={{ mb: 2 }}>
+            {purgeSuccessMessage}
+          </Typography>
+        )}
+
+        {showPurgeAuditLog && (
+          <Stack sx={{ alignItems: 'center', mb: 2 }}>
+            <Button
+              variant="outlined"
+              color="error"
+              onClick={() => {
+                setPurgeSuccessMessage(null);
+                setPurgeDialogOpen(true);
+              }}
+              disabled={loading}
+            >
+              Delete all audit trail records
+            </Button>
+          </Stack>
+        )}
 
         {loading && (
           <Stack sx={{ py: 6, alignItems: 'center' }}>
@@ -224,6 +251,17 @@ export default function AdminAuditLogPage() {
         open={detailRow !== null}
         row={detailRow}
         onClose={() => setDetailRow(null)}
+      />
+
+      <PurgeAuditLogDialog
+        open={purgeDialogOpen}
+        totalCount={totalCount}
+        onClose={() => setPurgeDialogOpen(false)}
+        onPurged={(message) => {
+          setPage(0);
+          setPurgeSuccessMessage(message);
+          void loadAuditLog();
+        }}
       />
     </Container>
   );

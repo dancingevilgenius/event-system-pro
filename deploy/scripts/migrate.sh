@@ -178,6 +178,21 @@ case "${SEED_DEV_DATA:-}" in
     ;;
 esac
 
+case "${ALLOW_AUDIT_PURGE:-}" in
+  1|true|TRUE|yes|YES)
+    echo "ALLOW_AUDIT_PURGE enabled — audit log purge RPC allowed on this database."
+    psql_cmd <<SQL
+ALTER DATABASE ${PGDATABASE} SET app.allow_audit_purge = 'true';
+SQL
+    ;;
+  *)
+    echo "ALLOW_AUDIT_PURGE not set — audit log purge RPC disabled."
+    psql_cmd <<SQL
+ALTER DATABASE ${PGDATABASE} RESET app.allow_audit_purge;
+SQL
+    ;;
+esac
+
 LAST_STEP="record deployment_info"
 DEPLOYED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 psql_cmd <<SQL

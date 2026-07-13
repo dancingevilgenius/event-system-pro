@@ -146,26 +146,35 @@ export function formatWsdcFetchTimingMessage(
   return `${action} completed in ${formatWsdcFetchElapsed(elapsedMs)}.`;
 }
 
+export function formatWsdcLevelLineParts(
+  roleLabel: string | undefined,
+  required: string | undefined,
+  allowed: string | undefined,
+): { label: string; detail: string } {
+  const label = roleLabel?.trim() || 'Role';
+  const req = required?.trim();
+  const allow = allowed?.trim();
+
+  if (req && allow) {
+    return { label, detail: `Qualified for ${req} or ${allow}` };
+  }
+
+  if (req) {
+    return { label, detail: req };
+  }
+
+  if (allow) {
+    return { label, detail: `Qualified for ${allow}` };
+  }
+
+  return { label, detail: '—' };
+}
+
 export function formatWsdcLevelLine(
   roleLabel: string | undefined,
   required: string | undefined,
   allowed: string | undefined,
 ): string {
-  const role = roleLabel?.trim() || 'Role';
-  const req = required?.trim();
-  const allow = allowed?.trim();
-
-  if (req && allow) {
-    return `${role}: Qualified for ${req} or ${allow}`;
-  }
-
-  if (req) {
-    return `${role}: ${req}`;
-  }
-
-  if (allow) {
-    return `${role}: Qualified for ${allow}`;
-  }
-
-  return `${role}: —`;
+  const { label, detail } = formatWsdcLevelLineParts(roleLabel, required, allowed);
+  return `${label}: ${detail}`;
 }

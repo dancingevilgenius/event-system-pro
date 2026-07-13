@@ -19,7 +19,7 @@ import {
   autocompleteWsdcDancers,
   findWsdcDancerById,
   findWsdcDancerByQuery,
-  formatWsdcLevelLine,
+  formatWsdcLevelLineParts,
   isWsdcDancerProfile,
   isWsdcNameList,
   normalizeWsdcId,
@@ -28,6 +28,25 @@ import {
   type WsdcSuggestion,
 } from '../api/wsdcRegistry';
 import AppTextField from './AppTextField';
+
+function WsdcLevelLine({
+  roleLabel,
+  required,
+  allowed,
+  sx,
+}: {
+  roleLabel?: string;
+  required?: string;
+  allowed?: string;
+  sx?: object;
+}) {
+  const { label, detail } = formatWsdcLevelLineParts(roleLabel, required, allowed);
+  return (
+    <Typography variant="body2" sx={sx}>
+      <strong>{label}:</strong> {detail}
+    </Typography>
+  );
+}
 
 export type WsdcLookupProps = {
   /** Prefill search box (e.g. first + last name). */
@@ -473,24 +492,22 @@ export default function WsdcLookup({
           <Typography variant="h6" component="h2" gutterBottom>
             {profile.dancer_first} {profile.dancer_last} (#{normalizeWsdcId(profile.dancer_wsdcid)})
           </Typography>
-          <Typography variant="body2" sx={{ mb: 0.5 }}>
-            {formatWsdcLevelLine(
-              profile.dominate_role || profile.short_dominate_role,
-              profile.dominate_required,
-              profile.dominate_allowed,
-            )}
-          </Typography>
-          <Typography variant="body2" sx={{ mb: 1.5 }}>
-            {formatWsdcLevelLine(
-              profile.non_dominate_role || profile.short_non_dominate_role,
-              profile.non_dominate_required,
-              profile.non_dominate_allowed,
-            )}
-          </Typography>
+          <WsdcLevelLine
+            sx={{ mb: 0.5 }}
+            roleLabel={profile.dominate_role || profile.short_dominate_role}
+            required={profile.dominate_required}
+            allowed={profile.dominate_allowed}
+          />
+          <WsdcLevelLine
+            sx={{ mb: 1.5 }}
+            roleLabel={profile.non_dominate_role || profile.short_non_dominate_role}
+            required={profile.non_dominate_required}
+            allowed={profile.non_dominate_allowed}
+          />
           {(profile.dominate_role_highest_level || profile.non_dominate_role_highest_level) && (
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
-              Highest points — Primary: {profile.dominate_role_highest_level ?? '—'} (
-              {profile.dominate_role_highest_level_points ?? 0}) · Secondary:{' '}
+              Highest points — <strong>Primary:</strong> {profile.dominate_role_highest_level ?? '—'} (
+              {profile.dominate_role_highest_level_points ?? 0}) · <strong>Secondary:</strong>{' '}
               {profile.non_dominate_role_highest_level ?? '—'} (
               {profile.non_dominate_role_highest_level_points ?? 0})
             </Typography>

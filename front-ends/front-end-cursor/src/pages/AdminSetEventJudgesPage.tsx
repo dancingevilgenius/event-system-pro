@@ -367,7 +367,7 @@ export default function AdminSetEventJudgesPage() {
             )}
           </Stack>
 
-          {eventSelectionReady && (
+          {eventSelectionReady && selectedEvent && (
             <>
               {loadingPool ? (
                 <Stack direction="row" spacing={1} sx={{ alignItems: 'center', justifyContent: 'center' }}>

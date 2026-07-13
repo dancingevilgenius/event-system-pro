@@ -1762,7 +1762,6 @@ export async function fetchEventPosContextByCode(
 
 export type JudgeSearchUser = {
   userId: number;
-  username: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -1782,7 +1781,7 @@ export async function searchUsersByFirstAndLastName(
   }
 
   const params = new URLSearchParams({
-    select: 'user_id,username,name_json,email',
+    select: 'user_id,name_json,email',
     limit: String(limit),
     order: 'name_json->>last.asc,name_json->>first.asc',
   });
@@ -1798,17 +1797,15 @@ export async function searchUsersByFirstAndLastName(
   return records
     .map((row) => ({
       userId: row.user_id,
-      username: row.username?.trim() ?? '',
       firstName: row.name_json?.first?.trim() ?? '',
       lastName: row.name_json?.last?.trim() ?? '',
       email: row.email?.trim() ?? '',
     }))
-    .filter((user) => user.userId > 0 && user.username !== '');
+    .filter((user) => user.userId > 0);
 }
 
 export type EventJudgePoolMember = {
   userId: number;
-  username: string;
   firstname: string;
   lastname: string;
   email: string;
@@ -1816,7 +1813,6 @@ export type EventJudgePoolMember = {
 
 type ApiEventJudgePoolMember = {
   user_id?: number | string | null;
-  username?: string | null;
   firstname?: string | null;
   lastname?: string | null;
   email?: string | null;
@@ -1831,7 +1827,6 @@ function parseEventJudgePoolMembers(value: unknown): EventJudgePoolMember[] {
     .filter((entry): entry is ApiEventJudgePoolMember => Boolean(entry) && typeof entry === 'object')
     .map((entry) => ({
       userId: Number(entry.user_id),
-      username: typeof entry.username === 'string' ? entry.username.trim() : '',
       firstname: typeof entry.firstname === 'string' ? entry.firstname.trim() : '',
       lastname: typeof entry.lastname === 'string' ? entry.lastname.trim() : '',
       email: typeof entry.email === 'string' ? entry.email.trim() : '',
@@ -1864,7 +1859,6 @@ export function saveEventJudgingPool(eventCode: string, judges: EventJudgePoolMe
     p_event_code: eventCode,
     p_judges: judges.map((judge) => ({
       user_id: judge.userId,
-      username: judge.username,
       firstname: judge.firstname,
       lastname: judge.lastname,
       email: judge.email,
@@ -1899,7 +1893,6 @@ export async function persistEventJudgingPool(
 export function judgeSearchUserToPoolMember(user: JudgeSearchUser): EventJudgePoolMember {
   return {
     userId: user.userId,
-    username: user.username,
     firstname: user.firstName,
     lastname: user.lastName,
     email: user.email,

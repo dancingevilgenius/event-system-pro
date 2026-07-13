@@ -459,13 +459,12 @@ export default function AdminSetEventJudgesPage() {
                           <TableCell>First name</TableCell>
                           <TableCell>Last name</TableCell>
                           <TableCell>Email</TableCell>
-                          <TableCell>Username</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
                         {searchResults.length === 0 ? (
                           <TableRow>
-                            <TableCell colSpan={5} align="center">
+                            <TableCell colSpan={4} align="center">
                               {firstNameQuery.trim() || lastNameQuery.trim()
                                 ? 'No users found.'
                                 : 'Search by first and/or last name.'}
@@ -493,7 +492,6 @@ export default function AdminSetEventJudgesPage() {
                                 <TableCell>{displayValue(user.firstName)}</TableCell>
                                 <TableCell>{displayValue(user.lastName)}</TableCell>
                                 <TableCell>{displayValue(user.email)}</TableCell>
-                                <TableCell>{displayValue(user.username)}</TableCell>
                               </TableRow>
                             );
                           })
@@ -515,14 +513,13 @@ export default function AdminSetEventJudgesPage() {
                         <TableCell>First name</TableCell>
                         <TableCell>Last name</TableCell>
                         <TableCell>Email</TableCell>
-                        <TableCell>Username</TableCell>
                         <TableCell align="center">Remove</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {judges.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={5} align="center">
+                          <TableCell colSpan={4} align="center">
                             No judges in the pool yet.
                           </TableCell>
                         </TableRow>
@@ -532,7 +529,6 @@ export default function AdminSetEventJudgesPage() {
                             <TableCell>{displayValue(judge.firstname)}</TableCell>
                             <TableCell>{displayValue(judge.lastname)}</TableCell>
                             <TableCell>{displayValue(judge.email)}</TableCell>
-                            <TableCell>{displayValue(judge.username)}</TableCell>
                             <TableCell align="center">
                               <Button
                                 variant="outlined"

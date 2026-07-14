@@ -25,7 +25,7 @@ export type AuditTrailCardProps = {
 function AuditTrailCardFieldItem({ field }: { field: AuditTrailCardField }) {
   return (
     <Box sx={{ minWidth: 0, gridColumn: field.columnSpan ? `span ${field.columnSpan}` : undefined }}>
-      <Typography variant="caption" color="text.secondary">
+      <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
         {field.label}
       </Typography>
       <Typography variant="body2" sx={{ wordBreak: 'break-word', ...field.valueSx }}>

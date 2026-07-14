@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import { useRef, type UIEvent } from 'react';
 import type { AuditLogRow } from '../api/postgrest';
+import { formatAuditLogActor } from '../lib/auditLogDisplay';
 import { getHighlightedJsonLines } from '../utils/auditJsonDiff';
 import { formatAuditJsonForDisplay, formatReadableDateTime } from '../utils/auditTimestamps';
 import CloseIcon from './CloseIcon';
@@ -221,7 +222,7 @@ export default function AuditLogDetailDialog({ open, row, onClose }: AuditLogDet
             <strong>Action:</strong> {row.action}
           </Typography>
           <Typography variant="body2">
-            <strong>Actor:</strong> {row.actorUsername || '—'}
+            <strong>Actor:</strong> {formatAuditLogActor(row)}
             {row.actorUserId != null ? ` (user_id ${row.actorUserId})` : ''}
           </Typography>
           <Typography variant="body2">

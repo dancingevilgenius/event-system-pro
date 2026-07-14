@@ -1464,11 +1464,34 @@ export type AuditLogRow = {
   action: string;
   actorUserId: number | null;
   actorUsername: string;
+  actorFirstName: string;
+  actorLastName: string;
   tableName: string;
   recordKey: string;
   oldData: Record<string, unknown> | null;
   newData: Record<string, unknown> | null;
   metadata: Record<string, unknown> | null;
+};
+
+export type AuditLogFilters = {
+  fromDateTime: string;
+  toDateTime: string;
+  tableName: string;
+  actorSearch: string;
+  action: string;
+};
+
+export const EMPTY_AUDIT_LOG_FILTERS: AuditLogFilters = {
+  fromDateTime: '',
+  toDateTime: '',
+  tableName: '',
+  actorSearch: '',
+  action: '',
+};
+
+export type AuditLogFilterOptions = {
+  tables: string[];
+  actions: string[];
 };
 
 type ApiAuditLogRow = {
@@ -1477,6 +1500,8 @@ type ApiAuditLogRow = {
   action: string;
   actor_user_id: number | null;
   actor_username: string | null;
+  actor_first_name: string | null;
+  actor_last_name: string | null;
   table_name: string | null;
   record_key: string | null;
   old_data: Record<string, unknown> | null;
@@ -1491,6 +1516,8 @@ function mapAuditLogRow(row: ApiAuditLogRow): AuditLogRow {
     action: row.action,
     actorUserId: row.actor_user_id,
     actorUsername: row.actor_username?.trim() ?? '',
+    actorFirstName: row.actor_first_name?.trim() ?? '',
+    actorLastName: row.actor_last_name?.trim() ?? '',
     tableName: row.table_name?.trim() ?? '',
     recordKey: row.record_key?.trim() ?? '',
     oldData: row.old_data,
@@ -1499,17 +1526,64 @@ function mapAuditLogRow(row: ApiAuditLogRow): AuditLogRow {
   };
 }
 
-export async function fetchAuditLogPage(
+function dateTimeLocalToIso(value: string): string | null {
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  const parsed = new Date(trimmed);
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString();
+}
+
+function buildAuditLogQueryParams(
   offset: number,
   limit: number,
-): Promise<{ rows: AuditLogRow[]; total: number }> {
+  filters: AuditLogFilters,
+): URLSearchParams {
   const params = new URLSearchParams({
     select:
-      'audit_id,occurred_at,action,actor_user_id,actor_username,table_name,record_key,old_data,new_data,metadata',
+      'audit_id,occurred_at,action,actor_user_id,actor_username,actor_first_name,actor_last_name,table_name,record_key,old_data,new_data,metadata',
     order: 'occurred_at.desc,audit_id.desc',
     offset: String(offset),
     limit: String(limit),
   });
+
+  const fromIso = dateTimeLocalToIso(filters.fromDateTime);
+  if (fromIso) {
+    params.append('occurred_at', `gte.${fromIso}`);
+  }
+
+  const toIso = dateTimeLocalToIso(filters.toDateTime);
+  if (toIso) {
+    params.append('occurred_at', `lte.${toIso}`);
+  }
+
+  if (filters.tableName.trim()) {
+    params.append('table_name', `eq.${filters.tableName.trim()}`);
+  }
+
+  if (filters.action.trim()) {
+    params.append('action', `eq.${filters.action.trim()}`);
+  }
+
+  if (filters.actorSearch.trim()) {
+    const escaped = escapePostgrestFilterValue(filters.actorSearch.trim());
+    params.append(
+      'or',
+      `(actor_username.ilike.*${escaped}*,actor_first_name.ilike.*${escaped}*,actor_last_name.ilike.*${escaped}*)`,
+    );
+  }
+
+  return params;
+}
+
+export async function fetchAuditLogPage(
+  offset: number,
+  limit: number,
+  filters: AuditLogFilters = EMPTY_AUDIT_LOG_FILTERS,
+): Promise<{ rows: AuditLogRow[]; total: number }> {
+  const params = buildAuditLogQueryParams(offset, limit, filters);
 
   const response = await fetch(`${POSTGREST_URL}/audit_log?${params.toString()}`, {
     headers: buildAuthHeaders({
@@ -1527,6 +1601,18 @@ export async function fetchAuditLogPage(
   return {
     rows: records.map(mapAuditLogRow),
     total,
+  };
+}
+
+export async function fetchAuditLogFilterOptions(): Promise<AuditLogFilterOptions> {
+  const result = await callRpc<{ tables?: string[]; actions?: string[] }>(
+    'audit_log_filter_options',
+    {},
+  );
+
+  return {
+    tables: Array.isArray(result.tables) ? result.tables : [],
+    actions: Array.isArray(result.actions) ? result.actions : [],
   };
 }
 

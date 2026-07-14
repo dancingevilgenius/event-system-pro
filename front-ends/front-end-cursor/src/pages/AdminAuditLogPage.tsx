@@ -16,14 +16,23 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchAuditLogPage, type AuditLogRow } from '../api/postgrest';
 import AuditLogDetailDialog from '../components/AuditLogDetailDialog';
+import AuditLogFilterDialog, {
+  EMPTY_AUDIT_LOG_FILTERS,
+  type AuditLogFilters,
+} from '../components/AuditLogFilterDialog';
 import AuditTrailCard from '../components/AuditTrailCard';
 import PurgeAuditLogDialog from '../components/PurgeAuditLogDialog';
 import { useIsMobileDevice } from '../hooks/useIsMobileDevice';
+import { formatAuditLogActor } from '../lib/auditLogDisplay';
 import { isEventsystemFunDeployment } from '../lib/deployment';
 import { formatReadableDateTime } from '../utils/auditTimestamps';
 
 const DESKTOP_PAGE_SIZE = 25;
 const MOBILE_PAGE_SIZE = 10;
+
+function auditLogFiltersActive(filters: AuditLogFilters): boolean {
+  return Object.values(filters).some((value) => value.trim() !== '');
+}
 
 function displayValue(value: string): string {
   return value.trim() === '' ? '—' : value;
@@ -48,7 +57,7 @@ function MobileAuditLogCard({
       fields={[
         { key: 'when', label: 'When', value: formatOccurredAt(row.occurredAt) },
         { key: 'action', label: 'Action', value: displayValue(row.action) },
-        { key: 'actor', label: 'Actor', value: displayValue(row.actorUsername) },
+        { key: 'actor', label: 'Actor', value: formatAuditLogActor(row) },
         { key: 'table', label: 'Table', value: displayValue(row.tableName) },
         {
           key: 'record',
@@ -77,16 +86,19 @@ export default function AdminAuditLogPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [detailRow, setDetailRow] = useState<AuditLogRow | null>(null);
+  const [filterDialogOpen, setFilterDialogOpen] = useState(false);
+  const [filters, setFilters] = useState<AuditLogFilters>(EMPTY_AUDIT_LOG_FILTERS);
   const [purgeDialogOpen, setPurgeDialogOpen] = useState(false);
   const [purgeSuccessMessage, setPurgeSuccessMessage] = useState<string | null>(null);
   const showPurgeAuditLog = isEventsystemFunDeployment();
+  const filtersActive = auditLogFiltersActive(filters);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const safePage = Math.min(page, totalPages - 1);
 
   useEffect(() => {
     setPage(0);
-  }, [pageSize]);
+  }, [pageSize, filters]);
 
   useEffect(() => {
     setPage((current) => Math.min(current, totalPages - 1));
@@ -97,7 +109,7 @@ export default function AdminAuditLogPage() {
     setError(null);
 
     try {
-      const result = await fetchAuditLogPage(safePage * pageSize, pageSize);
+      const result = await fetchAuditLogPage(safePage * pageSize, pageSize, filters);
       setRows(result.rows);
       setTotalCount(result.total);
     } catch (loadError) {
@@ -107,7 +119,7 @@ export default function AdminAuditLogPage() {
     } finally {
       setLoading(false);
     }
-  }, [pageSize, safePage]);
+  }, [filters, pageSize, safePage]);
 
   useEffect(() => {
     void loadAuditLog();
@@ -130,6 +142,23 @@ export default function AdminAuditLogPage() {
         <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 2 }}>
           {totalCount} events
         </Typography>
+
+        <Stack
+          sx={{
+            mb: 2,
+            width: '100%',
+            alignItems: isMobile ? 'center' : 'flex-start',
+          }}
+        >
+          <Button
+            variant="outlined"
+            onClick={() => setFilterDialogOpen(true)}
+            disabled={loading}
+            sx={{ minWidth: 200 }}
+          >
+            Filter{filtersActive ? ' • Active' : ''}
+          </Button>
+        </Stack>
 
         {purgeSuccessMessage && (
           <Typography variant="body2" color="success.main" align="center" sx={{ mb: 2 }}>
@@ -204,7 +233,7 @@ export default function AdminAuditLogPage() {
                         {formatOccurredAt(row.occurredAt)}
                       </TableCell>
                       <TableCell>{displayValue(row.action)}</TableCell>
-                      <TableCell>{displayValue(row.actorUsername)}</TableCell>
+                      <TableCell>{formatAuditLogActor(row)}</TableCell>
                       <TableCell>{displayValue(row.tableName)}</TableCell>
                       <TableCell sx={{ maxWidth: 240, wordBreak: 'break-word' }}>
                         {displayValue(row.recordKey)}
@@ -246,6 +275,16 @@ export default function AdminAuditLogPage() {
           </Button>
         </Stack>
       </Paper>
+
+      <AuditLogFilterDialog
+        open={filterDialogOpen}
+        initialFilters={filters}
+        onClose={() => setFilterDialogOpen(false)}
+        onApply={(nextFilters) => {
+          setFilters(nextFilters);
+          setPage(0);
+        }}
+      />
 
       <AuditLogDetailDialog
         open={detailRow !== null}

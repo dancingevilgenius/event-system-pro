@@ -6,22 +6,15 @@ import {
   Container,
   Paper,
   Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Typography,
 } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   fetchScheduledTasks,
   runScheduledTask,
   type ScheduledTaskRow,
 } from '../api/postgrest';
-import { useIsMobileDevice } from '../hooks/useIsMobileDevice';
 import { useMessages } from '../hooks/useMessages';
 import { formatReadableDateTime } from '../utils/auditTimestamps';
 
@@ -76,7 +69,24 @@ function healthLabel(health: string): string {
   }
 }
 
-function MobileScheduledTaskCard({
+function ReadOnlyField({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactNode;
+}) {
+  return (
+    <Box sx={{ minWidth: 0 }}>
+      <Typography variant="caption" color="text.secondary" component="div">
+        {label}
+      </Typography>
+      {children}
+    </Box>
+  );
+}
+
+function ScheduledTaskCard({
   task,
   running,
   onRun,
@@ -95,45 +105,58 @@ function MobileScheduledTaskCard({
           <Typography variant="body2" color="text.secondary">
             {displayValue(task.description)}
           </Typography>
+          <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+            {task.rpcSchema}.{task.rpcName}()
+          </Typography>
         </Box>
 
-        <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
-          <Chip
-            size="small"
-            label={task.enabled ? 'Enabled' : 'Disabled'}
-            color={task.enabled ? 'success' : 'default'}
-            variant={task.enabled ? 'filled' : 'outlined'}
-          />
-          <Chip
-            size="small"
-            label={healthLabel(task.health)}
-            color={healthChipColor(task.health)}
-            variant="outlined"
-          />
-        </Stack>
+        <Box
+          sx={{
+            display: 'grid',
+            gap: 1.5,
+            gridTemplateColumns: {
+              xs: '1fr',
+              sm: 'repeat(2, minmax(0, 1fr))',
+              md: 'repeat(3, minmax(0, 1fr))',
+            },
+          }}
+        >
+          <ReadOnlyField label="Schedule">
+            <Typography variant="body2">{displayValue(task.scheduleLabel)}</Typography>
+          </ReadOnlyField>
 
-        <Box>
-          <Typography variant="caption" color="text.secondary">
-            Schedule
-          </Typography>
-          <Typography variant="body2">{displayValue(task.scheduleLabel)}</Typography>
-        </Box>
+          <ReadOnlyField label="Last run">
+            <Typography variant="body2">
+              {formatTimestamp(task.lastFinishedAt ?? task.lastStartedAt)}
+            </Typography>
+            {task.lastStatus && (
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                {task.lastStatus}
+              </Typography>
+            )}
+            {task.lastErrorMessage && (
+              <Typography variant="caption" color="error" sx={{ display: 'block' }}>
+                {task.lastErrorMessage}
+              </Typography>
+            )}
+          </ReadOnlyField>
 
-        <Box>
-          <Typography variant="caption" color="text.secondary">
-            Last run
-          </Typography>
-          <Typography variant="body2">{formatTimestamp(task.lastFinishedAt ?? task.lastStartedAt)}</Typography>
-          {task.lastStatus && (
-            <Typography variant="body2" color="text.secondary">
-              Status: {task.lastStatus}
-            </Typography>
-          )}
-          {task.lastErrorMessage && (
-            <Typography variant="body2" color="error">
-              {task.lastErrorMessage}
-            </Typography>
-          )}
+          <ReadOnlyField label="Status">
+            <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 0.5, mt: 0.25 }}>
+              <Chip
+                size="small"
+                label={task.enabled ? 'Enabled' : 'Disabled'}
+                color={task.enabled ? 'success' : 'default'}
+                variant={task.enabled ? 'filled' : 'outlined'}
+              />
+              <Chip
+                size="small"
+                label={healthLabel(task.health)}
+                color={healthChipColor(task.health)}
+                variant="outlined"
+              />
+            </Stack>
+          </ReadOnlyField>
         </Box>
 
         <Button
@@ -152,7 +175,6 @@ function MobileScheduledTaskCard({
 
 export default function AdminScheduledTasksPage() {
   const navigate = useNavigate();
-  const isMobile = useIsMobileDevice();
   const { showSuccess, showProblem, showInfo, clearMessages } = useMessages();
 
   const [tasks, setTasks] = useState<ScheduledTaskRow[]>([]);
@@ -228,7 +250,7 @@ export default function AdminScheduledTasksPage() {
           </Typography>
         )}
 
-        {!loading && !error && isMobile && (
+        {!loading && !error && (
           <Stack spacing={2} sx={{ my: 3 }}>
             {tasks.length === 0 ? (
               <Typography variant="body2" color="text.secondary" align="center">
@@ -236,7 +258,7 @@ export default function AdminScheduledTasksPage() {
               </Typography>
             ) : (
               tasks.map((task) => (
-                <MobileScheduledTaskCard
+                <ScheduledTaskCard
                   key={task.jobName}
                   task={task}
                   running={runningJobName === task.jobName}
@@ -245,89 +267,6 @@ export default function AdminScheduledTasksPage() {
               ))
             )}
           </Stack>
-        )}
-
-        {!loading && !error && !isMobile && (
-          <TableContainer sx={{ overflowX: 'auto', my: 3 }}>
-            <Table size="small" aria-label="Scheduled tasks">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Task</TableCell>
-                  <TableCell>Schedule</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Last run</TableCell>
-                  <TableCell align="right">Action</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {tasks.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} align="center">
-                      No scheduled tasks found.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  tasks.map((task) => (
-                    <TableRow key={task.jobName} hover>
-                      <TableCell sx={{ minWidth: 220 }}>
-                        <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                          {task.jobName}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-                          {displayValue(task.description)}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
-                          {task.rpcSchema}.{task.rpcName}()
-                        </Typography>
-                      </TableCell>
-                      <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                        {displayValue(task.scheduleLabel)}
-                      </TableCell>
-                      <TableCell>
-                        <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 0.5 }}>
-                          <Chip
-                            size="small"
-                            label={task.enabled ? 'Enabled' : 'Disabled'}
-                            color={task.enabled ? 'success' : 'default'}
-                            variant={task.enabled ? 'filled' : 'outlined'}
-                          />
-                          <Chip
-                            size="small"
-                            label={healthLabel(task.health)}
-                            color={healthChipColor(task.health)}
-                            variant="outlined"
-                          />
-                        </Stack>
-                        {task.lastStatus && (
-                          <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
-                            Last: {task.lastStatus}
-                          </Typography>
-                        )}
-                        {task.lastErrorMessage && (
-                          <Typography variant="caption" color="error" sx={{ display: 'block' }}>
-                            {task.lastErrorMessage}
-                          </Typography>
-                        )}
-                      </TableCell>
-                      <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                        {formatTimestamp(task.lastFinishedAt ?? task.lastStartedAt)}
-                      </TableCell>
-                      <TableCell align="right">
-                        <Button
-                          variant="contained"
-                          size="small"
-                          disabled={runningJobName === task.jobName}
-                          onClick={() => void handleRunTask(task)}
-                        >
-                          {runningJobName === task.jobName ? 'Running…' : 'Run now'}
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
         )}
 
         <Stack spacing={2} sx={{ alignItems: 'center' }}>

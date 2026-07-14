@@ -8,11 +8,6 @@ const DEMO_ITEMS = [
     path: '/tournament-bracket-demo',
     available: true,
   },
-  {
-    label: 'Event Merchandise POS',
-    path: '/event-merchandise-pos-demo',
-    available: true,
-  },
 ] as const;
 
 export default function DemoPage() {

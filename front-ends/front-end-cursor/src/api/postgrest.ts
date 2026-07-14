@@ -1736,13 +1736,11 @@ export async function fetchMerchandiseByCode(
 type ApiEventByCodeRecord = {
   event_code: string;
   name: string;
-  location_json: string | null;
 };
 
 export type EventPosContext = {
   eventCode: string;
   name: string;
-  locationLabel: string | null;
 };
 
 export async function fetchEventPosContextByCode(
@@ -1750,7 +1748,7 @@ export async function fetchEventPosContextByCode(
   auth: RequestAuthMode = 'include',
 ): Promise<EventPosContext | null> {
   const params = new URLSearchParams({
-    select: 'event_code,name,location_json',
+    select: 'event_code,name',
   });
   params.append('event_code', `eq.${eventCode}`);
 
@@ -1768,7 +1766,6 @@ export async function fetchEventPosContextByCode(
   return {
     eventCode: row.event_code,
     name: row.name,
-    locationLabel: row.location_json,
   };
 }
 

@@ -38,6 +38,7 @@ import {
   formatReceiptId,
   type SalesTransactionReceipt,
 } from '../lib/salesTransactionReceipt';
+import { useAuth } from '../hooks/useAuth';
 
 const DEMO_EVENT_CODE = 'SWING_STATE_CLASSIC_2025_JUN';
 const DEMO_REGISTER_ID = 'REG-DEMO-01';
@@ -49,6 +50,7 @@ function buildReceipt(
   cart: MerchandiseCartLine[],
   event: EventPosContext,
   nextReceiptSeq: number,
+  cashierName: string,
 ): SalesTransactionReceipt {
   const { subtotal } = summarizeCart(cart);
   const taxTotal = Math.round(subtotal * DEMO_TAX_RATE * 100) / 100;
@@ -61,9 +63,8 @@ function buildReceipt(
     transactionType: 'sale',
     transactionAt: new Date().toISOString(),
     eventName: event.name,
-    eventLocation: event.locationLabel ?? undefined,
     registerId: DEMO_REGISTER_ID,
-    cashierName: 'Demo Cashier',
+    cashierName,
     currencyCode: 'USD',
     lineItems: cart.map((line, index) => ({
       lineNumber: index + 1,
@@ -128,6 +129,7 @@ function ProductCard({
 
 export default function EventMerchandisePosDemoPage() {
   const navigate = useNavigate();
+  const { session } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [eventContext, setEventContext] = useState<EventPosContext | null>(null);
@@ -142,8 +144,8 @@ export default function EventMerchandisePosDemoPage() {
     let cancelled = false;
 
     Promise.all([
-      fetchEventPosContextByCode(DEMO_EVENT_CODE, 'omit'),
-      fetchMerchandiseByCode(DEMO_EVENT_CODE, 'omit'),
+      fetchEventPosContextByCode(DEMO_EVENT_CODE),
+      fetchMerchandiseByCode(DEMO_EVENT_CODE),
     ])
       .then(([event, merch]) => {
         if (cancelled) {
@@ -215,11 +217,11 @@ export default function EventMerchandisePosDemoPage() {
   };
 
   const completeSale = () => {
-    if (!eventContext || cart.length === 0) {
+    if (!eventContext || cart.length === 0 || !session) {
       return;
     }
 
-    const receipt = buildReceipt(cart, eventContext, demoReceiptSeq);
+    const receipt = buildReceipt(cart, eventContext, demoReceiptSeq, session.username);
     setCompletedReceipt(receipt);
     setReceiptOpen(true);
     setDemoReceiptSeq((current) => current + 1);
@@ -364,8 +366,8 @@ export default function EventMerchandisePosDemoPage() {
         )}
 
         <Stack direction="row" spacing={2}>
-          <Button variant="outlined" onClick={() => navigate('/demo')}>
-            Back to Demo
+          <Button variant="outlined" onClick={() => navigate('/adminhome')}>
+            Back to Admin
           </Button>
         </Stack>
       </Stack>

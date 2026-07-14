@@ -16,6 +16,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchEventGroups, type EventGroupListRow } from '../api/postgrest';
 import AddEventGroupDialog from '../components/AddEventGroupDialog';
+import AppTextField from '../components/AppTextField';
 import EditEventGroupDirectorsDialog from '../components/EditEventGroupDirectorsDialog';
 import { EVENT_HOME_PATH, eventGroupDetailPath } from '../constants/eventRoutes';
 import { useMessages } from '../hooks/useMessages';
@@ -28,6 +29,7 @@ export default function AdminEventsPage() {
   const navigate = useNavigate();
   const { showSuccess } = useMessages();
   const [rows, setRows] = useState<EventGroupListRow[]>([]);
+  const [nameFilter, setNameFilter] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -52,6 +54,12 @@ export default function AdminEventsPage() {
     void loadEventGroups();
   }, [loadEventGroups]);
 
+  const normalizedNameFilter = nameFilter.trim().toLowerCase();
+  const filteredRows =
+    normalizedNameFilter === ''
+      ? rows
+      : rows.filter((row) => row.fullName.toLowerCase().includes(normalizedNameFilter));
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Paper elevation={3} sx={{ p: { xs: 2, sm: 4 } }}>
@@ -59,10 +67,30 @@ export default function AdminEventsPage() {
           Event Groups
         </Typography>
         <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 2 }}>
-          Event groups ({rows.length})
+          Event groups ({filteredRows.length}
+          {normalizedNameFilter !== '' && filteredRows.length !== rows.length
+            ? ` of ${rows.length}`
+            : ''}
+          )
         </Typography>
 
-        <Stack direction="row" sx={{ mb: 2, justifyContent: 'center' }}>
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={2}
+          sx={{ mb: 2, justifyContent: 'center', alignItems: 'center' }}
+        >
+          <AppTextField
+            label="Filter"
+            value={nameFilter}
+            onChange={(event) => setNameFilter(event.target.value)}
+            size="small"
+            sx={{ minWidth: { xs: '100%', sm: 260 } }}
+            slotProps={{
+              htmlInput: {
+                'aria-label': 'Filter event groups by name',
+              },
+            }}
+          />
           <Button variant="contained" onClick={() => setAddDialogOpen(true)}>
             Add Event Group
           </Button>
@@ -92,14 +120,16 @@ export default function AdminEventsPage() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rows.length === 0 ? (
+                {filteredRows.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={4} align="center">
-                      No event groups found.
+                      {rows.length === 0
+                        ? 'No event groups found.'
+                        : 'No event groups match this filter.'}
                     </TableCell>
                   </TableRow>
                 ) : (
-                  rows.map((row) => (
+                  filteredRows.map((row) => (
                     <TableRow key={row.eventGroupCode} hover>
                       <TableCell>{displayValue(row.eventGroupCode)}</TableCell>
                       <TableCell>{displayValue(row.fullName)}</TableCell>

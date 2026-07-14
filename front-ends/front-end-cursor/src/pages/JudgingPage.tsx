@@ -43,6 +43,11 @@ import {
   type CompetitorRole,
 } from '../types/competitorColors';
 import {
+  buildJudgeSubmission,
+  saveJudgeSubmission,
+} from '../services/tabulation';
+import { useMessages } from '../hooks/useMessages';
+import {
   digitsToScore,
   emptyEntryScoreState,
   findFirstDuplicateBib,
@@ -507,6 +512,7 @@ function JudgingEntryAccordion({
 
 export default function JudgingPage() {
   const navigate = useNavigate();
+  const { showSuccess } = useMessages();
   const entries = useMemo(() => createMockContestEntries(), []);
   const [paletteTarget, setPaletteTarget] = useState<PaletteTarget | null>(null);
   const [competitorColors, setCompetitorColors] = useState<
@@ -755,6 +761,15 @@ export default function JudgingPage() {
   };
 
   const handleSubmit = () => {
+    const submission = buildJudgeSubmission(
+      scoreByBib,
+      entries.map((entry) => entry.number),
+    );
+
+    saveJudgeSubmission(submission);
+    showSuccess(
+      `Scores submitted with ${submission.placements.length} placements derived (1st = highest score).`,
+    );
     navigate('/staff');
   };
 

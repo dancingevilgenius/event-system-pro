@@ -101,9 +101,17 @@ export async function fetchPocCounter(): Promise<number> {
     throw new Error(`Unable to load counter (${response.status})`);
   }
 
-  const records = (await response.json()) as Array<{ value?: string | null }>;
-  const rawValue = records[0]?.value ?? '0';
-  const parsed = Number.parseInt(rawValue, 10);
+  const records = (await response.json()) as Array<{ value?: unknown }>;
+  const rawValue = records[0]?.value;
 
-  return Number.isFinite(parsed) ? parsed : 0;
+  if (typeof rawValue === 'number') {
+    return Number.isFinite(rawValue) ? rawValue : 0;
+  }
+
+  if (typeof rawValue === 'string') {
+    const parsed = Number.parseInt(rawValue, 10);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  return 0;
 }

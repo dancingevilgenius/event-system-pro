@@ -431,20 +431,33 @@ type ApiDeploymentInfo = {
   deploy_source?: string;
 };
 
-function parseDeploymentInfo(value: string | null | undefined): DeploymentInfo | null {
-  if (!value?.trim()) {
+function parseDeploymentInfo(value: unknown): DeploymentInfo | null {
+  if (value == null) {
     return null;
   }
 
-  try {
-    const parsed = JSON.parse(value) as ApiDeploymentInfo;
-    return {
-      deployedAt: typeof parsed.deployed_at === 'string' ? parsed.deployed_at : null,
-      deploySource: typeof parsed.deploy_source === 'string' ? parsed.deploy_source : null,
-    };
-  } catch {
+  let parsed: ApiDeploymentInfo;
+
+  if (typeof value === 'string') {
+    if (!value.trim()) {
+      return null;
+    }
+
+    try {
+      parsed = JSON.parse(value) as ApiDeploymentInfo;
+    } catch {
+      return null;
+    }
+  } else if (typeof value === 'object') {
+    parsed = value as ApiDeploymentInfo;
+  } else {
     return null;
   }
+
+  return {
+    deployedAt: typeof parsed.deployed_at === 'string' ? parsed.deployed_at : null,
+    deploySource: typeof parsed.deploy_source === 'string' ? parsed.deploy_source : null,
+  };
 }
 
 export async function fetchDeploymentInfo(): Promise<DeploymentInfo | null> {
@@ -453,7 +466,7 @@ export async function fetchDeploymentInfo(): Promise<DeploymentInfo | null> {
     label: 'eq.deployment_info',
   });
 
-  const rows = await fetchJson<Array<{ value: string | null }>>(
+  const rows = await fetchJson<Array<{ value: unknown }>>(
     `${POSTGREST_URL}/system_config?${params.toString()}`,
     'Unable to load deployment info',
   );

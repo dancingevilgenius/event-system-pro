@@ -6,10 +6,10 @@
 WITH updated AS (
   UPDATE public.system_config
   SET
-    value = json_build_object(
+    value = jsonb_build_object(
       'deployed_at', to_char(CURRENT_TIMESTAMP AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
       'deploy_source', 'local-dev'
-    )::text,
+    ),
     modified_by = 'c-agent',
     modified_date = CURRENT_TIMESTAMP
   WHERE label = 'deployment_info'
@@ -18,10 +18,10 @@ WITH updated AS (
 INSERT INTO public.system_config (label, value, active, created_by)
 SELECT
   'deployment_info',
-  json_build_object(
+  jsonb_build_object(
     'deployed_at', to_char(CURRENT_TIMESTAMP AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
     'deploy_source', 'local-dev'
-  )::text,
+  ),
   true,
   'c-agent'
 WHERE NOT EXISTS (SELECT 1 FROM updated);

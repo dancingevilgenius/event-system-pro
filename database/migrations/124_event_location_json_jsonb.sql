@@ -5,8 +5,8 @@
 --
 --   psql -U postgres -d event_system_pro -f database/migrations/124_event_location_json_jsonb.sql
 
-\connect event_system_pro
-
+-- Drop dependent view before any column type change.
+-- (migrate.sh already connects to the target database; no \connect.)
 DROP VIEW IF EXISTS api.event;
 
 DO $$
@@ -19,6 +19,12 @@ BEGIN
       AND column_name = 'location_json'
       AND udt_name <> 'jsonb'
   ) THEN
+    -- Defaults on varchar (e.g. NULL/'{}') cannot auto-cast to jsonb.
+    EXECUTE $sql$
+      ALTER TABLE public."event"
+        ALTER COLUMN location_json DROP DEFAULT
+    $sql$;
+
     EXECUTE $sql$
       ALTER TABLE public."event"
         ALTER COLUMN location_json TYPE jsonb

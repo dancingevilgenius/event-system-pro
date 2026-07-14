@@ -151,6 +151,11 @@ export type RelativePlacementRow = {
   judgePlacements: number[];
 };
 
+/** Display a skating placement mark as a plain integer (1, 2, 3, …). */
+export function formatPlacementMark(placement: number): string {
+  return String(placement);
+}
+
 export function buildRelativePlacementRows(
   bibs: readonly number[],
   placementByBib: ReadonlyMap<number, readonly number[]>,

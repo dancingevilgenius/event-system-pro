@@ -15,6 +15,13 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { buildMockContestResults } from '../data/mockContestResults';
 import { formatCompetitorPairNames } from '../data/legionNames';
+import { formatPlacementMark } from '../utils/relativePlacement';
+
+const placementMarkCellSx = {
+  whiteSpace: 'nowrap',
+  textAlign: 'center',
+  fontVariantNumeric: 'tabular-nums',
+} as const;
 
 export default function AdminContestResultsPage() {
   const navigate = useNavigate();
@@ -25,21 +32,21 @@ export default function AdminContestResultsPage() {
     <Container maxWidth="lg" sx={{ py: 6 }}>
       <Paper elevation={3} sx={{ p: { xs: 2, sm: 4 } }}>
         <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
-          Contest Results
+          Relative Placement
         </Typography>
         <Typography
           variant="body2"
           color="text.secondary"
           sx={{ mb: 3, textAlign: 'center' }}
         >
-          Relative Placement after {judgeSheets.length} judges · {placementRows.length} couples
+          {judgeSheets.length} judges · {placementRows.length} couples
         </Typography>
 
         <TableContainer sx={{ overflowX: 'auto' }}>
           <Table size="small" stickyHeader aria-label="Relative placement results">
             <TableHead>
               <TableRow>
-                <TableCell align="right" sx={{ fontWeight: 700, whiteSpace: 'nowrap' }}>
+                <TableCell align="center" sx={{ fontWeight: 700, ...placementMarkCellSx }}>
                   Place
                 </TableCell>
                 <TableCell align="right" sx={{ fontWeight: 700, whiteSpace: 'nowrap' }}>
@@ -50,7 +57,7 @@ export default function AdminContestResultsPage() {
                   <TableCell
                     key={sheet.label}
                     align="center"
-                    sx={{ fontWeight: 700, whiteSpace: 'nowrap' }}
+                    sx={{ fontWeight: 700, ...placementMarkCellSx }}
                   >
                     {sheet.label}
                   </TableCell>
@@ -63,8 +70,14 @@ export default function AdminContestResultsPage() {
 
                 return (
                   <TableRow key={row.bib} hover>
-                    <TableCell align="right" sx={{ fontWeight: row.place <= 3 ? 700 : 400 }}>
-                      {row.place}
+                    <TableCell
+                      align="center"
+                      sx={{
+                        ...placementMarkCellSx,
+                        fontWeight: row.place <= 3 ? 700 : 400,
+                      }}
+                    >
+                      {formatPlacementMark(row.place)}
                     </TableCell>
                     <TableCell align="right">{row.bib}</TableCell>
                     <TableCell>
@@ -75,11 +88,15 @@ export default function AdminContestResultsPage() {
                           })
                         : '—'}
                     </TableCell>
-                    {judgeSheets.map((sheet) => (
-                      <TableCell key={sheet.label} align="center" sx={{ whiteSpace: 'nowrap' }}>
-                        {sheet.placements[row.bib]}
-                      </TableCell>
-                    ))}
+                    {judgeSheets.map((sheet, index) => {
+                      const placement = row.judgePlacements[index];
+
+                      return (
+                        <TableCell key={sheet.label} align="center" sx={placementMarkCellSx}>
+                          {placement == null ? '—' : formatPlacementMark(placement)}
+                        </TableCell>
+                      );
+                    })}
                   </TableRow>
                 );
               })}

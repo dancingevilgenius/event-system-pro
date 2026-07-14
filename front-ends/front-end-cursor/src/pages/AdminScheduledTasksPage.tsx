@@ -88,7 +88,12 @@ function ReadOnlyField({
 }) {
   return (
     <Box sx={{ minWidth: 0 }}>
-      <Typography variant="caption" color="text.secondary" component="div">
+      <Typography
+        variant="caption"
+        color="text.secondary"
+        component="div"
+        sx={{ fontWeight: 700 }}
+      >
         {label}
       </Typography>
       {children}
@@ -144,7 +149,12 @@ function ScheduleExplainDialog({
             </Typography>
           )}
           <Box>
-            <Typography variant="caption" color="text.secondary" component="div">
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              component="div"
+              sx={{ fontWeight: 700 }}
+            >
               Schedule code
             </Typography>
             <Typography

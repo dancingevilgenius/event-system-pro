@@ -1990,6 +1990,9 @@ export type RunScheduledTaskResult = {
   result?: Record<string, unknown>;
   triggered_by?: string;
   manual?: boolean;
+  started_at?: string;
+  finished_at?: string;
+  is_enabled?: boolean;
 };
 
 export function runScheduledTask(jobName: string) {

@@ -618,15 +618,55 @@ export default function AdminScheduledTasksPage() {
     }
   };
 
+  const applyRunTimestamps = (
+    jobName: string,
+    startedAt: string | undefined,
+    finishedAt: string | undefined,
+    status: string | undefined,
+    errorMessage?: string | null,
+  ) => {
+    if (!startedAt && !finishedAt) {
+      return;
+    }
+
+    setTasks((current) =>
+      current.map((row) =>
+        row.jobName === jobName
+          ? {
+              ...row,
+              lastStartedAt: startedAt ?? row.lastStartedAt,
+              lastFinishedAt: finishedAt ?? startedAt ?? row.lastFinishedAt,
+              lastStatus: status ?? row.lastStatus,
+              lastErrorMessage:
+                status === 'error' ? (errorMessage ?? row.lastErrorMessage) : null,
+            }
+          : row,
+      ),
+    );
+  };
+
   const handleRunTask = async (task: ScheduledTaskRow) => {
     clearMessages();
     setRunningJobName(task.jobName);
 
+    // Reflect click time immediately on screen while the RPC runs.
+    const clickTime = new Date().toISOString();
+    applyRunTimestamps(task.jobName, clickTime, clickTime, 'running');
+
     try {
       const result = await runScheduledTask(task.jobName);
 
+      applyRunTimestamps(
+        task.jobName,
+        result.started_at,
+        result.finished_at,
+        result.status,
+        result.error_message,
+      );
+
       if (!result.ok) {
         showProblem(result.error_message ?? result.message ?? `Unable to run ${task.jobName}.`);
+        await loadTasks({ quiet: true });
         return;
       }
 
@@ -637,9 +677,10 @@ export default function AdminScheduledTasksPage() {
         showSuccess(`${task.jobName} finished (${status}).`);
       }
 
-      await loadTasks();
+      await loadTasks({ quiet: true });
     } catch (runError) {
       showProblem(runError instanceof Error ? runError.message : `Unable to run ${task.jobName}.`);
+      await loadTasks({ quiet: true });
     } finally {
       setRunningJobName(null);
     }

@@ -472,7 +472,7 @@ function ScheduledTaskCard({
             )}
           </ReadOnlyField>
 
-          <ReadOnlyField label="is_enabled">
+          <ReadOnlyField label="Enabled">
             <Stack spacing={0.75} sx={{ mt: 0.25 }}>
               <FormControlLabel
                 sx={{ ml: 0, mr: 0, alignItems: 'center' }}
@@ -483,7 +483,7 @@ function ScheduledTaskCard({
                     onChange={(_, checked) => onToggleEnabled(task, checked)}
                     slotProps={{
                       input: {
-                        'aria-label': `${task.jobName} is_enabled ${task.isEnabled ? 'true' : 'false'}`,
+                        'aria-label': `${task.jobName} Enabled ${task.isEnabled ? 'true' : 'false'}`,
                       },
                     }}
                   />

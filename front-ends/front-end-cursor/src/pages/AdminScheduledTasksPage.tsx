@@ -9,9 +9,11 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
   IconButton,
   Paper,
   Stack,
+  Switch,
   Typography,
 } from '@mui/material';
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
@@ -19,6 +21,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   fetchScheduledTasks,
   runScheduledTask,
+  setScheduledTaskEnabled,
   type ScheduledTaskRow,
 } from '../api/postgrest';
 import { useMessages } from '../hooks/useMessages';
@@ -180,13 +183,17 @@ function ScheduleExplainDialog({
 function ScheduledTaskCard({
   task,
   running,
+  togglingEnabled,
   onRun,
   onExplainSchedule,
+  onToggleEnabled,
 }: {
   task: ScheduledTaskRow;
   running: boolean;
+  togglingEnabled: boolean;
   onRun: (task: ScheduledTaskRow) => void;
   onExplainSchedule: (task: ScheduledTaskRow) => void;
+  onToggleEnabled: (task: ScheduledTaskRow, isEnabled: boolean) => void;
 }) {
   const code = scheduleCode(task);
 
@@ -259,19 +266,40 @@ function ScheduledTaskCard({
             )}
           </ReadOnlyField>
 
-          <ReadOnlyField label="Status">
-            <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 0.5, mt: 0.25 }}>
-              <Chip
-                size="small"
-                label={task.enabled ? 'Enabled' : 'Disabled'}
-                color={task.enabled ? 'success' : 'default'}
-                variant={task.enabled ? 'filled' : 'outlined'}
+          <ReadOnlyField label="is_enabled">
+            <Stack spacing={0.75} sx={{ mt: 0.25 }}>
+              <FormControlLabel
+                sx={{ ml: 0, mr: 0, alignItems: 'center' }}
+                control={
+                  <Switch
+                    checked={task.isEnabled}
+                    disabled={togglingEnabled}
+                    onChange={(_, checked) => onToggleEnabled(task, checked)}
+                    slotProps={{
+                      input: {
+                        'aria-label': `${task.jobName} is_enabled ${task.isEnabled ? 'true' : 'false'}`,
+                      },
+                    }}
+                  />
+                }
+                label={
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontFamily:
+                        'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+                    }}
+                  >
+                    {task.isEnabled ? 'true' : 'false'}
+                  </Typography>
+                }
               />
               <Chip
                 size="small"
                 label={healthLabel(task.health)}
                 color={healthChipColor(task.health)}
                 variant="outlined"
+                sx={{ alignSelf: 'flex-start' }}
               />
             </Stack>
           </ReadOnlyField>
@@ -299,6 +327,7 @@ export default function AdminScheduledTasksPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [runningJobName, setRunningJobName] = useState<string | null>(null);
+  const [togglingJobName, setTogglingJobName] = useState<string | null>(null);
   const [scheduleDialogTask, setScheduleDialogTask] = useState<ScheduledTaskRow | null>(null);
 
   const loadTasks = useCallback(async () => {
@@ -319,6 +348,56 @@ export default function AdminScheduledTasksPage() {
   useEffect(() => {
     void loadTasks();
   }, [loadTasks]);
+
+  const handleToggleEnabled = async (task: ScheduledTaskRow, isEnabled: boolean) => {
+    clearMessages();
+    setTogglingJobName(task.jobName);
+
+    const previous = task.isEnabled;
+    setTasks((current) =>
+      current.map((row) =>
+        row.jobName === task.jobName
+          ? {
+              ...row,
+              isEnabled,
+              health: isEnabled
+                ? row.health === 'disabled'
+                  ? 'never_run'
+                  : row.health
+                : 'disabled',
+            }
+          : row,
+      ),
+    );
+
+    try {
+      const result = await setScheduledTaskEnabled(task.jobName, isEnabled);
+
+      if (!result.ok) {
+        setTasks((current) =>
+          current.map((row) =>
+            row.jobName === task.jobName ? { ...row, isEnabled: previous } : row,
+          ),
+        );
+        showProblem(result.message ?? `Unable to update ${task.jobName}.`);
+        return;
+      }
+
+      showSuccess(result.message ?? `${task.jobName} updated.`);
+      await loadTasks();
+    } catch (toggleError) {
+      setTasks((current) =>
+        current.map((row) =>
+          row.jobName === task.jobName ? { ...row, isEnabled: previous } : row,
+        ),
+      );
+      showProblem(
+        toggleError instanceof Error ? toggleError.message : `Unable to update ${task.jobName}.`,
+      );
+    } finally {
+      setTogglingJobName(null);
+    }
+  };
 
   const handleRunTask = async (task: ScheduledTaskRow) => {
     clearMessages();
@@ -381,8 +460,12 @@ export default function AdminScheduledTasksPage() {
                   key={task.jobName}
                   task={task}
                   running={runningJobName === task.jobName}
+                  togglingEnabled={togglingJobName === task.jobName}
                   onRun={(selectedTask) => void handleRunTask(selectedTask)}
                   onExplainSchedule={setScheduleDialogTask}
+                  onToggleEnabled={(selectedTask, isEnabled) =>
+                    void handleToggleEnabled(selectedTask, isEnabled)
+                  }
                 />
               ))
             )}

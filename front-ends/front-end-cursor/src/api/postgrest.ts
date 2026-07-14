@@ -1919,7 +1919,7 @@ export type ScheduledTaskRow = {
   scheduleCron: string | null;
   intervalSeconds: number | null;
   scheduleLabel: string;
-  enabled: boolean;
+  isEnabled: boolean;
   lastJobRunId: number | null;
   lastStatus: string | null;
   lastStartedAt: string | null;
@@ -1936,7 +1936,7 @@ type ApiScheduledTaskRow = {
   schedule_cron: string | null;
   interval_seconds: number | null;
   schedule_label: string;
-  enabled: boolean;
+  is_enabled: boolean;
   last_job_run_id: number | null;
   last_status: string | null;
   last_started_at: string | null;
@@ -1954,7 +1954,7 @@ function mapScheduledTaskRow(row: ApiScheduledTaskRow): ScheduledTaskRow {
     scheduleCron: row.schedule_cron,
     intervalSeconds: row.interval_seconds,
     scheduleLabel: row.schedule_label,
-    enabled: row.enabled,
+    isEnabled: row.is_enabled,
     lastJobRunId: row.last_job_run_id,
     lastStatus: row.last_status,
     lastStartedAt: row.last_started_at,
@@ -1994,4 +1994,18 @@ export type RunScheduledTaskResult = {
 
 export function runScheduledTask(jobName: string) {
   return callRpc<RunScheduledTaskResult>('run_scheduled_task', { p_job_name: jobName });
+}
+
+export type SetScheduledTaskEnabledResult = {
+  ok: boolean;
+  job_name?: string;
+  is_enabled?: boolean;
+  message?: string;
+};
+
+export function setScheduledTaskEnabled(jobName: string, isEnabled: boolean) {
+  return callRpc<SetScheduledTaskEnabledResult>('set_scheduled_task_enabled', {
+    p_job_name: jobName,
+    p_is_enabled: isEnabled,
+  });
 }

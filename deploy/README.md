@@ -56,7 +56,7 @@ The admin-home **POC counter** is ticked by `poc_counter_tick`; the **realtime**
 2. Insert a row into `maintenance.job_definition`:
    - **Cron job:** set `schedule_cron` (5 fields), leave `interval_seconds` NULL.
    - **Sub-minute job:** set `interval_seconds` (e.g. `10`), leave `schedule_cron` NULL.
-   - Also set `enabled`, `stale_after_interval`, `description`, `created_by = 'c-agent'`.
+   - Also set `is_enabled`, `stale_after_interval`, `description`, `created_by = 'c-agent'`.
 3. Redeploy / recreate the **`scheduler`** container so entrypoint regenerates crontab / interval loops.
 4. Manual test: `docker compose … exec scheduler /run-maintenance-job.sh <job_name>`
 
@@ -113,7 +113,7 @@ Inspect registry and recent runs:
 
 ```powershell
 docker compose -f deploy/docker-compose.yml --env-file deploy/.env exec postgres `
-  psql -U postgres -d event_system_pro -c "SELECT job_name, schedule_cron, enabled, stale_after_interval FROM maintenance.job_definition ORDER BY job_name;"
+  psql -U postgres -d event_system_pro -c "SELECT job_name, schedule_cron, is_enabled, stale_after_interval FROM maintenance.job_definition ORDER BY job_name;"
 docker compose -f deploy/docker-compose.yml --env-file deploy/.env exec postgres `
   psql -U postgres -d event_system_pro -c "SELECT job_run_id, job_name, status, started_at, finished_at FROM maintenance.job_run ORDER BY job_run_id DESC LIMIT 10;"
 ```

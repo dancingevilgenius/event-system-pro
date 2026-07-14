@@ -22,6 +22,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   fetchMerchandiseByCode,
   fetchEventPosContextByCode,
+  fetchCashierDisplayName,
   type MerchandiseDetail,
   type EventPosContext,
 } from '../api/postgrest';
@@ -134,6 +135,7 @@ export default function EventMerchandisePosDemoPage() {
   const [error, setError] = useState<string | null>(null);
   const [eventContext, setEventContext] = useState<EventPosContext | null>(null);
   const [merchandise, setMerchandise] = useState<MerchandiseDetail | null>(null);
+  const [cashierName, setCashierName] = useState<string | null>(null);
   const [genderFilter, setGenderFilter] = useState<GenderFilter>('All');
   const [cart, setCart] = useState<MerchandiseCartLine[]>([]);
   const [receiptOpen, setReceiptOpen] = useState(false);
@@ -142,12 +144,16 @@ export default function EventMerchandisePosDemoPage() {
 
   useEffect(() => {
     let cancelled = false;
+    const userId = session?.user_id;
 
     Promise.all([
       fetchEventPosContextByCode(DEMO_EVENT_CODE),
       fetchMerchandiseByCode(DEMO_EVENT_CODE),
+      userId != null
+        ? fetchCashierDisplayName(userId).catch(() => null)
+        : Promise.resolve(null),
     ])
-      .then(([event, merch]) => {
+      .then(([event, merch, cashierDisplayName]) => {
         if (cancelled) {
           return;
         }
@@ -165,6 +171,7 @@ export default function EventMerchandisePosDemoPage() {
         setEventContext(event);
         setMerchandise(merch);
         setDemoReceiptSeq(merch.nextReceiptSeq);
+        setCashierName(cashierDisplayName ?? session?.email ?? null);
       })
       .catch((loadError) => {
         if (!cancelled) {
@@ -180,7 +187,7 @@ export default function EventMerchandisePosDemoPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [session?.email, session?.user_id]);
 
   const filteredItems = useMemo(() => {
     const items = merchandise?.merchandise.items ?? [];
@@ -217,11 +224,12 @@ export default function EventMerchandisePosDemoPage() {
   };
 
   const completeSale = () => {
-    if (!eventContext || cart.length === 0 || !session) {
+    const resolvedCashier = cashierName ?? session?.email;
+    if (!eventContext || cart.length === 0 || !resolvedCashier) {
       return;
     }
 
-    const receipt = buildReceipt(cart, eventContext, demoReceiptSeq, session.username);
+    const receipt = buildReceipt(cart, eventContext, demoReceiptSeq, resolvedCashier);
     setCompletedReceipt(receipt);
     setReceiptOpen(true);
     setDemoReceiptSeq((current) => current + 1);

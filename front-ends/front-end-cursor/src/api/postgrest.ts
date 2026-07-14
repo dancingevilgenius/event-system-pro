@@ -1694,6 +1694,47 @@ export async function fetchUserWsdcId(userId: number): Promise<string | null> {
   return id || null;
 }
 
+/** Prefer "First Last" from user.name_json; fall back to email when name is empty. */
+export function formatCashierDisplayName(params: {
+  firstName?: string | null;
+  lastName?: string | null;
+  email?: string | null;
+}): string {
+  const fullName = [params.firstName?.trim(), params.lastName?.trim()].filter(Boolean).join(' ');
+  if (fullName) {
+    return fullName;
+  }
+
+  return params.email?.trim() ?? '';
+}
+
+export async function fetchCashierDisplayName(userId: number): Promise<string | null> {
+  const params = new URLSearchParams({
+    select: 'name_json,email',
+  });
+  params.append('user_id', `eq.${userId}`);
+
+  const rows = await fetchJson<
+    Array<{
+      name_json: { first?: string | null; last?: string | null } | null;
+      email: string | null;
+    }>
+  >(`${POSTGREST_URL}/user?${params.toString()}`, 'Unable to load cashier name');
+
+  const row = rows[0];
+  if (!row) {
+    return null;
+  }
+
+  const displayName = formatCashierDisplayName({
+    firstName: row.name_json?.first,
+    lastName: row.name_json?.last,
+    email: row.email,
+  });
+
+  return displayName || null;
+}
+
 type ApiMerchandiseRecord = {
   event_code: string;
   merchandise_json: unknown;

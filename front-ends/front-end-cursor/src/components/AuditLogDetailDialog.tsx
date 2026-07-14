@@ -10,6 +10,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { useRef, type UIEvent } from 'react';
 import type { AuditLogRow } from '../api/postgrest';
 import { getHighlightedNewDataLines } from '../utils/auditJsonDiff';
 import { formatAuditJsonForDisplay, formatReadableDateTime } from '../utils/auditTimestamps';
@@ -22,12 +23,30 @@ type AuditLogDetailDialogProps = {
   onClose: () => void;
 };
 
-const JSON_FIELD_SX = {
-  fontFamily: 'monospace',
+/** Shared by Previous data, New data, and Metadata TextFields (root + textarea). */
+const JSON_FONT = {
+  fontFamily:
+    'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
   fontSize: '0.8rem',
+  lineHeight: 1.5,
+  fontWeight: 400,
+} as const;
+
+const JSON_TEXT_FIELD_INPUT_SX = {
+  alignItems: 'flex-start',
+  ...JSON_FONT,
+  '& textarea': {
+    ...JSON_FONT,
+  },
 } as const;
 
 const CHANGED_LINE_BG = '#d9f7d9';
+
+/** Matches MUI outlined InputBase content padding so highlight layer lines up. */
+const JSON_FIELD_CONTENT_PADDING = {
+  px: '14px',
+  py: '16.5px',
+} as const;
 
 function formatJson(value: Record<string, unknown> | null): string {
   return formatAuditJsonForDisplay(value);
@@ -37,7 +56,13 @@ function formatOccurredAt(value: string): string {
   return formatReadableDateTime(value);
 }
 
-function ReadOnlyJsonField({ value }: { value: string }) {
+function AuditJsonTextField({
+  value,
+  ariaLabel,
+}: {
+  value: string;
+  ariaLabel: string;
+}) {
   return (
     <TextField
       value={value}
@@ -45,70 +70,111 @@ function ReadOnlyJsonField({ value }: { value: string }) {
       fullWidth
       minRows={4}
       slotProps={{
+        htmlInput: {
+          readOnly: true,
+          'aria-label': ariaLabel,
+        },
         input: {
           readOnly: true,
-          sx: JSON_FIELD_SX,
+          sx: JSON_TEXT_FIELD_INPUT_SX,
         },
       }}
     />
   );
 }
 
-function HighlightedNewDataField({
+function HighlightedNewDataTextField({
   oldData,
   newData,
 }: {
   oldData: Record<string, unknown> | null;
   newData: Record<string, unknown>;
 }) {
+  const backdropRef = useRef<HTMLDivElement>(null);
   const lines = getHighlightedNewDataLines(oldData, newData);
+  const value = formatJson(newData);
   const hasHighlights = lines.some((line) => line.changed);
 
+  const handleScroll = (event: UIEvent<HTMLTextAreaElement>) => {
+    const backdrop = backdropRef.current;
+    if (!backdrop) {
+      return;
+    }
+    backdrop.scrollTop = event.currentTarget.scrollTop;
+    backdrop.scrollLeft = event.currentTarget.scrollLeft;
+  };
+
   return (
-    <Box
-      role="textbox"
-      aria-readonly="true"
-      aria-label="New data"
-      sx={{
-        border: 1,
-        borderColor: 'divider',
-        borderRadius: 1,
-        px: 1.5,
-        py: 1.25,
-        minHeight: 96,
-        maxHeight: 360,
-        overflow: 'auto',
-        bgcolor: 'background.paper',
-        ...JSON_FIELD_SX,
-        whiteSpace: 'pre-wrap',
-        wordBreak: 'break-word',
-      }}
-    >
-      {lines.map((line, index) => (
+    <Stack spacing={1}>
+      <Box sx={{ position: 'relative' }}>
         <Box
-          key={`${index}-${line.text.slice(0, 24)}`}
-          component="span"
+          ref={backdropRef}
+          aria-hidden
           sx={{
-            display: 'block',
-            bgcolor: line.changed ? CHANGED_LINE_BG : 'transparent',
-            borderRadius: 0.5,
-            px: line.changed ? 0.5 : 0,
-            mx: line.changed ? -0.5 : 0,
+            position: 'absolute',
+            inset: 0,
+            overflow: 'hidden',
+            ...JSON_FIELD_CONTENT_PADDING,
+            ...JSON_FONT,
+            whiteSpace: 'pre-wrap',
+            wordBreak: 'break-word',
+            pointerEvents: 'none',
+            zIndex: 1,
+            color: 'text.primary',
           }}
         >
-          {line.text || '\u00a0'}
+          {lines.map((line, index) => (
+            <Box
+              key={`${index}-${line.text.slice(0, 24)}`}
+              component="span"
+              sx={{
+                display: 'block',
+                ...JSON_FONT,
+                bgcolor: line.changed ? CHANGED_LINE_BG : 'transparent',
+                borderRadius: 0.5,
+              }}
+            >
+              {line.text || '\u00a0'}
+            </Box>
+          ))}
         </Box>
-      ))}
+
+        <TextField
+          value={value}
+          multiline
+          fullWidth
+          minRows={4}
+          slotProps={{
+            htmlInput: {
+              readOnly: true,
+              'aria-label': 'New data',
+              onScroll: handleScroll,
+            },
+            input: {
+              readOnly: true,
+              sx: {
+                ...JSON_TEXT_FIELD_INPUT_SX,
+                position: 'relative',
+                zIndex: 2,
+                bgcolor: 'transparent',
+                '& textarea': {
+                  ...JSON_FONT,
+                  color: 'transparent',
+                  WebkitTextFillColor: 'transparent',
+                  caretColor: 'transparent',
+                  background: 'transparent',
+                },
+              },
+            },
+          }}
+        />
+      </Box>
       {hasHighlights && (
-        <Typography
-          variant="caption"
-          color="text.secondary"
-          sx={{ display: 'block', mt: 1, fontFamily: 'inherit' }}
-        >
+        <Typography variant="caption" color="text.secondary">
           Light green marks values that differ from previous data.
         </Typography>
       )}
-    </Box>
+    </Stack>
   );
 }
 
@@ -162,7 +228,7 @@ export default function AuditLogDetailDialog({ open, row, onClose }: AuditLogDet
               <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
                 Metadata
               </Typography>
-              <ReadOnlyJsonField value={formatJson(row.metadata)} />
+              <AuditJsonTextField ariaLabel="Metadata" value={formatJson(row.metadata)} />
             </Stack>
           )}
 
@@ -171,7 +237,7 @@ export default function AuditLogDetailDialog({ open, row, onClose }: AuditLogDet
               <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
                 Previous data
               </Typography>
-              <ReadOnlyJsonField value={formatJson(row.oldData)} />
+              <AuditJsonTextField ariaLabel="Previous data" value={formatJson(row.oldData)} />
             </Stack>
           )}
 
@@ -181,9 +247,9 @@ export default function AuditLogDetailDialog({ open, row, onClose }: AuditLogDet
                 New data
               </Typography>
               {hasOldData ? (
-                <HighlightedNewDataField oldData={row.oldData} newData={row.newData} />
+                <HighlightedNewDataTextField oldData={row.oldData} newData={row.newData} />
               ) : (
-                <ReadOnlyJsonField value={formatJson(row.newData)} />
+                <AuditJsonTextField ariaLabel="New data" value={formatJson(row.newData)} />
               )}
             </Stack>
           )}

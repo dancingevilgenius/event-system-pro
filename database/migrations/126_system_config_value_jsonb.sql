@@ -7,6 +7,9 @@
 
 DROP VIEW IF EXISTS api.system_config;
 
+-- Column type change fails while UPDATE OF value trigger exists (Dokploy migrate exit 3).
+DROP TRIGGER IF EXISTS system_config_notify_poc_counter ON public.system_config;
+
 CREATE OR REPLACE FUNCTION public.system_config_value_text(p_value jsonb)
 RETURNS text
 LANGUAGE sql
@@ -123,6 +126,11 @@ BEGIN
   RETURN NEW;
 END;
 $$;
+
+CREATE TRIGGER system_config_notify_poc_counter
+  AFTER INSERT OR UPDATE OF value ON public.system_config
+  FOR EACH ROW
+  EXECUTE FUNCTION public.notify_poc_counter_change();
 
 CREATE OR REPLACE FUNCTION api.poc_counter_tick()
 RETURNS json

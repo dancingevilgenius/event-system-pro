@@ -8,7 +8,7 @@ DELETE FROM maintenance.job_definition
 WHERE job_name = 'robot_riot_attendee_churn';
 
 INSERT INTO public.system_config (label, value, active, created_by)
-SELECT 'robot_riot_attendee_churn_until', '', true, 'c-agent'
+SELECT 'robot_riot_attendee_churn_until', NULL, true, 'c-agent'
 WHERE NOT EXISTS (
   SELECT 1 FROM public.system_config WHERE label = 'robot_riot_attendee_churn_until'
 );

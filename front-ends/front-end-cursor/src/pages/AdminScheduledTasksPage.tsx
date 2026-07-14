@@ -711,7 +711,7 @@ export default function AdminScheduledTasksPage() {
         open={scheduleDialogTask !== null}
         onClose={() => setScheduleDialogTask(null)}
         onSaved={async () => {
-          await loadTasks();
+          await loadTasks({ quiet: true });
         }}
       />
     </Container>

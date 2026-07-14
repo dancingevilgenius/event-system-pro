@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { useRef, type UIEvent } from 'react';
 import type { AuditLogRow } from '../api/postgrest';
-import { getHighlightedNewDataLines } from '../utils/auditJsonDiff';
+import { getHighlightedJsonLines } from '../utils/auditJsonDiff';
 import { formatAuditJsonForDisplay, formatReadableDateTime } from '../utils/auditTimestamps';
 import CloseIcon from './CloseIcon';
 import { useIsMobileDevice } from '../hooks/useIsMobileDevice';
@@ -40,7 +40,8 @@ const JSON_TEXT_FIELD_INPUT_SX = {
   },
 } as const;
 
-const CHANGED_LINE_BG = '#d9f7d9';
+const NEW_CHANGED_LINE_BG = '#d9f7d9';
+const PREVIOUS_CHANGED_LINE_BG = '#fff3b0';
 
 /** Matches MUI outlined InputBase content padding so highlight layer lines up. */
 const JSON_FIELD_CONTENT_PADDING = {
@@ -83,16 +84,22 @@ function AuditJsonTextField({
   );
 }
 
-function HighlightedNewDataTextField({
-  oldData,
-  newData,
+function HighlightedJsonTextField({
+  sourceData,
+  compareData,
+  ariaLabel,
+  changedLineBg,
+  caption,
 }: {
-  oldData: Record<string, unknown> | null;
-  newData: Record<string, unknown>;
+  sourceData: Record<string, unknown>;
+  compareData: Record<string, unknown> | null;
+  ariaLabel: string;
+  changedLineBg: string;
+  caption: string;
 }) {
   const backdropRef = useRef<HTMLDivElement>(null);
-  const lines = getHighlightedNewDataLines(oldData, newData);
-  const value = formatJson(newData);
+  const lines = getHighlightedJsonLines(sourceData, compareData);
+  const value = formatJson(sourceData);
   const hasHighlights = lines.some((line) => line.changed);
 
   const handleScroll = (event: UIEvent<HTMLTextAreaElement>) => {
@@ -130,7 +137,7 @@ function HighlightedNewDataTextField({
               sx={{
                 display: 'block',
                 ...JSON_FONT,
-                bgcolor: line.changed ? CHANGED_LINE_BG : 'transparent',
+                bgcolor: line.changed ? changedLineBg : 'transparent',
                 borderRadius: 0.5,
               }}
             >
@@ -147,7 +154,7 @@ function HighlightedNewDataTextField({
           slotProps={{
             htmlInput: {
               readOnly: true,
-              'aria-label': 'New data',
+              'aria-label': ariaLabel,
               onScroll: handleScroll,
             },
             input: {
@@ -171,7 +178,7 @@ function HighlightedNewDataTextField({
       </Box>
       {hasHighlights && (
         <Typography variant="caption" color="text.secondary">
-          Light green marks values that differ from previous data.
+          {caption}
         </Typography>
       )}
     </Stack>
@@ -187,6 +194,7 @@ export default function AuditLogDetailDialog({ open, row, onClose }: AuditLogDet
 
   const hasOldData = Boolean(row.oldData && Object.keys(row.oldData).length > 0);
   const hasNewData = Boolean(row.newData && Object.keys(row.newData).length > 0);
+  const canCompare = hasOldData && hasNewData;
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md" fullScreen={isMobile}>
@@ -232,12 +240,22 @@ export default function AuditLogDetailDialog({ open, row, onClose }: AuditLogDet
             </Stack>
           )}
 
-          {hasOldData && (
+          {hasOldData && row.oldData && (
             <Stack spacing={1}>
               <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
                 Previous data
               </Typography>
-              <AuditJsonTextField ariaLabel="Previous data" value={formatJson(row.oldData)} />
+              {canCompare ? (
+                <HighlightedJsonTextField
+                  sourceData={row.oldData}
+                  compareData={row.newData}
+                  ariaLabel="Previous data"
+                  changedLineBg={PREVIOUS_CHANGED_LINE_BG}
+                  caption="Light yellow marks values that differ from new data."
+                />
+              ) : (
+                <AuditJsonTextField ariaLabel="Previous data" value={formatJson(row.oldData)} />
+              )}
             </Stack>
           )}
 
@@ -246,8 +264,14 @@ export default function AuditLogDetailDialog({ open, row, onClose }: AuditLogDet
               <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
                 New data
               </Typography>
-              {hasOldData ? (
-                <HighlightedNewDataTextField oldData={row.oldData} newData={row.newData} />
+              {canCompare ? (
+                <HighlightedJsonTextField
+                  sourceData={row.newData}
+                  compareData={row.oldData}
+                  ariaLabel="New data"
+                  changedLineBg={NEW_CHANGED_LINE_BG}
+                  caption="Light green marks values that differ from previous data."
+                />
               ) : (
                 <AuditJsonTextField ariaLabel="New data" value={formatJson(row.newData)} />
               )}

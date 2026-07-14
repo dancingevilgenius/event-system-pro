@@ -14,30 +14,30 @@ function isStructuralJsonLine(line: string): boolean {
 }
 
 /**
- * Returns display lines for `newData`, with `changed` true when that line
- * differs from the formatted previous-data JSON (and is content, not braces).
+ * Returns display lines for `sourceData`, with `changed` true when that line
+ * differs from the formatted `compareData` JSON (and is content, not braces).
  */
-export function getHighlightedNewDataLines(
-  oldData: Record<string, unknown> | null | undefined,
-  newData: Record<string, unknown> | null | undefined,
+export function getHighlightedJsonLines(
+  sourceData: Record<string, unknown> | null | undefined,
+  compareData: Record<string, unknown> | null | undefined,
 ): Array<{ text: string; changed: boolean }> {
-  const newText = formatAuditJsonForDisplay(newData ?? null);
-  if (!newText) {
+  const sourceText = formatAuditJsonForDisplay(sourceData ?? null);
+  if (!sourceText) {
     return [];
   }
 
-  const lines = newText.split('\n');
-  const oldText = formatAuditJsonForDisplay(oldData ?? null);
-  if (!oldText) {
+  const lines = sourceText.split('\n');
+  const compareText = formatAuditJsonForDisplay(compareData ?? null);
+  if (!compareText) {
     return lines.map((text) => ({ text, changed: false }));
   }
 
-  const oldLines = new Set(oldText.split('\n').map((line) => line.trimEnd()));
+  const compareLines = new Set(compareText.split('\n').map((line) => line.trimEnd()));
 
   return lines.map((text) => {
     const normalized = text.trimEnd();
     const changed =
-      !isStructuralJsonLine(normalized) && !oldLines.has(normalized);
+      !isStructuralJsonLine(normalized) && !compareLines.has(normalized);
     return { text, changed };
   });
 }

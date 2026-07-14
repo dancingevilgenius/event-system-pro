@@ -1,9 +1,15 @@
+import CloseIcon from '@mui/icons-material/Close';
 import {
   Box,
   Button,
   Chip,
   CircularProgress,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  IconButton,
   Paper,
   Stack,
   Typography,
@@ -17,6 +23,10 @@ import {
 } from '../api/postgrest';
 import { useMessages } from '../hooks/useMessages';
 import { formatReadableDateTime } from '../utils/auditTimestamps';
+import {
+  describeScheduleInPlainEnglish,
+  scheduleCode,
+} from '../utils/scheduleDescription';
 
 function displayValue(value: string | null | undefined): string {
   return value?.trim() ? value.trim() : '—';
@@ -86,15 +96,90 @@ function ReadOnlyField({
   );
 }
 
+function ScheduleExplainDialog({
+  task,
+  open,
+  onClose,
+}: {
+  task: ScheduledTaskRow | null;
+  open: boolean;
+  onClose: () => void;
+}) {
+  const code = task ? scheduleCode(task) : '—';
+  const explanation = task
+    ? describeScheduleInPlainEnglish(task)
+    : 'No schedule is configured for this task.';
+
+  return (
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <DialogTitle
+        sx={{
+          textAlign: 'center',
+          pb: 0.5,
+          pl: 4,
+          pr: 4,
+          position: 'relative',
+        }}
+      >
+        Schedule
+        <IconButton
+          aria-label="Close schedule dialog"
+          onClick={onClose}
+          size="small"
+          sx={{
+            position: 'absolute',
+            right: 4,
+            top: 4,
+          }}
+        >
+          <CloseIcon fontSize="small" />
+        </IconButton>
+      </DialogTitle>
+
+      <DialogContent sx={{ pt: 1 }}>
+        <Stack spacing={2}>
+          {task && (
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, textAlign: 'center' }}>
+              {task.jobName}
+            </Typography>
+          )}
+          <Box>
+            <Typography variant="caption" color="text.secondary" component="div">
+              Schedule code
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace' }}
+            >
+              {code}
+            </Typography>
+          </Box>
+          <Typography variant="body1">{explanation}</Typography>
+        </Stack>
+      </DialogContent>
+
+      <DialogActions sx={{ px: 3, pb: 3, pt: 0 }}>
+        <Button variant="contained" onClick={onClose} fullWidth>
+          Close
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
 function ScheduledTaskCard({
   task,
   running,
   onRun,
+  onExplainSchedule,
 }: {
   task: ScheduledTaskRow;
   running: boolean;
   onRun: (task: ScheduledTaskRow) => void;
+  onExplainSchedule: (task: ScheduledTaskRow) => void;
 }) {
+  const code = scheduleCode(task);
+
   return (
     <Paper variant="outlined" sx={{ p: 2 }}>
       <Stack spacing={1.5}>
@@ -122,7 +207,30 @@ function ScheduledTaskCard({
           }}
         >
           <ReadOnlyField label="Schedule">
-            <Typography variant="body2">{displayValue(task.scheduleLabel)}</Typography>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => onExplainSchedule(task)}
+              aria-label={`Explain schedule ${code}`}
+              sx={{
+                mt: 0.25,
+                maxWidth: '100%',
+                justifyContent: 'flex-start',
+                fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+                textTransform: 'none',
+              }}
+            >
+              <Box
+                component="span"
+                sx={{
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {code}
+              </Box>
+            </Button>
           </ReadOnlyField>
 
           <ReadOnlyField label="Last run">
@@ -181,6 +289,7 @@ export default function AdminScheduledTasksPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [runningJobName, setRunningJobName] = useState<string | null>(null);
+  const [scheduleDialogTask, setScheduleDialogTask] = useState<ScheduledTaskRow | null>(null);
 
   const loadTasks = useCallback(async () => {
     setLoading(true);
@@ -263,6 +372,7 @@ export default function AdminScheduledTasksPage() {
                   task={task}
                   running={runningJobName === task.jobName}
                   onRun={(selectedTask) => void handleRunTask(selectedTask)}
+                  onExplainSchedule={setScheduleDialogTask}
                 />
               ))
             )}
@@ -283,6 +393,12 @@ export default function AdminScheduledTasksPage() {
           </Button>
         </Stack>
       </Paper>
+
+      <ScheduleExplainDialog
+        task={scheduleDialogTask}
+        open={scheduleDialogTask !== null}
+        onClose={() => setScheduleDialogTask(null)}
+      />
     </Container>
   );
 }

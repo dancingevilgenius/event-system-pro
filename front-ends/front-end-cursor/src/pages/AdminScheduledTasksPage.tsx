@@ -11,6 +11,7 @@ import {
   DialogTitle,
   FormControlLabel,
   IconButton,
+  MenuItem,
   Paper,
   Stack,
   Switch,
@@ -22,14 +23,26 @@ import {
   fetchScheduledTasks,
   runScheduledTask,
   setScheduledTaskEnabled,
+  setScheduledTaskSchedule,
   type ScheduledTaskRow,
 } from '../api/postgrest';
+import AppTextField from '../components/AppTextField';
 import { useMessages } from '../hooks/useMessages';
 import { formatReadableDateTime } from '../utils/auditTimestamps';
 import {
   describeScheduleInPlainEnglish,
   scheduleCode,
 } from '../utils/scheduleDescription';
+import {
+  SCHEDULE_FREQUENCY_OPTIONS,
+  buildCronFromPreset,
+  needsTimeOfDay,
+  parseSchedulePreset,
+  staleAfterForFrequency,
+  type ScheduleFrequency,
+  type SchedulePeriod,
+  type ScheduleTimeOfDay,
+} from '../utils/schedulePresets';
 
 function displayValue(value: string | null | undefined): string {
   return value?.trim() ? value.trim() : '—';
@@ -104,19 +117,124 @@ function ReadOnlyField({
   );
 }
 
-function ScheduleExplainDialog({
+const HOUR_OPTIONS = Array.from({ length: 12 }, (_, index) => index + 1);
+const MINUTE_OPTIONS = Array.from({ length: 60 }, (_, index) => index);
+
+function ScheduleDialog({
   task,
   open,
   onClose,
+  onSaved,
 }: {
   task: ScheduledTaskRow | null;
   open: boolean;
   onClose: () => void;
+  onSaved: () => Promise<void>;
 }) {
-  const code = task ? scheduleCode(task) : '—';
-  const explanation = task
-    ? describeScheduleInPlainEnglish(task)
+  const { showSuccess, showProblem, clearMessages } = useMessages();
+  const [frequency, setFrequency] = useState<ScheduleFrequency | 'custom'>('custom');
+  const [time, setTime] = useState<ScheduleTimeOfDay>({
+    hour12: 12,
+    minute: 0,
+    period: 'AM',
+  });
+  const [dayOfWeek, setDayOfWeek] = useState(0);
+  const [dayOfMonth, setDayOfMonth] = useState(1);
+  const [month, setMonth] = useState(1);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!open || !task) {
+      return;
+    }
+
+    const parsed = parseSchedulePreset(task);
+    setFrequency(parsed.frequency);
+    setTime(parsed.time);
+    setDayOfWeek(parsed.dayOfWeek);
+    setDayOfMonth(parsed.dayOfMonth);
+    setMonth(parsed.month);
+  }, [open, task]);
+
+  const previewTask: ScheduledTaskRow | null = task
+    ? {
+        ...task,
+        scheduleCron:
+          frequency === 'custom'
+            ? task.scheduleCron
+            : buildCronFromPreset(frequency, time, { dayOfWeek, dayOfMonth, month }),
+        intervalSeconds: frequency === 'custom' ? task.intervalSeconds : null,
+        scheduleLabel:
+          frequency === 'custom'
+            ? task.scheduleLabel
+            : buildCronFromPreset(frequency, time, { dayOfWeek, dayOfMonth, month }),
+      }
+    : null;
+
+  const code = previewTask ? scheduleCode(previewTask) : '—';
+  const explanation = previewTask
+    ? describeScheduleInPlainEnglish(previewTask)
     : 'No schedule is configured for this task.';
+  const showTimeSelectors = needsTimeOfDay(frequency);
+
+  const saveSchedule = async (nextFrequency: ScheduleFrequency, nextTime: ScheduleTimeOfDay) => {
+    if (!task) {
+      return;
+    }
+
+    clearMessages();
+    setSaving(true);
+
+    const cron = buildCronFromPreset(nextFrequency, nextTime, {
+      dayOfWeek,
+      dayOfMonth,
+      month,
+    });
+
+    try {
+      const result = await setScheduledTaskSchedule(
+        task.jobName,
+        cron,
+        staleAfterForFrequency(nextFrequency),
+      );
+
+      if (!result.ok) {
+        showProblem(result.message ?? `Unable to update schedule for ${task.jobName}.`);
+        return;
+      }
+
+      showSuccess(result.message ?? `Schedule for ${task.jobName} updated.`);
+      await onSaved();
+    } catch (saveError) {
+      showProblem(
+        saveError instanceof Error
+          ? saveError.message
+          : `Unable to update schedule for ${task.jobName}.`,
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleFrequencyChange = (value: string) => {
+    if (!SCHEDULE_FREQUENCY_OPTIONS.some((option) => option.value === value)) {
+      return;
+    }
+
+    const nextFrequency = value as ScheduleFrequency;
+    setFrequency(nextFrequency);
+    void saveSchedule(nextFrequency, time);
+  };
+
+  const handleTimeChange = (patch: Partial<ScheduleTimeOfDay>) => {
+    if (frequency === 'custom') {
+      return;
+    }
+
+    const nextTime = { ...time, ...patch };
+    setTime(nextTime);
+    void saveSchedule(frequency, nextTime);
+  };
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
@@ -151,6 +269,84 @@ function ScheduleExplainDialog({
               {task.jobName}
             </Typography>
           )}
+
+          <AppTextField
+            select
+            label="Frequency"
+            value={frequency === 'custom' ? '' : frequency}
+            onChange={(event) => handleFrequencyChange(event.target.value)}
+            disabled={saving || !task}
+            fullWidth
+            helperText={
+              frequency === 'custom'
+                ? 'Current schedule is custom. Choose a frequency to replace it.'
+                : 'Changing frequency saves the cron schedule immediately.'
+            }
+          >
+            {frequency === 'custom' && (
+              <MenuItem value="">
+                <em>Custom schedule</em>
+              </MenuItem>
+            )}
+            {SCHEDULE_FREQUENCY_OPTIONS.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </AppTextField>
+
+          {showTimeSelectors && (
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
+              <AppTextField
+                select
+                label="Hour"
+                value={String(time.hour12)}
+                onChange={(event) =>
+                  handleTimeChange({ hour12: Number(event.target.value) })
+                }
+                disabled={saving}
+                fullWidth
+              >
+                {HOUR_OPTIONS.map((hour) => (
+                  <MenuItem key={hour} value={String(hour)}>
+                    {hour}
+                  </MenuItem>
+                ))}
+              </AppTextField>
+
+              <AppTextField
+                select
+                label="Minute"
+                value={String(time.minute)}
+                onChange={(event) =>
+                  handleTimeChange({ minute: Number(event.target.value) })
+                }
+                disabled={saving}
+                fullWidth
+              >
+                {MINUTE_OPTIONS.map((minute) => (
+                  <MenuItem key={minute} value={String(minute)}>
+                    {String(minute).padStart(2, '0')}
+                  </MenuItem>
+                ))}
+              </AppTextField>
+
+              <AppTextField
+                select
+                label="AM/PM"
+                value={time.period}
+                onChange={(event) =>
+                  handleTimeChange({ period: event.target.value as SchedulePeriod })
+                }
+                disabled={saving}
+                fullWidth
+              >
+                <MenuItem value="AM">AM</MenuItem>
+                <MenuItem value="PM">PM</MenuItem>
+              </AppTextField>
+            </Stack>
+          )}
+
           <Box>
             <Typography
               variant="caption"
@@ -162,17 +358,27 @@ function ScheduleExplainDialog({
             </Typography>
             <Typography
               variant="body1"
-              sx={{ fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace' }}
+              sx={{
+                fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+              }}
             >
               {code}
             </Typography>
           </Box>
           <Typography variant="body1">{explanation}</Typography>
+          {saving && (
+            <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+              <CircularProgress size={18} />
+              <Typography variant="body2" color="text.secondary">
+                Saving schedule…
+              </Typography>
+            </Stack>
+          )}
         </Stack>
       </DialogContent>
 
       <DialogActions sx={{ px: 3, pb: 3, pt: 0 }}>
-        <Button variant="contained" onClick={onClose} fullWidth>
+        <Button variant="contained" onClick={onClose} fullWidth disabled={saving}>
           Close
         </Button>
       </DialogActions>
@@ -330,18 +536,31 @@ export default function AdminScheduledTasksPage() {
   const [togglingJobName, setTogglingJobName] = useState<string | null>(null);
   const [scheduleDialogTask, setScheduleDialogTask] = useState<ScheduledTaskRow | null>(null);
 
-  const loadTasks = useCallback(async () => {
-    setLoading(true);
+  const loadTasks = useCallback(async (options?: { quiet?: boolean }) => {
+    const quiet = options?.quiet === true;
+    if (!quiet) {
+      setLoading(true);
+    }
     setError(null);
 
     try {
       const rows = await fetchScheduledTasks();
       setTasks(rows);
+      setScheduleDialogTask((current) => {
+        if (!current) {
+          return current;
+        }
+        return rows.find((row) => row.jobName === current.jobName) ?? current;
+      });
+      return rows;
     } catch (loadError) {
       setTasks([]);
       setError(loadError instanceof Error ? loadError.message : 'Unable to load scheduled tasks.');
+      return [];
     } finally {
-      setLoading(false);
+      if (!quiet) {
+        setLoading(false);
+      }
     }
   }, []);
 
@@ -487,10 +706,13 @@ export default function AdminScheduledTasksPage() {
         </Stack>
       </Paper>
 
-      <ScheduleExplainDialog
+      <ScheduleDialog
         task={scheduleDialogTask}
         open={scheduleDialogTask !== null}
         onClose={() => setScheduleDialogTask(null)}
+        onSaved={async () => {
+          await loadTasks();
+        }}
       />
     </Container>
   );

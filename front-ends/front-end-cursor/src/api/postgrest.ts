@@ -2009,3 +2009,23 @@ export function setScheduledTaskEnabled(jobName: string, isEnabled: boolean) {
     p_is_enabled: isEnabled,
   });
 }
+
+export type SetScheduledTaskScheduleResult = {
+  ok: boolean;
+  job_name?: string;
+  schedule_cron?: string;
+  interval_seconds?: number | null;
+  message?: string;
+};
+
+export function setScheduledTaskSchedule(
+  jobName: string,
+  scheduleCron: string,
+  staleAfterInterval?: string,
+) {
+  return callRpc<SetScheduledTaskScheduleResult>('set_scheduled_task_schedule', {
+    p_job_name: jobName,
+    p_schedule_cron: scheduleCron,
+    p_stale_after_interval: staleAfterInterval ?? null,
+  });
+}

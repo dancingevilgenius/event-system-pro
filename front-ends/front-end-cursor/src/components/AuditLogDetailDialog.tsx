@@ -9,6 +9,8 @@ import {
   Stack,
   TextField,
   Typography,
+  useTheme,
+  type PaletteMode,
 } from '@mui/material';
 import { useRef, type UIEvent } from 'react';
 import type { AuditLogRow } from '../api/postgrest';
@@ -41,8 +43,33 @@ const JSON_TEXT_FIELD_INPUT_SX = {
   },
 } as const;
 
-const NEW_CHANGED_LINE_BG = '#d9f7d9';
-const PREVIOUS_CHANGED_LINE_BG = '#fff3b0';
+const LIGHT_NEW_CHANGED_LINE_BG = '#d9f7d9';
+const LIGHT_PREVIOUS_CHANGED_LINE_BG = '#fff3b0';
+const DARK_NEW_CHANGED_LINE_BG = '#1e5c32';
+const DARK_PREVIOUS_CHANGED_LINE_BG = '#735c00';
+
+function changedLineBackground(
+  kind: 'new' | 'previous',
+  mode: PaletteMode,
+): string {
+  if (mode === 'dark') {
+    return kind === 'new' ? DARK_NEW_CHANGED_LINE_BG : DARK_PREVIOUS_CHANGED_LINE_BG;
+  }
+
+  return kind === 'new' ? LIGHT_NEW_CHANGED_LINE_BG : LIGHT_PREVIOUS_CHANGED_LINE_BG;
+}
+
+function changedLineCaption(kind: 'new' | 'previous', mode: PaletteMode): string {
+  if (mode === 'dark') {
+    return kind === 'new'
+      ? 'Dark green marks values that differ from previous data.'
+      : 'Dark yellow marks values that differ from new data.';
+  }
+
+  return kind === 'new'
+    ? 'Light green marks values that differ from previous data.'
+    : 'Light yellow marks values that differ from new data.';
+}
 
 /** Matches MUI outlined InputBase content padding so highlight layer lines up. */
 const JSON_FIELD_CONTENT_PADDING = {
@@ -188,6 +215,7 @@ function HighlightedJsonTextField({
 
 export default function AuditLogDetailDialog({ open, row, onClose }: AuditLogDetailDialogProps) {
   const isMobile = useIsMobileDevice();
+  const theme = useTheme();
 
   if (!row) {
     return null;
@@ -251,8 +279,8 @@ export default function AuditLogDetailDialog({ open, row, onClose }: AuditLogDet
                   sourceData={row.oldData}
                   compareData={row.newData}
                   ariaLabel="Previous data"
-                  changedLineBg={PREVIOUS_CHANGED_LINE_BG}
-                  caption="Light yellow marks values that differ from new data."
+                  changedLineBg={changedLineBackground('previous', theme.palette.mode)}
+                  caption={changedLineCaption('previous', theme.palette.mode)}
                 />
               ) : (
                 <AuditJsonTextField ariaLabel="Previous data" value={formatJson(row.oldData)} />
@@ -270,8 +298,8 @@ export default function AuditLogDetailDialog({ open, row, onClose }: AuditLogDet
                   sourceData={row.newData}
                   compareData={row.oldData}
                   ariaLabel="New data"
-                  changedLineBg={NEW_CHANGED_LINE_BG}
-                  caption="Light green marks values that differ from previous data."
+                  changedLineBg={changedLineBackground('new', theme.palette.mode)}
+                  caption={changedLineCaption('new', theme.palette.mode)}
                 />
               ) : (
                 <AuditJsonTextField ariaLabel="New data" value={formatJson(row.newData)} />

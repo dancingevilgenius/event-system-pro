@@ -216,7 +216,7 @@ def main() -> None:
         "-- number_of_days is a random 3–5 per row; start_date has a small per-group offset.",
         "-- end_date = start_date + number_of_days.",
         "-- event.name is event_group.full_name + year, or full_name + Roman suffix (~32% of groups).",
-        "-- location_json.venue is a fictitious hotel, sports complex, or gym/dojo name.",
+        "-- location_json is jsonb; .venue is a fictitious hotel, sports complex, or gym/dojo name.",
         "-- Safe to re-run: removes prior fictional-group events first.",
         "--",
         "--   psql -U postgres -d event_system_pro -f database/seeds/011_event_fictional_instances.sql",
@@ -288,7 +288,9 @@ def main() -> None:
                 "state": state,
                 "country": country,
             }
-            location_json = json.dumps(location, separators=(",", ":"))
+            # Emit a jsonb literal (not a varchar JSON string) so venue objects
+            # audit/display without extra escape characters.
+            location_json = json.dumps(location, separators=(",", ":"), ensure_ascii=False)
 
             value_rows.append(
                 "  (\n"
@@ -296,7 +298,7 @@ def main() -> None:
                 f"    {sql_str(name)},\n"
                 f"    {sql_str(country)},\n"
                 f"    {sql_str(state)},\n"
-                f"    {sql_str(location_json)},\n"
+                f"    {sql_str(location_json)}::jsonb,\n"
                 "    TRUE,\n"
                 f"    {days},\n"
                 f"    {start_expr},\n"

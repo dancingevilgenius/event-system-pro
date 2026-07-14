@@ -33,6 +33,7 @@ import {
 import {
   formatCompetitorPairNames,
   formatFullFirstLast,
+  formatInitialLast,
   type LegionMember,
 } from '../data/legionNames';
 import {
@@ -63,6 +64,7 @@ const JUDGING_PAGE_SIZE = 10;
 const NUMBER_COLUMN_WIDTH = '2.75rem';
 const SCORE_DISPLAY_WIDTH = '5ch';
 const SUMMARY_SWATCH_GAP = 2;
+const SUMMARY_NAME_SEPARATOR = ' · ';
 
 type JudgingListLayout = 'scrollable' | 'pagination';
 
@@ -93,18 +95,49 @@ const SUMMARY_NAME_MODES = [
 
 type SummaryNameMode = (typeof SUMMARY_NAME_MODES)[number];
 
-function summarySwatchReserve(hasLeaderColors: boolean, hasFollowerColors: boolean): number {
-  let reserve = 0;
+function formatSummaryLeaderName(
+  leader: LegionMember,
+  mode: SummaryNameMode,
+): string {
+  return mode.leaderFullFirst
+    ? formatFullFirstLast(leader.first, leader.last)
+    : formatInitialLast(leader.first, leader.last);
+}
 
-  if (hasLeaderColors) {
-    reserve += COLOR_SWATCH_SIZE + SUMMARY_SWATCH_GAP;
+function formatSummaryFollowerName(
+  follower: LegionMember,
+  mode: SummaryNameMode,
+): string {
+  return mode.followerFullFirst
+    ? formatFullFirstLast(follower.first, follower.last)
+    : formatInitialLast(follower.first, follower.last);
+}
+
+function summarySeparatorReserve(
+  showLeaderSwatch: boolean,
+  showFollowerSwatch: boolean,
+  dotWidth: number,
+): number {
+  const iconCount = Number(showLeaderSwatch) + Number(showFollowerSwatch);
+
+  if (iconCount === 0) {
+    return dotWidth;
   }
 
-  if (hasFollowerColors) {
-    reserve += COLOR_SWATCH_SIZE + SUMMARY_SWATCH_GAP;
-  }
+  return (
+    iconCount * COLOR_SWATCH_SIZE +
+    (iconCount + 1) * SUMMARY_SWATCH_GAP
+  );
+}
 
-  return reserve;
+function summaryNameTypographySx() {
+  return {
+    minWidth: 0,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    flex: 1,
+  } as const;
 }
 
 type JudgingEntry = MockContestEntry;
@@ -221,7 +254,7 @@ function CompetitorNamesText({
 
   const showLeaderSwatch = hasSelectedColors(leaderColors);
   const showFollowerSwatch = hasSelectedColors(followerColors);
-  const swatchReserve = summarySwatchReserve(showLeaderSwatch, showFollowerSwatch);
+  const showAnySwatch = showLeaderSwatch || showFollowerSwatch;
 
   useLayoutEffect(() => {
     const container = containerRef.current;
@@ -230,13 +263,21 @@ function CompetitorNamesText({
       return;
     }
 
+    measure.textContent = SUMMARY_NAME_SEPARATOR;
+    const dotWidth = measure.scrollWidth;
+
     const checkFit = () => {
       const availableWidth = container.clientWidth;
+      const separatorReserve = summarySeparatorReserve(
+        showLeaderSwatch,
+        showFollowerSwatch,
+        dotWidth,
+      );
 
       for (const mode of SUMMARY_NAME_MODES) {
         measure.textContent = formatCompetitorPairNames(leader, follower, mode);
 
-        if (measure.scrollWidth + swatchReserve <= availableWidth) {
+        if (measure.scrollWidth - dotWidth + separatorReserve <= availableWidth) {
           setNameMode(mode);
           return;
         }
@@ -251,7 +292,7 @@ function CompetitorNamesText({
     observer.observe(container);
 
     return () => observer.disconnect();
-  }, [leader, follower, swatchReserve]);
+  }, [leader, follower, showLeaderSwatch, showFollowerSwatch]);
 
   return (
     <Box
@@ -266,35 +307,53 @@ function CompetitorNamesText({
         overflow: 'hidden',
       }}
     >
-      {showLeaderSwatch ? (
-        <CompetitorColorSwatchBox
-          colors={leaderColors}
-          size={COLOR_SWATCH_SIZE}
-        />
-      ) : null}
+      <Typography
+        component="span"
+        variant="body1"
+        sx={summaryNameTypographySx()}
+      >
+        {formatSummaryLeaderName(leader, nameMode)}
+      </Typography>
+
+      <Box
+        component="span"
+        sx={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: `${SUMMARY_SWATCH_GAP}px`,
+          flexShrink: 0,
+          mx: `${SUMMARY_SWATCH_GAP}px`,
+        }}
+      >
+        {showAnySwatch ? (
+          <>
+            {showLeaderSwatch ? (
+              <CompetitorColorSwatchBox
+                colors={leaderColors}
+                size={COLOR_SWATCH_SIZE}
+              />
+            ) : null}
+            {showFollowerSwatch ? (
+              <CompetitorColorSwatchBox
+                colors={followerColors}
+                size={COLOR_SWATCH_SIZE}
+              />
+            ) : null}
+          </>
+        ) : (
+          <Typography component="span" variant="body1">
+            {SUMMARY_NAME_SEPARATOR}
+          </Typography>
+        )}
+      </Box>
 
       <Typography
         component="span"
         variant="body1"
-        sx={{
-          flex: 1,
-          minWidth: 0,
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          ml: showLeaderSwatch ? `${SUMMARY_SWATCH_GAP}px` : 0,
-          mr: showFollowerSwatch ? `${SUMMARY_SWATCH_GAP}px` : 0,
-        }}
+        sx={summaryNameTypographySx()}
       >
-        {formatCompetitorPairNames(leader, follower, nameMode)}
+        {formatSummaryFollowerName(follower, nameMode)}
       </Typography>
-
-      {showFollowerSwatch ? (
-        <CompetitorColorSwatchBox
-          colors={followerColors}
-          size={COLOR_SWATCH_SIZE}
-        />
-      ) : null}
 
       <Box
         component="span"

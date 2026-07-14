@@ -84,7 +84,7 @@ export default function AdminEventsPage() {
             value={nameFilter}
             onChange={(event) => setNameFilter(event.target.value)}
             size="small"
-            sx={{ minWidth: { xs: '100%', sm: 260 } }}
+            sx={{ width: { xs: '100%', sm: 260 }, maxWidth: '50vw' }}
             slotProps={{
               htmlInput: {
                 'aria-label': 'Filter event groups by name',

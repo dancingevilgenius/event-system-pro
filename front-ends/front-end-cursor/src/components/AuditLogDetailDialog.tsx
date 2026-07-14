@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
@@ -10,6 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import type { AuditLogRow } from '../api/postgrest';
+import { getHighlightedNewDataLines } from '../utils/auditJsonDiff';
 import { formatAuditJsonForDisplay, formatReadableDateTime } from '../utils/auditTimestamps';
 import CloseIcon from './CloseIcon';
 import { useIsMobileDevice } from '../hooks/useIsMobileDevice';
@@ -20,6 +22,13 @@ type AuditLogDetailDialogProps = {
   onClose: () => void;
 };
 
+const JSON_FIELD_SX = {
+  fontFamily: 'monospace',
+  fontSize: '0.8rem',
+} as const;
+
+const CHANGED_LINE_BG = '#d9f7d9';
+
 function formatJson(value: Record<string, unknown> | null): string {
   return formatAuditJsonForDisplay(value);
 }
@@ -28,12 +37,90 @@ function formatOccurredAt(value: string): string {
   return formatReadableDateTime(value);
 }
 
+function ReadOnlyJsonField({ value }: { value: string }) {
+  return (
+    <TextField
+      value={value}
+      multiline
+      fullWidth
+      minRows={4}
+      slotProps={{
+        input: {
+          readOnly: true,
+          sx: JSON_FIELD_SX,
+        },
+      }}
+    />
+  );
+}
+
+function HighlightedNewDataField({
+  oldData,
+  newData,
+}: {
+  oldData: Record<string, unknown> | null;
+  newData: Record<string, unknown>;
+}) {
+  const lines = getHighlightedNewDataLines(oldData, newData);
+  const hasHighlights = lines.some((line) => line.changed);
+
+  return (
+    <Box
+      role="textbox"
+      aria-readonly="true"
+      aria-label="New data"
+      sx={{
+        border: 1,
+        borderColor: 'divider',
+        borderRadius: 1,
+        px: 1.5,
+        py: 1.25,
+        minHeight: 96,
+        maxHeight: 360,
+        overflow: 'auto',
+        bgcolor: 'background.paper',
+        ...JSON_FIELD_SX,
+        whiteSpace: 'pre-wrap',
+        wordBreak: 'break-word',
+      }}
+    >
+      {lines.map((line, index) => (
+        <Box
+          key={`${index}-${line.text.slice(0, 24)}`}
+          component="span"
+          sx={{
+            display: 'block',
+            bgcolor: line.changed ? CHANGED_LINE_BG : 'transparent',
+            borderRadius: 0.5,
+            px: line.changed ? 0.5 : 0,
+            mx: line.changed ? -0.5 : 0,
+          }}
+        >
+          {line.text || '\u00a0'}
+        </Box>
+      ))}
+      {hasHighlights && (
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ display: 'block', mt: 1, fontFamily: 'inherit' }}
+        >
+          Light green marks values that differ from previous data.
+        </Typography>
+      )}
+    </Box>
+  );
+}
+
 export default function AuditLogDetailDialog({ open, row, onClose }: AuditLogDetailDialogProps) {
   const isMobile = useIsMobileDevice();
 
   if (!row) {
     return null;
   }
+
+  const hasOldData = Boolean(row.oldData && Object.keys(row.oldData).length > 0);
+  const hasNewData = Boolean(row.newData && Object.keys(row.newData).length > 0);
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md" fullScreen={isMobile}>
@@ -72,55 +159,32 @@ export default function AuditLogDetailDialog({ open, row, onClose }: AuditLogDet
 
           {row.metadata && Object.keys(row.metadata).length > 0 && (
             <Stack spacing={1}>
-              <Typography variant="subtitle2">Metadata</Typography>
-              <TextField
-                value={formatJson(row.metadata)}
-                multiline
-                fullWidth
-                minRows={3}
-                slotProps={{
-                  input: {
-                    readOnly: true,
-                    sx: { fontFamily: 'monospace', fontSize: '0.8rem' },
-                  },
-                }}
-              />
+              <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                Metadata
+              </Typography>
+              <ReadOnlyJsonField value={formatJson(row.metadata)} />
             </Stack>
           )}
 
-          {row.oldData && Object.keys(row.oldData).length > 0 && (
+          {hasOldData && (
             <Stack spacing={1}>
-              <Typography variant="subtitle2">Previous data</Typography>
-              <TextField
-                value={formatJson(row.oldData)}
-                multiline
-                fullWidth
-                minRows={4}
-                slotProps={{
-                  input: {
-                    readOnly: true,
-                    sx: { fontFamily: 'monospace', fontSize: '0.8rem' },
-                  },
-                }}
-              />
+              <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                Previous data
+              </Typography>
+              <ReadOnlyJsonField value={formatJson(row.oldData)} />
             </Stack>
           )}
 
-          {row.newData && Object.keys(row.newData).length > 0 && (
+          {hasNewData && row.newData && (
             <Stack spacing={1}>
-              <Typography variant="subtitle2">New data</Typography>
-              <TextField
-                value={formatJson(row.newData)}
-                multiline
-                fullWidth
-                minRows={4}
-                slotProps={{
-                  input: {
-                    readOnly: true,
-                    sx: { fontFamily: 'monospace', fontSize: '0.8rem' },
-                  },
-                }}
-              />
+              <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                New data
+              </Typography>
+              {hasOldData ? (
+                <HighlightedNewDataField oldData={row.oldData} newData={row.newData} />
+              ) : (
+                <ReadOnlyJsonField value={formatJson(row.newData)} />
+              )}
             </Stack>
           )}
         </Stack>

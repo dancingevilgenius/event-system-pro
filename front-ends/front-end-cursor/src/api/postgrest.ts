@@ -204,6 +204,8 @@ export type UserListRow = {
   phone: string;
   /** Raw `phone_numbers_json` for unchanged pass-through on edit save. */
   phoneNumbersJson: unknown[];
+  /** From `additional_info_json.demo` — demo users skip libphonenumber validation. */
+  isDemo: boolean;
   city: string;
   state: string;
   primaryRole: string;
@@ -453,6 +455,7 @@ function mapUserToListRow(user: ApiUserRecord): UserListRow {
   const phoneNumbersJson = Array.isArray(user.phone_numbers_json)
     ? user.phone_numbers_json
     : [];
+  const demoFlag = additionalInfo.demo;
 
   return {
     userId: user.user_id,
@@ -462,6 +465,7 @@ function mapUserToListRow(user: ApiUserRecord): UserListRow {
     email: user.email?.trim() ?? '',
     phone: primaryPhoneE164(user.phone_numbers_json ?? null),
     phoneNumbersJson,
+    isDemo: demoFlag === true || demoFlag === 'true',
     city: address?.city?.trim() ?? '',
     state: address?.state_or_province?.trim() ?? '',
     primaryRole: typeof primaryRole === 'string' ? primaryRole.trim() : '',

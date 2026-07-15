@@ -4,6 +4,11 @@ import {
   parsePhoneNumberFromString,
 } from 'libphonenumber-js';
 
+export type PhoneNumberOptions = {
+  /** When true, never call libphonenumber — demo seed phones use 555 placeholders. */
+  isDemo?: boolean;
+};
+
 function digitsOnly(value: string): string {
   return value.replace(/\D/g, '');
 }
@@ -24,20 +29,36 @@ export function isPhoneCleared(phone: string | undefined): boolean {
   return digits.length === 0 || digits.length <= 3;
 }
 
-/**
- * Accepts numbers that are long enough to store.
- * Intentionally does NOT require libphonenumber "valid" — demo seed phones
- * use 555-… placeholders that fail strict validity checks.
- */
-export function hasUsablePhone(phone: string | undefined): boolean {
-  if (typeof phone !== 'string' || isPhoneCleared(phone)) {
-    return false;
-  }
-
+/** Digit-length check only — no libphonenumber. */
+function hasUsablePhoneDigitsOnly(phone: string): boolean {
   const digits = digitsOnly(phone);
 
   // NANP: 10-digit national, or 11 digits with leading country code 1 (includes 555 demo).
   if (digits.length === 10 || (digits.length === 11 && digits.startsWith('1'))) {
+    return true;
+  }
+
+  // Other international numbers: E.164 allows up to 15 digits.
+  return digits.length >= 8 && digits.length <= 15;
+}
+
+/**
+ * Accepts numbers that are long enough to store.
+ * For demo users (`isDemo: true`), never uses libphonenumber.
+ */
+export function hasUsablePhone(
+  phone: string | undefined,
+  options: PhoneNumberOptions = {},
+): boolean {
+  if (typeof phone !== 'string' || isPhoneCleared(phone)) {
+    return false;
+  }
+
+  if (options.isDemo) {
+    return hasUsablePhoneDigitsOnly(phone);
+  }
+
+  if (hasUsablePhoneDigitsOnly(phone)) {
     return true;
   }
 
@@ -47,12 +68,7 @@ export function hasUsablePhone(phone: string | undefined): boolean {
 
   const parsed =
     parsePhoneNumberFromString(phone) ?? parsePhoneNumberFromString(phone, 'US');
-  if (parsed?.nationalNumber && parsed.nationalNumber.length >= 8) {
-    return true;
-  }
-
-  // Other international numbers: E.164 allows up to 15 digits.
-  return digits.length >= 8 && digits.length <= 15;
+  return Boolean(parsed?.nationalNumber && parsed.nationalNumber.length >= 8);
 }
 
 export function phoneHasNationalDigits(phone: string | undefined): boolean {
@@ -73,25 +89,9 @@ export function phoneDigitsMatch(left: string | undefined, right: string | undef
   return normalize(leftDigits) === normalize(rightDigits);
 }
 
-export function buildPhoneNumbersJson(phone: string | undefined) {
-  if (!hasUsablePhone(phone) || !phone) {
-    return [];
-  }
-
-  const parsed =
-    parsePhoneNumberFromString(phone) ?? parsePhoneNumberFromString(phone, 'US');
-  if (parsed?.nationalNumber && parsed.countryCallingCode) {
-    return [
-      {
-        type: 'mobile',
-        country_code: parsed.countryCallingCode,
-        number: parsed.nationalNumber,
-        primary: true,
-      },
-    ];
-  }
-
+function buildPhoneNumbersJsonFromDigits(phone: string) {
   const digits = digitsOnly(phone);
+
   if (digits.length === 11 && digits.startsWith('1')) {
     return [
       {
@@ -114,12 +114,45 @@ export function buildPhoneNumbersJson(phone: string | undefined) {
     ];
   }
 
-  return [
-    {
-      type: 'mobile',
-      country_code: '1',
-      number: digits,
-      primary: true,
-    },
-  ];
+  if (digits.length >= 8) {
+    return [
+      {
+        type: 'mobile',
+        country_code: '1',
+        number: digits,
+        primary: true,
+      },
+    ];
+  }
+
+  return [];
+}
+
+export function buildPhoneNumbersJson(
+  phone: string | undefined,
+  options: PhoneNumberOptions = {},
+) {
+  if (!hasUsablePhone(phone, options) || !phone) {
+    return [];
+  }
+
+  // Demo users: never call libphonenumber.
+  if (options.isDemo) {
+    return buildPhoneNumbersJsonFromDigits(phone);
+  }
+
+  const parsed =
+    parsePhoneNumberFromString(phone) ?? parsePhoneNumberFromString(phone, 'US');
+  if (parsed?.nationalNumber && parsed.countryCallingCode) {
+    return [
+      {
+        type: 'mobile',
+        country_code: parsed.countryCallingCode,
+        number: parsed.nationalNumber,
+        primary: true,
+      },
+    ];
+  }
+
+  return buildPhoneNumbersJsonFromDigits(phone);
 }

@@ -101,11 +101,13 @@ export default function EditUserDialog({
     setError(null);
   };
 
+  const phoneOptions = { isDemo: user?.isDemo === true };
+
   const handlePhoneChange = (phone: string) => {
     if (
       ignoreDialOnlyPhoneChangeRef.current &&
       !phoneHasNationalDigits(phone) &&
-      hasUsablePhone(user?.phone ?? '')
+      hasUsablePhone(user?.phone ?? '', phoneOptions)
     ) {
       return;
     }
@@ -127,6 +129,7 @@ export default function EditUserDialog({
     const email = form.email.trim();
     const password = form.password;
     const confirmPassword = form.confirmPassword;
+    const isDemo = user.isDemo === true;
 
     if (!username) {
       setError('Username is required.');
@@ -140,9 +143,10 @@ export default function EditUserDialog({
 
     const phoneUnchanged = phoneDigitsMatch(form.phone, user.phone);
     const phoneCleared = isPhoneCleared(form.phone);
-    const phoneUsable = hasUsablePhone(form.phone);
+    // Demo users: never validate with libphonenumber (555 seed numbers fail it).
+    const phoneUsable = hasUsablePhone(form.phone, { isDemo });
 
-    // Incomplete edits only — unchanged / untouched demo 555 numbers pass through.
+    // Incomplete edits only — unchanged / untouched phones pass through.
     if (phoneTouched && !phoneCleared && !phoneUsable && !phoneUnchanged) {
       setError('Enter a complete phone number or clear it.');
       return;
@@ -166,7 +170,7 @@ export default function EditUserDialog({
     } else if (phoneUnchanged && user.phoneNumbersJson.length > 0) {
       phoneNumbersJson = user.phoneNumbersJson;
     } else if (phoneUsable) {
-      phoneNumbersJson = buildPhoneNumbersJson(form.phone);
+      phoneNumbersJson = buildPhoneNumbersJson(form.phone, { isDemo });
     } else if (!phoneTouched) {
       phoneNumbersJson = user.phoneNumbersJson;
     }

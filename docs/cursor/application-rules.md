@@ -27,6 +27,7 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 | Password recovery setup re-export | `front-ends/front-end-cursor/src/components/PasswordRecoverySetupForm.tsx` |
 | Admin home | `front-ends/front-end-cursor/src/pages/AdminHomePage.tsx` |
 | Admin competitors | `front-ends/front-end-cursor/src/pages/AdminCompetitorsPage.tsx` |
+| Admin search users | `front-ends/front-end-cursor/src/pages/AdminSearchUsersPage.tsx` |
 | Staff / contest pick | `front-ends/front-end-cursor/src/pages/StaffPage.tsx`, `ContestSelectionPage.tsx` |
 | Competitor placeholder | `front-ends/front-end-cursor/src/pages/CompetitorPage.tsx` |
 | Judging page | `front-ends/front-end-cursor/src/pages/JudgingPage.tsx` |
@@ -126,7 +127,7 @@ Ten roles from `user_app_role` (included in login JWT `app_roles`):
 | `/home`, `/account`, `/changepassword`, `/secret-questions` | Any signed-in user |
 | `/staff`, `/judging` | `STAFF` (or `ADMIN`) |
 | `/competitor` | `COMPETITOR` (or `ADMIN`) |
-| `/adminhome`, `/admin/event-details`, `/admin/contests`, `/admin/contests/contest`, `/admin/competitors`, `/admin/competition-entries` | `ADMIN` |
+| `/adminhome`, `/admin/event-details`, `/admin/contests`, `/admin/contests/contest`, `/admin/competitors`, `/admin/search-users`, `/admin/competition-entries` | `ADMIN` |
 
 ---
 
@@ -251,7 +252,7 @@ Forgot-password flow uses a separate stepper on **`/forgot-password`** (user ans
 ### Admin home (`/adminhome`)
 
 - Title: **Admin**.
-- Navigation buttons: **Event Details**, **Contests**, **Competitors**, **Competition Entries**, **Staff** (plus **Back to Home**).
+- Navigation buttons: **Events**, **Contests**, **Competitors**, **Users**, **Competition Entries**, and other admin tools (plus **Back to Home**).
 - **Generate Attendees** (outlined button): calls PostgREST RPC **`api.generate_demo_attendees`** (admin role required). Regenerates demo attendee rows in the reserved `attendee_id` range (see **Attendee demo data**). Shows success with selected event-group names, or a problem message on failure. Button label becomes **Generating Attendees…** while the request is in flight.
 - **Test Messages** clears the stack and shows one success, one warning, and one problem alert (same copy as the former Home test button).
 - **Event Details** and **Competition Entries** are **placeholder** pages (`AdminPlaceholderPage`).
@@ -264,6 +265,14 @@ Forgot-password flow uses a separate stepper on **`/forgot-password`** (user ans
 - **Filter / Sort** dialog: filter by first name, last name, city, state, primary role (not username); sort by last name, first name, or city (asc/desc).
 - Data comes from **`GET /user`** with PostgREST `ilike` / `eq` filters on JSON columns (`postgrest.ts`).
 - Empty filter values shown as **—** in the table.
+- **Back to Admin** returns to `/adminhome`.
+
+### Search Users (`/admin/search-users`)
+
+- Paginated **user** table: first name, last name, city, state, primary role.
+- Page size: **25** desktop, **10** mobile (`useIsMobileDevice`).
+- **Search-as-you-type** text field matches **first name or last name** (`name_json`) via debounced PostgREST `or` / `ilike` query (`fetchUsersPage` `nameSearch` option).
+- Empty values shown as **—** in the table.
 - **Back to Admin** returns to `/adminhome`.
 
 ---

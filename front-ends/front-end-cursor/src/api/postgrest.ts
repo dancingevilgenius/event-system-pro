@@ -257,6 +257,7 @@ function buildUserQueryParams(
   limit: number,
   filters: UserFilters,
   sort: UserSort,
+  nameSearch = '',
 ): URLSearchParams {
   const params = new URLSearchParams({
     select: 'user_id,username,name_json,addresses_json,additional_info_json',
@@ -264,8 +265,18 @@ function buildUserQueryParams(
     offset: String(offset),
   });
 
-  appendIlikeFilter(params, 'name_json->>first', filters.firstName);
-  appendIlikeFilter(params, 'name_json->>last', filters.lastName);
+  const trimmedNameSearch = nameSearch.trim();
+  if (trimmedNameSearch) {
+    const escaped = escapePostgrestFilterValue(trimmedNameSearch);
+    params.append(
+      'or',
+      `(name_json->>first.ilike.*${escaped}*,name_json->>last.ilike.*${escaped}*)`,
+    );
+  } else {
+    appendIlikeFilter(params, 'name_json->>first', filters.firstName);
+    appendIlikeFilter(params, 'name_json->>last', filters.lastName);
+  }
+
   appendIlikeFilter(params, 'addresses_json->0->>city', filters.city);
   appendEqFilter(params, 'addresses_json->0->>state_or_province', filters.state);
   if (filters.primaryRole !== null) {
@@ -321,6 +332,11 @@ function mapUserToListRow(user: ApiUserRecord): UserListRow {
   };
 }
 
+export type FetchUsersPageOptions = {
+  /** When set, matches first or last name (ilike), instead of firstName/lastName filters. */
+  nameSearch?: string;
+};
+
 export async function fetchUsersPage(
   offset: number,
   limit: number,
@@ -332,8 +348,9 @@ export async function fetchUsersPage(
     primaryRole: null,
   },
   sort: UserSort = { column: 'lastName', direction: 'asc' },
+  options: FetchUsersPageOptions = {},
 ): Promise<FetchUsersPageResult> {
-  const params = buildUserQueryParams(offset, limit, filters, sort);
+  const params = buildUserQueryParams(offset, limit, filters, sort, options.nameSearch ?? '');
 
   const response = await fetch(`${POSTGREST_URL}/user?${params.toString()}`, {
     headers: buildAuthHeaders({

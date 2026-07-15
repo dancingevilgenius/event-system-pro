@@ -26,6 +26,7 @@ const ADMIN_BUTTONS = [
   { label: 'Events', path: EVENT_HOME_PATH },
   { label: 'Contests', path: '/admin/contests' },
   { label: 'Competitors', path: '/admin/competitors' },
+  { label: 'Users', path: '/admin/search-users' },
   { label: 'Competition Entries', path: '/admin/competition-entries' },
   { label: 'Event Merchandise POS', path: '/event-merchandise-pos-demo' },
   { label: 'WSDC Find Dancer', path: '/wsdc-find-dancer' },

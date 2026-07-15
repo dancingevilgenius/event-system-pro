@@ -270,14 +270,17 @@ export default function AdminSearchUsersPage() {
         onSearch={handleAdvancedSearch}
       />
 
-      <EditUserDialog
-        open={editUser !== null}
-        user={editUser}
-        onClose={() => setEditUser(null)}
-        onSaved={() => {
-          void loadUsers();
-        }}
-      />
+      {editUser && (
+        <EditUserDialog
+          key={editUser.userId}
+          open
+          user={editUser}
+          onClose={() => setEditUser(null)}
+          onSaved={() => {
+            void loadUsers();
+          }}
+        />
+      )}
     </Container>
   );
 }

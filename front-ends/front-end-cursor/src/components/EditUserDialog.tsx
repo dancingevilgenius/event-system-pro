@@ -9,11 +9,14 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { parsePhoneNumberFromString } from 'libphonenumber-js';
-import { type FormEvent, useEffect, useState } from 'react';
+import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { adminUpdateUser, type UserListRow } from '../api/postgrest';
 import { CONTENT_MAX_WIDTH } from '../constants/layout';
-import { buildPhoneNumbersJson, hasUsablePhone } from '../utils/phoneNumbers';
+import {
+  buildPhoneNumbersJson,
+  hasUsablePhone,
+  phoneHasNationalDigits,
+} from '../utils/phoneNumbers';
 import AppPhoneNumberField from './AppPhoneNumberField';
 import AppTextField from './AppTextField';
 import CloseIcon from './CloseIcon';
@@ -45,9 +48,16 @@ const EMPTY_FORM: FormState = {
   confirmPassword: '',
 };
 
-function hasPhoneNationalDigits(phone: string): boolean {
-  const parsed = parsePhoneNumberFromString(phone);
-  return Boolean(parsed?.nationalNumber);
+function formFromUser(user: UserListRow): FormState {
+  return {
+    firstName: user.firstName,
+    lastName: user.lastName,
+    username: user.username,
+    email: user.email,
+    phone: user.phone,
+    password: '',
+    confirmPassword: '',
+  };
 }
 
 export default function EditUserDialog({
@@ -56,32 +66,47 @@ export default function EditUserDialog({
   onClose,
   onSaved,
 }: EditUserDialogProps) {
-  const [form, setForm] = useState<FormState>(EMPTY_FORM);
+  const [form, setForm] = useState<FormState>(() => (user ? formFromUser(user) : EMPTY_FORM));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const ignoreDialOnlyPhoneChangeRef = useRef(false);
 
   useEffect(() => {
     if (!open || !user) {
       return;
     }
 
-    setForm({
-      firstName: user.firstName,
-      lastName: user.lastName,
-      username: user.username,
-      email: user.email,
-      phone: user.phone,
-      password: '',
-      confirmPassword: '',
-    });
+    setForm(formFromUser(user));
     setError(null);
     setShowPassword(false);
+    // react-international-phone can emit a dial-code-only value on mount; ignore
+    // that so a prefilled demo number is not wiped before Save.
+    ignoreDialOnlyPhoneChangeRef.current = true;
+    const timer = window.setTimeout(() => {
+      ignoreDialOnlyPhoneChangeRef.current = false;
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
   }, [open, user]);
 
   const updateField = (field: keyof FormState, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
     setError(null);
+  };
+
+  const handlePhoneChange = (phone: string) => {
+    if (
+      ignoreDialOnlyPhoneChangeRef.current &&
+      !phoneHasNationalDigits(phone) &&
+      hasUsablePhone(user?.phone ?? '')
+    ) {
+      return;
+    }
+
+    updateField('phone', phone);
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -108,7 +133,7 @@ export default function EditUserDialog({
       return;
     }
 
-    if (hasPhoneNationalDigits(form.phone) && !hasUsablePhone(form.phone)) {
+    if (phoneHasNationalDigits(form.phone) && !hasUsablePhone(form.phone)) {
       setError('Enter a complete phone number or clear it.');
       return;
     }
@@ -210,12 +235,15 @@ export default function EditUserDialog({
               fullWidth
               autoComplete="off"
             />
-            <AppPhoneNumberField
-              label="Phone"
-              value={form.phone}
-              onChange={(phone) => updateField('phone', phone)}
-              autoComplete="tel"
-            />
+            {user && (
+              <AppPhoneNumberField
+                key={`edit-user-phone-${user.userId}`}
+                label="Phone"
+                value={form.phone}
+                onChange={handlePhoneChange}
+                autoComplete="tel"
+              />
+            )}
             <AppTextField
               label="Password"
               type={passwordInputType}

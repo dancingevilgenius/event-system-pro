@@ -210,6 +210,15 @@ export type UserFilters = {
   primaryRole: null | 'leader' | 'follower';
 };
 
+/** Advanced filters used by the Search Users dialog (AND combined with quick search). */
+export type UserAdvancedSearchFilters = {
+  username: string;
+  state: string;
+  country: string;
+  isDemo: boolean | null;
+  primaryRole: null | 'leader' | 'follower';
+};
+
 export type UserSortColumn = 'firstName' | 'lastName' | 'city' | 'state' | 'primaryRole';
 
 export type UserSort = {
@@ -222,6 +231,14 @@ export type FetchUsersPageResult = {
   total: number;
 };
 
+export const EMPTY_ADVANCED_USER_FILTERS: UserAdvancedSearchFilters = {
+  username: '',
+  state: '',
+  country: '',
+  isDemo: null,
+  primaryRole: null,
+};
+
 const SORT_COLUMN_TO_POSTGREST: Record<UserSortColumn, string> = {
   firstName: 'name_json->>first',
   lastName: 'name_json->>last',
@@ -229,6 +246,8 @@ const SORT_COLUMN_TO_POSTGREST: Record<UserSortColumn, string> = {
   state: 'addresses_json->0->>state_or_province',
   primaryRole: 'additional_info_json->>primary-role',
 };
+
+const PHONE_NUMBER_COLUMN = 'phone_numbers_json->0->>number';
 
 function escapePostgrestFilterValue(value: string): string {
   return value.replace(/[*(),.\\]/g, (character) => `\\${character}`);
@@ -252,12 +271,89 @@ function appendEqFilter(params: URLSearchParams, column: string, value: string) 
   params.append(column, `eq.${trimmed}`);
 }
 
+/** No letters, at least one digit — treated as a phone-number quick search. */
+export function isPhoneOnlyQuickSearch(value: string): boolean {
+  const trimmed = value.trim();
+  return trimmed.length > 0 && !/[A-Za-z]/.test(trimmed) && /\d/.test(trimmed);
+}
+
+function digitsOnly(value: string): string {
+  return value.replace(/\D/g, '');
+}
+
+function appendQuickSearchFilters(params: URLSearchParams, quickSearch: string) {
+  const trimmed = quickSearch.trim();
+  if (!trimmed) {
+    return;
+  }
+
+  if (trimmed.includes('@')) {
+    appendIlikeFilter(params, 'email', trimmed);
+    return;
+  }
+
+  if (isPhoneOnlyQuickSearch(trimmed)) {
+    const digits = digitsOnly(trimmed);
+    if (digits) {
+      appendIlikeFilter(params, PHONE_NUMBER_COLUMN, digits);
+    } else {
+      // Numbers/punctuation that yield no digits: match nothing.
+      params.append('user_id', 'eq.-1');
+    }
+    return;
+  }
+
+  const escaped = escapePostgrestFilterValue(trimmed);
+  const phoneDigits = digitsOnly(trimmed);
+  const phoneClause = phoneDigits
+    ? `,${PHONE_NUMBER_COLUMN}.ilike.*${escapePostgrestFilterValue(phoneDigits)}*`
+    : `,${PHONE_NUMBER_COLUMN}.ilike.*${escaped}*`;
+
+  params.append(
+    'or',
+    `(name_json->>first.ilike.*${escaped}*,name_json->>last.ilike.*${escaped}*,email.ilike.*${escaped}*${phoneClause})`,
+  );
+}
+
+function appendAdvancedSearchFilters(
+  params: URLSearchParams,
+  advanced: UserAdvancedSearchFilters,
+) {
+  appendIlikeFilter(params, 'username', advanced.username);
+  appendEqFilter(params, 'addresses_json->0->>state_or_province', advanced.state);
+  appendEqFilter(params, 'addresses_json->0->>country_code', advanced.country);
+
+  if (advanced.primaryRole !== null) {
+    appendEqFilter(params, 'additional_info_json->>primary-role', advanced.primaryRole);
+  }
+
+  if (advanced.isDemo === true) {
+    appendEqFilter(params, 'additional_info_json->>demo', 'true');
+  } else if (advanced.isDemo === false) {
+    // Exclude demo=true without a second top-level `or` (conflicts with quick search).
+    params.append('not.and', '(additional_info_json->>demo.eq.true)');
+  }
+}
+
+export type FetchUsersPageOptions = {
+  /**
+   * Search-as-you-type query:
+   * - contains `@` → email only
+   * - digits/phone punctuation only → phone only
+   * - otherwise → first name, last name, email, or phone
+   */
+  quickSearch?: string;
+  /** @deprecated Prefer `quickSearch`. */
+  nameSearch?: string;
+  advancedFilters?: UserAdvancedSearchFilters;
+};
+
 function buildUserQueryParams(
   offset: number,
   limit: number,
   filters: UserFilters,
   sort: UserSort,
-  nameSearch = '',
+  options: FetchUsersPageOptions = {},
 ): URLSearchParams {
   const params = new URLSearchParams({
     select: 'user_id,username,name_json,addresses_json,additional_info_json',
@@ -265,13 +361,9 @@ function buildUserQueryParams(
     offset: String(offset),
   });
 
-  const trimmedNameSearch = nameSearch.trim();
-  if (trimmedNameSearch) {
-    const escaped = escapePostgrestFilterValue(trimmedNameSearch);
-    params.append(
-      'or',
-      `(name_json->>first.ilike.*${escaped}*,name_json->>last.ilike.*${escaped}*)`,
-    );
+  const quickSearch = (options.quickSearch ?? options.nameSearch ?? '').trim();
+  if (quickSearch) {
+    appendQuickSearchFilters(params, quickSearch);
   } else {
     appendIlikeFilter(params, 'name_json->>first', filters.firstName);
     appendIlikeFilter(params, 'name_json->>last', filters.lastName);
@@ -281,6 +373,10 @@ function buildUserQueryParams(
   appendEqFilter(params, 'addresses_json->0->>state_or_province', filters.state);
   if (filters.primaryRole !== null) {
     appendEqFilter(params, 'additional_info_json->>primary-role', filters.primaryRole);
+  }
+
+  if (options.advancedFilters) {
+    appendAdvancedSearchFilters(params, options.advancedFilters);
   }
 
   const sortColumn = SORT_COLUMN_TO_POSTGREST[sort.column];
@@ -332,11 +428,6 @@ function mapUserToListRow(user: ApiUserRecord): UserListRow {
   };
 }
 
-export type FetchUsersPageOptions = {
-  /** When set, matches first or last name (ilike), instead of firstName/lastName filters. */
-  nameSearch?: string;
-};
-
 export async function fetchUsersPage(
   offset: number,
   limit: number,
@@ -350,7 +441,7 @@ export async function fetchUsersPage(
   sort: UserSort = { column: 'lastName', direction: 'asc' },
   options: FetchUsersPageOptions = {},
 ): Promise<FetchUsersPageResult> {
-  const params = buildUserQueryParams(offset, limit, filters, sort, options.nameSearch ?? '');
+  const params = buildUserQueryParams(offset, limit, filters, sort, options);
 
   const response = await fetch(`${POSTGREST_URL}/user?${params.toString()}`, {
     headers: buildAuthHeaders({

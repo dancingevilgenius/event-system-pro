@@ -110,9 +110,9 @@ Ten roles from `user_app_role` (included in login JWT `app_roles`):
 | `HEAD_JUDGE` | Head Judge |
 | `REGISTRATION` | Registration |
 | `FLOOR_PARENT` | Floor Parent |
-| `BALLROOM_COORDINATOR` | Ballroom Coordinator |
+| `EVENT_MANAGER` | Event Manager |
 | `DJ` | DJ |
-| `EVENT_COORDINATOR` | Event Coordinator |
+| `EVENT_DIRECTOR` | Event Director |
 | `COMPETITOR` | Competitor |
 
 ### `ProtectedRoute` behavior

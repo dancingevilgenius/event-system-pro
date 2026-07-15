@@ -21,9 +21,9 @@ CREATE TABLE IF NOT EXISTS public.user_app_role (
       'HEAD_JUDGE',
       'REGISTRATION',
       'FLOOR_PARENT',
-      'BALLROOM_COORDINATOR',
+      'EVENT_MANAGER',
       'DJ',
-      'EVENT_COORDINATOR',
+      'EVENT_DIRECTOR',
       'COMPETITOR'
     ))
 );
@@ -42,9 +42,9 @@ CROSS JOIN (
     ('HEAD_JUDGE'),
     ('REGISTRATION'),
     ('FLOOR_PARENT'),
-    ('BALLROOM_COORDINATOR'),
+    ('EVENT_MANAGER'),
     ('DJ'),
-    ('EVENT_COORDINATOR'),
+    ('EVENT_DIRECTOR'),
     ('COMPETITOR')
 ) AS r(role_code)
 WHERE u.username = 'dancingevilgenius'
@@ -55,7 +55,7 @@ SET
   volunteer_json = jsonb_set(
     COALESCE(u.volunteer_json::jsonb, '{}'::jsonb),
     '{roles}',
-    '["ADMIN", "STAFF", "JUDGE", "HEAD_JUDGE", "REGISTRATION", "FLOOR_PARENT", "BALLROOM_COORDINATOR", "DJ", "EVENT_COORDINATOR", "COMPETITOR"]'::jsonb
+    '["ADMIN", "STAFF", "JUDGE", "HEAD_JUDGE", "REGISTRATION", "FLOOR_PARENT", "EVENT_MANAGER", "DJ", "EVENT_DIRECTOR", "COMPETITOR"]'::jsonb
   )::json
 WHERE u.username = 'dancingevilgenius';
 

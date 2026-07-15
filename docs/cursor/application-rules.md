@@ -271,7 +271,7 @@ Forgot-password flow uses a separate stepper on **`/forgot-password`** (user ans
 
 ### Search Users (`/admin/search-users`)
 
-- Paginated **user** table columns: first name, last name, **Edit**.
+- Paginated **user** table columns: first name, last name, username, **Edit**.
 - Page size: **25** desktop, **10** mobile (`useIsMobileDevice`).
 - **Search-as-you-type** text field (`fetchUsersPage` `quickSearch`, max 30 characters):
   - Contains `@` → **email** only.

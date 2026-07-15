@@ -175,6 +175,7 @@ export type ApiUserRecord = {
   user_id: number;
   username: string;
   email?: string | null;
+  phone_numbers_json?: unknown;
   name_json: {
     first?: string | null;
     last?: string | null;
@@ -198,6 +199,9 @@ export type UserListRow = {
   username: string;
   firstName: string;
   lastName: string;
+  email: string;
+  /** E.164 phone for edit forms, or empty when none. */
+  phone: string;
   city: string;
   state: string;
   primaryRole: string;
@@ -357,7 +361,7 @@ function buildUserQueryParams(
   options: FetchUsersPageOptions = {},
 ): URLSearchParams {
   const params = new URLSearchParams({
-    select: 'user_id,username,name_json,addresses_json,additional_info_json',
+    select: 'user_id,username,email,phone_numbers_json,name_json,addresses_json,additional_info_json',
     limit: String(limit),
     offset: String(offset),
   });
@@ -414,6 +418,32 @@ function primaryAddress(
   return null;
 }
 
+function primaryPhoneE164(phoneNumbersJson: unknown): string {
+  if (!Array.isArray(phoneNumbersJson) || phoneNumbersJson.length === 0) {
+    return '';
+  }
+
+  const entries = phoneNumbersJson.filter(
+    (entry): entry is {
+      number?: string | null;
+      country_code?: string | null;
+      primary?: boolean;
+    } => Boolean(entry) && typeof entry === 'object',
+  );
+  const selected =
+    entries.find((entry) => entry.primary) ??
+    entries.find((entry) => entry.number?.trim()) ??
+    entries[0];
+
+  const number = selected?.number?.replace(/\D/g, '') ?? '';
+  if (!number) {
+    return '';
+  }
+
+  const countryCode = String(selected?.country_code ?? '1').replace(/\D/g, '') || '1';
+  return `+${countryCode}${number}`;
+}
+
 function mapUserToListRow(user: ApiUserRecord): UserListRow {
   const address = primaryAddress(user.addresses_json);
   const additionalInfo = user.additional_info_json ?? {};
@@ -424,6 +454,8 @@ function mapUserToListRow(user: ApiUserRecord): UserListRow {
     username: user.username?.trim() ?? '',
     firstName: user.name_json?.first?.trim() ?? '',
     lastName: user.name_json?.last?.trim() ?? '',
+    email: user.email?.trim() ?? '',
+    phone: primaryPhoneE164(user.phone_numbers_json ?? null),
     city: address?.city?.trim() ?? '',
     state: address?.state_or_province?.trim() ?? '',
     primaryRole: typeof primaryRole === 'string' ? primaryRole.trim() : '',
@@ -442,6 +474,8 @@ export function adminUpdateUser(params: {
   firstName: string;
   lastName: string;
   username: string;
+  email?: string;
+  phoneNumbersJson?: unknown[];
   newPassword?: string;
 }) {
   return callRpc<AdminUpdateUserResult>('admin_update_user', {
@@ -449,6 +483,8 @@ export function adminUpdateUser(params: {
     p_first_name: params.firstName,
     p_last_name: params.lastName,
     p_username: params.username,
+    p_email: params.email?.trim() ? params.email.trim() : null,
+    p_phone_numbers_json: params.phoneNumbersJson ?? [],
     p_new_password: params.newPassword?.trim() ? params.newPassword : null,
   });
 }

@@ -9,9 +9,12 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import { type FormEvent, useEffect, useState } from 'react';
 import { adminUpdateUser, type UserListRow } from '../api/postgrest';
 import { CONTENT_MAX_WIDTH } from '../constants/layout';
+import { buildPhoneNumbersJson, hasCompletePhone } from '../utils/phoneNumbers';
+import AppPhoneNumberField from './AppPhoneNumberField';
 import AppTextField from './AppTextField';
 import CloseIcon from './CloseIcon';
 
@@ -26,6 +29,8 @@ type FormState = {
   firstName: string;
   lastName: string;
   username: string;
+  email: string;
+  phone: string;
   password: string;
   confirmPassword: string;
 };
@@ -34,9 +39,16 @@ const EMPTY_FORM: FormState = {
   firstName: '',
   lastName: '',
   username: '',
+  email: '',
+  phone: '',
   password: '',
   confirmPassword: '',
 };
+
+function hasPhoneNationalDigits(phone: string): boolean {
+  const parsed = parsePhoneNumberFromString(phone);
+  return Boolean(parsed?.nationalNumber);
+}
 
 export default function EditUserDialog({
   open,
@@ -58,6 +70,8 @@ export default function EditUserDialog({
       firstName: user.firstName,
       lastName: user.lastName,
       username: user.username,
+      email: user.email,
+      phone: user.phone,
       password: '',
       confirmPassword: '',
     });
@@ -80,11 +94,22 @@ export default function EditUserDialog({
     const firstName = form.firstName.trim();
     const lastName = form.lastName.trim();
     const username = form.username.trim();
+    const email = form.email.trim();
     const password = form.password;
     const confirmPassword = form.confirmPassword;
 
     if (!username) {
       setError('Username is required.');
+      return;
+    }
+
+    if (email && !email.includes('@')) {
+      setError('Enter a valid email address.');
+      return;
+    }
+
+    if (hasPhoneNationalDigits(form.phone) && !hasCompletePhone(form.phone)) {
+      setError('Enter a complete phone number or clear it.');
       return;
     }
 
@@ -109,6 +134,10 @@ export default function EditUserDialog({
         firstName,
         lastName,
         username,
+        email,
+        phoneNumbersJson: hasCompletePhone(form.phone)
+          ? buildPhoneNumbersJson(form.phone)
+          : [],
         newPassword: password || undefined,
       });
 
@@ -172,6 +201,20 @@ export default function EditUserDialog({
               fullWidth
               required
               autoComplete="off"
+            />
+            <AppTextField
+              label="Email"
+              type="email"
+              value={form.email}
+              onChange={(event) => updateField('email', event.target.value)}
+              fullWidth
+              autoComplete="off"
+            />
+            <AppPhoneNumberField
+              label="Phone"
+              value={form.phone}
+              onChange={(phone) => updateField('phone', phone)}
+              autoComplete="tel"
             />
             <AppTextField
               label="Password"

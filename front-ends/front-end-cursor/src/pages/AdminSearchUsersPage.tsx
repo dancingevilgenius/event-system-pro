@@ -16,6 +16,10 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchUsersPage, type UserListRow } from '../api/postgrest';
+import UserAdvancedSearchDialog, {
+  EMPTY_ADVANCED_USER_FILTERS,
+  type UserAdvancedSearchFilters,
+} from '../components/UserAdvancedSearchDialog';
 import { EMPTY_USER_FILTERS } from '../components/UserFilterSortDialog';
 import { useIsMobileDevice } from '../hooks/useIsMobileDevice';
 
@@ -25,6 +29,16 @@ const SEARCH_DEBOUNCE_MS = 300;
 
 function displayValue(value: string): string {
   return value.trim() === '' ? '—' : value;
+}
+
+function hasActiveAdvancedFilters(filters: UserAdvancedSearchFilters): boolean {
+  return (
+    filters.username.trim() !== '' ||
+    filters.state !== '' ||
+    filters.country !== '' ||
+    filters.isDemo !== null ||
+    filters.primaryRole !== null
+  );
 }
 
 export default function AdminSearchUsersPage() {
@@ -39,9 +53,14 @@ export default function AdminSearchUsersPage() {
   const [error, setError] = useState<string | null>(null);
   const [searchInput, setSearchInput] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [advancedFilters, setAdvancedFilters] = useState<UserAdvancedSearchFilters>(
+    EMPTY_ADVANCED_USER_FILTERS,
+  );
+  const [advancedDialogOpen, setAdvancedDialogOpen] = useState(false);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const safePage = Math.min(page, totalPages - 1);
+  const advancedActive = hasActiveAdvancedFilters(advancedFilters);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -55,7 +74,7 @@ export default function AdminSearchUsersPage() {
 
   useEffect(() => {
     setPage(0);
-  }, [pageSize, debouncedSearch]);
+  }, [pageSize, debouncedSearch, advancedFilters]);
 
   useEffect(() => {
     setPage((current) => Math.min(current, totalPages - 1));
@@ -71,7 +90,10 @@ export default function AdminSearchUsersPage() {
         pageSize,
         EMPTY_USER_FILTERS,
         { column: 'lastName', direction: 'asc' },
-        { nameSearch: debouncedSearch },
+        {
+          quickSearch: debouncedSearch,
+          advancedFilters,
+        },
       );
       setRows(result.users);
       setTotalCount(result.total);
@@ -82,7 +104,7 @@ export default function AdminSearchUsersPage() {
     } finally {
       setLoading(false);
     }
-  }, [debouncedSearch, pageSize, safePage]);
+  }, [advancedFilters, debouncedSearch, pageSize, safePage]);
 
   useEffect(() => {
     void loadUsers();
@@ -96,6 +118,10 @@ export default function AdminSearchUsersPage() {
     setPage((current) => Math.min(totalPages - 1, current + 1));
   };
 
+  const handleAdvancedSearch = (nextFilters: UserAdvancedSearchFilters) => {
+    setAdvancedFilters(nextFilters);
+  };
+
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Paper elevation={3} sx={{ p: { xs: 2, sm: 4 } }}>
@@ -106,15 +132,32 @@ export default function AdminSearchUsersPage() {
           All users ({totalCount})
         </Typography>
 
-        <TextField
-          fullWidth
-          label="Search by first or last name"
-          value={searchInput}
-          onChange={(event) => setSearchInput(event.target.value)}
-          placeholder="Type to search…"
-          autoComplete="off"
-          sx={{ mb: 2 }}
-        />
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          spacing={1.5}
+          sx={{ mb: 2, alignItems: { xs: 'stretch', sm: 'flex-start' } }}
+        >
+          <TextField
+            fullWidth
+            label="Search by first name, last name, email, or phone number"
+            value={searchInput}
+            onChange={(event) => setSearchInput(event.target.value)}
+            placeholder="Type to search…"
+            autoComplete="off"
+          />
+          <Button
+            variant="outlined"
+            onClick={() => setAdvancedDialogOpen(true)}
+            sx={{
+              minWidth: { sm: 160 },
+              whiteSpace: 'nowrap',
+              alignSelf: { xs: 'stretch', sm: 'center' },
+            }}
+          >
+            Advanced Search
+            {advancedActive && ' • Active'}
+          </Button>
+        </Stack>
 
         <Stack
           direction="row"
@@ -206,6 +249,13 @@ export default function AdminSearchUsersPage() {
           </Button>
         </Stack>
       </Paper>
+
+      <UserAdvancedSearchDialog
+        open={advancedDialogOpen}
+        initialFilters={advancedFilters}
+        onClose={() => setAdvancedDialogOpen(false)}
+        onSearch={handleAdvancedSearch}
+      />
     </Container>
   );
 }

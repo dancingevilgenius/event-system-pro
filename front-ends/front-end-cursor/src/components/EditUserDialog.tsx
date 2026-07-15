@@ -13,7 +13,7 @@ import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import { type FormEvent, useEffect, useState } from 'react';
 import { adminUpdateUser, type UserListRow } from '../api/postgrest';
 import { CONTENT_MAX_WIDTH } from '../constants/layout';
-import { buildPhoneNumbersJson, hasCompletePhone } from '../utils/phoneNumbers';
+import { buildPhoneNumbersJson, hasUsablePhone } from '../utils/phoneNumbers';
 import AppPhoneNumberField from './AppPhoneNumberField';
 import AppTextField from './AppTextField';
 import CloseIcon from './CloseIcon';
@@ -108,7 +108,7 @@ export default function EditUserDialog({
       return;
     }
 
-    if (hasPhoneNationalDigits(form.phone) && !hasCompletePhone(form.phone)) {
+    if (hasPhoneNationalDigits(form.phone) && !hasUsablePhone(form.phone)) {
       setError('Enter a complete phone number or clear it.');
       return;
     }
@@ -135,7 +135,7 @@ export default function EditUserDialog({
         lastName,
         username,
         email,
-        phoneNumbersJson: hasCompletePhone(form.phone)
+        phoneNumbersJson: hasUsablePhone(form.phone)
           ? buildPhoneNumbersJson(form.phone)
           : [],
         newPassword: password || undefined,

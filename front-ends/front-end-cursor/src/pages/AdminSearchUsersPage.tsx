@@ -16,6 +16,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchUsersPage, type UserListRow } from '../api/postgrest';
+import EditUserDialog from '../components/EditUserDialog';
 import UserAdvancedSearchDialog, {
   EMPTY_ADVANCED_USER_FILTERS,
   type UserAdvancedSearchFilters,
@@ -57,6 +58,7 @@ export default function AdminSearchUsersPage() {
     EMPTY_ADVANCED_USER_FILTERS,
   );
   const [advancedDialogOpen, setAdvancedDialogOpen] = useState(false);
+  const [editUser, setEditUser] = useState<UserListRow | null>(null);
 
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
   const safePage = Math.min(page, totalPages - 1);
@@ -220,15 +222,13 @@ export default function AdminSearchUsersPage() {
                 <TableRow>
                   <TableCell>First Name</TableCell>
                   <TableCell>Last Name</TableCell>
-                  <TableCell>City</TableCell>
-                  <TableCell>State</TableCell>
-                  <TableCell>Primary Role</TableCell>
+                  <TableCell>Edit</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {rows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} align="center">
+                    <TableCell colSpan={3} align="center">
                       No users found.
                     </TableCell>
                   </TableRow>
@@ -237,9 +237,15 @@ export default function AdminSearchUsersPage() {
                     <TableRow key={row.userId} hover>
                       <TableCell>{displayValue(row.firstName)}</TableCell>
                       <TableCell>{displayValue(row.lastName)}</TableCell>
-                      <TableCell>{displayValue(row.city)}</TableCell>
-                      <TableCell>{displayValue(row.state)}</TableCell>
-                      <TableCell>{displayValue(row.primaryRole)}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          onClick={() => setEditUser(row)}
+                        >
+                          Edit
+                        </Button>
+                      </TableCell>
                     </TableRow>
                   ))
                 )}
@@ -260,6 +266,15 @@ export default function AdminSearchUsersPage() {
         initialFilters={advancedFilters}
         onClose={() => setAdvancedDialogOpen(false)}
         onSearch={handleAdvancedSearch}
+      />
+
+      <EditUserDialog
+        open={editUser !== null}
+        user={editUser}
+        onClose={() => setEditUser(null)}
+        onSaved={() => {
+          void loadUsers();
+        }}
       />
     </Container>
   );

@@ -195,6 +195,7 @@ export type ApiUserRecord = {
 
 export type UserListRow = {
   userId: number;
+  username: string;
   firstName: string;
   lastName: string;
   city: string;
@@ -420,12 +421,36 @@ function mapUserToListRow(user: ApiUserRecord): UserListRow {
 
   return {
     userId: user.user_id,
+    username: user.username?.trim() ?? '',
     firstName: user.name_json?.first?.trim() ?? '',
     lastName: user.name_json?.last?.trim() ?? '',
     city: address?.city?.trim() ?? '',
     state: address?.state_or_province?.trim() ?? '',
     primaryRole: typeof primaryRole === 'string' ? primaryRole.trim() : '',
   };
+}
+
+export type AdminUpdateUserResult = {
+  ok: boolean;
+  message: string;
+  user_id?: number;
+  username?: string;
+};
+
+export function adminUpdateUser(params: {
+  userId: number;
+  firstName: string;
+  lastName: string;
+  username: string;
+  newPassword?: string;
+}) {
+  return callRpc<AdminUpdateUserResult>('admin_update_user', {
+    p_user_id: params.userId,
+    p_first_name: params.firstName,
+    p_last_name: params.lastName,
+    p_username: params.username,
+    p_new_password: params.newPassword?.trim() ? params.newPassword : null,
+  });
 }
 
 export async function fetchUsersPage(

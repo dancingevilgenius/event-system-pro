@@ -278,7 +278,7 @@ Forgot-password flow uses a separate stepper on **`/forgot-password`** (user ans
   - Digits + special characters only (no letters) → **phone number** only (`phone_numbers_json->0->>number`).
   - Otherwise → first name, last name, email, or phone number.
 - **Advanced Search** button opens a modal (`UserAdvancedSearchDialog`) with username, State dropdown, Country dropdown, Demo / Not Demo toggle, Leader / Follower (primary-role) toggle; **Search** applies filters, **Cancel** discards draft changes.
-- **Edit** opens `EditUserDialog` to change first name, last name, username, and optional password via RPC **`api.admin_update_user`** (admin JWT required). Leave password blank to keep the current password.
+- **Edit** opens `EditUserDialog` to change first name, last name, username, email, phone, and optional password via RPC **`api.admin_update_user`** (admin JWT required). Existing email/phone are pre-populated. Leave password blank to keep the current password.
 - Empty values shown as **—** in the table.
 - **Back to Admin** returns to `/adminhome`.
 

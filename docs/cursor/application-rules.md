@@ -29,6 +29,7 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 | Admin competitors | `front-ends/front-end-cursor/src/pages/AdminCompetitorsPage.tsx` |
 | Admin search users | `front-ends/front-end-cursor/src/pages/AdminSearchUsersPage.tsx` |
 | User advanced search dialog | `front-ends/front-end-cursor/src/components/UserAdvancedSearchDialog.tsx` |
+| Edit user dialog | `front-ends/front-end-cursor/src/components/EditUserDialog.tsx` |
 | Staff / contest pick | `front-ends/front-end-cursor/src/pages/StaffPage.tsx`, `ContestSelectionPage.tsx` |
 | Competitor placeholder | `front-ends/front-end-cursor/src/pages/CompetitorPage.tsx` |
 | Judging page | `front-ends/front-end-cursor/src/pages/JudgingPage.tsx` |
@@ -270,13 +271,14 @@ Forgot-password flow uses a separate stepper on **`/forgot-password`** (user ans
 
 ### Search Users (`/admin/search-users`)
 
-- Paginated **user** table: first name, last name, city, state, primary role.
+- Paginated **user** table columns: first name, last name, **Edit**.
 - Page size: **25** desktop, **10** mobile (`useIsMobileDevice`).
-- **Search-as-you-type** text field (`fetchUsersPage` `quickSearch`):
+- **Search-as-you-type** text field (`fetchUsersPage` `quickSearch`, max 30 characters):
   - Contains `@` → **email** only.
   - Digits + special characters only (no letters) → **phone number** only (`phone_numbers_json->0->>number`).
   - Otherwise → first name, last name, email, or phone number.
 - **Advanced Search** button opens a modal (`UserAdvancedSearchDialog`) with username, State dropdown, Country dropdown, Demo / Not Demo toggle, Leader / Follower (primary-role) toggle; **Search** applies filters, **Cancel** discards draft changes.
+- **Edit** opens `EditUserDialog` to change first name, last name, username, and optional password via RPC **`api.admin_update_user`** (admin JWT required). Leave password blank to keep the current password.
 - Empty values shown as **—** in the table.
 - **Back to Admin** returns to `/adminhome`.
 

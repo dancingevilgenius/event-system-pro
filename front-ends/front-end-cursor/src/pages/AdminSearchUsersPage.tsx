@@ -222,13 +222,14 @@ export default function AdminSearchUsersPage() {
                 <TableRow>
                   <TableCell>First Name</TableCell>
                   <TableCell>Last Name</TableCell>
+                  <TableCell>Username</TableCell>
                   <TableCell>Edit</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {rows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={3} align="center">
+                    <TableCell colSpan={4} align="center">
                       No users found.
                     </TableCell>
                   </TableRow>
@@ -237,6 +238,7 @@ export default function AdminSearchUsersPage() {
                     <TableRow key={row.userId} hover>
                       <TableCell>{displayValue(row.firstName)}</TableCell>
                       <TableCell>{displayValue(row.lastName)}</TableCell>
+                      <TableCell>{displayValue(row.username)}</TableCell>
                       <TableCell>
                         <Button
                           variant="outlined"

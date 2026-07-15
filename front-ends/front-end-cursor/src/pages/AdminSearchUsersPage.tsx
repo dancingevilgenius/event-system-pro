@@ -135,23 +135,28 @@ export default function AdminSearchUsersPage() {
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
           spacing={1.5}
-          sx={{ mb: 2, alignItems: { xs: 'stretch', sm: 'flex-start' } }}
+          sx={{ mb: 2, alignItems: { xs: 'stretch', sm: 'center' } }}
         >
           <TextField
             fullWidth
             label="Search by first name, last name, email, or phone number"
             value={searchInput}
-            onChange={(event) => setSearchInput(event.target.value)}
+            onChange={(event) => setSearchInput(event.target.value.slice(0, 30))}
             placeholder="Type to search…"
             autoComplete="off"
+            slotProps={{ htmlInput: { maxLength: 30 } }}
+            sx={{ flex: '1 1 auto', minWidth: 0 }}
           />
           <Button
             variant="outlined"
             onClick={() => setAdvancedDialogOpen(true)}
             sx={{
-              minWidth: { sm: 160 },
+              flex: '0 0 auto',
+              flexShrink: 0,
+              width: 'max-content',
+              maxWidth: '100%',
               whiteSpace: 'nowrap',
-              alignSelf: { xs: 'stretch', sm: 'center' },
+              alignSelf: { xs: 'flex-start', sm: 'center' },
             }}
           >
             Advanced Search

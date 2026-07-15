@@ -202,6 +202,8 @@ export type UserListRow = {
   email: string;
   /** E.164 phone for edit forms, or empty when none. */
   phone: string;
+  /** Raw `phone_numbers_json` for unchanged pass-through on edit save. */
+  phoneNumbersJson: unknown[];
   city: string;
   state: string;
   primaryRole: string;
@@ -448,6 +450,9 @@ function mapUserToListRow(user: ApiUserRecord): UserListRow {
   const address = primaryAddress(user.addresses_json);
   const additionalInfo = user.additional_info_json ?? {};
   const primaryRole = additionalInfo['primary-role'];
+  const phoneNumbersJson = Array.isArray(user.phone_numbers_json)
+    ? user.phone_numbers_json
+    : [];
 
   return {
     userId: user.user_id,
@@ -456,6 +461,7 @@ function mapUserToListRow(user: ApiUserRecord): UserListRow {
     lastName: user.name_json?.last?.trim() ?? '',
     email: user.email?.trim() ?? '',
     phone: primaryPhoneE164(user.phone_numbers_json ?? null),
+    phoneNumbersJson,
     city: address?.city?.trim() ?? '',
     state: address?.state_or_province?.trim() ?? '',
     primaryRole: typeof primaryRole === 'string' ? primaryRole.trim() : '',

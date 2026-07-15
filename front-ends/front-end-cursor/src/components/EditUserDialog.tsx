@@ -15,6 +15,8 @@ import { CONTENT_MAX_WIDTH } from '../constants/layout';
 import {
   buildPhoneNumbersJson,
   hasUsablePhone,
+  isPhoneCleared,
+  phoneDigitsMatch,
   phoneHasNationalDigits,
 } from '../utils/phoneNumbers';
 import AppPhoneNumberField from './AppPhoneNumberField';
@@ -70,6 +72,7 @@ export default function EditUserDialog({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [phoneTouched, setPhoneTouched] = useState(false);
   const ignoreDialOnlyPhoneChangeRef = useRef(false);
 
   useEffect(() => {
@@ -80,6 +83,7 @@ export default function EditUserDialog({
     setForm(formFromUser(user));
     setError(null);
     setShowPassword(false);
+    setPhoneTouched(false);
     // react-international-phone can emit a dial-code-only value on mount; ignore
     // that so a prefilled demo number is not wiped before Save.
     ignoreDialOnlyPhoneChangeRef.current = true;
@@ -106,6 +110,7 @@ export default function EditUserDialog({
       return;
     }
 
+    setPhoneTouched(true);
     updateField('phone', phone);
   };
 
@@ -133,7 +138,12 @@ export default function EditUserDialog({
       return;
     }
 
-    if (phoneHasNationalDigits(form.phone) && !hasUsablePhone(form.phone)) {
+    const phoneUnchanged = phoneDigitsMatch(form.phone, user.phone);
+    const phoneCleared = isPhoneCleared(form.phone);
+    const phoneUsable = hasUsablePhone(form.phone);
+
+    // Incomplete edits only — unchanged / untouched demo 555 numbers pass through.
+    if (phoneTouched && !phoneCleared && !phoneUsable && !phoneUnchanged) {
       setError('Enter a complete phone number or clear it.');
       return;
     }
@@ -150,6 +160,17 @@ export default function EditUserDialog({
       }
     }
 
+    let phoneNumbersJson: unknown[] = user.phoneNumbersJson;
+    if (phoneTouched && phoneCleared) {
+      phoneNumbersJson = [];
+    } else if (phoneUnchanged && user.phoneNumbersJson.length > 0) {
+      phoneNumbersJson = user.phoneNumbersJson;
+    } else if (phoneUsable) {
+      phoneNumbersJson = buildPhoneNumbersJson(form.phone);
+    } else if (!phoneTouched) {
+      phoneNumbersJson = user.phoneNumbersJson;
+    }
+
     setSaving(true);
     setError(null);
 
@@ -160,9 +181,7 @@ export default function EditUserDialog({
         lastName,
         username,
         email,
-        phoneNumbersJson: hasUsablePhone(form.phone)
-          ? buildPhoneNumbersJson(form.phone)
-          : [],
+        phoneNumbersJson,
         newPassword: password || undefined,
       });
 

@@ -2,7 +2,6 @@ import { Button, Container, Paper, Stack } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { logout as logoutApi } from '../api/postgrest';
-import ThemeSwitcher from '../components/ThemeSwitcher';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
 import { useMessages } from '../hooks/useMessages';
@@ -57,10 +56,6 @@ export default function HomePage() {
           <Button variant="contained" size="large" fullWidth onClick={() => navigate('/account')}>
             Account
           </Button>
-        </Stack>
-
-        <Stack spacing={2} sx={{ mb: 3, ...centeredContentStackSx }}>
-          <ThemeSwitcher fullWidth />
         </Stack>
 
         <Stack spacing={2} sx={centeredContentStackSx}>

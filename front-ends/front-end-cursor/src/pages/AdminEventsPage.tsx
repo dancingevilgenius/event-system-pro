@@ -24,7 +24,6 @@ import {
 } from '../api/postgrest';
 import AddEventGroupDialog from '../components/AddEventGroupDialog';
 import AppTextField from '../components/AppTextField';
-import EditEventGroupDirectorsDialog from '../components/EditEventGroupDirectorsDialog';
 import { EVENT_HOME_PATH, eventGroupDetailPath } from '../constants/eventRoutes';
 import { useMessages } from '../hooks/useMessages';
 import { EVENT_TYPES_LIST_CODE } from '../lib/staticList';
@@ -42,7 +41,6 @@ export default function AdminEventsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
-  const [directorsDialogRow, setDirectorsDialogRow] = useState<EventGroupListRow | null>(null);
   const [savingEventTypeCodes, setSavingEventTypeCodes] = useState<Set<string>>(new Set());
 
   const loadEventGroups = useCallback(async () => {
@@ -178,14 +176,13 @@ export default function AdminEventsPage() {
                   <TableCell>Event Group Code</TableCell>
                   <TableCell>Full Name</TableCell>
                   <TableCell>Event Type</TableCell>
-                  <TableCell align="center">Directors</TableCell>
                   <TableCell align="center">Events</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {filteredRows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} align="center">
+                    <TableCell colSpan={4} align="center">
                       {rows.length === 0
                         ? 'No event groups found.'
                         : 'No event groups match this filter.'}
@@ -226,15 +223,6 @@ export default function AdminEventsPage() {
                         <Button
                           variant="outlined"
                           size="small"
-                          onClick={() => setDirectorsDialogRow(row)}
-                        >
-                          Edit
-                        </Button>
-                      </TableCell>
-                      <TableCell align="center">
-                        <Button
-                          variant="outlined"
-                          size="small"
                           onClick={() =>
                             navigate(eventGroupDetailPath(row.eventGroupCode))
                           }
@@ -262,18 +250,6 @@ export default function AdminEventsPage() {
         onClose={() => setAddDialogOpen(false)}
         onCreated={() => {
           showSuccess('Event group created.');
-          void loadEventGroups();
-        }}
-      />
-
-      <EditEventGroupDirectorsDialog
-        open={directorsDialogRow !== null}
-        eventGroupCode={directorsDialogRow?.eventGroupCode ?? ''}
-        eventGroupName={directorsDialogRow?.fullName ?? ''}
-        initialDirectors={directorsDialogRow?.directors ?? []}
-        onClose={() => setDirectorsDialogRow(null)}
-        onSaved={() => {
-          showSuccess('Directors updated.');
           void loadEventGroups();
         }}
       />

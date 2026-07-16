@@ -10,6 +10,7 @@ INSERT INTO public.event_group (
   event_group_code,
   full_name,
   short_name,
+  event_type_code,
   more_json,
   created_by
 )
@@ -18,6 +19,7 @@ VALUES
     'ROBOT_RIOT',
     'Robot Riot',
     'Robot Riot',
+    'ROBOTICS_GENERAL',
     '{"demo": true}'::jsonb,
     'c-agent'
   ),
@@ -25,6 +27,7 @@ VALUES
     'SERVO_SLAM',
     'Servo Slam',
     'Servo Slam',
+    'ROBOTICS_GENERAL',
     '{"demo": true}'::jsonb,
     'c-agent'
   ),
@@ -32,6 +35,7 @@ VALUES
     'RIVET_RUMBLE',
     'Rivet Rumble',
     'Rivet Rumble',
+    'ROBOTICS_GENERAL',
     '{"demo": true}'::jsonb,
     'c-agent'
   ),
@@ -39,6 +43,7 @@ VALUES
     'CIRCUIT_CARNAGE',
     'Circuit Carnage',
     'Circuit Carnage',
+    'ROBOTICS_GENERAL',
     '{"demo": true}'::jsonb,
     'c-agent'
   ),
@@ -46,10 +51,12 @@ VALUES
     'GASKET_GAUNTLET',
     'Gasket Gauntlet',
     'Gasket Gauntlet',
+    'ROBOTICS_GENERAL',
     '{"demo": true}'::jsonb,
     'c-agent'
   )
 ON CONFLICT (event_group_code) DO UPDATE SET
   full_name = EXCLUDED.full_name,
   short_name = EXCLUDED.short_name,
+  event_type_code = EXCLUDED.event_type_code,
   more_json = EXCLUDED.more_json;

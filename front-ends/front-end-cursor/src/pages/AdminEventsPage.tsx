@@ -2,6 +2,7 @@ import {
   Button,
   CircularProgress,
   Container,
+  MenuItem,
   Paper,
   Stack,
   Table,
@@ -14,12 +15,19 @@ import {
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchEventGroups, type EventGroupListRow } from '../api/postgrest';
+import {
+  fetchEventGroups,
+  fetchSortedStaticListEntries,
+  updateEventGroupEventType,
+  type EventGroupListRow,
+  type StaticListEntry,
+} from '../api/postgrest';
 import AddEventGroupDialog from '../components/AddEventGroupDialog';
 import AppTextField from '../components/AppTextField';
 import EditEventGroupDirectorsDialog from '../components/EditEventGroupDirectorsDialog';
 import { EVENT_HOME_PATH, eventGroupDetailPath } from '../constants/eventRoutes';
 import { useMessages } from '../hooks/useMessages';
+import { EVENT_TYPES_LIST_CODE } from '../lib/staticList';
 
 function displayValue(value: string): string {
   return value.trim() === '' ? '—' : value;
@@ -27,23 +35,30 @@ function displayValue(value: string): string {
 
 export default function AdminEventsPage() {
   const navigate = useNavigate();
-  const { showSuccess } = useMessages();
+  const { showSuccess, showProblem } = useMessages();
   const [rows, setRows] = useState<EventGroupListRow[]>([]);
+  const [eventTypeOptions, setEventTypeOptions] = useState<StaticListEntry[]>([]);
   const [nameFilter, setNameFilter] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [directorsDialogRow, setDirectorsDialogRow] = useState<EventGroupListRow | null>(null);
+  const [savingEventTypeCodes, setSavingEventTypeCodes] = useState<Set<string>>(new Set());
 
   const loadEventGroups = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const eventGroups = await fetchEventGroups();
+      const [eventGroups, eventTypes] = await Promise.all([
+        fetchEventGroups(),
+        fetchSortedStaticListEntries(EVENT_TYPES_LIST_CODE, 'event types'),
+      ]);
       setRows(eventGroups);
+      setEventTypeOptions(eventTypes);
     } catch (loadError) {
       setRows([]);
+      setEventTypeOptions([]);
       setError(loadError instanceof Error ? loadError.message : 'Unable to load event groups.');
     } finally {
       setLoading(false);
@@ -59,6 +74,53 @@ export default function AdminEventsPage() {
     normalizedNameFilter === ''
       ? rows
       : rows.filter((row) => row.fullName.toLowerCase().includes(normalizedNameFilter));
+
+  const handleEventTypeChange = async (
+    eventGroupCode: string,
+    nextEventTypeCode: string,
+  ) => {
+    const currentRow = rows.find((row) => row.eventGroupCode === eventGroupCode);
+    const previousTypeCode = currentRow?.eventTypeCode ?? null;
+    const normalizedNext = nextEventTypeCode.trim() === '' ? null : nextEventTypeCode.trim();
+
+    if ((previousTypeCode ?? null) === normalizedNext) {
+      return;
+    }
+
+    setRows((prev) =>
+      prev.map((row) =>
+        row.eventGroupCode === eventGroupCode
+          ? { ...row, eventTypeCode: normalizedNext }
+          : row,
+      ),
+    );
+    setSavingEventTypeCodes((prev) => new Set(prev).add(eventGroupCode));
+
+    try {
+      const updated = await updateEventGroupEventType(eventGroupCode, normalizedNext);
+      setRows((prev) =>
+        prev.map((row) => (row.eventGroupCode === eventGroupCode ? updated : row)),
+      );
+      showSuccess('Event type updated.');
+    } catch (saveError) {
+      setRows((prev) =>
+        prev.map((row) =>
+          row.eventGroupCode === eventGroupCode
+            ? { ...row, eventTypeCode: previousTypeCode }
+            : row,
+        ),
+      );
+      showProblem(
+        saveError instanceof Error ? saveError.message : 'Unable to update event type.',
+      );
+    } finally {
+      setSavingEventTypeCodes((prev) => {
+        const next = new Set(prev);
+        next.delete(eventGroupCode);
+        return next;
+      });
+    }
+  };
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -115,6 +177,7 @@ export default function AdminEventsPage() {
                 <TableRow>
                   <TableCell>Event Group Code</TableCell>
                   <TableCell>Full Name</TableCell>
+                  <TableCell>Event Type</TableCell>
                   <TableCell align="center">Directors</TableCell>
                   <TableCell align="center">Events</TableCell>
                 </TableRow>
@@ -122,7 +185,7 @@ export default function AdminEventsPage() {
               <TableBody>
                 {filteredRows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={4} align="center">
+                    <TableCell colSpan={5} align="center">
                       {rows.length === 0
                         ? 'No event groups found.'
                         : 'No event groups match this filter.'}
@@ -133,6 +196,32 @@ export default function AdminEventsPage() {
                     <TableRow key={row.eventGroupCode} hover>
                       <TableCell>{displayValue(row.eventGroupCode)}</TableCell>
                       <TableCell>{displayValue(row.fullName)}</TableCell>
+                      <TableCell sx={{ minWidth: 200 }}>
+                        <AppTextField
+                          select
+                          size="small"
+                          fullWidth
+                          value={row.eventTypeCode ?? ''}
+                          disabled={savingEventTypeCodes.has(row.eventGroupCode)}
+                          onChange={(event) => {
+                            void handleEventTypeChange(row.eventGroupCode, event.target.value);
+                          }}
+                          slotProps={{
+                            htmlInput: {
+                              'aria-label': `Event type for ${row.fullName || row.eventGroupCode}`,
+                            },
+                          }}
+                        >
+                          <MenuItem value="">
+                            <em>Select event type</em>
+                          </MenuItem>
+                          {eventTypeOptions.map((entry) => (
+                            <MenuItem key={entry.key} value={entry.key}>
+                              {entry.label}
+                            </MenuItem>
+                          ))}
+                        </AppTextField>
+                      </TableCell>
                       <TableCell align="center">
                         <Button
                           variant="outlined"

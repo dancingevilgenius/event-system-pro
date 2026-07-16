@@ -9,9 +9,10 @@ import { setFlashSuccess } from '../lib/authMessages';
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, hasAnyRole } = useAuth();
   const { showProblem } = useMessages();
   const [busy, setBusy] = useState(false);
+  const isAdmin = hasAnyRole(['ADMIN']);
 
   const handleLogOff = async () => {
     setBusy(true);
@@ -50,9 +51,11 @@ export default function HomePage() {
           >
             Competitor
           </Button>
-          <Button variant="contained" size="large" fullWidth onClick={() => navigate('/adminhome')}>
-            Admin
-          </Button>
+          {isAdmin && (
+            <Button variant="contained" size="large" fullWidth onClick={() => navigate('/adminhome')}>
+              Admin
+            </Button>
+          )}
           <Button variant="contained" size="large" fullWidth onClick={() => navigate('/account')}>
             Account
           </Button>

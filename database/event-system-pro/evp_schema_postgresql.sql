@@ -99,6 +99,8 @@ CREATE TABLE IF NOT EXISTS event_group (
   event_group_code varchar(64) NOT NULL DEFAULT '',
   full_name varchar(64) NOT NULL DEFAULT '',
   short_name varchar(32) DEFAULT NULL,
+  directors_json json DEFAULT NULL,
+  event_type_code varchar(32) DEFAULT NULL,
   more_json jsonb DEFAULT NULL,
   created_date TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   created_by varchar(32) DEFAULT NULL,

@@ -811,6 +811,7 @@ export type EventGroupListRow = {
   eventGroupCode: string;
   fullName: string;
   directors: EventGroupDirector[];
+  eventTypeCode: string | null;
 };
 
 type ApiEventGroupDirector = {
@@ -824,6 +825,7 @@ type ApiEventGroupRecord = {
   event_group_code: string;
   full_name: string;
   directors_json?: ApiEventGroupDirector[] | null;
+  event_type_code?: string | null;
 };
 
 function parseEventGroupDirectors(value: unknown): EventGroupDirector[] {
@@ -849,10 +851,14 @@ type ApiEventWithAttendees = {
 };
 
 function mapEventGroupRow(row: ApiEventGroupRecord): EventGroupListRow {
+  const eventTypeCode =
+    typeof row.event_type_code === 'string' ? row.event_type_code.trim() : '';
+
   return {
     eventGroupCode: row.event_group_code,
     fullName: row.full_name,
     directors: parseEventGroupDirectors(row.directors_json),
+    eventTypeCode: eventTypeCode === '' ? null : eventTypeCode,
   };
 }
 
@@ -891,7 +897,7 @@ export async function fetchDemoEventGroupsWithAttendees(): Promise<EventGroupLis
   }
 
   const params = new URLSearchParams({
-    select: 'event_group_code,full_name,directors_json',
+    select: 'event_group_code,full_name,directors_json,event_type_code',
     order: 'full_name',
   });
   params.append('event_group_code', `in.(${eventGroupCodes.join(',')})`);
@@ -1001,10 +1007,52 @@ export async function updateEventGroupDirectors(
   return mapEventGroupRow(row);
 }
 
+export async function updateEventGroupEventType(
+  eventGroupCode: string,
+  eventTypeCode: string | null,
+): Promise<EventGroupListRow> {
+  const params = new URLSearchParams();
+  params.append('event_group_code', `eq.${eventGroupCode}`);
+
+  const trimmedType = eventTypeCode?.trim() ?? '';
+
+  const response = await fetch(`${POSTGREST_URL}/event_group?${params.toString()}`, {
+    method: 'PATCH',
+    headers: buildAuthHeaders({
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation',
+    }),
+    body: JSON.stringify({
+      event_type_code: trimmedType === '' ? null : trimmedType,
+    }),
+  });
+
+  if (!response.ok) {
+    let message = `Unable to update event group type (${response.status})`;
+    try {
+      const errorBody = (await response.json()) as RpcErrorBody;
+      if (errorBody.message) {
+        message = errorBody.message;
+      }
+    } catch {
+      // Keep default message when body is not JSON.
+    }
+    throw new Error(message);
+  }
+
+  const rows = (await response.json()) as ApiEventGroupRecord[];
+  const row = rows[0];
+  if (!row) {
+    throw new Error('Event group type update returned no rows.');
+  }
+
+  return mapEventGroupRow(row);
+}
+
 /** All event groups ordered by full name. */
 export async function fetchEventGroups(): Promise<EventGroupListRow[]> {
   const params = new URLSearchParams({
-    select: 'event_group_code,full_name,directors_json',
+    select: 'event_group_code,full_name,directors_json,event_type_code',
     order: 'full_name',
   });
 

@@ -5,10 +5,14 @@ import { rememberEventGroupCode } from '../lib/eventGroupSession';
 
 type AddEventButtonProps = {
   eventGroupCode: string;
+  eventId?: number;
+  label?: string;
 } & Pick<ButtonProps, 'variant' | 'fullWidth' | 'size'>;
 
 export default function AddEventButton({
   eventGroupCode,
+  eventId,
+  label = 'Add Event',
   variant = 'outlined',
   fullWidth = true,
   size = 'large',
@@ -18,12 +22,17 @@ export default function AddEventButton({
   const handleClick = () => {
     const trimmedCode = eventGroupCode.trim();
     rememberEventGroupCode(trimmedCode);
-    navigate(CREATE_EVENT_PATH, { state: { eventGroupCode: trimmedCode } });
+    navigate(CREATE_EVENT_PATH, {
+      state: {
+        eventGroupCode: trimmedCode,
+        ...(typeof eventId === 'number' && Number.isFinite(eventId) ? { eventId } : {}),
+      },
+    });
   };
 
   return (
     <Button variant={variant} size={size} fullWidth={fullWidth} onClick={handleClick}>
-      Add Event
+      {label}
     </Button>
   );
 }

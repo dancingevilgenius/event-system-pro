@@ -6,8 +6,10 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppTextField from '../components/AppTextField';
+import ShowRolesDialog from '../components/ShowRolesDialog';
 import ThemeSwitcher from '../components/ThemeSwitcher';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
@@ -18,6 +20,7 @@ export default function AccountPage() {
   const navigate = useNavigate();
   const { session } = useAuth();
   const { messageAutoDismissMs, setMessageAutoDismissMs } = useMessages();
+  const [rolesOpen, setRolesOpen] = useState(false);
 
   if (!session) {
     return null;
@@ -54,6 +57,14 @@ export default function AccountPage() {
           </AppTextField>
 
           <Button
+            variant="outlined"
+            size="large"
+            fullWidth
+            onClick={() => setRolesOpen(true)}
+          >
+            Show Roles
+          </Button>
+          <Button
             variant="contained"
             size="large"
             fullWidth
@@ -74,6 +85,12 @@ export default function AccountPage() {
           </Button>
         </Stack>
       </Paper>
+
+      <ShowRolesDialog
+        open={rolesOpen}
+        roles={session.roles}
+        onClose={() => setRolesOpen(false)}
+      />
     </Container>
   );
 }

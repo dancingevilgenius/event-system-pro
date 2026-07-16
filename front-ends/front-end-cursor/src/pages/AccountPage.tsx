@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import AppTextField from '../components/AppTextField';
+import ThemeSwitcher from '../components/ThemeSwitcher';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
 import { useMessages } from '../hooks/useMessages';
@@ -33,6 +34,8 @@ export default function AccountPage() {
         </Typography>
 
         <Stack spacing={2} sx={centeredContentStackSx}>
+          <ThemeSwitcher fullWidth />
+
           <AppTextField
             select
             label="Message display time"

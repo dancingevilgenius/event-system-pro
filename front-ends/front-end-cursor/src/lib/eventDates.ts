@@ -17,6 +17,54 @@ export const EMPTY_EVENT_DATES: EventDatesFormState = {
   endDateTime: '',
 };
 
+function padDateTimePart(value: number): string {
+  return String(value).padStart(2, '0');
+}
+
+/** Convert an API timestamptz string into a `datetime-local` input value. */
+export function toDateTimeLocalValue(value: string | null | undefined): string {
+  if (!value || value.trim() === '') {
+    return '';
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return '';
+  }
+
+  return [
+    `${date.getFullYear()}-${padDateTimePart(date.getMonth() + 1)}-${padDateTimePart(date.getDate())}`,
+    `${padDateTimePart(date.getHours())}:${padDateTimePart(date.getMinutes())}`,
+  ].join('T');
+}
+
+/** Build form date state from stored event start/end timestamps when available. */
+export function eventDatesFromApiTimestamps(
+  startDate: string | null | undefined,
+  endDate: string | null | undefined,
+): EventDatesFormState {
+  const startDateTime = toDateTimeLocalValue(startDate);
+  const endDateTime = toDateTimeLocalValue(endDate);
+
+  if (!startDateTime && !endDateTime) {
+    return EMPTY_EVENT_DATES;
+  }
+
+  if (endDateTime) {
+    return {
+      mode: 'multi_day',
+      startDateTime,
+      endDateTime,
+    };
+  }
+
+  return {
+    mode: 'single_day',
+    startDateTime,
+    endDateTime: '',
+  };
+}
+
 export type ScheduleTimeBlockDay = {
   id: string;
   title: string;

@@ -22,7 +22,7 @@ import {
 } from '@dnd-kit/sortable';
 import { type SyntheticEvent, useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { fetchEventGroupByCode } from '../api/postgrest';
+import { fetchEventById, fetchEventGroupByCode } from '../api/postgrest';
 import AddEventDates from '../components/AddEventDates';
 import AddEventLocation from '../components/AddEventLocation';
 import AddEventOnlineLinks from '../components/AddEventOnlineLinks';
@@ -37,9 +37,14 @@ import AddEventVolunteers from '../components/AddEventVolunteers';
 import AddEventSortableSectionAccordion from '../components/AddEventSortableSectionAccordion';
 import { type AddEventSectionStatus } from '../components/AddEventSectionStatusToggle';
 import { centeredContentStackSx } from '../constants/layout';
-import { EVENT_GROUPS_PATH, eventGroupDetailPath } from '../constants/eventRoutes';
+import {
+  EVENT_GROUPS_PATH,
+  eventDetailPath,
+  eventGroupDetailPath,
+} from '../constants/eventRoutes';
 import {
   EMPTY_EVENT_DATES,
+  eventDatesFromApiTimestamps,
   type EventDatesFormState,
   getScheduleTimeBlockDays,
   hasEventDatesForSchedule,
@@ -48,6 +53,7 @@ import { resolveEventGroupCode } from '../lib/eventGroupSession';
 
 type AddEventLocationState = {
   eventGroupCode?: string;
+  eventId?: number;
 };
 
 type AddEventSectionId =
@@ -220,8 +226,12 @@ function renderSectionContent(
 export default function AdminAddEventPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const eventGroupCode =
-    resolveEventGroupCode(location.state as AddEventLocationState | null) ?? '';
+  const locationState = (location.state as AddEventLocationState | null) ?? null;
+  const eventGroupCode = resolveEventGroupCode(locationState) ?? '';
+  const rawEventId = locationState?.eventId;
+  const eventId =
+    typeof rawEventId === 'number' && Number.isFinite(rawEventId) ? rawEventId : null;
+  const isEditingEvent = eventId !== null;
   const [eventGroupName, setEventGroupName] = useState('');
   const [expandedSection, setExpandedSection] = useState<AddEventSectionId | false>('dates');
   const [sectionStatuses, setSectionStatuses] = useState(createInitialSectionStatuses);
@@ -240,8 +250,25 @@ export default function AdminAddEventPage() {
 
   const scheduleDatesSelected = hasEventDatesForSchedule(eventDates);
 
-  const backPath = eventGroupCode ? eventGroupDetailPath(eventGroupCode) : EVENT_GROUPS_PATH;
-  const backLabel = eventGroupCode ? 'Back to Event Group' : 'Back to Event Groups';
+  const backPath =
+    isEditingEvent && eventGroupCode
+      ? eventDetailPath(eventGroupCode, eventId)
+      : eventGroupCode
+        ? eventGroupDetailPath(eventGroupCode)
+        : EVENT_GROUPS_PATH;
+  const backLabel =
+    isEditingEvent && eventGroupCode
+      ? 'Back to Event'
+      : eventGroupCode
+        ? 'Back to Event Group'
+        : 'Back to Event Groups';
+  const pageTitle = isEditingEvent
+    ? eventGroupCode
+      ? `Edit Event for ${eventGroupCode}`
+      : 'Edit Event'
+    : eventGroupCode
+      ? `Add Event for ${eventGroupCode}`
+      : 'Add Event';
 
   useEffect(() => {
     if (!eventGroupCode) {
@@ -267,6 +294,41 @@ export default function AdminAddEventPage() {
       cancelled = true;
     };
   }, [eventGroupCode]);
+
+  useEffect(() => {
+    if (!isEditingEvent || eventId === null) {
+      return;
+    }
+
+    let cancelled = false;
+
+    void fetchEventById(eventId)
+      .then((event) => {
+        if (cancelled) {
+          return;
+        }
+
+        if (!event || (eventGroupCode && event.eventGroupCode !== eventGroupCode)) {
+          return;
+        }
+
+        const nextDates = eventDatesFromApiTimestamps(event.startDate, event.endDate);
+        setEventDates(nextDates);
+
+        if (nextDates.startDateTime || nextDates.endDateTime) {
+          setSectionStatuses((current) =>
+            current.dates === 'in_progress' ? current : { ...current, dates: 'in_progress' },
+          );
+        }
+      })
+      .catch(() => {
+        // Keep empty dates when the event cannot be loaded.
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [eventGroupCode, eventId, isEditingEvent]);
 
   useEffect(() => {
     if (scheduleDatesSelected) {
@@ -314,7 +376,7 @@ export default function AdminAddEventPage() {
     <Container maxWidth="md" sx={{ py: 6 }}>
       <Paper elevation={3} sx={{ p: { xs: 2, sm: 4 } }}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
-          {eventGroupCode ? `Add Event for ${eventGroupCode}` : 'Add Event'}
+          {pageTitle}
         </Typography>
         {eventGroupName && (
           <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 3 }}>

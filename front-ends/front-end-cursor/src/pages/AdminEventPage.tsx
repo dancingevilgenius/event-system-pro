@@ -108,7 +108,13 @@ export default function AdminEventPage() {
         )}
 
         <Stack spacing={2} sx={centeredContentStackSx}>
-          {decodedGroupCode && <AddEventButton eventGroupCode={decodedGroupCode} />}
+          {decodedGroupCode && Number.isFinite(parsedEventId) && (
+            <AddEventButton
+              eventGroupCode={decodedGroupCode}
+              eventId={parsedEventId}
+              label="Edit Event"
+            />
+          )}
           <Button variant="outlined" fullWidth onClick={() => navigate(groupBasePath)}>
             Back to {groupFullName || 'Group'}
           </Button>

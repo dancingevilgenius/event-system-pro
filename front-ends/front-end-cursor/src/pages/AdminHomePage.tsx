@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom';
 import {
   generateDemoAttendees,
   prepareWsdcAttendeeRefresh,
-  runDemoEventActiveWindow,
   setUserWsdcId,
   startRobotRiotAttendeeChurn,
 } from '../api/postgrest';
@@ -18,8 +17,6 @@ import BuildInfoDialog from '../components/BuildInfoDialog';
 import { centeredContentStackSx } from '../constants/layout';
 import { useMessages } from '../hooks/useMessages';
 import { usePocCounter } from '../hooks/usePocCounter';
-import { formatReadableDateTime } from '../utils/auditTimestamps';
-
 import { EVENT_HOME_PATH } from '../constants/eventRoutes';
 
 const ADMIN_BUTTONS = [
@@ -45,7 +42,6 @@ export default function AdminHomePage() {
   const [generatingAttendees, setGeneratingAttendees] = useState(false);
   const [startingChurn, setStartingChurn] = useState(false);
   const [refreshingWsdc, setRefreshingWsdc] = useState(false);
-  const [refreshingDemoEventWindow, setRefreshingDemoEventWindow] = useState(false);
   const [buildInfoOpen, setBuildInfoOpen] = useState(false);
 
   const handleTestMessages = () => {
@@ -104,45 +100,6 @@ export default function AdminHomePage() {
       );
     } finally {
       setStartingChurn(false);
-    }
-  };
-
-  const handleRefreshDemoEventWindow = async () => {
-    clearMessages();
-    setRefreshingDemoEventWindow(true);
-
-    try {
-      const result = await runDemoEventActiveWindow();
-
-      if (!result.ok) {
-        showProblem(result.message ?? 'Unable to refresh demo event active window.');
-        return;
-      }
-
-      const alteredEvents = result.events ?? [];
-
-      if (alteredEvents.length === 0) {
-        showInfo('No current-year Hollowfen or Jitterbug events were updated.');
-        return;
-      }
-
-      showSuccess(
-        `Demo event active window refreshed (${result.events_updated ?? alteredEvents.length} event(s)).`,
-      );
-
-      for (const event of alteredEvents) {
-        showInfo(
-          `${event.name}: start ${formatReadableDateTime(event.start_date)}, end ${formatReadableDateTime(event.end_date)}`,
-        );
-      }
-    } catch (error) {
-      showProblem(
-        error instanceof Error
-          ? error.message
-          : 'Unable to refresh demo event active window.',
-      );
-    } finally {
-      setRefreshingDemoEventWindow(false);
     }
   };
 
@@ -269,16 +226,6 @@ export default function AdminHomePage() {
             onClick={() => void handleRefreshWsdcAttendees()}
           >
             {refreshingWsdc ? 'Refreshing WSDC Info…' : 'Refresh WSDC Attendee Info'}
-          </Button>
-          <Button
-            variant="outlined"
-            fullWidth
-            disabled={refreshingDemoEventWindow}
-            onClick={() => void handleRefreshDemoEventWindow()}
-          >
-            {refreshingDemoEventWindow
-              ? 'Refreshing Demo Event Window…'
-              : 'Refresh Hollowfen & Jitterbug Active Window'}
           </Button>
           <Button variant="outlined" fullWidth onClick={handleTestMessages}>
             Test Message Boxes

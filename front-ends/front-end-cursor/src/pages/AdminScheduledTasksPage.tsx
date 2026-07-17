@@ -23,6 +23,7 @@ import {
   fetchScheduledTasks,
   runScheduledTask,
   setScheduledTaskEnabled,
+  setScheduledTaskInterval,
   setScheduledTaskSchedule,
   type ScheduledTaskRow,
 } from '../api/postgrest';
@@ -35,7 +36,7 @@ import {
 } from '../utils/scheduleDescription';
 import {
   SCHEDULE_FREQUENCY_OPTIONS,
-  buildCronFromPreset,
+  buildScheduleFromPreset,
   needsTimeOfDay,
   parseSchedulePreset,
   staleAfterForFrequency,
@@ -157,18 +158,33 @@ function ScheduleDialog({
   }, [open, task]);
 
   const previewTask: ScheduledTaskRow | null = task
-    ? {
-        ...task,
-        scheduleCron:
-          frequency === 'custom'
-            ? task.scheduleCron
-            : buildCronFromPreset(frequency, time, { dayOfWeek, dayOfMonth, month }),
-        intervalSeconds: frequency === 'custom' ? task.intervalSeconds : null,
-        scheduleLabel:
-          frequency === 'custom'
-            ? task.scheduleLabel
-            : buildCronFromPreset(frequency, time, { dayOfWeek, dayOfMonth, month }),
-      }
+    ? (() => {
+        if (frequency === 'custom') {
+          return task;
+        }
+
+        const built = buildScheduleFromPreset(frequency, time, {
+          dayOfWeek,
+          dayOfMonth,
+          month,
+        });
+
+        if (built.kind === 'interval') {
+          return {
+            ...task,
+            scheduleCron: null,
+            intervalSeconds: built.intervalSeconds,
+            scheduleLabel: `Every ${built.intervalSeconds} seconds`,
+          };
+        }
+
+        return {
+          ...task,
+          scheduleCron: built.cron,
+          intervalSeconds: null,
+          scheduleLabel: built.cron,
+        };
+      })()
     : null;
 
   const code = previewTask ? scheduleCode(previewTask) : '—';
@@ -185,18 +201,18 @@ function ScheduleDialog({
     clearMessages();
     setSaving(true);
 
-    const cron = buildCronFromPreset(nextFrequency, nextTime, {
+    const built = buildScheduleFromPreset(nextFrequency, nextTime, {
       dayOfWeek,
       dayOfMonth,
       month,
     });
+    const staleAfter = staleAfterForFrequency(nextFrequency);
 
     try {
-      const result = await setScheduledTaskSchedule(
-        task.jobName,
-        cron,
-        staleAfterForFrequency(nextFrequency),
-      );
+      const result =
+        built.kind === 'interval'
+          ? await setScheduledTaskInterval(task.jobName, built.intervalSeconds, staleAfter)
+          : await setScheduledTaskSchedule(task.jobName, built.cron, staleAfter);
 
       if (!result.ok) {
         showProblem(result.message ?? `Unable to update schedule for ${task.jobName}.`);
@@ -280,7 +296,7 @@ function ScheduleDialog({
             helperText={
               frequency === 'custom'
                 ? 'Current schedule is custom. Choose a frequency to replace it.'
-                : 'Changing frequency saves the cron schedule immediately.'
+                : 'Changing frequency saves the schedule immediately.'
             }
           >
             {frequency === 'custom' && (

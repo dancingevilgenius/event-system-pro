@@ -12,11 +12,17 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 | Auth context | `front-ends/front-end-cursor/src/context/AuthProvider.tsx` |
 | PostgREST API | `front-ends/front-end-cursor/src/api/postgrest.ts` |
 | Mailer API | `front-ends/front-end-cursor/src/api/mailer.ts` |
+| WSDC registry API | `front-ends/front-end-cursor/src/api/wsdcRegistry.ts` |
+| Public home | `front-ends/front-end-cursor/src/pages/PublicHomePage.tsx` |
 | Login | `front-ends/front-end-cursor/src/pages/LoginPage.tsx` |
 | Register | `front-ends/front-end-cursor/src/pages/RegisterPage.tsx` |
 | Forgot password | `front-ends/front-end-cursor/src/pages/ForgotPasswordPage.tsx` |
-| Home | `front-ends/front-end-cursor/src/pages/HomePage.tsx` |
+| Demo hub | `front-ends/front-end-cursor/src/pages/DemoPage.tsx` |
+| Tournament bracket demo | `front-ends/front-end-cursor/src/pages/TournamentBracketDemoPage.tsx` |
+| Merchandise POS demo | `front-ends/front-end-cursor/src/pages/EventMerchandisePosDemoPage.tsx` |
+| Signed-in Home (role hub) | `front-ends/front-end-cursor/src/pages/HomePage.tsx` |
 | Account | `front-ends/front-end-cursor/src/pages/AccountPage.tsx` |
+| Show roles dialog | `front-ends/front-end-cursor/src/components/ShowRolesDialog.tsx` |
 | Secret questions (password recovery) | `front-ends/front-end-cursor/src/pages/SecretQuestionsPage.tsx` |
 | Change password | `front-ends/front-end-cursor/src/pages/ChangePasswordPage.tsx` |
 | Secret questions form | `front-ends/front-end-cursor/src/components/SecretQuestionsSelector.tsx` |
@@ -26,10 +32,25 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 | Register password-recovery dialog | `front-ends/front-end-cursor/src/components/PasswordRecoveryDialog.tsx` |
 | Password recovery setup re-export | `front-ends/front-end-cursor/src/components/PasswordRecoverySetupForm.tsx` |
 | Admin home | `front-ends/front-end-cursor/src/pages/AdminHomePage.tsx` |
+| Build info dialog | `front-ends/front-end-cursor/src/components/BuildInfoDialog.tsx` |
 | Admin competitors | `front-ends/front-end-cursor/src/pages/AdminCompetitorsPage.tsx` |
 | Admin search users | `front-ends/front-end-cursor/src/pages/AdminSearchUsersPage.tsx` |
 | User advanced search dialog | `front-ends/front-end-cursor/src/components/UserAdvancedSearchDialog.tsx` |
 | Edit user dialog | `front-ends/front-end-cursor/src/components/EditUserDialog.tsx` |
+| Event home | `front-ends/front-end-cursor/src/pages/EventHomePage.tsx` |
+| Event groups list | `front-ends/front-end-cursor/src/pages/AdminEventsPage.tsx` |
+| Event group detail | `front-ends/front-end-cursor/src/pages/AdminEventGroupPage.tsx` |
+| Event detail | `front-ends/front-end-cursor/src/pages/AdminEventPage.tsx` |
+| Event attendees | `front-ends/front-end-cursor/src/pages/AdminEventAttendeesPage.tsx` |
+| Event contests | `front-ends/front-end-cursor/src/pages/AdminEventContestsPage.tsx` |
+| Audit log | `front-ends/front-end-cursor/src/pages/AdminAuditLogPage.tsx` |
+| Audit trail card / detail | `front-ends/front-end-cursor/src/components/AuditTrailCard.tsx`, `AuditLogDetailDialog.tsx` |
+| Scheduled tasks | `front-ends/front-end-cursor/src/pages/AdminScheduledTasksPage.tsx` |
+| Schedule frequency presets | `front-ends/front-end-cursor/src/utils/schedulePresets.ts` |
+| Static lists | `front-ends/front-end-cursor/src/pages/StaticListsPage.tsx`, `StaticListDetailsPage.tsx` |
+| Governing bodies | `front-ends/front-end-cursor/src/pages/GoverningBodyPage.tsx` |
+| WSDC Find Dancer | `front-ends/front-end-cursor/src/pages/WsdcFindDancerPage.tsx` |
+| Set Event Judges | `front-ends/front-end-cursor/src/pages/AdminSetEventJudgesPage.tsx` |
 | Staff / contest pick | `front-ends/front-end-cursor/src/pages/StaffPage.tsx`, `ContestSelectionPage.tsx` |
 | Competitor placeholder | `front-ends/front-end-cursor/src/pages/CompetitorPage.tsx` |
 | Judging page | `front-ends/front-end-cursor/src/pages/JudgingPage.tsx` |
@@ -43,13 +64,15 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 | Progress bar | `front-ends/front-end-cursor/src/components/PercentCompleteBar.tsx` |
 | Layout constants | `front-ends/front-end-cursor/src/constants/layout.ts` |
 | Event admin routes | `front-ends/front-end-cursor/src/constants/eventRoutes.ts` |
-| Add Event page | `front-ends/front-end-cursor/src/pages/AdminAddEventPage.tsx` |
+| Add / Edit Event page | `front-ends/front-end-cursor/src/pages/AdminAddEventPage.tsx` |
 | Add Event sections | `front-ends/front-end-cursor/src/components/AddEvent*Section.tsx`, `AddEventSortableSectionAccordion.tsx` |
 | Add Event shared helpers | `front-ends/front-end-cursor/src/lib/eventDates.ts`, `eventGroupSession.ts`, `eventLocation.ts` |
 | Drag handle icon | `front-ends/front-end-cursor/src/components/DragHandleIcon.tsx` |
 | Message stack UI | `front-ends/front-end-cursor/src/components/MessageStack.tsx` |
 | Message provider / API | `front-ends/front-end-cursor/src/context/MessageProvider.tsx` |
+| Message auto-dismiss prefs | `front-ends/front-end-cursor/src/lib/messagePreferences.ts` |
 | `useMessages` hook | `front-ends/front-end-cursor/src/hooks/useMessages.ts` |
+| Readable datetime helpers | `front-ends/front-end-cursor/src/utils/auditTimestamps.ts` |
 | Theme switcher UI | `front-ends/front-end-cursor/src/components/ThemeSwitcher.tsx` |
 | Theme provider | `front-ends/front-end-cursor/src/context/AppThemeProvider.tsx` |
 | Skin definitions | `front-ends/front-end-cursor/src/skins/` |
@@ -65,6 +88,9 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 | PostgREST dev config | `back-ends/postgrest/postgrest.conf`, `back-ends/postgrest/.env.example` |
 | Cursor rules (DB audit) | `.cursor/rules/database-audit-columns.mdc` |
 | Cursor rules (demo attendee IDs) | `.cursor/rules/demo-attendee-id-reservation.mdc` |
+| Cursor rules (readable timestamps) | `.cursor/rules/database-timestamp-format.mdc` |
+| Cursor rules (bold labels) | `.cursor/rules/bold-text-labels.mdc` |
+| Cursor rules (MUI v9 `sx`) | `.cursor/rules/mui-v9-sx-styling.mdc` |
 | Activity monitor | `front-ends/front-end-cursor/src/components/ActivityMonitor.tsx` |
 | Contest selection layout | `front-ends/front-end-cursor/src/pages/ContestSelectionPage.tsx` |
 | Admin contests / results | `front-ends/front-end-cursor/src/pages/AdminContestsPage.tsx`, `AdminContestResultsPage.tsx` |
@@ -77,22 +103,34 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 ## General layout and navigation
 
 - Main content blocks (messages, buttons, fields, dropdowns) are capped at **360px** wide and centered (`CONTENT_MAX_WIDTH`).
-- Default route is **Login** (`/`). Unknown URLs redirect to login.
-- **Public routes:** `/` (login), `/register`, `/forgot-password`.
+- Default route is **Public Home** (`/`). Alias: `/home-page`. Unknown URLs redirect to **`/`**.
+- **Public routes:** `/`, `/home-page`, `/login`, `/register`, `/forgot-password`, `/demo`, `/tournament-bracket-demo`.
 - **Protected routes** require a signed-in session (see **Authentication** and **Roles and route guards**).
 - Staff reaches Judging via **Staff → Contest**, which navigates to `/judging`.
 - Judging **Submit** and **Back to Staff** both return to `/staff`.
 
 ---
 
+## Public home (`/`, `/home-page`)
+
+Unauthenticated landing page (`PublicHomePage`):
+
+- Brand title: **Event System Pro**.
+- Short tagline plus “More features coming soon.”
+- Shows current **hostname**.
+- Buttons: **Login** (`/login`), **Register** (`/register`), **Demo** (`/demo`).
+
+---
+
 ## Authentication and session
 
+- Login is at **`/login`** (not `/`). Success navigates to **`/home`**. **Back to Home** on the login page goes to `/home-page`.
 - Login calls PostgREST RPC **`api.login`** with username or email and password.
 - Passwords are verified with **bcrypt** on the server; distinct error messages for unknown account vs incorrect password.
 - On success the app stores a **session** in `sessionStorage` (`esp_session`): `user_id`, `username`, `email`, `roles`, and JWT **`token`**.
 - Authenticated API calls send **`Authorization: Bearer <token>`** (see `postgrest.ts`).
 - **Public** RPCs and lookups (login, register, forgot-password, country/state lists) call PostgREST with **`auth: 'omit'`** so a stale session JWT is not sent on unauthenticated flows.
-- **Logout** clears the session and returns to `/`.
+- **Log Off** (signed-in Home) calls the logout RPC, clears the session, and returns to **`/`** (public home).
 - Sign in again after database auth or role changes so the JWT includes current roles and username.
 
 ---
@@ -101,7 +139,7 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 
 ### App roles
 
-Ten roles from `user_app_role` (included in login JWT `app_roles`):
+Ten roles from `user_app_role` (included in login JWT `app_roles`). Codes are **uppercase**:
 
 | Code | Label |
 |------|-------|
@@ -116,9 +154,11 @@ Ten roles from `user_app_role` (included in login JWT `app_roles`):
 | `EVENT_DIRECTOR` | Event Director |
 | `COMPETITOR` | Competitor |
 
+Legacy codes **`EVENT_COORDINATOR`** and **`BALLROOM_COORDINATOR`** were renamed to **`EVENT_DIRECTOR`** and **`EVENT_MANAGER`**.
+
 ### `ProtectedRoute` behavior
 
-- No session → redirect to **`/`** (login).
+- No session → redirect to **`/`** (public home).
 - Session present but missing required role → redirect to **`/home`**.
 - Users with the **`ADMIN`** role pass **any** role check (admin can open staff, competitor, and admin routes).
 
@@ -126,20 +166,23 @@ Ten roles from `user_app_role` (included in login JWT `app_roles`):
 
 | Route | Required role(s) |
 |-------|------------------|
-| `/home`, `/account`, `/changepassword`, `/secret-questions` | Any signed-in user |
+| `/home`, `/account`, `/changepassword`, `/secret-questions`, `/static-lists`, `/static-list-details/:listCode` | Any signed-in user |
 | `/staff`, `/judging` | `STAFF` (or `ADMIN`) |
 | `/competitor` | `COMPETITOR` (or `ADMIN`) |
-| `/adminhome`, `/admin/event-details`, `/admin/contests`, `/admin/contests/contest`, `/admin/competitors`, `/admin/search-users`, `/admin/competition-entries` | `ADMIN` |
+| `/adminhome`, `/event-home`, `/event-groups`, `/event-groups/:code`, `/event-groups/:code/:eventId` (+ `/attendees`, `/competitors`, `/contests`), `/create-event`, `/admin/contests`, `/admin/contests/contest`, `/admin/competitors`, `/admin/search-users`, `/admin/competition-entries`, `/admin/audit-log`, `/admin/scheduled-tasks`, `/admin/set-event-judges`, `/governing-body`, `/wsdc-find-dancer`, `/event-merchandise-pos-demo` | `ADMIN` |
+| `/admin/event-details` | Redirects to `/event-groups` |
+| `/add-event` | Redirects to `/create-event` |
+| `/admin/tournament-bracket-demo` | Redirects to `/tournament-bracket-demo` |
 
 ---
 
 ## Home page (`/home`)
 
 - After login, the user lands on **Home** (role hub).
-- Buttons (top to bottom): **Staff** (`/staff`), **Competitor** (`/competitor`), **Admin** (`/adminhome`), **Account** (`/account`).
-- **Skin** dropdown (`ThemeSwitcher`) below the navigation buttons.
-- **Back to Login** logs out and returns to `/`.
-- **Test Messages** is on **Admin** home, not Home (see **Admin section**).
+- Buttons (top to bottom): **Staff** (`/staff`), **Competitor** (`/competitor`), **Admin** (`/adminhome`) — **only when the user has the `ADMIN` role** — then **Account** (`/account`).
+- **Skin** lives on **Account**, not Home.
+- **Log Off** calls logout, clears session, and returns to **`/`** (public home).
+- **Test Message Boxes** is on **Admin** home, not Home (see **Admin section**).
 
 ---
 
@@ -148,6 +191,9 @@ Ten roles from `user_app_role` (included in login JWT `app_roles`):
 ### Account (`/account`)
 
 - Shows signed-in **username**.
+- **`ThemeSwitcher`** (Skin dropdown) — moved here from Home.
+- **Message display time** select: how long success / warning / problem / info messages stay visible before auto-dismiss. Options: **3 seconds** (default), **10 seconds**, **1 minute**, **5 minutes**, **10 minutes**. Stored in `localStorage` key `evp.messageAutoDismissMs` (`messagePreferences.ts`).
+- **Show Roles** opens `ShowRolesDialog` listing the session’s role codes (e.g. `ADMIN`), or “No roles…” when empty.
 - **Change Password** navigates to `/changepassword`.
 - **Password Recovery** navigates to `/secret-questions`.
 - **Back to Home** returns to `/home`.
@@ -181,7 +227,7 @@ Four-step stepper (public, no login required):
 3. **New password** — set new password (≥ 8 characters, must match confirm); `api.forgot_password_complete`.
 4. **Done** — return to login.
 
-Login page links: **Forgot password?** and **Register**.
+Login page links: **Forgot password?**, **Register**, and **Back to Home** (`/home-page`).
 
 ---
 
@@ -194,7 +240,7 @@ Login page links: **Forgot password?** and **Register**.
 - Before submit, user must complete **three secret password-recovery questions** in the **`PasswordRecoveryDialog`** (opened from the register form).
 - Dialog uses the same shared slot components as `/secret-questions` (see **Secret question UI** below); slot labels are **not** shown in the dialog.
 - Answers are bcrypt-hashed via RPC **`api.hash_password_recovery_answers`** (`auth: omit`) and stored in `password_recovery_json` on submit.
-- Submit calls **`api.register_user`**; on success navigates to login.
+- Submit calls **`api.register_user`**; on success navigates to **`/login`**.
 - **Login** and **Register** call `clearMessages()` on mount.
 
 ---
@@ -254,11 +300,50 @@ Forgot-password flow uses a separate stepper on **`/forgot-password`** (user ans
 ### Admin home (`/adminhome`)
 
 - Title: **Admin**.
-- Navigation buttons: **Events**, **Contests**, **Competitors**, **Users**, **Competition Entries**, and other admin tools (plus **Back to Home**).
-- **Generate Attendees** (outlined button): calls PostgREST RPC **`api.generate_demo_attendees`** (admin role required). Regenerates demo attendee rows in the reserved `attendee_id` range (see **Attendee demo data**). Shows success with selected event-group names, or a problem message on failure. Button label becomes **Generating Attendees…** while the request is in flight.
-- **Test Messages** clears the stack and shows one success, one warning, and one problem alert (same copy as the former Home test button).
-- **Event Details** and **Competition Entries** are **placeholder** pages (`AdminPlaceholderPage`).
-- **Contests** opens a real page with three contest buttons → **`/admin/contests/contest`** (results).
+- Shows a **POC counter** (10s realtime WebSocket demo) above the button stack.
+- Contained navigation buttons (top to bottom):
+
+| Label | Path |
+|-------|------|
+| Events | `/event-home` |
+| Contests | `/admin/contests` |
+| Competitors | `/admin/competitors` |
+| Users | `/admin/search-users` |
+| Competition Entries | `/admin/competition-entries` (placeholder) |
+| Event Merchandise POS | `/event-merchandise-pos-demo` |
+| WSDC Find Dancer | `/wsdc-find-dancer` |
+| Set Event Judges | `/admin/set-event-judges` |
+| Governing Bodies | `/governing-body` |
+| Audit Log | `/admin/audit-log` |
+| Scheduled Tasks | `/admin/scheduled-tasks` |
+| Static Lists | `/static-lists` |
+| Staff | `/staff` |
+
+- Outlined actions below the nav stack:
+  - **Generate Attendees** — calls PostgREST RPC **`api.generate_demo_attendees`** (admin JWT). Regenerates demo attendee rows in the reserved `attendee_id` range (see **Attendee demo data**). Success includes selected event-group names. Label becomes **Generating Attendees…** while in flight.
+  - **Rotate Robot Riot Attendees (10 min)** — starts a short-lived attendee churn job for the Robot Riot demo event (`startRobotRiotAttendeeChurn(10)`).
+  - **Refresh WSDC Attendee Info** — prepares targets, fetches WSDC profiles, and saves them onto matching users.
+  - **Test Message Boxes** — clears the stack, then shows one success, warning, problem, and **info** alert (`You look marvelous!`).
+  - **Build Info** — opens `BuildInfoDialog`.
+  - **Back to Home** → `/home`.
+- Removed: **Refresh Hollowfen & Jitterbug Active Window** (no longer on Admin home).
+- Legacy path `/admin/event-details` redirects to **`/event-groups`**.
+
+### Event admin hierarchy
+
+Paths from `eventRoutes.ts`: `EVENT_HOME_PATH=/event-home`, `EVENT_GROUPS_PATH=/event-groups`, `EVENTS_PATH=/events`, `CREATE_EVENT_PATH=/create-event`.
+
+| Route | Page | Behavior |
+|-------|------|----------|
+| `/event-home` | `EventHomePage` | **Event Groups** → `/event-groups`; **Events** → `/events` (placeholder); Back to Admin |
+| `/event-groups` | `AdminEventsPage` | Title **Event Groups**; filter by name; **Add Event Group**; table columns Code / Full Name / **Event Type** (inline dropdown from static list `EVENT_TYPES`, saves immediately) / **Edit** → group detail. No Directors column. |
+| `/event-groups/:code` | `AdminEventGroupPage` | Buttons per event (month/year labels); **Add Event**; Back to Event Groups |
+| `/event-groups/:code/:eventId` | `AdminEventPage` | **Attendees**, **Competitors** (placeholder), **Contests**; **Edit Event** (`AddEventButton` with `eventId`); Back to group |
+| `.../attendees` | `AdminEventAttendeesPage` | Real attendees list for that event |
+| `.../contests` | `AdminEventContestsPage` | Event contest management |
+| `/create-event` | `AdminAddEventPage` | **Add Event** or **Edit Event** (when navigated with `{ eventGroupCode, eventId }`). Edit preloads event dates/fields; title **Edit Event for {code}**; Back returns to the event detail when editing. |
+
+See **Multi-section admin form pages (Add Event pattern)** for accordion / status / DnD construction rules.
 
 ### Admin competitors (`/admin/competitors`)
 
@@ -286,12 +371,95 @@ Forgot-password flow uses a separate stepper on **`/forgot-password`** (user ans
 
 ## Competitor page (`/competitor`) — placeholder
 
-- Route: **`/competitor`**, opened from the **Competitor** button on Home (requires `competitor` or `admin` role).
+- Route: **`/competitor`**, opened from the **Competitor** button on Home (requires `COMPETITOR` or `ADMIN` role).
 - Page title: **Competitor** (`ContestSelectionPage` with `title="Competitor"`).
 - Shows three full-width contest buttons: **Contest 1**, **Contest 2**, **Contest 3**.
 - Contest buttons are **placeholders** — they do **not** navigate anywhere (`contestRoute` is not set).
 - **Back to Home** button navigates to `/home`.
 - Same layout shell as Staff (centered paper, 360px-wide button stack) but without a working contest destination yet.
+
+---
+
+## Demo pages
+
+### Demo hub (`/demo`)
+
+- Public page opened from Public Home **Demo**.
+- Currently links to **Tournament Bracket Demo** (`/tournament-bracket-demo`).
+- **Back** returns to `/home-page`.
+
+### Tournament bracket demo (`/tournament-bracket-demo`)
+
+- Public interactive bracket demo (loads users from the API; picks winners).
+- Legacy `/admin/tournament-bracket-demo` redirects here.
+- Back to Demo → `/demo`.
+
+### Event Merchandise POS demo (`/event-merchandise-pos-demo`)
+
+- **ADMIN** only (linked from Admin home, not the public Demo hub).
+- Demo checkout/receipt flow for seeded merchandise event data (`016_merchandise_pos_demo.sql`).
+- **Back to Admin** → `/adminhome`.
+
+---
+
+## Audit log (`/admin/audit-log`)
+
+- **ADMIN** only.
+- Paginated grid: **When**, **Action**, **Actor**, **Table**, **Record**, and a **View** button as the last cell (also on mobile cards via `AuditTrailCard` with `actionsInGrid`).
+- Page size: **25** desktop, **10** mobile.
+- **When** uses `formatReadableDateTime` (see **Readable datetime strings**).
+- **View** opens `AuditLogDetailDialog` for the row.
+- Filter dialog for narrowing results.
+- **Purge** (“Delete all audit trail records”) is shown only on **eventsystem.fun** deployments (`isEventsystemFunDeployment()`).
+- **Back to Admin** → `/adminhome`.
+
+---
+
+## Scheduled tasks (`/admin/scheduled-tasks`)
+
+- **ADMIN** only.
+- Task cards with enable toggle, health chip, schedule dialog, and **Run now**.
+- Frequency options (`schedulePresets.ts` / `SCHEDULE_FREQUENCY_OPTIONS`):
+
+| Option | Notes |
+|--------|--------|
+| Once every 30 seconds | Interval schedule (`30` seconds), not cron |
+| Once a minute | Cron |
+| Once every 10 minutes | Cron `*/10 * * * *` |
+| Once every 30 minutes | Cron `*/30 * * * *` |
+| Once an hour | Cron |
+| Once a day | Cron + time of day |
+| Once a week | Cron + weekday + time of day |
+| Once a year | Cron + month/day + time of day |
+
+- Changing frequency **saves immediately**.
+- Last-run / next-run style timestamps display with `formatReadableDateTime`.
+- **Back to Admin** → `/adminhome`.
+
+---
+
+## Static lists, governing bodies, WSDC, judges
+
+### Static lists (`/static-lists`)
+
+- Any signed-in user can open the list hub and detail pages.
+- Hub shows a button per `list_code` → `/static-list-details/:listCode`.
+- Detail page: view entries; **edit only if the user has `ADMIN`**.
+
+### Governing bodies (`/governing-body`)
+
+- **ADMIN** only.
+- Table of governing body code / names; **More** opens edit of `more_json`.
+
+### WSDC Find Dancer (`/wsdc-find-dancer`)
+
+- **ADMIN** only.
+- Looks up a dancer in the WSDC registry, matches an ESP user (WSDC# or name), and **Confirm and Save** via `saveWsdcForMatchingUser` / related PostgREST helpers.
+
+### Set Event Judges (`/admin/set-event-judges`)
+
+- **ADMIN** only.
+- Pick event group / event, search users, build a judging pool, **Save judging pool** (`persistEventJudgingPool`).
 
 ---
 
@@ -301,32 +469,32 @@ App-wide stacked alerts at the top of the screen (not Judging-specific). Wrapped
 
 ### Types and appearance
 
-- Three message types: **success**, **warning**, and **problem**.
-- Each type uses a distinct outlined **MUI Alert** color scheme (green, amber, red).
+- Four message types: **success**, **warning**, **problem**, and **info**.
+- Each type uses a distinct outlined **MUI Alert** color scheme (green, amber, red, blue).
 - The stack is **fixed** at the top center (`top: 16px`), capped at **360px** wide (`CONTENT_MAX_WIDTH`), same as other main content blocks.
 - Container uses `aria-live="polite"` for screen readers.
 
 ### Stacking and dismissal
 
 - Multiple messages can be visible **at the same time**, stacked vertically (newest appended below prior messages).
-- Messages **do not auto-dismiss** — they persist until the user **clicks** one.
-- Clicking a message plays a **collapse animation** (~350ms), then removes it from the stack.
+- Messages **auto-dismiss** after the user’s **Message display time** preference (default **3 seconds**; set on Account). Clicking a message still dismisses it immediately (collapse animation ~350ms).
 - New messages **slide in** from above when added.
 
 ### API and usage
 
 - Any page can call `useMessages()` (must be inside `MessageProvider`).
-- Show messages with `showSuccess(text)`, `showWarning(text)`, or `showProblem(text)` — each returns the new message id.
+- Show messages with `showSuccess(text)`, `showWarning(text)`, `showProblem(text)`, or `showInfo(text)` — each returns the new message id.
 - `clearMessages()` removes all messages immediately (no exit animation).
 - `dismissMessage(id)` removes a single message immediately (used internally after the collapse animation).
 
 ### Page-specific behavior
 
 - **Login**, **Register**, and **Forgot password** call `clearMessages()` on mount so no stale messages carry over.
-- **Admin home** has a **Test Messages** button that clears the stack, then shows:
+- **Admin home** has a **Test Message Boxes** button that clears the stack, then shows:
   - Success: `Your change has been saved.`
   - Warning: `Your event starts in less than 15 min.`
   - Problem: `Your sign in time has passed.`
+  - Info: `You look marvelous!`
 
 ---
 
@@ -334,14 +502,11 @@ App-wide stacked alerts at the top of the screen (not Judging-specific). Wrapped
 
 App-wide MUI theming via **skins**. `AppThemeProvider` wraps the app in `main.tsx` (outside `MessageProvider` and the router).
 
-### Home page placement
+### Account page placement
 
-- The **Home** page (`/home`) exposes the skin control via `ThemeSwitcher`.
-- Page layout order (top to bottom):
-  1. **Staff**, **Competitor**, **Admin**, and **Account** navigation buttons
-  2. **Skin** dropdown (`ThemeSwitcher`)
-  3. **Back to Login**
-- The dropdown uses the same **360px** centered width as other main controls (`centeredContentStackSx`).
+- The **Account** page (`/account`) exposes the skin control via `ThemeSwitcher` (near the top of the account stack).
+- Home does **not** show the skin dropdown.
+- The dropdown uses the same **360px** centered width as other main controls (`centeredContentStackSx` / `fullWidth`).
 
 ### Dropdown behavior
 
@@ -680,6 +845,29 @@ The app is designed to be **usable on phones** as well as desktop — narrow, ce
 
 ---
 
+## Readable datetime strings
+
+When saving a **datetime as a string** (JSON text fields, `additional_info_json`, activity strings, audit-style payloads), use:
+
+**Example:** `Jul 11, 2026, 5:42:28 AM CDT`
+
+- Abbreviated month (`Jul`), day, year, comma, 12-hour time **with seconds**, `AM`/`PM`, timezone abbreviation
+- **No milliseconds**
+- **No ISO-8601** for these string fields (e.g. not `2026-07-11T05:42:28-05:00`)
+
+Applies to keys such as `last_login_at`, `last_logout_at`, `last-activity`, and any new string datetime fields (unless a field documents its own format, e.g. WSDC `last_update_datetime`).
+
+| Layer | Helper |
+|-------|--------|
+| PostgreSQL | `api.format_activity_timestamp(date_trunc('second', p_ts))` / `api.parse_activity_timestamp(text)` |
+| Frontend | `formatReadableDateTime()` / `formatAuditJsonForDisplay()` in `utils/auditTimestamps.ts` |
+
+`TIMESTAMPTZ` columns (`created_date`, `modified_date`, …) stay as real timestamps — do not stringify those.
+
+Cursor rule: `.cursor/rules/database-timestamp-format.mdc`.
+
+---
+
 ## Database audit columns
 
 Every `public` table uses these four columns:
@@ -890,8 +1078,9 @@ Every top-level accordion panel includes a **3-way toggle** at the bottom (**`Ad
 |------|------|
 | Route | **`CREATE_EVENT_PATH`** = `/create-event`; legacy `/add-event` redirects |
 | Group code | From navigation `state.eventGroupCode`, else **`sessionStorage`** (`lib/eventGroupSession.ts`) |
-| **Add Event** button | Shared **`AddEventButton`** on all `/event-groups/:eventGroupCode` pages; remembers group code on navigate |
-| Back button | Returns to `/event-groups/:code` when a group is known, else `/event-groups` |
+| Edit mode | Navigation `state.eventId` loads that event and titles the page **Edit Event for {code}**; preloads dates and other fields |
+| **Add Event** / **Edit Event** button | Shared **`AddEventButton`** on event group and event detail pages; remembers group code (and optional `eventId`) on navigate |
+| Back button | Edit mode → event detail `/event-groups/:code/:eventId`; create mode → `/event-groups/:code` when a group is known, else `/event-groups` |
 
 ### Dark skin: date/time picker icons
 
@@ -989,25 +1178,29 @@ Login JWT payload includes:
 2. `DROP DATABASE` + `CREATE DATABASE`
 3. Apply **`database/event-system-pro/evp_schema_postgresql.sql`** then **`baseline_reference_data.sql`** (baseline bundle)
 4. Apply **`database/migrations/*.sql`** in sorted order (skips patterns in **`database/superseded-by-baseline.manifest`**)
-5. Apply dev **seeds** listed in **`database/seeds/dev.manifest`** (order matters; currently `002`–`014`)
+5. Apply dev **seeds** listed in **`database/seeds/dev.manifest`** (order matters — see table below)
 6. Print verification counts (tables, views, users, events)
 
 ### Dev seed bundle (`dev.manifest`)
 
 Applied by **`rebuild-local-database.ps1`** locally and by **`deploy/scripts/seed-dev-environment.sh`** when **`SEED_DEV_DATA=true`** (Dokploy / eventsystem.fun test deploys; tracked in **`public.schema_seeds`**).
 
+`EVENT_TYPES` and `SECRET_QUESTIONS` live in **`baseline_reference_data.sql`** (not repeated in the seed manifest). Current manifest order:
+
 | Seed | Purpose |
 |------|---------|
-| `002`–`004` | Lookup types, dummy users, owner account |
 | `005` + `005a` | **1000** superhero/supervillain users (see below) |
-| `007` | App roles for `dancingevilgenius` |
+| `003` | Dummy users |
+| `004` | Owner account (`dancingevilgenius`) |
+| `007` | App roles for `dancingevilgenius` (all ten roles) |
 | `008`–`011` | Fictional demo event groups and instances |
+| `016` | Merchandise POS demo |
 | `012` | Demo attendees (`api.generate_demo_attendees_core` — all demo groups in recent years) |
 | `017` | Re-run attendee generation for deploys that applied `012` before robot/kart were included |
 | `013`–`014` | Governing body and static list |
-| `015`–`016` | Local deployment info, merchandise POS demo |
+| `015` | Local deployment info |
 
-Legacy **`006_user_superhero_followers.sql`** is **not** in the manifest (superseded by the 1000-user `005` seed).
+Legacy **`006_user_superhero_followers.sql`** and seeds `005b`/`005c`/`002*` are **not** in the manifest (superseded or folded into baseline).
 
 Set **`SEED_DEV_DATA=false`** (or omit) on production **`eventsystem.pro`** so migrate applies schema only.
 
@@ -1158,6 +1351,18 @@ When the agent updates rows in migrations (non-seed):
 ## Attendee `contests_json`
 
 Optional **`contests_json`** on **`attendee`** (`json`, default `NULL`) holds per-attendee contest enrollment data. Exposed on **`api.attendee`** view. Demo attendee seed does not populate it yet.
+
+---
+
+## Frontend construction rules (Cursor)
+
+### Bold text labels
+
+Field labels (form captions, read-only field names like **Schedule**, **Last run**, **Status**) should use **`fontWeight: 700`** (or `bold`) in `sx` so they read as labels, not values. Does not apply to body copy, buttons, chips, or page titles. Cursor rule: `.cursor/rules/bold-text-labels.mdc`.
+
+### MUI v9 styling (`sx` prop)
+
+This project uses **@mui/material v9**. Put layout/typography CSS-like values in **`sx`**, not as legacy system props (`fontWeight`, `alignItems`, `width`, etc. on `Typography` / `Stack` / `Box`). Still OK as direct props: `variant`, `color`, `direction`, `spacing`, `component`, `onClick`, etc. Cursor rule: `.cursor/rules/mui-v9-sx-styling.mdc`. Run `npm run build` in the front-end package when touching MUI components.
 
 ---
 

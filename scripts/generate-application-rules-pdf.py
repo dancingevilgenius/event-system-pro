@@ -173,58 +173,88 @@ def build_pdf() -> None:
     pdf.section_title("General layout and navigation")
     for item in [
         "Main content blocks (messages, buttons, fields, dropdowns) are capped at 360px wide and centered.",
-        "Default route is Login (/). Unknown URLs redirect to login.",
-        "Public routes: /, /register, /forgot-password.",
+        "Default route is Public Home (/); alias /home-page. Unknown URLs redirect to /.",
+        "Public routes: /, /home-page, /login, /register, /forgot-password, /demo, /tournament-bracket-demo.",
         "Protected routes require a signed-in session (see Authentication and Roles).",
         "Staff reaches Judging via Staff -> Contest, which goes to /judging.",
         "Judging Submit and Back to Staff both return to /staff.",
     ]:
         pdf.bullet(item)
 
+    pdf.section_title("Public home (/)")
+    for item in [
+        "Brand title Event System Pro; Login, Register, and Demo buttons.",
+        "Shows hostname; Demo opens /demo (tournament bracket demo hub).",
+    ]:
+        pdf.bullet(item)
+
     pdf.section_title("Authentication and session")
     for item in [
+        "Login is at /login (not /). Success navigates to /home.",
         "Login calls PostgREST RPC api.login with username or email and password.",
         "Passwords verified with bcrypt on the server.",
         "On success: session in sessionStorage (esp_session) with user_id, username, email, roles, JWT token.",
         "Authenticated API calls send Authorization: Bearer <token>.",
-        "Logout clears session and returns to /.",
+        "Log Off clears session and returns to / (public home).",
         "Sign in again after DB auth or role changes so JWT includes current roles.",
     ]:
         pdf.bullet(item)
 
     pdf.section_title("Roles and route guards")
     pdf.body_text(
-        "Ten app roles: admin, staff, judge, headjudge, registration, floorparent, "
-        "ballroomcoordinator, dj, eventcoordinator, competitor."
+        "Ten uppercase app roles: ADMIN, STAFF, JUDGE, HEAD_JUDGE, REGISTRATION, "
+        "FLOOR_PARENT, EVENT_MANAGER, DJ, EVENT_DIRECTOR, COMPETITOR."
     )
     for item in [
-        "ProtectedRoute: no session -> /; missing role -> /home.",
-        "Admin role passes any role check.",
-        "/home, /account, /changepassword: any signed-in user.",
-        "/staff, /judging: staff or admin.",
-        "/competitor: competitor or admin.",
-        "/adminhome, /admin/*: admin only.",
+        "ProtectedRoute: no session -> / (public home); missing role -> /home.",
+        "ADMIN role passes any role check.",
+        "/home, /account, /changepassword, /secret-questions, /static-lists: any signed-in user.",
+        "/staff, /judging: STAFF or ADMIN.",
+        "/competitor: COMPETITOR or ADMIN.",
+        "/adminhome, /event-home, /event-groups/*, /create-event, /admin/*, /governing-body, /wsdc-find-dancer: ADMIN.",
+        "Legacy /admin/event-details redirects to /event-groups.",
     ]:
         pdf.bullet(item)
 
     pdf.subsection_title("Home page (/home)")
     for item in [
         "After login, user lands on Home (role hub).",
-        "Buttons: Staff (/staff), Competitor (/competitor), Admin (/adminhome), Account (/account).",
-        "Skin dropdown (ThemeSwitcher) below navigation buttons.",
-        "Back to Login logs out and returns to /.",
-        "Test Messages is on Admin home, not Home.",
+        "Buttons: Staff, Competitor, Admin (ADMIN role only), Account.",
+        "Skin dropdown is on Account, not Home.",
+        "Log Off logs out and returns to public home (/).",
+        "Test Message Boxes is on Admin home, not Home.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("Account page (/account)")
+    for item in [
+        "ThemeSwitcher (Skin) lives here.",
+        "Message display time: 3s (default), 10s, 1m, 5m, 10m; localStorage evp.messageAutoDismissMs.",
+        "Show Roles dialog lists session role codes.",
+        "Change Password, Password Recovery, Back to Home.",
     ]:
         pdf.bullet(item)
 
     pdf.subsection_title("Admin section")
     for item in [
-        "Admin home: Event Details, Contests, Competitors, Competition Entries, Staff, Generate Attendees.",
-        "Generate Attendees calls api.generate_demo_attendees (admin JWT); regenerates demo attendee_id 1-3000.",
-        "Test Messages on Admin home shows one success, warning, and problem alert.",
-        "Event Details and Competition Entries are placeholders.",
-        "Contests page navigates to /admin/contests/contest (results).",
-        "Admin competitors: paginated user table; 25 rows desktop, 10 mobile.",
+        "Admin nav: Events (/event-home), Contests, Competitors, Users, Competition Entries,",
+        "  Event Merchandise POS, WSDC Find Dancer, Set Event Judges, Governing Bodies,",
+        "  Audit Log, Scheduled Tasks, Static Lists, Staff.",
+        "Generate Attendees: api.generate_demo_attendees; reserved attendee_id 1-10000.",
+        "Also: Rotate Robot Riot Attendees (10 min), Refresh WSDC Attendee Info, Build Info.",
+        "Test Message Boxes shows success, warning, problem, and info alerts.",
+        "Event hierarchy: /event-home -> /event-groups -> group -> event (attendees/contests).",
+        "Event Groups table: Code, Full Name, Event Type (immediate-save), Edit. No Directors column.",
+        "Add/Edit Event via /create-event; Edit Event preloads dates when eventId is passed.",
+        "Competition Entries remains a placeholder.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.subsection_title("Audit log and scheduled tasks")
+    for item in [
+        "Audit log (/admin/audit-log): When/Action/Actor/Table/Record + View button in grid.",
+        "Scheduled tasks frequencies include Once every 30 seconds, 10 minutes, and 30 minutes.",
+        "Timestamps display with formatReadableDateTime (Jul 11, 2026, 5:42:28 AM CDT style).",
     ]:
         pdf.bullet(item)
 
@@ -246,8 +276,8 @@ def build_pdf() -> None:
     )
     pdf.subsection_title("Types and appearance")
     for item in [
-        "Three message types: success, warning, and problem.",
-        "Each type uses a distinct outlined MUI Alert color scheme (green, amber, red).",
+        "Four message types: success, warning, problem, and info.",
+        "Each type uses a distinct outlined MUI Alert color scheme (green, amber, red, blue).",
         "Fixed at top center (top: 16px), capped at 360px wide (CONTENT_MAX_WIDTH).",
         "Container uses aria-live: polite for screen readers.",
     ]:
@@ -256,8 +286,8 @@ def build_pdf() -> None:
     pdf.subsection_title("Stacking and dismissal")
     for item in [
         "Multiple messages can be visible at the same time, stacked vertically.",
-        "Messages do not auto-dismiss - they persist until the user clicks one.",
-        "Clicking a message plays a collapse animation (~350ms), then removes it.",
+        "Messages auto-dismiss after Account Message display time (default 3 seconds).",
+        "Clicking a message still dismisses it (collapse animation ~350ms).",
         "New messages slide in from above when added.",
     ]:
         pdf.bullet(item)
@@ -265,7 +295,7 @@ def build_pdf() -> None:
     pdf.subsection_title("API and usage")
     for item in [
         "Any page can call useMessages() (must be inside MessageProvider).",
-        "Show messages with showSuccess(text), showWarning(text), or showProblem(text).",
+        "Show messages with showSuccess, showWarning, showProblem, or showInfo.",
         "clearMessages() removes all messages immediately (no exit animation).",
         "dismissMessage(id) removes a single message immediately (after collapse animation).",
     ]:
@@ -274,10 +304,11 @@ def build_pdf() -> None:
     pdf.subsection_title("Page-specific behavior")
     for item in [
         "Login, Register, and Forgot password call clearMessages() on mount.",
-        "Admin home has a Test Messages button that clears the stack, then shows one of each type:",
+        "Admin home Test Message Boxes clears the stack, then shows:",
         "  Success: Your change has been saved.",
         "  Warning: Your event starts in less than 15 min.",
         "  Problem: Your sign in time has passed.",
+        "  Info: You look marvelous!",
     ]:
         pdf.bullet(item)
 
@@ -285,10 +316,10 @@ def build_pdf() -> None:
     pdf.body_text(
         "App-wide MUI theming via skins. AppThemeProvider wraps the app in main.tsx."
     )
-    pdf.subsection_title("Home page placement")
+    pdf.subsection_title("Account page placement")
     for item in [
-        "Home page (/home) exposes the skin control via ThemeSwitcher.",
-        "Layout order: Staff and Competitor buttons, then Skin dropdown, then Test Messages and Back to Login.",
+        "Account page (/account) exposes the skin control via ThemeSwitcher.",
+        "Home does not show the skin dropdown.",
         "Dropdown uses the same 360px centered width as other main controls.",
     ]:
         pdf.bullet(item)
@@ -554,13 +585,22 @@ def build_pdf() -> None:
 
     pdf.section_title("Attendee demo data")
     for item in [
-        "attendee_id 1-3000 reserved for demo seed data; production rows must be > 3000.",
-        "Seed selects 5 random demo event_group trios (15 events) x 200 attendees = 3000 rows.",
+        "attendee_id 1-10000 reserved for demo seed data; production rows must be > 10000.",
+        "All demo events in current_year and current_year-1 x 200 attendees (up to 10000 rows).",
         "created_date: 1-90 days before event start_date (same calendar year as event).",
-        "Re-run deletes only attendee_id <= 3000; preserves rows above 3000.",
+        "Re-run deletes only attendee_id <= reserved total; preserves rows above the range.",
         "Admin Generate Attendees calls api.generate_demo_attendees (admin JWT required).",
         "CLI seed: database/seeds/012_attendee_seed.sql calls generate_demo_attendees_core.",
         "PostgREST needs PGRST_JWT_SECRET matching database app.jwt_secret for authenticated RPCs.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Readable datetime strings")
+    for item in [
+        "String datetimes use readable form: Jul 11, 2026, 5:42:28 AM CDT (no ms, no ISO).",
+        "PostgreSQL: api.format_activity_timestamp / api.parse_activity_timestamp.",
+        "Frontend: formatReadableDateTime() in utils/auditTimestamps.ts.",
+        "TIMESTAMPTZ audit columns stay as real timestamps.",
     ]:
         pdf.bullet(item)
 
@@ -655,8 +695,10 @@ def build_pdf() -> None:
 
     pdf.section_title("Local database development")
     for item in [
-        "rebuild-local-database.ps1: drop DB, baseline, migrations (skip superseded 005-007, 015, 027, 030), seeds 002-012.",
-        "Migrations run in prod; seeds are local dev only.",
+        "rebuild-local-database.ps1: drop DB, baseline, migrations (skip superseded-by-baseline.manifest), then seeds from dev.manifest.",
+        "dev.manifest order: 005/005a, 003, 004, 007, 008-011, 016, 012, 017, 013-014, 015.",
+        "EVENT_TYPES and SECRET_QUESTIONS are in baseline_reference_data.sql.",
+        "Migrations run in prod; seeds apply when SEED_DEV_DATA=true (not on eventsystem.pro).",
         "configure-local-postgres-trust.ps1: passwordless psql on localhost (dev only).",
     ]:
         pdf.bullet(item)
@@ -691,8 +733,17 @@ def build_pdf() -> None:
     pdf.section_title("Lookup tables and owner account")
     for item in [
         "_lu tables: created_by = c-agent on seed rows; modified_* NULL.",
+        "Countries/US states live in static_list (COUNTRIES, US_STATES).",
         "dancingevilgenius dev account (seed 004); default password ChangeMeFool!",
-        "Seed 007 grants all seven app roles to dancingevilgenius.",
+        "Seed 007 grants all ten app roles to dancingevilgenius.",
+    ]:
+        pdf.bullet(item)
+
+    pdf.section_title("Frontend construction rules")
+    for item in [
+        "Bold field labels: fontWeight 700 in sx (bold-text-labels rule).",
+        "MUI v9: put layout/typography CSS values in sx, not legacy system props.",
+        "Run npm run build in the front-end package when touching MUI components.",
     ]:
         pdf.bullet(item)
 

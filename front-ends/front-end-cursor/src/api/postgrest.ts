@@ -2396,3 +2396,15 @@ export function setScheduledTaskSchedule(
     p_stale_after_interval: staleAfterInterval ?? null,
   });
 }
+
+export function setScheduledTaskInterval(
+  jobName: string,
+  intervalSeconds: number,
+  staleAfterInterval?: string,
+) {
+  return callRpc<SetScheduledTaskScheduleResult>('set_scheduled_task_interval', {
+    p_job_name: jobName,
+    p_interval_seconds: intervalSeconds,
+    p_stale_after_interval: staleAfterInterval ?? null,
+  });
+}

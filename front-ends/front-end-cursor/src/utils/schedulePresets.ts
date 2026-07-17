@@ -1,5 +1,8 @@
 export const SCHEDULE_FREQUENCIES = [
+  'once_every_30_seconds',
   'once_a_minute',
+  'once_every_10_minutes',
+  'once_every_30_minutes',
   'once_an_hour',
   'once_a_day',
   'once_a_week',
@@ -24,11 +27,18 @@ export type ParsedSchedulePreset = {
   month: number;
 };
 
+export type BuiltSchedule =
+  | { kind: 'cron'; cron: string }
+  | { kind: 'interval'; intervalSeconds: number };
+
 export const SCHEDULE_FREQUENCY_OPTIONS: Array<{
   value: ScheduleFrequency;
   label: string;
 }> = [
+  { value: 'once_every_30_seconds', label: 'Once every 30 seconds' },
   { value: 'once_a_minute', label: 'Once a minute' },
+  { value: 'once_every_10_minutes', label: 'Once every 10 minutes' },
+  { value: 'once_every_30_minutes', label: 'Once every 30 minutes' },
   { value: 'once_an_hour', label: 'Once an hour' },
   { value: 'once_a_day', label: 'Once a day' },
   { value: 'once_a_week', label: 'Once a week' },
@@ -77,8 +87,16 @@ export function parseSchedulePreset(options: {
   scheduleCron: string | null;
   intervalSeconds: number | null;
 }): ParsedSchedulePreset {
+  if (options.intervalSeconds != null) {
+    const parsed = defaultParsed();
+    if (options.intervalSeconds === 30) {
+      return { ...parsed, frequency: 'once_every_30_seconds' };
+    }
+    return parsed;
+  }
+
   const cron = options.scheduleCron?.trim();
-  if (!cron || options.intervalSeconds != null) {
+  if (!cron) {
     return defaultParsed();
   }
 
@@ -93,6 +111,28 @@ export function parseSchedulePreset(options: {
   // Once a minute: * * * * *
   if (minute === '*' && hour === '*' && dayOfMonth === '*' && month === '*' && dayOfWeek === '*') {
     return { ...parsed, frequency: 'once_a_minute' };
+  }
+
+  // Every 10 minutes: */10 * * * *
+  if (
+    minute === '*/10' &&
+    hour === '*' &&
+    dayOfMonth === '*' &&
+    month === '*' &&
+    dayOfWeek === '*'
+  ) {
+    return { ...parsed, frequency: 'once_every_10_minutes' };
+  }
+
+  // Every 30 minutes: */30 * * * *
+  if (
+    minute === '*/30' &&
+    hour === '*' &&
+    dayOfMonth === '*' &&
+    month === '*' &&
+    dayOfWeek === '*'
+  ) {
+    return { ...parsed, frequency: 'once_every_30_minutes' };
   }
 
   // Once an hour: M * * * *
@@ -170,6 +210,25 @@ export function parseSchedulePreset(options: {
   return parsed;
 }
 
+export function buildScheduleFromPreset(
+  frequency: ScheduleFrequency,
+  time: ScheduleTimeOfDay,
+  options?: {
+    dayOfWeek?: number;
+    dayOfMonth?: number;
+    month?: number;
+  },
+): BuiltSchedule {
+  if (frequency === 'once_every_30_seconds') {
+    return { kind: 'interval', intervalSeconds: 30 };
+  }
+
+  return {
+    kind: 'cron',
+    cron: buildCronFromPreset(frequency, time, options),
+  };
+}
+
 export function buildCronFromPreset(
   frequency: ScheduleFrequency,
   time: ScheduleTimeOfDay,
@@ -186,8 +245,14 @@ export function buildCronFromPreset(
   const month = options?.month ?? 1;
 
   switch (frequency) {
+    case 'once_every_30_seconds':
+      throw new Error('once_every_30_seconds uses interval_seconds, not cron');
     case 'once_a_minute':
       return '* * * * *';
+    case 'once_every_10_minutes':
+      return '*/10 * * * *';
+    case 'once_every_30_minutes':
+      return '*/30 * * * *';
     case 'once_an_hour':
       return '0 * * * *';
     case 'once_a_day':
@@ -206,8 +271,14 @@ export function buildCronFromPreset(
 /** Suggested stale_after_interval text for PostgreSQL interval literals. */
 export function staleAfterForFrequency(frequency: ScheduleFrequency): string {
   switch (frequency) {
+    case 'once_every_30_seconds':
+      return '2 minutes';
     case 'once_a_minute':
       return '5 minutes';
+    case 'once_every_10_minutes':
+      return '45 minutes';
+    case 'once_every_30_minutes':
+      return '2 hours';
     case 'once_an_hour':
       return '3 hours';
     case 'once_a_day':

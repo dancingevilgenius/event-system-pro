@@ -51,20 +51,15 @@ function MobileAuditLogCard({
 }) {
   return (
     <AuditTrailCard
-      columns={2}
-      flexDirection="row"
+      columns={3}
       actionsAlign="right"
+      actionsInGrid
       fields={[
         { key: 'when', label: 'When', value: formatOccurredAt(row.occurredAt) },
         { key: 'action', label: 'Action', value: displayValue(row.action) },
         { key: 'actor', label: 'Actor', value: formatAuditLogActor(row) },
         { key: 'table', label: 'Table', value: displayValue(row.tableName) },
-        {
-          key: 'record',
-          label: 'Record',
-          value: displayValue(row.recordKey),
-          columnSpan: 2,
-        },
+        { key: 'record', label: 'Record', value: displayValue(row.recordKey) },
       ]}
       actions={
         <Button variant="outlined" size="small" onClick={() => onView(row)}>

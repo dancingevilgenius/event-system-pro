@@ -29,6 +29,8 @@ export type AuditTrailCardProps = {
   flexDirection?: 'row' | 'column';
   actions?: ReactNode;
   actionsAlign?: 'left' | 'right';
+  /** When true, render actions as the last grid cell instead of a separate column or footer. */
+  actionsInGrid?: boolean;
   showActionsDivider?: boolean;
   sx?: SxProps<Theme>;
 };
@@ -63,11 +65,14 @@ export default function AuditTrailCard({
   flexDirection = 'column',
   actions,
   actionsAlign = 'right',
+  actionsInGrid = false,
   showActionsDivider = true,
   sx,
 }: AuditTrailCardProps) {
   const hasActions = actions != null;
   const actionsOnRight = actionsAlign === 'right';
+  const actionsAside = hasActions && flexDirection === 'row' && !actionsInGrid;
+  const actionsBelow = hasActions && flexDirection === 'column' && !actionsInGrid;
 
   const actionsNode = hasActions ? (
     <Box
@@ -112,9 +117,21 @@ export default function AuditTrailCard({
             {fields.map((field, index) => (
               <AuditTrailCardFieldItem key={field.key ?? field.label ?? index} field={field} />
             ))}
+            {hasActions && actionsInGrid && (
+              <Box
+                sx={{
+                  ...AUDIT_TRAIL_CELL_SX,
+                  display: 'flex',
+                  alignItems: 'flex-end',
+                  justifyContent: actionsOnRight ? 'flex-end' : 'flex-start',
+                }}
+              >
+                {actions}
+              </Box>
+            )}
           </Box>
 
-          {hasActions && flexDirection === 'row' && (
+          {actionsAside && (
             <Stack
               spacing={1}
               sx={{
@@ -130,7 +147,7 @@ export default function AuditTrailCard({
 
         {beforeActions}
 
-        {hasActions && flexDirection === 'column' && (
+        {actionsBelow && (
           <>
             {showActionsDivider && <Divider />}
             {actionsNode}

@@ -992,12 +992,10 @@ Authenticated RPCs (including **Generate Attendees**) send `Authorization: Beare
 
 ### Activity and inactivity
 
-- **`ActivityMonitor`** runs on every signed-in page.
-- Client inactivity timeout: **10 minutes** (`INACTIVITY_TIMEOUT_MS` in `session.ts`).
-- Activity is recorded on **clicks**, **keydown in form fields**, and **route changes**.
-- Server sync: `api.touch_last_activity` (debounced 30s) and `api.session_status` (every 15s).
-- On expiry: flash warning, message stack warning, **logout**, redirect to **`/`**.
-- Restoring a session on load checks local expiry first; expired sessions are cleared before render.
+- Inactivity logout is owned by the scheduled task **`inactivity_logout`** (`api.inactivity_logout`), which stamps `inactive_logout_at` after **10 minutes** without server `last-activity`.
+- **`ActivityMonitor`** runs on every signed-in page. It does **not** run a local logout timer.
+- Activity is recorded on **clicks**, **keydown in form fields**, and **route changes** via `api.touch_last_activity` (debounced 30s).
+- `api.session_status` is polled every 15s; when the cron has marked the session inactive (`active: false`), the client shows a flash warning, **logout**, and redirects to **`/`**.
 
 ### Login flash messages
 

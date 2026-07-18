@@ -82,6 +82,26 @@ export function bumpActivityExpiry(): number {
   return expiresAt;
 }
 
+/**
+ * Merge client and server inactivity deadlines.
+ * Prefer the later time so a freshly reset local timer is not shortened by a
+ * stale server `activity_expires_at` before `touch_last_activity` lands.
+ */
+export function mergeActivityExpiresAt(
+  clientExpiresAt: number | null,
+  serverExpiresAt: number | null,
+): number | null {
+  if (serverExpiresAt === null) {
+    return clientExpiresAt;
+  }
+
+  if (clientExpiresAt === null) {
+    return serverExpiresAt;
+  }
+
+  return Math.max(clientExpiresAt, serverExpiresAt);
+}
+
 export function clearActivityExpiry(): void {
   sessionStorage.removeItem(ACTIVITY_EXPIRES_AT_KEY);
 }

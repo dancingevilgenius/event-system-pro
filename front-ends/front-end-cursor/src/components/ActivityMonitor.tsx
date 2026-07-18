@@ -12,10 +12,13 @@ import {
   getActivityExpiresAt,
   isActivityExpired,
   isInactivityLogoutDisabled,
+  mergeActivityExpiresAt,
   setActivityExpiresAt,
 } from '../lib/session';
 
 const SYNC_DEBOUNCE_MS = 30 * 1000;
+/** Force a server touch when the previous deadline was this close. */
+const FORCE_SYNC_WITHIN_MS = 2 * 60 * 1000;
 const TIMER_INTERVAL_MS = 1_000;
 const SERVER_SYNC_INTERVAL_MS = 15 * 1000;
 
@@ -59,28 +62,78 @@ export default function ActivityMonitor() {
     navigate('/', { replace: true });
   }, [inactivityDisabled, logout, navigate, session, showWarning]);
 
+  const syncActivityToServer = useCallback(
+    async (force = false): Promise<boolean> => {
+      if (inactivityDisabled || !session || syncingRef.current) {
+        return false;
+      }
+
+      const now = Date.now();
+      if (!force && now - lastSyncRef.current < SYNC_DEBOUNCE_MS) {
+        return false;
+      }
+
+      syncingRef.current = true;
+      try {
+        const result = await touchLastActivity();
+        lastSyncRef.current = Date.now();
+
+        if (isInactiveLogout(result)) {
+          forceInactiveLogout();
+          return false;
+        }
+
+        // Successful touch resets both server last-activity and the local timer.
+        bumpActivityExpiry();
+        return true;
+      } catch {
+        // Keep the local session when activity sync fails transiently.
+        return false;
+      } finally {
+        syncingRef.current = false;
+      }
+    },
+    [forceInactiveLogout, inactivityDisabled, session],
+  );
+
   const applyServerStatus = useCallback(
-    async     (status: Awaited<ReturnType<typeof sessionStatus>>) => {
+    async (status: Awaited<ReturnType<typeof sessionStatus>>) => {
       if (inactivityDisabled) {
         return false;
       }
 
       if (isInactiveLogout(status)) {
+        // Local activity may have reset the timer while the server still has a
+        // stale last-activity (touch debounced / in flight). Try to revive.
+        if (!isActivityExpired()) {
+          if (syncingRef.current) {
+            return false;
+          }
+
+          const revived = await syncActivityToServer(true);
+          if (revived || !loggingOutRef.current) {
+            return false;
+          }
+
+          return true;
+        }
+
         forceInactiveLogout();
         return true;
       }
 
       const serverExpiresAt = parseServerExpiresAt(status.activity_expires_at);
-      if (serverExpiresAt !== null) {
-        const clientExpiresAt = getActivityExpiresAt();
-        if (clientExpiresAt === null || serverExpiresAt < clientExpiresAt) {
-          setActivityExpiresAt(serverExpiresAt);
-        }
+      const mergedExpiresAt = mergeActivityExpiresAt(
+        getActivityExpiresAt(),
+        serverExpiresAt,
+      );
+      if (mergedExpiresAt !== null) {
+        setActivityExpiresAt(mergedExpiresAt);
       }
 
       return false;
     },
-    [forceInactiveLogout, inactivityDisabled],
+    [forceInactiveLogout, inactivityDisabled, syncActivityToServer],
   );
 
   const refreshExpiryFromServer = useCallback(async () => {
@@ -96,41 +149,17 @@ export default function ActivityMonitor() {
     }
   }, [applyServerStatus, inactivityDisabled, session]);
 
-  const syncActivityToServer = useCallback(
-    async (force = false) => {
-      if (inactivityDisabled || !session || syncingRef.current) {
-        return;
-      }
-
-      const now = Date.now();
-      if (!force && now - lastSyncRef.current < SYNC_DEBOUNCE_MS) {
-        return;
-      }
-
-      syncingRef.current = true;
-      try {
-        const result = await touchLastActivity();
-        lastSyncRef.current = Date.now();
-
-        if (isInactiveLogout(result)) {
-          forceInactiveLogout();
-        }
-      } catch {
-        // Keep the local session when activity sync fails transiently.
-      } finally {
-        syncingRef.current = false;
-      }
-    },
-    [forceInactiveLogout, inactivityDisabled, session],
-  );
-
   const recordActivity = useCallback(() => {
     if (inactivityDisabled) {
       return;
     }
 
+    const previousExpiresAt = getActivityExpiresAt();
+    const nearExpiry = previousExpiresAt !== null
+      && previousExpiresAt - Date.now() <= FORCE_SYNC_WITHIN_MS;
+
     bumpActivityExpiry();
-    void syncActivityToServer();
+    void syncActivityToServer(nearExpiry);
   }, [inactivityDisabled, syncActivityToServer]);
 
   const checkLocalExpiry = useCallback(() => {

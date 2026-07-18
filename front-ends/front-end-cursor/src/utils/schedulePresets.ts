@@ -45,6 +45,21 @@ export const SCHEDULE_FREQUENCY_OPTIONS: Array<{
   { value: 'once_a_year', label: 'Once a year' },
 ];
 
+export function scheduleFrequencyLabel(options: {
+  scheduleCron: string | null;
+  intervalSeconds: number | null;
+}): string {
+  const { frequency } = parseSchedulePreset(options);
+  if (frequency === 'custom') {
+    return 'Custom schedule';
+  }
+
+  return (
+    SCHEDULE_FREQUENCY_OPTIONS.find((option) => option.value === frequency)?.label ??
+    'Custom schedule'
+  );
+}
+
 export function needsTimeOfDay(frequency: ScheduleFrequency | 'custom'): boolean {
   return (
     frequency === 'once_a_day' ||

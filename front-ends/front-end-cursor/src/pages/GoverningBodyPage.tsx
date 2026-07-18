@@ -3,7 +3,6 @@ import {
   Button,
   CircularProgress,
   Container,
-  Divider,
   Paper,
   Stack,
   Table,
@@ -38,42 +37,48 @@ function MobileGoverningBodyCard({
 }) {
   return (
     <Paper variant="outlined" sx={{ p: 2 }}>
-      <Stack spacing={1.5}>
+      <Box
+        sx={{
+          display: 'grid',
+          gap: 1.5,
+          alignItems: 'end',
+          gridTemplateColumns: {
+            xs: '1fr',
+            sm: 'repeat(2, minmax(0, 1fr))',
+            md: 'repeat(3, minmax(0, 1fr)) auto',
+          },
+        }}
+      >
+        <Box>
+          <Typography variant="caption" color="text.secondary">
+            Code
+          </Typography>
+          <Typography variant="body2">{displayValue(row.code)}</Typography>
+        </Box>
+        <Box>
+          <Typography variant="caption" color="text.secondary">
+            Long name
+          </Typography>
+          <Typography variant="body2">{displayValue(row.longName)}</Typography>
+        </Box>
+        <Box>
+          <Typography variant="caption" color="text.secondary">
+            Short name
+          </Typography>
+          <Typography variant="body2">{displayValue(row.shortName)}</Typography>
+        </Box>
         <Box
           sx={{
-            display: 'grid',
-            gap: 1.5,
-            gridTemplateColumns: {
-              xs: '1fr',
-              sm: 'repeat(2, minmax(0, 1fr))',
-              md: 'repeat(3, minmax(0, 1fr))',
-            },
+            display: 'flex',
+            alignItems: 'flex-end',
+            justifyContent: { xs: 'flex-start', md: 'flex-end' },
           }}
         >
-          <Box>
-            <Typography variant="caption" color="text.secondary">
-              Code
-            </Typography>
-            <Typography variant="body2">{displayValue(row.code)}</Typography>
-          </Box>
-          <Box>
-            <Typography variant="caption" color="text.secondary">
-              Long name
-            </Typography>
-            <Typography variant="body2">{displayValue(row.longName)}</Typography>
-          </Box>
-          <Box>
-            <Typography variant="caption" color="text.secondary">
-              Short name
-            </Typography>
-            <Typography variant="body2">{displayValue(row.shortName)}</Typography>
-          </Box>
+          <Button variant="outlined" size="small" onClick={() => onMore(row)}>
+            More
+          </Button>
         </Box>
-        <Divider />
-        <Button variant="outlined" size="small" onClick={() => onMore(row)} sx={{ alignSelf: 'flex-start' }}>
-          More
-        </Button>
-      </Stack>
+      </Box>
     </Paper>
   );
 }

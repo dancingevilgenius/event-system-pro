@@ -39,6 +39,7 @@ import {
   buildScheduleFromPreset,
   needsTimeOfDay,
   parseSchedulePreset,
+  scheduleFrequencyLabel,
   staleAfterForFrequency,
   type ScheduleFrequency,
   type SchedulePeriod,
@@ -417,7 +418,7 @@ function ScheduledTaskCard({
   onExplainSchedule: (task: ScheduledTaskRow) => void;
   onToggleEnabled: (task: ScheduledTaskRow, isEnabled: boolean) => void;
 }) {
-  const code = scheduleCode(task);
+  const frequencyLabel = scheduleFrequencyLabel(task);
 
   return (
     <Paper variant="outlined" sx={{ p: 2 }}>
@@ -450,12 +451,11 @@ function ScheduledTaskCard({
               variant="outlined"
               size="small"
               onClick={() => onExplainSchedule(task)}
-              aria-label={`Explain schedule ${code}`}
+              aria-label={`Explain schedule ${frequencyLabel}`}
               sx={{
                 mt: 0.25,
                 maxWidth: '100%',
                 justifyContent: 'flex-start',
-                fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
                 textTransform: 'none',
               }}
             >
@@ -467,7 +467,7 @@ function ScheduledTaskCard({
                   whiteSpace: 'nowrap',
                 }}
               >
-                {code}
+                {frequencyLabel}
               </Box>
             </Button>
           </ReadOnlyField>

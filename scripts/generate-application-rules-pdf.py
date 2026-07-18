@@ -618,9 +618,8 @@ def build_pdf() -> None:
     for item in [
         "main.tsx order: AppThemeProvider -> MessageProvider -> AuthProvider -> BrowserRouter -> App.",
         "ActivityMonitor and LoginFlashHandler render above Routes in App.",
-        "Inactivity logout: scheduled task inactivity_logout (10 minutes without last-activity).",
-        "ActivityMonitor: touch_last_activity (30s debounce) + session_status poll (15s); no local timer.",
-        "When cron marks inactive: warning message, logout, redirect to /.",
+        "Inactivity logout: scheduled task inactivity_logout; frequency equals the idle window.",
+        "Default schedule */10 * * * * (10 minutes). ActivityMonitor: touch + session_status poll; no local timer.",
     ]:
         pdf.bullet(item)
 

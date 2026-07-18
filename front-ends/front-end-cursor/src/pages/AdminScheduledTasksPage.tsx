@@ -122,6 +122,33 @@ function ReadOnlyField({
 const HOUR_OPTIONS = Array.from({ length: 12 }, (_, index) => index + 1);
 const MINUTE_OPTIONS = Array.from({ length: 60 }, (_, index) => index);
 
+function idleWindowLabel(seconds: number | null | undefined): string {
+  if (seconds == null || seconds <= 0) {
+    return '—';
+  }
+
+  if (seconds < 60) {
+    return `${seconds} second${seconds === 1 ? '' : 's'}`;
+  }
+
+  if (seconds % 86400 === 0) {
+    const days = seconds / 86400;
+    return `${days} day${days === 1 ? '' : 's'}`;
+  }
+
+  if (seconds % 3600 === 0) {
+    const hours = seconds / 3600;
+    return `${hours} hour${hours === 1 ? '' : 's'}`;
+  }
+
+  if (seconds % 60 === 0) {
+    const minutes = seconds / 60;
+    return `${minutes} minute${minutes === 1 ? '' : 's'}`;
+  }
+
+  return `${seconds} second${seconds === 1 ? '' : 's'}`;
+}
+
 function ScheduleDialog({
   task,
   open,
@@ -295,9 +322,11 @@ function ScheduleDialog({
             disabled={saving || !task}
             fullWidth
             helperText={
-              frequency === 'custom'
-                ? 'Current schedule is custom. Choose a frequency to replace it.'
-                : 'Changing frequency saves the schedule immediately.'
+              task?.jobName === 'inactivity_logout'
+                ? 'For inactivity_logout, frequency is the idle window (how long without activity before logout).'
+                : frequency === 'custom'
+                  ? 'Current schedule is custom. Choose a frequency to replace it.'
+                  : 'Changing frequency saves the schedule immediately.'
             }
           >
             {frequency === 'custom' && (
@@ -419,6 +448,7 @@ function ScheduledTaskCard({
   onToggleEnabled: (task: ScheduledTaskRow, isEnabled: boolean) => void;
 }) {
   const frequencyLabel = scheduleFrequencyLabel(task);
+  const showIdleWindow = task.jobName === 'inactivity_logout';
 
   return (
     <Paper variant="outlined" sx={{ p: 2 }}>
@@ -471,6 +501,17 @@ function ScheduledTaskCard({
               </Box>
             </Button>
           </ReadOnlyField>
+
+          {showIdleWindow && (
+            <ReadOnlyField label="Idle window">
+              <Typography variant="body2" sx={{ mt: 0.25 }}>
+                {idleWindowLabel(task.idleTimeoutSeconds)}
+              </Typography>
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                Same as schedule frequency — change Frequency to change the idle window.
+              </Typography>
+            </ReadOnlyField>
+          )}
 
           <ReadOnlyField label="Last run">
             <Typography variant="body2">

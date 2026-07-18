@@ -33,14 +33,19 @@ if [ "$i" -ge 60 ] || [ -z "$(printf '%s' "$CRONTAB_BODY" | tr -d '[:space:]')" 
   exit 1
 fi
 
-printf '%s\n' "$CRONTAB_BODY" > /etc/crontabs/root
-chmod 0600 /etc/crontabs/root
+install_crontab() {
+  BODY="$1"
+  printf '%s\n' "$BODY" > /etc/crontabs/root
+  chmod 0600 /etc/crontabs/root
+}
+
+install_crontab "$CRONTAB_BODY"
 
 echo "scheduler: installed crontab from maintenance.job_definition:"
 sed 's/^/scheduler:   /' /etc/crontabs/root
 
 # Refreshable interval loops: pick up jobs added after boot (e.g. timed admin-started jobs)
-# and stop loops when the job_definition row is removed.
+# and stop loops when the job_definition row is removed or schedule mode changes.
 INTERVAL_STATE_DIR="$(mktemp -d)"
 trap 'rm -rf "$INTERVAL_STATE_DIR"' EXIT
 
@@ -48,13 +53,21 @@ start_interval_loop() {
   JOB_NAME="$1"
   INTERVAL_SECS="$2"
   PID_FILE="${INTERVAL_STATE_DIR}/${JOB_NAME}.pid"
+  INTERVAL_FILE="${INTERVAL_STATE_DIR}/${JOB_NAME}.interval"
 
   if [ -f "$PID_FILE" ]; then
     OLD_PID="$(cat "$PID_FILE" 2>/dev/null || true)"
+    OLD_INTERVAL="$(cat "$INTERVAL_FILE" 2>/dev/null || true)"
     if [ -n "${OLD_PID:-}" ] && kill -0 "$OLD_PID" 2>/dev/null; then
-      return 0
+      if [ "${OLD_INTERVAL:-}" = "$INTERVAL_SECS" ]; then
+        return 0
+      fi
+      echo "scheduler: restarting interval loop ${JOB_NAME} (${OLD_INTERVAL:-?}s -> ${INTERVAL_SECS}s)"
+      kill "$OLD_PID" 2>/dev/null || true
+      rm -f "$PID_FILE" "$INTERVAL_FILE"
+    else
+      rm -f "$PID_FILE" "$INTERVAL_FILE"
     fi
-    rm -f "$PID_FILE"
   fi
 
   echo "scheduler: starting interval loop ${JOB_NAME} every ${INTERVAL_SECS}s"
@@ -76,6 +89,31 @@ start_interval_loop() {
     done
   ) &
   echo $! > "$PID_FILE"
+  printf '%s\n' "$INTERVAL_SECS" > "$INTERVAL_FILE"
+}
+
+sync_crontab() {
+  set +e
+  NEXT_CRONTAB="$(
+    psql -h "$PGHOST" -U "$SCHEDULER_DB_USER" -d "$POSTGRES_DB" -v ON_ERROR_STOP=1 -t -A \
+      -c "SELECT api.scheduler_crontab();" 2>/dev/null
+  )"
+  PSQL_EXIT=$?
+  set -e
+
+  if [ "$PSQL_EXIT" -ne 0 ] || [ -z "$(printf '%s' "$NEXT_CRONTAB" | tr -d '[:space:]')" ]; then
+    echo "scheduler: WARNING failed to refresh crontab from api.scheduler_crontab()" >&2
+    return 0
+  fi
+
+  CURRENT_CRONTAB="$(cat /etc/crontabs/root 2>/dev/null || true)"
+  if [ "$NEXT_CRONTAB" = "$CURRENT_CRONTAB" ]; then
+    return 0
+  fi
+
+  install_crontab "$NEXT_CRONTAB"
+  echo "scheduler: refreshed crontab from maintenance.job_definition:"
+  sed 's/^/scheduler:   /' /etc/crontabs/root
 }
 
 sync_interval_loops() {
@@ -112,18 +150,20 @@ sync_interval_loops() {
         echo "scheduler: stopping interval loop ${JOB_NAME} (removed from job_definition)"
         kill "$OLD_PID" 2>/dev/null || true
       fi
-      rm -f "$PID_FILE"
+      rm -f "$PID_FILE" "${INTERVAL_STATE_DIR}/${JOB_NAME}.interval"
     fi
   done
 
   rm -f "$DESIRED_FILE"
 }
 
-echo "scheduler: syncing interval jobs (refresh every ${INTERVAL_REFRESH_SECONDS}s)"
+echo "scheduler: syncing schedules (refresh every ${INTERVAL_REFRESH_SECONDS}s)"
+sync_crontab
 sync_interval_loops
 (
   while true; do
     sleep "$INTERVAL_REFRESH_SECONDS"
+    sync_crontab
     sync_interval_loops
   done
 ) &

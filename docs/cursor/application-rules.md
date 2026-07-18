@@ -995,7 +995,7 @@ Authenticated RPCs (including **Generate Attendees**) send `Authorization: Beare
 
 - Inactivity logout is owned by the scheduled task **`inactivity_logout`** (`api.inactivity_logout`), which stamps `inactive_logout_at` when `last-activity` is older than the task's **schedule period** (frequency = idle window; default `*/10 * * * *` → 10 minutes).
 - **`ActivityMonitor`** runs on every signed-in page. It does **not** run a local logout timer.
-- Activity is recorded on **clicks**, **keydown in form fields**, and **route changes** via `api.touch_last_activity` (debounced 30s).
+- Activity is recorded on **clicks**, **keydown in form fields**, and **route changes** via `api.touch_last_activity` (debounced 5s).
 - `api.session_status` is polled every 15s; when the job has marked the session inactive (`active: false`), the client shows a flash warning, **logout**, and redirects to **`/`**.
 
 ### Login flash messages

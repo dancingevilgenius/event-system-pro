@@ -2283,7 +2283,7 @@ export type ScheduledTaskRow = {
   intervalSeconds: number | null;
   scheduleLabel: string;
   isEnabled: boolean;
-  /** Present for inactivity_logout: seconds without last-activity before logout. */
+  /** Present for inactivity_logout: idle window derived from schedule period. */
   idleTimeoutSeconds: number | null;
   lastJobRunId: number | null;
   lastStatus: string | null;
@@ -2413,14 +2413,3 @@ export function setScheduledTaskInterval(
   });
 }
 
-export type SetInactivityIdleTimeoutResult = {
-  ok: boolean;
-  idle_timeout_seconds?: number;
-  message?: string;
-};
-
-export function setInactivityIdleTimeoutSeconds(seconds: number) {
-  return callRpc<SetInactivityIdleTimeoutResult>('set_inactivity_idle_timeout_seconds', {
-    p_seconds: seconds,
-  });
-}

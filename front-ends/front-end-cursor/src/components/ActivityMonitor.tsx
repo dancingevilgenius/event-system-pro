@@ -9,7 +9,8 @@ import {
 } from '../lib/authMessages';
 import { isInactivityLogoutDisabled } from '../lib/session';
 
-const SYNC_DEBOUNCE_MS = 30 * 1000;
+/** Keep well below short idle windows (e.g. 30s schedule = 30s logout). */
+const SYNC_DEBOUNCE_MS = 5 * 1000;
 const SERVER_SYNC_INTERVAL_MS = 15 * 1000;
 
 function isInactiveLogout(status: { ok?: boolean; active?: boolean }): boolean {

@@ -1,48 +1,139 @@
--- Configurable inactivity idle timeout (separate from job schedule frequency).
--- Frequency = how often inactivity_logout runs; idle timeout = how long without
--- last-activity before a session is marked inactive.
--- Default remains 600 seconds (10 minutes).
+-- Idle timeout for inactivity_logout equals the job's schedule period
+-- (interval_seconds, or the inferred period of schedule_cron).
+-- Frequency is the idle window — not a separate knob.
+-- Default schedule is */10 * * * * so the idle window stays 10 minutes.
 -- Run: psql -U postgres -d event_system_pro -f database/migrations/133_inactivity_idle_timeout_config.sql
 
 \connect event_system_pro
 
-INSERT INTO public.system_config (label, value, active, created_by)
-SELECT
-  'inactivity_idle_timeout_seconds',
-  '600'::jsonb,
-  true,
-  'c-agent'
-WHERE NOT EXISTS (
-  SELECT 1
-  FROM public.system_config AS s
-  WHERE s.label = 'inactivity_idle_timeout_seconds'
-);
-
+-- Preserve the historical ~10 minute idle window for the default job.
 UPDATE maintenance.job_definition
 SET
-  description = 'Mark signed-in users inactive after the configured idle timeout without last-activity. Schedule frequency is how often to check; idle timeout is configured separately on this task.',
+  schedule_cron = '*/10 * * * *',
+  interval_seconds = NULL,
+  description = 'Mark signed-in users inactive when last-activity is older than this task''s schedule period (frequency = idle window).',
   modified_date = CURRENT_TIMESTAMP,
   modified_by = 'c-agent'
 WHERE job_name = 'inactivity_logout'
-  AND (
-    description IS DISTINCT FROM 'Mark signed-in users inactive after the configured idle timeout without last-activity. Schedule frequency is how often to check; idle timeout is configured separately on this task.'
-  );
+  AND schedule_cron = '*/5 * * * *'
+  AND interval_seconds IS NULL;
+
+UPDATE maintenance.job_definition
+SET
+  description = 'Mark signed-in users inactive when last-activity is older than this task''s schedule period (frequency = idle window).',
+  modified_date = CURRENT_TIMESTAMP,
+  modified_by = 'c-agent'
+WHERE job_name = 'inactivity_logout'
+  AND description IS DISTINCT FROM 'Mark signed-in users inactive when last-activity is older than this task''s schedule period (frequency = idle window).';
+
+CREATE OR REPLACE FUNCTION api.schedule_period_seconds(
+  p_schedule_cron text,
+  p_interval_seconds integer
+)
+RETURNS integer
+LANGUAGE plpgsql
+IMMUTABLE
+SET search_path = public, api
+AS $$
+DECLARE
+  v_parts text[];
+  v_min text;
+  v_hour text;
+  v_dom text;
+  v_mon text;
+  v_dow text;
+  v_n integer;
+BEGIN
+  IF p_interval_seconds IS NOT NULL AND p_interval_seconds > 0 THEN
+    RETURN p_interval_seconds;
+  END IF;
+
+  IF p_schedule_cron IS NULL OR btrim(p_schedule_cron) = '' THEN
+    RETURN NULL;
+  END IF;
+
+  v_parts := regexp_split_to_array(btrim(p_schedule_cron), '\s+');
+  IF coalesce(array_length(v_parts, 1), 0) <> 5 THEN
+    RETURN NULL;
+  END IF;
+
+  v_min := v_parts[1];
+  v_hour := v_parts[2];
+  v_dom := v_parts[3];
+  v_mon := v_parts[4];
+  v_dow := v_parts[5];
+
+  -- Once a minute: * * * * *
+  IF v_min = '*' AND v_hour = '*' AND v_dom = '*' AND v_mon = '*' AND v_dow = '*' THEN
+    RETURN 60;
+  END IF;
+
+  -- Every N minutes: */N * * * *
+  IF v_min ~ '^\*/[0-9]+$'
+     AND v_hour = '*'
+     AND v_dom = '*'
+     AND v_mon = '*'
+     AND v_dow = '*' THEN
+    v_n := substring(v_min FROM 3)::integer;
+    IF v_n > 0 THEN
+      RETURN v_n * 60;
+    END IF;
+  END IF;
+
+  -- Once an hour: M * * * *
+  IF v_min ~ '^[0-9]+$'
+     AND v_hour = '*'
+     AND v_dom = '*'
+     AND v_mon = '*'
+     AND v_dow = '*' THEN
+    RETURN 3600;
+  END IF;
+
+  -- Once a day: M H * * *
+  IF v_min ~ '^[0-9]+$'
+     AND v_hour ~ '^[0-9]+$'
+     AND v_dom = '*'
+     AND v_mon = '*'
+     AND v_dow = '*' THEN
+    RETURN 86400;
+  END IF;
+
+  -- Once a week: M H * * D
+  IF v_min ~ '^[0-9]+$'
+     AND v_hour ~ '^[0-9]+$'
+     AND v_dom = '*'
+     AND v_mon = '*'
+     AND v_dow ~ '^[0-9]+$' THEN
+    RETURN 604800;
+  END IF;
+
+  -- Once a year: M H D Mo *
+  IF v_min ~ '^[0-9]+$'
+     AND v_hour ~ '^[0-9]+$'
+     AND v_dom ~ '^[0-9]+$'
+     AND v_mon ~ '^[0-9]+$'
+     AND v_dow = '*' THEN
+    RETURN 31536000;
+  END IF;
+
+  RETURN NULL;
+END;
+$$;
 
 CREATE OR REPLACE FUNCTION api.inactivity_idle_timeout_seconds()
 RETURNS integer
 LANGUAGE sql
 STABLE
 SECURITY DEFINER
-SET search_path = public, api
+SET search_path = public, api, maintenance
 AS $$
   SELECT GREATEST(
     1,
     COALESCE(
       (
-        SELECT NULLIF(public.system_config_value_text(s.value), '')::integer
-        FROM public.system_config AS s
-        WHERE s.label = 'inactivity_idle_timeout_seconds'
-          AND s.active IS NOT FALSE
+        SELECT api.schedule_period_seconds(d.schedule_cron, d.interval_seconds)
+        FROM maintenance.job_definition AS d
+        WHERE d.job_name = 'inactivity_logout'
         LIMIT 1
       ),
       600
@@ -73,86 +164,10 @@ AS $$
         <= api.activity_timestamp() - api.inactivity_idle_interval();
 $$;
 
-CREATE OR REPLACE FUNCTION api.set_inactivity_idle_timeout_seconds(p_seconds integer)
-RETURNS json
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public, api
-AS $$
-DECLARE
-  v_user_id bigint;
-  v_username text;
-  v_seconds integer := p_seconds;
-BEGIN
-  v_user_id := api.current_user_id();
+-- Drop the short-lived separate setter from earlier drafts of this migration if present.
+DROP FUNCTION IF EXISTS api.set_inactivity_idle_timeout_seconds(integer);
 
-  IF v_user_id IS NULL THEN
-    RETURN json_build_object(
-      'ok', false,
-      'message', 'You are not signed in.'
-    );
-  END IF;
-
-  IF NOT api.has_app_role('ADMIN') THEN
-    RETURN json_build_object(
-      'ok', false,
-      'message', 'Admin role required.'
-    );
-  END IF;
-
-  IF v_seconds IS NULL OR v_seconds < 1 OR v_seconds > 86400 THEN
-    RETURN json_build_object(
-      'ok', false,
-      'message', 'Idle timeout must be between 1 and 86400 seconds.'
-    );
-  END IF;
-
-  SELECT u.username
-  INTO v_username
-  FROM public."user" AS u
-  WHERE u.user_id = v_user_id
-    AND u.active IS NOT FALSE;
-
-  IF NOT FOUND THEN
-    RETURN json_build_object(
-      'ok', false,
-      'message', 'Account not found.'
-    );
-  END IF;
-
-  PERFORM api.set_audit_actor(v_username);
-
-  UPDATE public.system_config
-  SET
-    value = to_jsonb(v_seconds),
-    active = true,
-    modified_date = CURRENT_TIMESTAMP,
-    modified_by = v_username
-  WHERE label = 'inactivity_idle_timeout_seconds';
-
-  IF NOT FOUND THEN
-    INSERT INTO public.system_config (label, value, active, created_by)
-    VALUES (
-      'inactivity_idle_timeout_seconds',
-      to_jsonb(v_seconds),
-      true,
-      v_username
-    );
-  END IF;
-
-  RETURN json_build_object(
-    'ok', true,
-    'idle_timeout_seconds', v_seconds,
-    'message', format(
-      'Inactivity idle timeout set to %s second%s.',
-      v_seconds,
-      CASE WHEN v_seconds = 1 THEN '' ELSE 's' END
-    )
-  );
-END;
-$$;
-
--- Expose idle_timeout_seconds on inactivity_logout rows for the admin UI.
+-- Expose derived idle_timeout_seconds on inactivity_logout for the admin UI.
 CREATE OR REPLACE FUNCTION api.list_scheduled_tasks()
 RETURNS json
 LANGUAGE plpgsql
@@ -162,7 +177,6 @@ SET search_path = public, api, maintenance
 AS $$
 DECLARE
   v_tasks json;
-  v_idle_timeout integer := api.inactivity_idle_timeout_seconds();
 BEGIN
   IF api.current_user_id() IS NULL THEN
     RETURN json_build_object(
@@ -195,7 +209,8 @@ BEGIN
         ELSE j.schedule_cron
       END AS schedule_label,
       CASE
-        WHEN j.job_name = 'inactivity_logout' THEN v_idle_timeout
+        WHEN j.job_name = 'inactivity_logout' THEN
+          api.schedule_period_seconds(j.schedule_cron, j.interval_seconds)
         ELSE NULL
       END AS idle_timeout_seconds,
       lr.job_run_id AS last_job_run_id,
@@ -234,12 +249,12 @@ BEGIN
 END;
 $$;
 
+REVOKE ALL ON FUNCTION api.schedule_period_seconds(text, integer) FROM PUBLIC;
 REVOKE ALL ON FUNCTION api.inactivity_idle_timeout_seconds() FROM PUBLIC;
 REVOKE ALL ON FUNCTION api.inactivity_idle_interval() FROM PUBLIC;
-REVOKE ALL ON FUNCTION api.set_inactivity_idle_timeout_seconds(integer) FROM PUBLIC;
 
+GRANT EXECUTE ON FUNCTION api.schedule_period_seconds(text, integer) TO authenticated, maintenance;
 GRANT EXECUTE ON FUNCTION api.inactivity_idle_timeout_seconds() TO authenticated, maintenance;
 GRANT EXECUTE ON FUNCTION api.inactivity_idle_interval() TO authenticated, maintenance;
-GRANT EXECUTE ON FUNCTION api.set_inactivity_idle_timeout_seconds(integer) TO authenticated;
 
 NOTIFY pgrst, 'reload schema';

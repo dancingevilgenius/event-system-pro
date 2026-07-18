@@ -432,8 +432,8 @@ See **Multi-section admin form pages (Add Event pattern)** for accordion / statu
 | Once a week | Cron + weekday + time of day |
 | Once a year | Cron + month/day + time of day |
 
-- Changing frequency **saves immediately**. Frequency is **check cadence**, not idle timeout.
-- **`inactivity_logout`** also shows an **Idle timeout** control (default 10 minutes). That value is what decides when a session is marked inactive.
+- Changing frequency **saves immediately**.
+- For **`inactivity_logout`**, frequency **is** the idle window (e.g. every 30 seconds → logout after 30 seconds without activity). The card shows a read-only **Idle window** derived from the schedule.
 - Last-run / next-run style timestamps display with `formatReadableDateTime`.
 - **Back to Admin** → `/adminhome`.
 
@@ -993,8 +993,7 @@ Authenticated RPCs (including **Generate Attendees**) send `Authorization: Beare
 
 ### Activity and inactivity
 
-- Inactivity logout is owned by the scheduled task **`inactivity_logout`** (`api.inactivity_logout`), which stamps `inactive_logout_at` after the configured **idle timeout** without server `last-activity` (default **600 seconds** / 10 minutes; `system_config.inactivity_idle_timeout_seconds`).
-- **Schedule frequency** (e.g. every 30 seconds) is only how often the job checks; it is not the idle timeout. Set **Idle timeout** on the task card to change when sessions are marked inactive.
+- Inactivity logout is owned by the scheduled task **`inactivity_logout`** (`api.inactivity_logout`), which stamps `inactive_logout_at` when `last-activity` is older than the task's **schedule period** (frequency = idle window; default `*/10 * * * *` → 10 minutes).
 - **`ActivityMonitor`** runs on every signed-in page. It does **not** run a local logout timer.
 - Activity is recorded on **clicks**, **keydown in form fields**, and **route changes** via `api.touch_last_activity` (debounced 30s).
 - `api.session_status` is polled every 15s; when the job has marked the session inactive (`active: false`), the client shows a flash warning, **logout**, and redirects to **`/`**.

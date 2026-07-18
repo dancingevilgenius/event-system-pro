@@ -100,7 +100,7 @@ docker compose -f deploy/docker-compose.yml --env-file deploy/.env exec schedule
 
 `api.scheduler_health()` uses each job’s `stale_after_interval` from `job_definition` (defaults: inactivity **15 minutes**, nightly **25 hours**). Disabled jobs are not treated as stale.
 
-**Note:** Inactivity logout is cron-only. `session_status` reports `active: false` only after `inactivity_logout` stamps `inactive_logout_at` (migration `132`). The client polls that status and clears the local session; it does not run its own inactivity timer.
+**Note:** Inactivity logout is scheduler-only. `session_status` reports `active: false` only after `inactivity_logout` stamps `inactive_logout_at` (migration `132`). Idle timeout (default **600 seconds**) is configured separately from schedule frequency via `system_config.inactivity_idle_timeout_seconds` / admin **Idle timeout** (migration `133`). The client polls `session_status` and clears the local session; it does not run its own inactivity timer.
 
 Manual one-shot from a running stack:
 

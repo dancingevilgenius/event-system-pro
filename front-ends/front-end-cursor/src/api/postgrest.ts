@@ -2283,6 +2283,8 @@ export type ScheduledTaskRow = {
   intervalSeconds: number | null;
   scheduleLabel: string;
   isEnabled: boolean;
+  /** Present for inactivity_logout: seconds without last-activity before logout. */
+  idleTimeoutSeconds: number | null;
   lastJobRunId: number | null;
   lastStatus: string | null;
   lastStartedAt: string | null;
@@ -2300,6 +2302,7 @@ type ApiScheduledTaskRow = {
   interval_seconds: number | null;
   schedule_label: string;
   is_enabled: boolean;
+  idle_timeout_seconds?: number | null;
   last_job_run_id: number | null;
   last_status: string | null;
   last_started_at: string | null;
@@ -2318,6 +2321,8 @@ function mapScheduledTaskRow(row: ApiScheduledTaskRow): ScheduledTaskRow {
     intervalSeconds: row.interval_seconds,
     scheduleLabel: row.schedule_label,
     isEnabled: row.is_enabled,
+    idleTimeoutSeconds:
+      typeof row.idle_timeout_seconds === 'number' ? row.idle_timeout_seconds : null,
     lastJobRunId: row.last_job_run_id,
     lastStatus: row.last_status,
     lastStartedAt: row.last_started_at,
@@ -2405,5 +2410,17 @@ export function setScheduledTaskInterval(
     p_job_name: jobName,
     p_interval_seconds: intervalSeconds,
     p_stale_after_interval: staleAfterInterval ?? null,
+  });
+}
+
+export type SetInactivityIdleTimeoutResult = {
+  ok: boolean;
+  idle_timeout_seconds?: number;
+  message?: string;
+};
+
+export function setInactivityIdleTimeoutSeconds(seconds: number) {
+  return callRpc<SetInactivityIdleTimeoutResult>('set_inactivity_idle_timeout_seconds', {
+    p_seconds: seconds,
   });
 }

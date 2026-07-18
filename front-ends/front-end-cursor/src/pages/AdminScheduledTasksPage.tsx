@@ -22,6 +22,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   fetchScheduledTasks,
   runScheduledTask,
+  setInactivityIdleTimeoutSeconds,
   setScheduledTaskEnabled,
   setScheduledTaskInterval,
   setScheduledTaskSchedule,
@@ -121,6 +122,34 @@ function ReadOnlyField({
 
 const HOUR_OPTIONS = Array.from({ length: 12 }, (_, index) => index + 1);
 const MINUTE_OPTIONS = Array.from({ length: 60 }, (_, index) => index);
+
+const IDLE_TIMEOUT_OPTIONS = [
+  { label: '30 seconds', value: 30 },
+  { label: '1 minute', value: 60 },
+  { label: '2 minutes', value: 120 },
+  { label: '5 minutes', value: 300 },
+  { label: '10 minutes', value: 600 },
+  { label: '15 minutes', value: 900 },
+  { label: '30 minutes', value: 1800 },
+] as const;
+
+function idleTimeoutLabel(seconds: number | null | undefined): string {
+  if (seconds == null || seconds <= 0) {
+    return '—';
+  }
+
+  const known = IDLE_TIMEOUT_OPTIONS.find((option) => option.value === seconds);
+  if (known) {
+    return known.label;
+  }
+
+  if (seconds % 60 === 0) {
+    const minutes = seconds / 60;
+    return `${minutes} minute${minutes === 1 ? '' : 's'}`;
+  }
+
+  return `${seconds} second${seconds === 1 ? '' : 's'}`;
+}
 
 function ScheduleDialog({
   task,
@@ -295,9 +324,11 @@ function ScheduleDialog({
             disabled={saving || !task}
             fullWidth
             helperText={
-              frequency === 'custom'
-                ? 'Current schedule is custom. Choose a frequency to replace it.'
-                : 'Changing frequency saves the schedule immediately.'
+              task?.jobName === 'inactivity_logout'
+                ? 'How often to check for idle sessions. Idle timeout is set separately on the task card.'
+                : frequency === 'custom'
+                  ? 'Current schedule is custom. Choose a frequency to replace it.'
+                  : 'Changing frequency saves the schedule immediately.'
             }
           >
             {frequency === 'custom' && (
@@ -407,18 +438,27 @@ function ScheduledTaskCard({
   task,
   running,
   togglingEnabled,
+  savingIdleTimeout,
   onRun,
   onExplainSchedule,
   onToggleEnabled,
+  onIdleTimeoutChange,
 }: {
   task: ScheduledTaskRow;
   running: boolean;
   togglingEnabled: boolean;
+  savingIdleTimeout: boolean;
   onRun: (task: ScheduledTaskRow) => void;
   onExplainSchedule: (task: ScheduledTaskRow) => void;
   onToggleEnabled: (task: ScheduledTaskRow, isEnabled: boolean) => void;
+  onIdleTimeoutChange: (task: ScheduledTaskRow, seconds: number) => void;
 }) {
   const frequencyLabel = scheduleFrequencyLabel(task);
+  const showIdleTimeout = task.jobName === 'inactivity_logout';
+  const idleTimeoutValue = task.idleTimeoutSeconds ?? 600;
+  const idleTimeoutKnown = IDLE_TIMEOUT_OPTIONS.some(
+    (option) => option.value === idleTimeoutValue,
+  );
 
   return (
     <Paper variant="outlined" sx={{ p: 2 }}>
@@ -471,6 +511,39 @@ function ScheduledTaskCard({
               </Box>
             </Button>
           </ReadOnlyField>
+
+          {showIdleTimeout && (
+            <ReadOnlyField label="Idle timeout">
+              <AppTextField
+                select
+                size="small"
+                value={String(idleTimeoutValue)}
+                onChange={(event) =>
+                  onIdleTimeoutChange(task, Number(event.target.value))
+                }
+                disabled={savingIdleTimeout}
+                fullWidth
+                helperText="Time without activity before logout. Schedule only controls check frequency."
+                slotProps={{
+                  htmlInput: {
+                    'aria-label': `${task.jobName} idle timeout ${idleTimeoutLabel(idleTimeoutValue)}`,
+                  },
+                }}
+                sx={{ mt: 0.25 }}
+              >
+                {!idleTimeoutKnown && (
+                  <MenuItem value={String(idleTimeoutValue)}>
+                    {idleTimeoutLabel(idleTimeoutValue)}
+                  </MenuItem>
+                )}
+                {IDLE_TIMEOUT_OPTIONS.map((option) => (
+                  <MenuItem key={option.value} value={String(option.value)}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </AppTextField>
+            </ReadOnlyField>
+          )}
 
           <ReadOnlyField label="Last run">
             <Typography variant="body2">
@@ -550,6 +623,7 @@ export default function AdminScheduledTasksPage() {
   const [error, setError] = useState<string | null>(null);
   const [runningJobName, setRunningJobName] = useState<string | null>(null);
   const [togglingJobName, setTogglingJobName] = useState<string | null>(null);
+  const [savingIdleTimeoutJobName, setSavingIdleTimeoutJobName] = useState<string | null>(null);
   const [scheduleDialogTask, setScheduleDialogTask] = useState<ScheduledTaskRow | null>(null);
 
   const loadTasks = useCallback(async (options?: { quiet?: boolean }) => {
@@ -583,6 +657,50 @@ export default function AdminScheduledTasksPage() {
   useEffect(() => {
     void loadTasks();
   }, [loadTasks]);
+
+  const handleIdleTimeoutChange = async (task: ScheduledTaskRow, seconds: number) => {
+    if (task.jobName !== 'inactivity_logout' || task.idleTimeoutSeconds === seconds) {
+      return;
+    }
+
+    clearMessages();
+    setSavingIdleTimeoutJobName(task.jobName);
+
+    const previous = task.idleTimeoutSeconds;
+    setTasks((current) =>
+      current.map((row) =>
+        row.jobName === task.jobName ? { ...row, idleTimeoutSeconds: seconds } : row,
+      ),
+    );
+
+    try {
+      const result = await setInactivityIdleTimeoutSeconds(seconds);
+
+      if (!result.ok) {
+        setTasks((current) =>
+          current.map((row) =>
+            row.jobName === task.jobName ? { ...row, idleTimeoutSeconds: previous } : row,
+          ),
+        );
+        showProblem(result.message ?? 'Unable to update idle timeout.');
+        return;
+      }
+
+      showSuccess(result.message ?? 'Idle timeout updated.');
+      await loadTasks({ quiet: true });
+    } catch (idleError) {
+      setTasks((current) =>
+        current.map((row) =>
+          row.jobName === task.jobName ? { ...row, idleTimeoutSeconds: previous } : row,
+        ),
+      );
+      showProblem(
+        idleError instanceof Error ? idleError.message : 'Unable to update idle timeout.',
+      );
+    } finally {
+      setSavingIdleTimeoutJobName(null);
+    }
+  };
 
   const handleToggleEnabled = async (task: ScheduledTaskRow, isEnabled: boolean) => {
     clearMessages();
@@ -737,10 +855,14 @@ export default function AdminScheduledTasksPage() {
                   task={task}
                   running={runningJobName === task.jobName}
                   togglingEnabled={togglingJobName === task.jobName}
+                  savingIdleTimeout={savingIdleTimeoutJobName === task.jobName}
                   onRun={(selectedTask) => void handleRunTask(selectedTask)}
                   onExplainSchedule={setScheduleDialogTask}
                   onToggleEnabled={(selectedTask, isEnabled) =>
                     void handleToggleEnabled(selectedTask, isEnabled)
+                  }
+                  onIdleTimeoutChange={(selectedTask, seconds) =>
+                    void handleIdleTimeoutChange(selectedTask, seconds)
                   }
                 />
               ))

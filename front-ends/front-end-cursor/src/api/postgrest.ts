@@ -128,7 +128,6 @@ export type SessionStatusResult = {
   active: boolean;
   message?: string;
   'last-activity'?: string;
-  activity_expires_at?: string;
 };
 
 export type TouchActivityResult = {

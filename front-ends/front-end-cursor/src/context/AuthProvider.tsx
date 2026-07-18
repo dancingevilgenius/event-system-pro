@@ -1,11 +1,7 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { ensureRealtimeService } from '../api/realtime';
-import { INACTIVITY_LOGOUT_MESSAGE, setFlashWarning } from '../lib/authMessages';
 import {
-  bumpActivityExpiry,
   clearSession,
-  ensureActivityExpiry,
-  isActivityExpired,
   loadSession,
   saveSession,
   sessionHasAnyRole,
@@ -18,29 +14,11 @@ type AuthProviderProps = {
   children: ReactNode;
 };
 
-function loadInitialSession(): UserSession | null {
-  const loaded = loadSession();
-  if (!loaded) {
-    return null;
-  }
-
-  ensureActivityExpiry();
-
-  if (isActivityExpired()) {
-    clearSession();
-    setFlashWarning(INACTIVITY_LOGOUT_MESSAGE);
-    return null;
-  }
-
-  return loaded;
-}
-
 export default function AuthProvider({ children }: AuthProviderProps) {
-  const [session, setSessionState] = useState<UserSession | null>(() => loadInitialSession());
+  const [session, setSessionState] = useState<UserSession | null>(() => loadSession());
 
   const setSession = useCallback((nextSession: UserSession) => {
     saveSession(nextSession);
-    bumpActivityExpiry();
     setSessionState(nextSession);
   }, []);
 

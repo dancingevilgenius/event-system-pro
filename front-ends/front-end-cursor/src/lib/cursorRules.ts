@@ -7,11 +7,7 @@ export type CursorRule = {
   body: string;
 };
 
-const mdcModules = import.meta.glob('../data/cursor-rules/*.mdc', {
-  eager: true,
-  query: '?raw',
-  import: 'default',
-}) as Record<string, string>;
+import { CURSOR_RULE_RAW } from './cursorRules.generated';
 
 function parseFrontmatterValue(raw: string): string {
   const trimmed = raw.trim();
@@ -67,12 +63,8 @@ function parseMdc(raw: string, id: string): CursorRule {
 }
 
 export function loadCursorRules(): CursorRule[] {
-  return Object.entries(mdcModules)
-    .map(([path, raw]) => {
-      const fileName = path.split('/').pop() ?? path;
-      const id = fileName.replace(/\.mdc$/, '');
-      return parseMdc(raw, id);
-    })
+  return Object.entries(CURSOR_RULE_RAW)
+    .map(([id, raw]) => parseMdc(raw, id))
     .sort((a, b) => a.title.localeCompare(b.title));
 }
 

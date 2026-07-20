@@ -49,9 +49,6 @@ export default defineConfig({
   define: buildInfoDefine,
   plugins: [react(), devRealtimePlugin()],
   server: {
-    fs: {
-      allow: [repoRoot],
-    },
     port: 5173,
     strictPort: true,
     proxy: {

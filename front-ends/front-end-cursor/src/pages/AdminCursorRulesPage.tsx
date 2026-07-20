@@ -158,6 +158,11 @@ export default function AdminCursorRulesPage() {
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
             <CircularProgress />
           </Box>
+        ) : sortedRules.length === 0 ? (
+          <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 4 }}>
+            No Cursor rules were found. Run <code>npm run prebuild</code> in the front-end package to
+            sync rules from <code>.cursor/rules</code>.
+          </Typography>
         ) : (
           <Stack spacing={1.5} sx={{ ...centeredContentStackSx, maxWidth: CONTENT_MAX_WIDTH, mx: 'auto' }}>
             {sortedRules.map((rule) => {

@@ -1,0 +1,39 @@
+---
+description: Text field labels should be bold so they read clearly as labels
+globs: "**/*.{tsx,jsx}"
+alwaysApply: false
+---
+
+# Bold text labels
+
+Text labels that name a field (form labels, read-only field captions like **Schedule**, **Last run**, **Status**, dialog section labels) should be **bold** so they read clearly as labels rather than values.
+
+## Rule
+
+When rendering a label for a field or labeled value group, set `fontWeight` to **700** (or `bold`) in `sx`. Keep the value text at normal weight unless it has another role (e.g. emphasized title).
+
+```tsx
+// ❌ BAD — label and value weight look the same
+<Typography variant="caption" color="text.secondary">
+  Schedule
+</Typography>
+<Typography variant="body2">{scheduleCode}</Typography>
+
+// ✅ GOOD
+<Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
+  Schedule
+</Typography>
+<Typography variant="body2">{scheduleCode}</Typography>
+```
+
+## Applies to
+
+- Read-only field labels on admin/detail cards
+- Form field helper labels that act as the field name (when not using MUI `InputLabel` / `FormLabel`, which already convey hierarchy)
+- Section or dialog labels that identify the meaning of nearby content
+
+## Does not apply to
+
+- Body copy, descriptions, helper hints that are not field names
+- Button text, chip labels, navigation items
+- Page titles / headings (use heading variants instead)

@@ -1,0 +1,45 @@
+---
+description: Canonical readable timestamp format when saving datetime strings
+alwaysApply: true
+---
+
+# Readable datetime strings
+
+When saving a **datetime as a string** (JSON text fields, `additional_info_json`, activity strings, audit-style payloads), use:
+
+**Example:** `Jul 11, 2026, 5:42:28 AM CDT`
+
+- Abbreviated month (`Jul`), day, year, comma, 12-hour time **with seconds**, `AM`/`PM`, timezone abbreviation (`CDT`)
+- **No milliseconds**
+- **No ISO-8601** (e.g. `2026-07-11T05:42:28-05:00`)
+
+Applies to keys such as `last_login_at`, `last_logout_at`, `last-activity`, and any new string datetime fields (unless a field documents its own format, e.g. WSDC `last_update_datetime`).
+
+## PostgreSQL
+
+Use `api.format_activity_timestamp(date_trunc('second', p_ts))`. Parse with `api.parse_activity_timestamp(text)`.
+
+```sql
+-- ❌ BAD
+jsonb_build_object('last_login_at', to_jsonb(v_now))
+
+-- ✅ GOOD
+jsonb_build_object(
+  'last_login_at',
+  to_jsonb(api.format_activity_timestamp(date_trunc('second', v_now)))
+)
+```
+
+`TIMESTAMPTZ` columns (`created_date`, `modified_date`, …) stay as real timestamps — do not stringify those.
+
+## Frontend
+
+Use `formatReadableDateTime()` from `front-ends/front-end-cursor/src/utils/auditTimestamps.ts`.
+
+```ts
+// ❌ BAD
+info.last_login_at = new Date().toISOString();
+
+// ✅ GOOD
+info.last_login_at = formatReadableDateTime(new Date());
+```

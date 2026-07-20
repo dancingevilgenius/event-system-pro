@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Container, Paper, Stack, Typography } from '@mui/material';
+import { Button, Container, Grid, Paper, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import {
   generateDemoAttendees,
@@ -15,6 +15,7 @@ import {
 } from '../api/wsdcRegistry';
 import BuildInfoDialog from '../components/BuildInfoDialog';
 import { centeredContentStackSx } from '../constants/layout';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 import { usePocCounter } from '../hooks/usePocCounter';
 import { EVENT_HOME_PATH } from '../constants/eventRoutes';
@@ -38,6 +39,7 @@ const ADMIN_BUTTONS = [
 
 export default function AdminHomePage() {
   const navigate = useNavigate();
+  const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const { showSuccess, showWarning, showProblem, showInfo, clearMessages } = useMessages();
   const { counter, error: counterError } = usePocCounter();
   const [generatingAttendees, setGeneratingAttendees] = useState(false);
@@ -172,8 +174,8 @@ export default function AdminHomePage() {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 6 }}>
-      <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 }, textAlign: 'center' }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Admin
         </Typography>
@@ -187,21 +189,38 @@ export default function AdminHomePage() {
               : counter}
         </Typography>
 
-        <Stack spacing={2} sx={{ my: 3, ...centeredContentStackSx }}>
-          {ADMIN_BUTTONS.map((button) => (
-            <Button
-              key={button.label}
-              variant="contained"
-              size="large"
-              fullWidth
-              onClick={() => navigate(button.path)}
-            >
-              {button.label}
-            </Button>
-          ))}
-        </Stack>
+        {showXsLayout ? (
+          <Stack spacing={2} sx={{ my: 3, ...centeredContentStackSx }}>
+            {ADMIN_BUTTONS.map((button) => (
+              <Button
+                key={button.label}
+                variant="contained"
+                size="large"
+                fullWidth
+                onClick={() => navigate(button.path)}
+              >
+                {button.label}
+              </Button>
+            ))}
+          </Stack>
+        ) : (
+          <Grid container spacing={2} sx={{ my: 3 }}>
+            {ADMIN_BUTTONS.map((button) => (
+              <Grid key={button.label} size={{ xs: 12, md: 6, lg: 4 }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  onClick={() => navigate(button.path)}
+                >
+                  {button.label}
+                </Button>
+              </Grid>
+            ))}
+          </Grid>
+        )}
 
-        <Stack spacing={2} sx={centeredContentStackSx}>
+        <Stack spacing={2} sx={showXsLayout ? centeredContentStackSx : undefined}>
           <Button
             variant="outlined"
             fullWidth

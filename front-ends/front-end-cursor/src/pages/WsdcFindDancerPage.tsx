@@ -11,10 +11,12 @@ import {
 import WsdcFindDancerSection from '../components/WsdcFindDancerSection';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 
 export default function WsdcFindDancerPage() {
   const navigate = useNavigate();
+  const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const { hasAnyRole } = useAuth();
   const isAdmin = hasAnyRole(['ADMIN']);
   const { showProblem, showSuccess } = useMessages();
@@ -165,12 +167,18 @@ export default function WsdcFindDancerPage() {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 6 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
+        <Typography
+          variant="h4"
+          component="h1"
+          gutterBottom
+          sx={{ textAlign: 'center' }}
+        >
           WSDC Find Dancer
         </Typography>
 
+        <Stack sx={showXsLayout ? centeredContentStackSx : { width: '100%', maxWidth: 480, mx: 'auto' }}>
         <WsdcFindDancerSection
           title=""
           enableDirectLink
@@ -183,9 +191,10 @@ export default function WsdcFindDancerPage() {
           onFetchStart={handleFetchStart}
           onFetchComplete={handleFetchComplete}
         />
+        </Stack>
 
         {checkingMatch && (
-          <Typography variant="body2" color="text.secondary" align="center" sx={{ mt: 2 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 2, textAlign: 'center' }}>
             Checking for a matching Event System Pro account…
           </Typography>
         )}
@@ -214,7 +223,7 @@ export default function WsdcFindDancerPage() {
           </Alert>
         )}
 
-        <Stack spacing={2} sx={{ mt: 3, ...centeredContentStackSx }}>
+        <Stack spacing={2} sx={{ mt: 3, ...(showXsLayout ? centeredContentStackSx : { maxWidth: 480, mx: 'auto', width: '100%' }) }}>
           <Button variant="outlined" fullWidth onClick={() => navigate('/adminhome')}>
             Back to Admin
           </Button>

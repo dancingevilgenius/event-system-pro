@@ -2,6 +2,7 @@ import {
   Button,
   CircularProgress,
   Container,
+  Grid,
   Paper,
   Stack,
   Typography,
@@ -10,9 +11,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchStaticLists, type StaticListListRow } from '../api/postgrest';
 import { centeredContentStackSx } from '../constants/layout';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 
 export default function StaticListsPage() {
   const navigate = useNavigate();
+  const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const [rows, setRows] = useState<StaticListListRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -37,8 +40,8 @@ export default function StaticListsPage() {
   }, [loadStaticLists]);
 
   return (
-    <Container maxWidth="md" sx={{ py: 6 }}>
-      <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 }, textAlign: 'center' }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Static Lists
         </Typography>
@@ -55,16 +58,35 @@ export default function StaticListsPage() {
           </Typography>
         )}
 
-        {!loading && !error && (
+        {!loading && !error && rows.length === 0 && (
+          <Typography variant="body2" color="text.secondary" sx={{ py: 4 }}>
+            No static lists found.
+          </Typography>
+        )}
+
+        {!loading && !error && rows.length > 0 && showXsLayout && (
           <Stack spacing={2} sx={{ my: 3, ...centeredContentStackSx }}>
-            {rows.length === 0 ? (
-              <Typography variant="body2" color="text.secondary">
-                No static lists found.
-              </Typography>
-            ) : (
-              rows.map((row) => (
+            {rows.map((row) => (
+              <Button
+                key={row.listCode}
+                variant="contained"
+                size="large"
+                fullWidth
+                onClick={() =>
+                  navigate(`/static-list-details/${encodeURIComponent(row.listCode)}`)
+                }
+              >
+                {row.listCode}
+              </Button>
+            ))}
+          </Stack>
+        )}
+
+        {!loading && !error && rows.length > 0 && !showXsLayout && (
+          <Grid container spacing={2} sx={{ my: 3 }}>
+            {rows.map((row) => (
+              <Grid key={row.listCode} size={{ xs: 12, md: 6, lg: 4 }}>
                 <Button
-                  key={row.listCode}
                   variant="contained"
                   size="large"
                   fullWidth
@@ -74,12 +96,12 @@ export default function StaticListsPage() {
                 >
                   {row.listCode}
                 </Button>
-              ))
-            )}
-          </Stack>
+              </Grid>
+            ))}
+          </Grid>
         )}
 
-        <Stack spacing={2} sx={centeredContentStackSx}>
+        <Stack spacing={2} sx={showXsLayout ? centeredContentStackSx : undefined}>
           <Button variant="outlined" fullWidth onClick={() => navigate('/adminhome')}>
             Back to Admin
           </Button>

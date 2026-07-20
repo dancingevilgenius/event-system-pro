@@ -424,9 +424,9 @@ See **Multi-section admin form pages (Add Event pattern)** for accordion / statu
 | Option | Notes |
 |--------|--------|
 | Once every 30 seconds | Interval schedule (`30` seconds), not cron |
-| Once a minute | Cron |
-| Once every 10 minutes | Cron `*/10 * * * *` |
-| Once every 30 minutes | Cron `*/30 * * * *` |
+| Once a minute | Interval schedule (`60` seconds), not cron |
+| Once every 10 minutes | Interval schedule (`600` seconds), not cron |
+| Once every 30 minutes | Interval schedule (`1800` seconds), not cron |
 | Once an hour | Cron |
 | Once a day | Cron + time of day |
 | Once a week | Cron + weekday + time of day |

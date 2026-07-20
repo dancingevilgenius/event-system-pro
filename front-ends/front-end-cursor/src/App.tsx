@@ -6,6 +6,7 @@ import AccountPage from './pages/AccountPage';
 import AdminAuditLogPage from './pages/AdminAuditLogPage';
 import AdminCompetitorsPage from './pages/AdminCompetitorsPage';
 import AdminContestResultsPage from './pages/AdminContestResultsPage';
+import AdminCursorRulesPage from './pages/AdminCursorRulesPage';
 import AdminContestsPage from './pages/AdminContestsPage';
 import AdminAddEventPage from './pages/AdminAddEventPage';
 import AdminEventAttendeesPage from './pages/AdminEventAttendeesPage';
@@ -129,6 +130,14 @@ export default function App() {
         element={
           <ProtectedRoute roles={['ADMIN']}>
             <AdminScheduledTasksPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/cursor-rules"
+        element={
+          <ProtectedRoute roles={['ADMIN']}>
+            <AdminCursorRulesPage />
           </ProtectedRoute>
         }
       />

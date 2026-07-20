@@ -2019,6 +2019,46 @@ export async function fetchUserWsdcId(userId: number): Promise<string | null> {
   return id || null;
 }
 
+const CURSOR_RULES_STARRED_KEY = 'cursor_rules_starred';
+
+function cursorRulesStarredFromAdditionalInfo(
+  additionalInfo: Record<string, unknown> | null | undefined,
+): string[] {
+  const value = additionalInfo?.[CURSOR_RULES_STARRED_KEY];
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.filter((item): item is string => typeof item === 'string' && item.trim() !== '');
+}
+
+export async function fetchUserCursorRulesStarred(userId: number): Promise<string[]> {
+  const params = new URLSearchParams({
+    select: 'additional_info_json',
+  });
+  params.append('user_id', `eq.${userId}`);
+
+  const rows = await fetchJson<Array<{ additional_info_json: Record<string, unknown> | null }>>(
+    `${POSTGREST_URL}/user?${params.toString()}`,
+    'Unable to load starred Cursor rules',
+  );
+
+  return cursorRulesStarredFromAdditionalInfo(rows[0]?.additional_info_json);
+}
+
+export type SetUserCursorRulesStarredResult = {
+  ok: boolean;
+  message?: string;
+  user_id?: number;
+  cursor_rules_starred?: string[];
+};
+
+export function setUserCursorRulesStarred(starred: string[]) {
+  return callRpc<SetUserCursorRulesStarredResult>('set_user_cursor_rules_starred', {
+    p_starred: starred,
+  });
+}
+
 /** Prefer "First Last" from user.name_json; fall back to email when name is empty. */
 export function formatCashierDisplayName(params: {
   firstName?: string | null;

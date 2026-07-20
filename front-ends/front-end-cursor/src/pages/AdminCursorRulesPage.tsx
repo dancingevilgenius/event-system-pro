@@ -21,6 +21,7 @@ import {
   setUserCursorRulesStarred,
 } from '../api/postgrest';
 import { useAuth } from '../hooks/useAuth';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 import { centeredContentStackSx } from '../constants/layout';
 import {
@@ -83,6 +84,7 @@ export default function AdminCursorRulesPage() {
   const navigate = useNavigate();
   const { session } = useAuth();
   const { showProblem } = useMessages();
+  const { showXsLayout, containerMaxWidth } = useLayoutTier();
 
   const allRules = useMemo(() => loadCursorRules(), []);
   const [starredIds, setStarredIds] = useState<string[]>([]);
@@ -153,8 +155,8 @@ export default function AdminCursorRulesPage() {
   );
 
   return (
-    <Container maxWidth="md" sx={{ py: 6 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
         <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
           Cursor Rules
         </Typography>
@@ -170,7 +172,14 @@ export default function AdminCursorRulesPage() {
             sync rules from <code>.cursor/rules</code>.
           </Typography>
         ) : (
-          <Stack spacing={1.5} sx={centeredContentStackSx}>
+          <Stack
+            spacing={1.5}
+            sx={
+              showXsLayout
+                ? centeredContentStackSx
+                : { width: '100%', maxWidth: 960, mx: 'auto' }
+            }
+          >
             {sortedRules.map((rule) => {
               const isStarred = starredIds.includes(rule.id);
               const isSaving = savingRuleId === rule.id;
@@ -237,7 +246,15 @@ export default function AdminCursorRulesPage() {
           </Stack>
         )}
 
-        <Stack spacing={2} sx={{ mt: 4, ...centeredContentStackSx }}>
+        <Stack
+          spacing={2}
+          sx={{
+            mt: 4,
+            ...(showXsLayout
+              ? centeredContentStackSx
+              : { maxWidth: 480, mx: 'auto', width: '100%' }),
+          }}
+        >
           <Button variant="outlined" fullWidth onClick={() => navigate('/adminhome')}>
             Back to Admin
           </Button>

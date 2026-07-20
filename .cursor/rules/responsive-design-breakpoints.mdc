@@ -1,0 +1,65 @@
+---
+description: Responsive breakpoints for new pages — XS phone, md iPad, lg iPad Pro, xl laptop/desktop
+globs: "front-ends/front-end-cursor/**/*.{tsx,jsx}"
+alwaysApply: false
+---
+
+# Responsive design breakpoints (new pages)
+
+All **new pages** and substantial UI work in `front-ends/front-end-cursor` must be responsive across four tiers. Use **mobile-first** styles: base layout at **xs**, then enhance at `md`, `lg`, and `xl` with MUI `sx` / `Grid` breakpoint objects.
+
+## Breakpoint tiers (authoritative)
+
+| MUI key | `min-width` | Primary design viewport | Target device |
+| --- | --- | --- | --- |
+| **xs** | `0px` | **360 × 780** CSS px (portrait) | Samsung Galaxy S24 |
+| **md** | `768px` | **820 × 1180** CSS px (portrait) | iPad (mini 768px; Air / 10th gen 820px) |
+| **lg** | `1024px` | **1024 × 1366** CSS px (portrait) | iPad Pro 12.9″ / 13″ M4 |
+| **xl** | `1280px` | **1920 × 1080** CSS px (browser viewport) | 17″ laptop and desktop monitor |
+
+- **xs** is the default: stack columns, full-width controls, compact padding.
+- **md** adds tablet layouts (2-column grids, row toolbars, wider dialogs).
+- **lg** uses large-tablet / small-desktop density (more columns, side panels).
+- **xl** uses full desktop width (wide tables, multi-column admin dashboards, `Container maxWidth="lg"` or `"xl"` where appropriate).
+
+Portrait widths above are **CSS viewport** sizes (`window.innerWidth` / `innerHeight`), not physical panel resolution.
+
+## MUI `sx` patterns (preferred)
+
+```tsx
+// Stack: column on phone, row from tablet up
+<Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ alignItems: { md: 'center' } }}>
+
+// Grid (MUI v6+): full width on xs, half from md, quarter from lg
+<Grid container spacing={2}>
+  <Grid size={{ xs: 12, md: 6, lg: 3 }}>...</Grid>
+</Grid>
+
+// Paper padding: compact on xs, roomier from md
+<Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
+
+// Container: narrow on xs/md, wider on lg/xl
+<Container maxWidth={{ xs: 'sm', md: 'md', lg: 'lg', xl: 'xl' }} sx={{ py: { xs: 4, md: 6 } }}>
+```
+
+Put layout CSS in `sx` (see `mui-v9-sx-styling` rule). Prefer breakpoint objects over one-off `@media` unless matching `MOBILE_LAYOUT_MIN_WIDTH` (769px) for the legacy 360px centered column.
+
+## `sm` breakpoint
+
+MUI’s default **`sm` (600px)** is not a primary tier for this project. On **new pages**, prefer **xs → md → lg → xl** only. Existing pages may still use `sm`; do not introduce `sm` in new work unless bridging a specific legacy layout.
+
+## Layout conventions (reuse)
+
+- **Phone (xs):** `CONTENT_MAX_WIDTH` (360px) centered column where the app uses narrow forms (`centeredContentStackSx`, `mobileColumnSx` in `constants/layout.ts`).
+- **Tablet+:** release the 360px cap; use `Container` + `Paper` patterns from admin pages (`maxWidth="md"` or wider at `lg`/`xl`).
+- **Touch:** `useIsMobileDevice()` (coarse pointer or ≤768px + touch) is for **behavior** (keyboard scroll, field focus), not for replacing responsive `sx` breakpoints.
+- **Dialogs:** `fullWidth` + `maxWidth={{ xs: 'xs', md: 'sm', lg: 'md' }}` so modals fit Galaxy S24 and iPad.
+
+## Checklist before finishing a new page
+
+1. **360px** (xs): no horizontal scroll; primary actions reachable; text not clipped.
+2. **820px** (md): tablet layout (e.g. 2-column grids, toolbar rows) looks intentional.
+3. **1024px** (lg): iPad Pro layout uses available width (tables, filters, side content).
+4. **1920px** (xl): desktop layout does not over-stretch; use `Container` max width or sensible column caps.
+
+Resize the browser or use devtools device modes at the viewports above.

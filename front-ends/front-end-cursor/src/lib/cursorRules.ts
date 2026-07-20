@@ -7,7 +7,7 @@ export type CursorRule = {
   body: string;
 };
 
-const mdcModules = import.meta.glob('../../../../.cursor/rules/*.mdc', {
+const mdcModules = import.meta.glob('../data/cursor-rules/*.mdc', {
   eager: true,
   query: '?raw',
   import: 'default',

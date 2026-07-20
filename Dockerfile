@@ -11,6 +11,7 @@ COPY front-ends/front-end-cursor/package.json front-ends/front-end-cursor/packag
 RUN npm ci
 
 COPY front-ends/front-end-cursor/ ./
+COPY .cursor/rules ./src/data/cursor-rules/
 COPY .git /.git-metadata
 
 ARG VITE_POSTGREST_URL=https://eventsystem.fun/api

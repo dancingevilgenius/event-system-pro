@@ -26,6 +26,7 @@ import JudgingScoreInput from '../components/JudgingScoreInput';
 import PaletteOutlinedIcon from '../components/PaletteOutlinedIcon';
 import PercentCompleteBar from '../components/PercentCompleteBar';
 import { centeredContentStackSx, CONTENT_MAX_WIDTH } from '../constants/layout';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 import {
   createMockContestEntries,
   type MockContestEntry,
@@ -839,12 +840,15 @@ export default function JudgingPage() {
     ? entryByBib.get(duplicateScoreDialog.otherBib)
     : undefined;
 
+  const { containerMaxWidth } = useLayoutTier();
+
   return (
     <Container
-      maxWidth="md"
+      maxWidth={containerMaxWidth}
       sx={{
-        py: 2,
-        height: '100vh',
+        py: { xs: 2, md: 4 },
+        height: { xs: 'auto', md: '100vh' },
+        minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
         boxSizing: 'border-box',
@@ -853,7 +857,7 @@ export default function JudgingPage() {
       <Paper
         elevation={3}
         sx={{
-          p: 4,
+          p: { xs: 2, md: 3, lg: 4 },
           flex: 1,
           minHeight: 0,
           display: 'flex',
@@ -892,12 +896,13 @@ export default function JudgingPage() {
 
           {listLayout === 'pagination' && displayEntries.length > 0 && (
             <Stack
-              direction="row"
+              direction={{ xs: 'column', md: 'row' }}
               spacing={1}
               sx={{
                 ...centeredContentStackSx,
                 alignItems: 'center',
                 justifyContent: 'space-between',
+                width: '100%',
               }}
             >
               <Button

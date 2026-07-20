@@ -31,7 +31,9 @@ import {
   type JudgeSearchUser,
 } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
-import { centeredContentStackSx } from '../constants/layout';
+import AuditTrailCard from '../components/AuditTrailCard';
+import { centeredContentStackSx, CONTENT_MAX_WIDTH } from '../constants/layout';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 import { formatReadableDateTime } from '../utils/auditTimestamps';
 
@@ -68,9 +70,83 @@ function eventOptionLabel(event: EventListRow): string {
   return name ? `${name} (${startDate})` : startDate;
 }
 
+function JudgeSearchResultMobileCard({
+  user,
+  checked,
+  alreadyInPool,
+  onToggle,
+}: {
+  user: JudgeSearchUser;
+  checked: boolean;
+  alreadyInPool: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <AuditTrailCard
+      columns={2}
+      actionsAlign="right"
+      actionsInGrid
+      fields={[
+        { key: 'first', label: 'First name', value: displayValue(user.firstName) },
+        { key: 'last', label: 'Last name', value: displayValue(user.lastName) },
+        {
+          key: 'email',
+          label: 'Email',
+          value: displayValue(user.email),
+          columnSpan: 2,
+        },
+      ]}
+      actions={
+        <Checkbox
+          checked={checked}
+          disabled={alreadyInPool}
+          onChange={onToggle}
+          slotProps={{
+            input: {
+              'aria-label': `Add ${user.firstName} ${user.lastName} to judging pool`,
+            },
+          }}
+        />
+      }
+    />
+  );
+}
+
+function JudgePoolMobileCard({
+  judge,
+  onRemove,
+}: {
+  judge: EventJudgePoolMember;
+  onRemove: () => void;
+}) {
+  return (
+    <AuditTrailCard
+      columns={2}
+      actionsAlign="right"
+      actionsInGrid
+      fields={[
+        { key: 'first', label: 'First name', value: displayValue(judge.firstname) },
+        { key: 'last', label: 'Last name', value: displayValue(judge.lastname) },
+        {
+          key: 'email',
+          label: 'Email',
+          value: displayValue(judge.email),
+          columnSpan: 2,
+        },
+      ]}
+      actions={
+        <Button variant="outlined" size="small" color="error" onClick={onRemove}>
+          Remove
+        </Button>
+      }
+    />
+  );
+}
+
 export default function AdminSetEventJudgesPage() {
   const navigate = useNavigate();
   const { showProblem, showSuccess } = useMessages();
+  const { showXsLayout, showLgLayout, containerMaxWidth } = useLayoutTier();
 
   const [eventGroups, setEventGroups] = useState<EventGroupListRow[]>([]);
   const [events, setEvents] = useState<EventListRow[]>([]);
@@ -291,8 +367,8 @@ export default function AdminSetEventJudgesPage() {
   const eventSelectionReady = Boolean(selectedEventCode && selectedEvent);
 
   return (
-    <Container maxWidth="md" sx={{ py: 6 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
           Set Event Judges
         </Typography>
@@ -386,7 +462,7 @@ export default function AdminSetEventJudgesPage() {
                 <Typography variant="subtitle1" sx={{ mb: 1 }}>
                   Search users
                 </Typography>
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
+                <Stack direction={{ xs: 'column', md: 'row' }} spacing={1}>
                   <AppTextField
                     label="First name"
                     value={firstNameQuery}
@@ -417,7 +493,8 @@ export default function AdminSetEventJudgesPage() {
                     variant="outlined"
                     onClick={() => void handleSearch()}
                     disabled={searching}
-                    sx={{ minWidth: 120, height: 56 }}
+                    fullWidth={showXsLayout}
+                    sx={{ minWidth: { xs: '100%', md: 120 }, height: { xs: 'auto', md: 56 } }}
                   >
                     {searching ? 'Searching…' : 'Search'}
                   </Button>
@@ -431,9 +508,9 @@ export default function AdminSetEventJudgesPage() {
 
               <Box>
                 <Stack
-                  direction={{ xs: 'column', sm: 'row' }}
+                  direction={{ xs: 'column', md: 'row' }}
                   spacing={1}
-                  sx={{ mb: 1, alignItems: { sm: 'center' }, justifyContent: 'space-between' }}
+                  sx={{ mb: 1, alignItems: { md: 'center' }, justifyContent: 'space-between' }}
                 >
                   <Typography variant="subtitle2">Search results</Typography>
                   <Button
@@ -450,6 +527,31 @@ export default function AdminSetEventJudgesPage() {
                   <Stack sx={{ py: 3, alignItems: 'center' }}>
                     <CircularProgress size={28} />
                   </Stack>
+                ) : showXsLayout ? (
+                  <Stack spacing={1.5}>
+                    {searchResults.length === 0 ? (
+                      <Typography variant="body2" color="text.secondary" align="center" sx={{ py: 2 }}>
+                        {firstNameQuery.trim() || lastNameQuery.trim()
+                          ? 'No users found.'
+                          : 'Search by first and/or last name.'}
+                      </Typography>
+                    ) : (
+                      searchResults.map((user) => {
+                        const alreadyInPool = judgeUserIds.has(user.userId);
+                        const checked = selectedUserIds.has(user.userId);
+
+                        return (
+                          <JudgeSearchResultMobileCard
+                            key={user.userId}
+                            user={user}
+                            checked={checked}
+                            alreadyInPool={alreadyInPool}
+                            onToggle={() => toggleSelectedUser(user.userId)}
+                          />
+                        );
+                      })
+                    )}
+                  </Stack>
                 ) : (
                   <TableContainer sx={{ overflowX: 'auto' }}>
                     <Table size="small" aria-label="User search results">
@@ -458,13 +560,13 @@ export default function AdminSetEventJudgesPage() {
                           <TableCell padding="checkbox">Add</TableCell>
                           <TableCell>First name</TableCell>
                           <TableCell>Last name</TableCell>
-                          <TableCell>Email</TableCell>
+                          {showLgLayout ? <TableCell>Email</TableCell> : null}
                         </TableRow>
                       </TableHead>
                       <TableBody>
                         {searchResults.length === 0 ? (
                           <TableRow>
-                            <TableCell colSpan={4} align="center">
+                            <TableCell colSpan={showLgLayout ? 4 : 3} align="center">
                               {firstNameQuery.trim() || lastNameQuery.trim()
                                 ? 'No users found.'
                                 : 'Search by first and/or last name.'}
@@ -491,7 +593,9 @@ export default function AdminSetEventJudgesPage() {
                                 </TableCell>
                                 <TableCell>{displayValue(user.firstName)}</TableCell>
                                 <TableCell>{displayValue(user.lastName)}</TableCell>
-                                <TableCell>{displayValue(user.email)}</TableCell>
+                                {showLgLayout ? (
+                                  <TableCell>{displayValue(user.email)}</TableCell>
+                                ) : null}
                               </TableRow>
                             );
                           })
@@ -506,45 +610,65 @@ export default function AdminSetEventJudgesPage() {
                 <Typography variant="subtitle2" sx={{ mb: 1 }}>
                   Judging pool — {eventOptionLabel(selectedEvent)}
                 </Typography>
-                <TableContainer sx={{ overflowX: 'auto' }}>
-                  <Table size="small" aria-label="Event judging pool">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell>First name</TableCell>
-                        <TableCell>Last name</TableCell>
-                        <TableCell>Email</TableCell>
-                        <TableCell align="center">Remove</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {judges.length === 0 ? (
+                {showXsLayout ? (
+                  <Stack spacing={1.5}>
+                    {judges.length === 0 ? (
+                      <Typography variant="body2" color="text.secondary" align="center" sx={{ py: 2 }}>
+                        No judges in the pool yet.
+                      </Typography>
+                    ) : (
+                      judges.map((judge) => (
+                        <JudgePoolMobileCard
+                          key={judge.userId}
+                          judge={judge}
+                          onRemove={() => handleRemoveJudge(judge.userId)}
+                        />
+                      ))
+                    )}
+                  </Stack>
+                ) : (
+                  <TableContainer sx={{ overflowX: 'auto' }}>
+                    <Table size="small" aria-label="Event judging pool">
+                      <TableHead>
                         <TableRow>
-                          <TableCell colSpan={4} align="center">
-                            No judges in the pool yet.
-                          </TableCell>
+                          <TableCell>First name</TableCell>
+                          <TableCell>Last name</TableCell>
+                          {showLgLayout ? <TableCell>Email</TableCell> : null}
+                          <TableCell align="center">Remove</TableCell>
                         </TableRow>
-                      ) : (
-                        judges.map((judge) => (
-                          <TableRow key={judge.userId} hover>
-                            <TableCell>{displayValue(judge.firstname)}</TableCell>
-                            <TableCell>{displayValue(judge.lastname)}</TableCell>
-                            <TableCell>{displayValue(judge.email)}</TableCell>
-                            <TableCell align="center">
-                              <Button
-                                variant="outlined"
-                                size="small"
-                                color="error"
-                                onClick={() => handleRemoveJudge(judge.userId)}
-                              >
-                                Remove
-                              </Button>
+                      </TableHead>
+                      <TableBody>
+                        {judges.length === 0 ? (
+                          <TableRow>
+                            <TableCell colSpan={showLgLayout ? 4 : 3} align="center">
+                              No judges in the pool yet.
                             </TableCell>
                           </TableRow>
-                        ))
-                      )}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
+                        ) : (
+                          judges.map((judge) => (
+                            <TableRow key={judge.userId} hover>
+                              <TableCell>{displayValue(judge.firstname)}</TableCell>
+                              <TableCell>{displayValue(judge.lastname)}</TableCell>
+                              {showLgLayout ? (
+                                <TableCell>{displayValue(judge.email)}</TableCell>
+                              ) : null}
+                              <TableCell align="center">
+                                <Button
+                                  variant="outlined"
+                                  size="small"
+                                  color="error"
+                                  onClick={() => handleRemoveJudge(judge.userId)}
+                                >
+                                  Remove
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        )}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                )}
               </Box>
 
               {saveError && (
@@ -567,7 +691,12 @@ export default function AdminSetEventJudgesPage() {
         </Stack>
 
         <Stack spacing={2} sx={{ mt: 3, ...centeredContentStackSx }}>
-          <Button variant="outlined" fullWidth onClick={() => navigate('/adminhome')}>
+          <Button
+            variant="outlined"
+            fullWidth
+            onClick={() => navigate('/adminhome')}
+            sx={{ maxWidth: { xs: '100%', md: CONTENT_MAX_WIDTH } }}
+          >
             Back to Admin
           </Button>
         </Stack>

@@ -40,6 +40,7 @@ import {
   type SalesTransactionReceipt,
 } from '../lib/salesTransactionReceipt';
 import { useAuth } from '../hooks/useAuth';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 
 const DEMO_EVENT_CODE = 'SWING_STATE_CLASSIC_2025_JUN';
 const DEMO_REGISTER_ID = 'REG-DEMO-01';
@@ -131,6 +132,7 @@ function ProductCard({
 export default function EventMerchandisePosDemoPage() {
   const navigate = useNavigate();
   const { session } = useAuth();
+  const { showXsLayout, showMdLayout, showLgLayout, containerMaxWidth } = useLayoutTier();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [eventContext, setEventContext] = useState<EventPosContext | null>(null);
@@ -237,9 +239,9 @@ export default function EventMerchandisePosDemoPage() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Stack spacing={3}>
-        <Stack spacing={0.5}>
+        <Stack spacing={0.5} sx={{ textAlign: { xs: 'center', md: 'left' } }}>
           <Typography variant="h4" component="h1">
             Event Merchandise POS
           </Typography>
@@ -260,13 +262,13 @@ export default function EventMerchandisePosDemoPage() {
 
         {!loading && !error && eventContext && merchandise && (
           <Grid container spacing={3}>
-            <Grid size={{ xs: 12, md: 8 }}>
-              <Paper variant="outlined" sx={{ p: 2 }}>
+            <Grid size={{ xs: 12, lg: 8 }}>
+              <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 } }}>
                 <Stack spacing={2}>
                   <Stack
-                    direction={{ xs: 'column', sm: 'row' }}
+                    direction={{ xs: 'column', md: 'row' }}
                     spacing={2}
-                    sx={{ justifyContent: 'space-between', alignItems: { sm: 'center' } }}
+                    sx={{ justifyContent: 'space-between', alignItems: { md: 'center' } }}
                   >
                     <Typography variant="h6">{eventContext.name}</Typography>
                     <ToggleButtonGroup
@@ -287,7 +289,7 @@ export default function EventMerchandisePosDemoPage() {
 
                   <Grid container spacing={2}>
                     {filteredItems.map((item) => (
-                      <Grid key={item.sku} size={{ xs: 12, sm: 6 }}>
+                      <Grid key={item.sku} size={{ xs: 12, md: 6, xl: 4 }}>
                         <ProductCard item={item} onAdd={addToCart} />
                       </Grid>
                     ))}
@@ -296,8 +298,8 @@ export default function EventMerchandisePosDemoPage() {
               </Paper>
             </Grid>
 
-            <Grid size={{ xs: 12, md: 4 }}>
-              <Paper variant="outlined" sx={{ p: 2 }}>
+            <Grid size={{ xs: 12, lg: 4 }}>
+              <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 } }}>
                 <Stack spacing={2}>
                   <Typography variant="h6">Cart</Typography>
                   {cart.length === 0 && (
@@ -373,14 +375,24 @@ export default function EventMerchandisePosDemoPage() {
           </Grid>
         )}
 
-        <Stack direction="row" spacing={2}>
-          <Button variant="outlined" onClick={() => navigate('/adminhome')}>
+        <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+          <Button
+            variant="outlined"
+            onClick={() => navigate('/adminhome')}
+            fullWidth={showXsLayout}
+            sx={{ minWidth: { xs: '100%', md: 200 } }}
+          >
             Back to Admin
           </Button>
         </Stack>
       </Stack>
 
-      <Dialog open={receiptOpen} onClose={() => setReceiptOpen(false)} fullWidth maxWidth="md">
+      <Dialog
+        open={receiptOpen}
+        onClose={() => setReceiptOpen(false)}
+        fullWidth
+        maxWidth={showLgLayout ? 'md' : showMdLayout ? 'sm' : 'xs'}
+      >
         <DialogTitle>Sales receipt</DialogTitle>
         <DialogContent dividers>
           {completedReceipt && <SalesTransactionReceiptView receipt={completedReceipt} />}

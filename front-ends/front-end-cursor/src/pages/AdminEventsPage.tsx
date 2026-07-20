@@ -24,7 +24,9 @@ import {
 } from '../api/postgrest';
 import AddEventGroupDialog from '../components/AddEventGroupDialog';
 import AppTextField from '../components/AppTextField';
+import AuditTrailCard from '../components/AuditTrailCard';
 import { EVENT_HOME_PATH, eventGroupDetailPath } from '../constants/eventRoutes';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 import { EVENT_TYPES_LIST_CODE } from '../lib/staticList';
 
@@ -32,9 +34,65 @@ function displayValue(value: string): string {
   return value.trim() === '' ? '—' : value;
 }
 
+function EventGroupMobileCard({
+  row,
+  eventTypeOptions,
+  saving,
+  onEventTypeChange,
+  onEdit,
+}: {
+  row: EventGroupListRow;
+  eventTypeOptions: StaticListEntry[];
+  saving: boolean;
+  onEventTypeChange: (eventGroupCode: string, nextEventTypeCode: string) => void;
+  onEdit: () => void;
+}) {
+  return (
+    <Paper variant="outlined" sx={{ p: 2 }}>
+      <Stack spacing={2}>
+        <AuditTrailCard
+          columns={2}
+          fields={[
+            { key: 'code', label: 'Event Group Code', value: displayValue(row.eventGroupCode) },
+            {
+              key: 'name',
+              label: 'Full Name',
+              value: displayValue(row.fullName),
+              columnSpan: 2,
+            },
+          ]}
+        />
+        <AppTextField
+          select
+          label="Event Type"
+          size="small"
+          fullWidth
+          value={row.eventTypeCode ?? ''}
+          disabled={saving}
+          onChange={(event) => onEventTypeChange(row.eventGroupCode, event.target.value)}
+        >
+          <MenuItem value="">
+            <em>Select event type</em>
+          </MenuItem>
+          {eventTypeOptions.map((entry) => (
+            <MenuItem key={entry.key} value={entry.key}>
+              {entry.label}
+            </MenuItem>
+          ))}
+        </AppTextField>
+        <Button variant="outlined" size="small" onClick={onEdit}>
+          Edit events
+        </Button>
+      </Stack>
+    </Paper>
+  );
+}
+
 export default function AdminEventsPage() {
   const navigate = useNavigate();
   const { showSuccess, showProblem } = useMessages();
+  const { showXsLayout, showMdLayout, showLgLayout, containerMaxWidth } = useLayoutTier();
+
   const [rows, setRows] = useState<EventGroupListRow[]>([]);
   const [eventTypeOptions, setEventTypeOptions] = useState<StaticListEntry[]>([]);
   const [nameFilter, setNameFilter] = useState('');
@@ -73,10 +131,7 @@ export default function AdminEventsPage() {
       ? rows
       : rows.filter((row) => row.fullName.toLowerCase().includes(normalizedNameFilter));
 
-  const handleEventTypeChange = async (
-    eventGroupCode: string,
-    nextEventTypeCode: string,
-  ) => {
+  const handleEventTypeChange = async (eventGroupCode: string, nextEventTypeCode: string) => {
     const currentRow = rows.find((row) => row.eventGroupCode === eventGroupCode);
     const previousTypeCode = currentRow?.eventTypeCode ?? null;
     const normalizedNext = nextEventTypeCode.trim() === '' ? null : nextEventTypeCode.trim();
@@ -121,8 +176,8 @@ export default function AdminEventsPage() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Paper elevation={3} sx={{ p: { xs: 2, sm: 4 } }}>
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
           Event Groups
         </Typography>
@@ -135,23 +190,28 @@ export default function AdminEventsPage() {
         </Typography>
 
         <Stack
-          direction={{ xs: 'column', sm: 'row' }}
+          direction={{ xs: 'column', md: 'row' }}
           spacing={2}
-          sx={{ mb: 2, justifyContent: 'center', alignItems: 'center' }}
+          sx={{ mb: 2, justifyContent: 'center', alignItems: { xs: 'stretch', md: 'center' } }}
         >
           <AppTextField
             label="Filter"
             value={nameFilter}
             onChange={(event) => setNameFilter(event.target.value)}
             size="small"
-            sx={{ width: { xs: '100%', sm: 260 }, maxWidth: '50vw' }}
+            sx={{ width: { xs: '100%', md: 260 } }}
             slotProps={{
               htmlInput: {
                 'aria-label': 'Filter event groups by name',
               },
             }}
           />
-          <Button variant="contained" onClick={() => setAddDialogOpen(true)}>
+          <Button
+            variant="contained"
+            onClick={() => setAddDialogOpen(true)}
+            fullWidth={showXsLayout}
+            sx={{ flexShrink: 0 }}
+          >
             Add Event Group
           </Button>
         </Stack>
@@ -168,21 +228,50 @@ export default function AdminEventsPage() {
           </Typography>
         )}
 
-        {!loading && !error && (
+        {!loading && !error && showXsLayout && (
+          <Stack spacing={2}>
+            {filteredRows.length === 0 ? (
+              <Typography variant="body2" color="text.secondary" align="center" sx={{ py: 4 }}>
+                {rows.length === 0
+                  ? 'No event groups found.'
+                  : 'No event groups match this filter.'}
+              </Typography>
+            ) : (
+              filteredRows.map((row) => (
+                <EventGroupMobileCard
+                  key={row.eventGroupCode}
+                  row={row}
+                  eventTypeOptions={eventTypeOptions}
+                  saving={savingEventTypeCodes.has(row.eventGroupCode)}
+                  onEventTypeChange={(code, value) => {
+                    void handleEventTypeChange(code, value);
+                  }}
+                  onEdit={() => navigate(eventGroupDetailPath(row.eventGroupCode))}
+                />
+              ))
+            )}
+          </Stack>
+        )}
+
+        {!loading && !error && showMdLayout && (
           <TableContainer sx={{ overflowX: 'auto' }}>
             <Table size="small" aria-label="Event groups table">
               <TableHead>
                 <TableRow>
-                  <TableCell>Event Group Code</TableCell>
-                  <TableCell>Full Name</TableCell>
-                  <TableCell>Event Type</TableCell>
-                  <TableCell align="center">Events</TableCell>
+                  {showLgLayout ? (
+                    <TableCell sx={{ fontWeight: 700 }}>Event Group Code</TableCell>
+                  ) : null}
+                  <TableCell sx={{ fontWeight: 700 }}>Full Name</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Event Type</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 700 }}>
+                    Events
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {filteredRows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={4} align="center">
+                    <TableCell colSpan={showLgLayout ? 4 : 3} align="center">
                       {rows.length === 0
                         ? 'No event groups found.'
                         : 'No event groups match this filter.'}
@@ -191,9 +280,11 @@ export default function AdminEventsPage() {
                 ) : (
                   filteredRows.map((row) => (
                     <TableRow key={row.eventGroupCode} hover>
-                      <TableCell>{displayValue(row.eventGroupCode)}</TableCell>
+                      {showLgLayout ? (
+                        <TableCell>{displayValue(row.eventGroupCode)}</TableCell>
+                      ) : null}
                       <TableCell>{displayValue(row.fullName)}</TableCell>
-                      <TableCell sx={{ minWidth: 200 }}>
+                      <TableCell sx={{ minWidth: { md: 160, lg: 200 } }}>
                         <AppTextField
                           select
                           size="small"
@@ -223,9 +314,7 @@ export default function AdminEventsPage() {
                         <Button
                           variant="outlined"
                           size="small"
-                          onClick={() =>
-                            navigate(eventGroupDetailPath(row.eventGroupCode))
-                          }
+                          onClick={() => navigate(eventGroupDetailPath(row.eventGroupCode))}
                         >
                           Edit
                         </Button>
@@ -239,7 +328,12 @@ export default function AdminEventsPage() {
         )}
 
         <Stack spacing={2} sx={{ mt: 3, alignItems: 'center' }}>
-          <Button variant="outlined" onClick={() => navigate(EVENT_HOME_PATH)} sx={{ minWidth: 200 }}>
+          <Button
+            variant="outlined"
+            onClick={() => navigate(EVENT_HOME_PATH)}
+            fullWidth={showXsLayout}
+            sx={{ minWidth: { xs: '100%', md: 200 } }}
+          >
             Back to Event Home
           </Button>
         </Stack>

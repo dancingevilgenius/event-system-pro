@@ -18,7 +18,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   fetchStaticListByCode,
@@ -27,7 +27,9 @@ import {
   type StaticListRecord,
 } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
+import AuditTrailCard from '../components/AuditTrailCard';
 import { useAuth } from '../hooks/useAuth';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 import {
   NOT_APPLICABLE_INT,
@@ -74,12 +76,87 @@ function editDialogLabel(field: EditField): string {
   return staticListFieldLabel(field);
 }
 
+function StaticListEntryMobileCard({
+  entry,
+  index,
+  isAdmin,
+  showMinAgeColumn,
+  showMaxAgeColumn,
+  showDescriptionColumn,
+  onOpenEdit,
+  renderAgeCell,
+  renderDescriptionCell,
+}: {
+  entry: StaticListEntry;
+  index: number;
+  isAdmin: boolean;
+  showMinAgeColumn: boolean;
+  showMaxAgeColumn: boolean;
+  showDescriptionColumn: boolean;
+  onOpenEdit: (index: number, field: EditField) => void;
+  renderAgeCell: (
+    index: number,
+    field: StaticListJsonField,
+    ageValue: number | undefined,
+  ) => ReactNode;
+  renderDescriptionCell: (index: number, description: string | undefined) => ReactNode;
+}) {
+  const fields: Parameters<typeof AuditTrailCard>[0]['fields'] = [
+    { key: 'key', label: 'Key', value: displayValue(entry.key) },
+    {
+      key: 'value',
+      label: 'Value',
+      value: isAdmin ? (
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={() => onOpenEdit(index, 'label')}
+          sx={{ textTransform: 'none', justifyContent: 'flex-start' }}
+        >
+          {displayValue(entry.label)}
+        </Button>
+      ) : (
+        displayValue(entry.label)
+      ),
+      columnSpan: 2,
+    },
+  ];
+
+  if (showMinAgeColumn) {
+    fields.push({
+      key: 'min-age',
+      label: staticListFieldLabel('min-age'),
+      value: renderAgeCell(index, 'min-age', entry.minAge),
+    });
+  }
+
+  if (showMaxAgeColumn) {
+    fields.push({
+      key: 'max-age',
+      label: staticListFieldLabel('max-age'),
+      value: renderAgeCell(index, 'max-age', entry.maxAge),
+    });
+  }
+
+  if (showDescriptionColumn) {
+    fields.push({
+      key: 'description',
+      label: staticListFieldLabel('description'),
+      value: renderDescriptionCell(index, entry.description),
+      columnSpan: 2,
+    });
+  }
+
+  return <AuditTrailCard columns={2} fields={fields} />;
+}
+
 export default function StaticListDetailsPage() {
   const navigate = useNavigate();
   const { listCode = '' } = useParams<{ listCode: string }>();
   const decodedListCode = decodeURIComponent(listCode);
   const { hasAnyRole } = useAuth();
   const { showSuccess, showProblem } = useMessages();
+  const { showXsLayout, showMdLayout, showLgLayout, containerMaxWidth } = useLayoutTier();
   const isAdmin = hasAnyRole(['ADMIN']);
 
   const [record, setRecord] = useState<StaticListRecord | null>(null);
@@ -102,8 +179,11 @@ export default function StaticListDetailsPage() {
     () => staticListHasJsonField(entries, 'description'),
     [entries],
   );
-  const columnCount =
-    2 + (showMinAgeColumn ? 1 : 0) + (showMaxAgeColumn ? 1 : 0) + (showDescriptionColumn ? 1 : 0);
+  const mdTableColumnCount =
+    2 +
+    (showMinAgeColumn ? 1 : 0) +
+    (showMaxAgeColumn ? 1 : 0) +
+    (showLgLayout && showDescriptionColumn ? 1 : 0);
 
   const valueColumnWidth = useMemo(() => valueButtonWidth(entries), [entries]);
   const valueColumnSx = useMemo(
@@ -309,8 +389,8 @@ export default function StaticListDetailsPage() {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 4 }}>
-      <Paper elevation={3} sx={{ p: { xs: 2, sm: 4 } }}>
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
           {record?.listCode || decodedListCode || 'Static List'}
         </Typography>
@@ -339,24 +419,55 @@ export default function StaticListDetailsPage() {
           </Typography>
         )}
 
-        {!loading && !error && (
+        {!loading && !error && showXsLayout && (
+          <Stack spacing={2}>
+            {entries.length === 0 ? (
+              <Typography variant="body2" color="text.secondary" align="center" sx={{ py: 4 }}>
+                No entries in this list.
+              </Typography>
+            ) : (
+              entries.map((entry, index) => (
+                <StaticListEntryMobileCard
+                  key={entry.key}
+                  entry={entry}
+                  index={index}
+                  isAdmin={isAdmin}
+                  showMinAgeColumn={showMinAgeColumn}
+                  showMaxAgeColumn={showMaxAgeColumn}
+                  showDescriptionColumn={showDescriptionColumn}
+                  onOpenEdit={handleOpenEdit}
+                  renderAgeCell={renderAgeCell}
+                  renderDescriptionCell={renderDescriptionCell}
+                />
+              ))
+            )}
+          </Stack>
+        )}
+
+        {!loading && !error && showMdLayout && (
           <TableContainer sx={{ overflowX: 'auto' }}>
             <Table size="small" aria-label="Static list entries">
               <TableHead>
                 <TableRow>
-                  <TableCell>Key</TableCell>
-                  <TableCell>Value</TableCell>
-                  {showMinAgeColumn && <TableCell>{staticListFieldLabel('min-age')}</TableCell>}
-                  {showMaxAgeColumn && <TableCell>{staticListFieldLabel('max-age')}</TableCell>}
-                  {showDescriptionColumn && (
-                    <TableCell>{staticListFieldLabel('description')}</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Key</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Value</TableCell>
+                  {showMinAgeColumn && (
+                    <TableCell sx={{ fontWeight: 700 }}>{staticListFieldLabel('min-age')}</TableCell>
+                  )}
+                  {showMaxAgeColumn && (
+                    <TableCell sx={{ fontWeight: 700 }}>{staticListFieldLabel('max-age')}</TableCell>
+                  )}
+                  {showLgLayout && showDescriptionColumn && (
+                    <TableCell sx={{ fontWeight: 700 }}>
+                      {staticListFieldLabel('description')}
+                    </TableCell>
                   )}
                 </TableRow>
               </TableHead>
               <TableBody>
                 {entries.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={columnCount} align="center">
+                    <TableCell colSpan={mdTableColumnCount} align="center">
                       No entries in this list.
                     </TableCell>
                   </TableRow>
@@ -390,7 +501,7 @@ export default function StaticListDetailsPage() {
                       {showMaxAgeColumn && (
                         <TableCell>{renderAgeCell(index, 'max-age', entry.maxAge)}</TableCell>
                       )}
-                      {showDescriptionColumn && (
+                      {showLgLayout && showDescriptionColumn && (
                         <TableCell>{renderDescriptionCell(index, entry.description)}</TableCell>
                       )}
                     </TableRow>
@@ -405,14 +516,20 @@ export default function StaticListDetailsPage() {
           <Button
             variant="outlined"
             onClick={() => navigate('/static-lists')}
-            sx={{ minWidth: 200 }}
+            fullWidth={showXsLayout}
+            sx={{ minWidth: { xs: '100%', md: 200 } }}
           >
             Back to Static Lists
           </Button>
         </Stack>
       </Paper>
 
-      <Dialog open={editTarget !== null} onClose={handleCloseEdit} fullWidth maxWidth="sm">
+      <Dialog
+        open={editTarget !== null}
+        onClose={handleCloseEdit}
+        fullWidth
+        maxWidth={showLgLayout ? 'sm' : 'xs'}
+      >
         <DialogTitle
           sx={{
             display: 'flex',

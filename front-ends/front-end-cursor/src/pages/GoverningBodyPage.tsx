@@ -1,5 +1,4 @@
 import {
-  Box,
   Button,
   CircularProgress,
   Container,
@@ -20,15 +19,16 @@ import {
   updateGoverningBodyMoreJson,
   type GoverningBodyRow,
 } from '../api/postgrest';
+import AuditTrailCard from '../components/AuditTrailCard';
 import GoverningBodyMoreDialog from '../components/GoverningBodyMoreDialog';
-import { useIsMobileDevice } from '../hooks/useIsMobileDevice';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 
 function displayValue(value: string): string {
   return value.trim() === '' ? '—' : value;
 }
 
-function MobileGoverningBodyCard({
+function GoverningBodyMobileCard({
   row,
   onMore,
 }: {
@@ -36,56 +36,27 @@ function MobileGoverningBodyCard({
   onMore: (row: GoverningBodyRow) => void;
 }) {
   return (
-    <Paper variant="outlined" sx={{ p: 2 }}>
-      <Box
-        sx={{
-          display: 'grid',
-          gap: 1.5,
-          alignItems: 'end',
-          gridTemplateColumns: {
-            xs: '1fr',
-            sm: 'repeat(2, minmax(0, 1fr))',
-            md: 'repeat(3, minmax(0, 1fr)) auto',
-          },
-        }}
-      >
-        <Box>
-          <Typography variant="caption" color="text.secondary">
-            Code
-          </Typography>
-          <Typography variant="body2">{displayValue(row.code)}</Typography>
-        </Box>
-        <Box>
-          <Typography variant="caption" color="text.secondary">
-            Long name
-          </Typography>
-          <Typography variant="body2">{displayValue(row.longName)}</Typography>
-        </Box>
-        <Box>
-          <Typography variant="caption" color="text.secondary">
-            Short name
-          </Typography>
-          <Typography variant="body2">{displayValue(row.shortName)}</Typography>
-        </Box>
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'flex-end',
-            justifyContent: { xs: 'flex-start', md: 'flex-end' },
-          }}
-        >
-          <Button variant="outlined" size="small" onClick={() => onMore(row)}>
-            More
-          </Button>
-        </Box>
-      </Box>
-    </Paper>
+    <AuditTrailCard
+      columns={2}
+      actionsAlign="right"
+      actionsInGrid
+      fields={[
+        { key: 'code', label: 'Code', value: displayValue(row.code) },
+        { key: 'long', label: 'Long name', value: displayValue(row.longName), columnSpan: 2 },
+        { key: 'short', label: 'Short name', value: displayValue(row.shortName), columnSpan: 2 },
+      ]}
+      actions={
+        <Button variant="outlined" size="small" onClick={() => onMore(row)}>
+          More
+        </Button>
+      }
+    />
   );
 }
 
 export default function GoverningBodyPage() {
   const navigate = useNavigate();
-  const isMobile = useIsMobileDevice();
+  const { showXsLayout, showMdLayout, showLgLayout, containerMaxWidth } = useLayoutTier();
   const { showSuccess, showProblem } = useMessages();
 
   const [rows, setRows] = useState<GoverningBodyRow[]>([]);
@@ -143,8 +114,8 @@ export default function GoverningBodyPage() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Paper elevation={3} sx={{ p: { xs: 2, sm: 4 } }}>
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
           Governing Bodies
         </Typography>
@@ -161,7 +132,7 @@ export default function GoverningBodyPage() {
           </Typography>
         )}
 
-        {!loading && !error && isMobile && (
+        {!loading && !error && showXsLayout && (
           <Stack spacing={2} sx={{ my: 3 }}>
             {rows.length === 0 ? (
               <Typography variant="body2" color="text.secondary" align="center">
@@ -169,27 +140,31 @@ export default function GoverningBodyPage() {
               </Typography>
             ) : (
               rows.map((row) => (
-                <MobileGoverningBodyCard key={row.code} row={row} onMore={handleOpenMore} />
+                <GoverningBodyMobileCard key={row.code} row={row} onMore={handleOpenMore} />
               ))
             )}
           </Stack>
         )}
 
-        {!loading && !error && !isMobile && (
+        {!loading && !error && showMdLayout && (
           <TableContainer sx={{ overflowX: 'auto', my: 3 }}>
             <Table size="small" aria-label="Governing bodies">
               <TableHead>
                 <TableRow>
-                  <TableCell>code</TableCell>
-                  <TableCell>long_name</TableCell>
-                  <TableCell>short_name</TableCell>
-                  <TableCell align="right">More</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>code</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>long_name</TableCell>
+                  {showLgLayout ? (
+                    <TableCell sx={{ fontWeight: 700 }}>short_name</TableCell>
+                  ) : null}
+                  <TableCell align="right" sx={{ fontWeight: 700 }}>
+                    More
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {rows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={4} align="center">
+                    <TableCell colSpan={showLgLayout ? 4 : 3} align="center">
                       No governing bodies found.
                     </TableCell>
                   </TableRow>
@@ -198,7 +173,9 @@ export default function GoverningBodyPage() {
                     <TableRow key={row.code} hover>
                       <TableCell>{displayValue(row.code)}</TableCell>
                       <TableCell>{displayValue(row.longName)}</TableCell>
-                      <TableCell>{displayValue(row.shortName)}</TableCell>
+                      {showLgLayout ? (
+                        <TableCell>{displayValue(row.shortName)}</TableCell>
+                      ) : null}
                       <TableCell align="right">
                         <Button variant="outlined" size="small" onClick={() => handleOpenMore(row)}>
                           More
@@ -213,7 +190,12 @@ export default function GoverningBodyPage() {
         )}
 
         <Stack spacing={2} sx={{ mt: 3, alignItems: 'center' }}>
-          <Button variant="outlined" onClick={() => navigate('/adminhome')} sx={{ minWidth: 200 }}>
+          <Button
+            variant="outlined"
+            onClick={() => navigate('/adminhome')}
+            fullWidth={showXsLayout}
+            sx={{ minWidth: { xs: '100%', md: 200 } }}
+          >
             Back to Admin
           </Button>
         </Stack>

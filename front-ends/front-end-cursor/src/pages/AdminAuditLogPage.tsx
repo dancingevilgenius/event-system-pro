@@ -22,12 +22,13 @@ import AuditLogFilterDialog, {
 } from '../components/AuditLogFilterDialog';
 import AuditTrailCard from '../components/AuditTrailCard';
 import PurgeAuditLogDialog from '../components/PurgeAuditLogDialog';
-import { useIsMobileDevice } from '../hooks/useIsMobileDevice';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 import { formatAuditLogActor } from '../lib/auditLogDisplay';
 import { isEventsystemFunDeployment } from '../lib/deployment';
 import { formatReadableDateTime } from '../utils/auditTimestamps';
 
 const DESKTOP_PAGE_SIZE = 25;
+const TABLET_PAGE_SIZE = 15;
 const MOBILE_PAGE_SIZE = 10;
 
 function auditLogFiltersActive(filters: AuditLogFilters): boolean {
@@ -42,7 +43,7 @@ function formatOccurredAt(value: string): string {
   return formatReadableDateTime(value);
 }
 
-function MobileAuditLogCard({
+function AuditLogMobileCard({
   row,
   onView,
 }: {
@@ -51,15 +52,15 @@ function MobileAuditLogCard({
 }) {
   return (
     <AuditTrailCard
-      columns={3}
+      columns={2}
       actionsAlign="right"
       actionsInGrid
       fields={[
-        { key: 'when', label: 'When', value: formatOccurredAt(row.occurredAt) },
+        { key: 'when', label: 'When', value: formatOccurredAt(row.occurredAt), columnSpan: 2 },
         { key: 'action', label: 'Action', value: displayValue(row.action) },
         { key: 'actor', label: 'Actor', value: formatAuditLogActor(row) },
         { key: 'table', label: 'Table', value: displayValue(row.tableName) },
-        { key: 'record', label: 'Record', value: displayValue(row.recordKey) },
+        { key: 'record', label: 'Record', value: displayValue(row.recordKey), columnSpan: 2 },
       ]}
       actions={
         <Button variant="outlined" size="small" onClick={() => onView(row)}>
@@ -72,8 +73,8 @@ function MobileAuditLogCard({
 
 export default function AdminAuditLogPage() {
   const navigate = useNavigate();
-  const isMobile = useIsMobileDevice();
-  const pageSize = isMobile ? MOBILE_PAGE_SIZE : DESKTOP_PAGE_SIZE;
+  const { showXsLayout, showMdLayout, showLgLayout, containerMaxWidth } = useLayoutTier();
+  const pageSize = showXsLayout ? MOBILE_PAGE_SIZE : showLgLayout ? DESKTOP_PAGE_SIZE : TABLET_PAGE_SIZE;
 
   const [page, setPage] = useState(0);
   const [rows, setRows] = useState<AuditLogRow[]>([]);
@@ -129,8 +130,8 @@ export default function AdminAuditLogPage() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Paper elevation={3} sx={{ p: { xs: 2, sm: 4 } }}>
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
           Audit Log
         </Typography>
@@ -142,14 +143,15 @@ export default function AdminAuditLogPage() {
           sx={{
             mb: 2,
             width: '100%',
-            alignItems: isMobile ? 'center' : 'flex-start',
+            alignItems: { xs: 'center', md: 'flex-start' },
           }}
         >
           <Button
             variant="outlined"
             onClick={() => setFilterDialogOpen(true)}
             disabled={loading}
-            sx={{ minWidth: 200 }}
+            fullWidth={showXsLayout}
+            sx={{ minWidth: { xs: '100%', md: 200 } }}
           >
             Filter{filtersActive ? ' • Active' : ''}
           </Button>
@@ -171,6 +173,8 @@ export default function AdminAuditLogPage() {
                 setPurgeDialogOpen(true);
               }}
               disabled={loading}
+              fullWidth={showXsLayout}
+              sx={{ maxWidth: { xs: '100%', md: 360 } }}
             >
               Delete all audit trail records
             </Button>
@@ -189,35 +193,39 @@ export default function AdminAuditLogPage() {
           </Typography>
         )}
 
-        {!loading && !error && isMobile && (
+        {!loading && !error && showXsLayout && (
           <Stack spacing={2} sx={{ my: 3 }}>
             {rows.length === 0 ? (
               <Typography variant="body2" color="text.secondary" align="center">
                 No audit events found.
               </Typography>
             ) : (
-              rows.map((row) => <MobileAuditLogCard key={row.auditId} row={row} onView={setDetailRow} />)
+              rows.map((row) => (
+                <AuditLogMobileCard key={row.auditId} row={row} onView={setDetailRow} />
+              ))
             )}
           </Stack>
         )}
 
-        {!loading && !error && !isMobile && (
+        {!loading && !error && showMdLayout && (
           <TableContainer sx={{ overflowX: 'auto', my: 3 }}>
             <Table size="small" aria-label="Audit log">
               <TableHead>
                 <TableRow>
-                  <TableCell>When</TableCell>
-                  <TableCell>Action</TableCell>
-                  <TableCell>Actor</TableCell>
-                  <TableCell>Table</TableCell>
-                  <TableCell>Record</TableCell>
-                  <TableCell align="right">More</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>When</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Action</TableCell>
+                  {showLgLayout ? <TableCell sx={{ fontWeight: 700 }}>Actor</TableCell> : null}
+                  {showLgLayout ? <TableCell sx={{ fontWeight: 700 }}>Table</TableCell> : null}
+                  {showLgLayout ? <TableCell sx={{ fontWeight: 700 }}>Record</TableCell> : null}
+                  <TableCell align="right" sx={{ fontWeight: 700 }}>
+                    More
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {rows.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={6} align="center">
+                    <TableCell colSpan={showLgLayout ? 6 : 3} align="center">
                       No audit events found.
                     </TableCell>
                   </TableRow>
@@ -228,11 +236,17 @@ export default function AdminAuditLogPage() {
                         {formatOccurredAt(row.occurredAt)}
                       </TableCell>
                       <TableCell>{displayValue(row.action)}</TableCell>
-                      <TableCell>{formatAuditLogActor(row)}</TableCell>
-                      <TableCell>{displayValue(row.tableName)}</TableCell>
-                      <TableCell sx={{ maxWidth: 240, wordBreak: 'break-word' }}>
-                        {displayValue(row.recordKey)}
-                      </TableCell>
+                      {showLgLayout ? (
+                        <TableCell>{formatAuditLogActor(row)}</TableCell>
+                      ) : null}
+                      {showLgLayout ? (
+                        <TableCell>{displayValue(row.tableName)}</TableCell>
+                      ) : null}
+                      {showLgLayout ? (
+                        <TableCell sx={{ maxWidth: 240, wordBreak: 'break-word' }}>
+                          {displayValue(row.recordKey)}
+                        </TableCell>
+                      ) : null}
                       <TableCell align="right">
                         <Button variant="outlined" size="small" onClick={() => setDetailRow(row)}>
                           View
@@ -248,7 +262,7 @@ export default function AdminAuditLogPage() {
 
         {!loading && !error && totalCount > 0 && (
           <Stack
-            direction={isMobile ? 'column' : 'row'}
+            direction={{ xs: 'column', md: 'row' }}
             spacing={2}
             sx={{ alignItems: 'center', justifyContent: 'center', mb: 3 }}
           >
@@ -258,14 +272,23 @@ export default function AdminAuditLogPage() {
             <Typography variant="body2" color="text.secondary">
               Page {safePage + 1} of {totalPages}
             </Typography>
-            <Button variant="outlined" disabled={safePage >= totalPages - 1} onClick={handleNextPage}>
+            <Button
+              variant="outlined"
+              disabled={safePage >= totalPages - 1}
+              onClick={handleNextPage}
+            >
               Next
             </Button>
           </Stack>
         )}
 
         <Stack spacing={2} sx={{ alignItems: 'center' }}>
-          <Button variant="outlined" onClick={() => navigate('/adminhome')} sx={{ minWidth: 200 }}>
+          <Button
+            variant="outlined"
+            onClick={() => navigate('/adminhome')}
+            fullWidth={showXsLayout}
+            sx={{ minWidth: { xs: '100%', md: 200 } }}
+          >
             Back to Admin
           </Button>
         </Stack>

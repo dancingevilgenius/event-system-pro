@@ -90,7 +90,7 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 | Cursor rules (demo attendee IDs) | `.cursor/rules/demo-attendee-id-reservation.mdc` |
 | Cursor rules (readable timestamps) | `.cursor/rules/database-timestamp-format.mdc` |
 | Cursor rules (bold labels) | `.cursor/rules/bold-text-labels.mdc` |
-| Cursor rules (MUI v9 `sx`) | `.cursor/rules/mui-v9-sx-styling.mdc` |
+| Cursor rules (MUI v9 `sx` + responsive) | `.cursor/rules/mui-v9-sx-styling.mdc` |
 | Activity monitor | `front-ends/front-end-cursor/src/components/ActivityMonitor.tsx` |
 | Contest selection layout | `front-ends/front-end-cursor/src/pages/ContestSelectionPage.tsx` |
 | Admin contests / results | `front-ends/front-end-cursor/src/pages/AdminContestsPage.tsx`, `AdminContestResultsPage.tsx` |
@@ -802,7 +802,7 @@ Each competitor's selected colors are shown in a **square** swatch cell (`Compet
 
 ## Mobile-friendly layout
 
-The app is designed to be **usable on phones** as well as desktop — narrow, centered content rather than wide multi-column layouts.
+The app is designed to be **usable on phones** as well as desktop — narrow, centered content rather than wide multi-column layouts. For **new pages**, use the responsive breakpoint tiers in `.cursor/rules/mui-v9-sx-styling.mdc` (xs Galaxy S24, md iPad, lg iPad Pro, xl laptop/desktop).
 
 ### Viewport and page shell
 
@@ -1361,7 +1361,7 @@ Field labels (form captions, read-only field names like **Schedule**, **Last run
 
 ### MUI v9 styling (`sx` prop)
 
-This project uses **@mui/material v9**. Put layout/typography CSS-like values in **`sx`**, not as legacy system props (`fontWeight`, `alignItems`, `width`, etc. on `Typography` / `Stack` / `Box`). Still OK as direct props: `variant`, `color`, `direction`, `spacing`, `component`, `onClick`, etc. Cursor rule: `.cursor/rules/mui-v9-sx-styling.mdc`. Run `npm run build` in the front-end package when touching MUI components.
+This project uses **@mui/material v9**. Put layout/typography CSS-like values in **`sx`**, not as legacy system props (`fontWeight`, `alignItems`, `width`, etc. on `Typography` / `Stack` / `Box`). Still OK as direct props: `variant`, `color`, `direction`, `spacing`, `component`, `onClick`, etc. New pages must be responsive at **xs** (Galaxy S24), **md** (iPad), **lg** (iPad Pro), and **xl** (laptop/desktop) — see `.cursor/rules/mui-v9-sx-styling.mdc`. Run `npm run build` in the front-end package when touching MUI components.
 
 ---
 

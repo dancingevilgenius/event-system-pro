@@ -37,6 +37,7 @@ import AddEventVolunteers from '../components/AddEventVolunteers';
 import AddEventSortableSectionAccordion from '../components/AddEventSortableSectionAccordion';
 import { type AddEventSectionStatus } from '../components/AddEventSectionStatusToggle';
 import { centeredContentStackSx } from '../constants/layout';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 import {
   EVENT_GROUPS_PATH,
   eventDetailPath,
@@ -226,6 +227,7 @@ function renderSectionContent(
 export default function AdminAddEventPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const locationState = (location.state as AddEventLocationState | null) ?? null;
   const eventGroupCode = resolveEventGroupCode(locationState) ?? '';
   const rawEventId = locationState?.eventId;
@@ -373,18 +375,22 @@ export default function AdminAddEventPage() {
   };
 
   return (
-    <Container maxWidth="md" sx={{ py: 6 }}>
-      <Paper elevation={3} sx={{ p: { xs: 2, sm: 4 } }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
           {pageTitle}
         </Typography>
         {eventGroupName && (
-          <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 3 }}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ mb: 3, textAlign: 'center' }}
+          >
             {eventGroupName}
           </Typography>
         )}
 
-        <Stack spacing={1.5} sx={{ mb: 3, width: '100%' }}>
+        <Stack spacing={1.5} sx={{ mb: 3, width: '100%', ...(showXsLayout ? {} : { maxWidth: 960, mx: 'auto' }) }}>
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
@@ -429,7 +435,7 @@ export default function AdminAddEventPage() {
           </DndContext>
         </Stack>
 
-        <Stack spacing={2} sx={centeredContentStackSx}>
+        <Stack spacing={2} sx={showXsLayout ? centeredContentStackSx : { maxWidth: 480, mx: 'auto', width: '100%' }}>
           <Button variant="outlined" fullWidth onClick={() => navigate(backPath)}>
             {backLabel}
           </Button>

@@ -8,7 +8,6 @@ import {
   Box,
   Button,
   Chip,
-  CircularProgress,
   Container,
   IconButton,
   Paper,
@@ -23,7 +22,7 @@ import {
 } from '../api/postgrest';
 import { useAuth } from '../hooks/useAuth';
 import { useMessages } from '../hooks/useMessages';
-import { centeredContentStackSx, CONTENT_MAX_WIDTH } from '../constants/layout';
+import { centeredContentStackSx } from '../constants/layout';
 import {
   loadCursorRules,
   sortCursorRules,
@@ -71,7 +70,6 @@ export default function AdminCursorRulesPage() {
 
   const allRules = useMemo(() => loadCursorRules(), []);
   const [starredIds, setStarredIds] = useState<string[]>([]);
-  const [loading, setLoading] = useState(true);
   const [savingRuleId, setSavingRuleId] = useState<string | null>(null);
   const [expandedRuleId, setExpandedRuleId] = useState<string | false>(false);
 
@@ -82,7 +80,6 @@ export default function AdminCursorRulesPage() {
 
   useEffect(() => {
     if (!session?.user_id) {
-      setLoading(false);
       return;
     }
 
@@ -99,10 +96,6 @@ export default function AdminCursorRulesPage() {
           showProblem(
             error instanceof Error ? error.message : 'Unable to load starred Cursor rules.',
           );
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
         }
       }
     })();
@@ -152,19 +145,16 @@ export default function AdminCursorRulesPage() {
 
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
           Project rules from <code>.cursor/rules</code>. Star important rules to pin them to the top.
+          {allRules.length > 0 ? ` Showing ${allRules.length} rule${allRules.length === 1 ? '' : 's'}.` : ''}
         </Typography>
 
-        {loading ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-            <CircularProgress />
-          </Box>
-        ) : sortedRules.length === 0 ? (
+        {sortedRules.length === 0 ? (
           <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 4 }}>
             No Cursor rules were found. Run <code>npm run prebuild</code> in the front-end package to
             sync rules from <code>.cursor/rules</code>.
           </Typography>
         ) : (
-          <Stack spacing={1.5} sx={{ ...centeredContentStackSx, maxWidth: CONTENT_MAX_WIDTH, mx: 'auto' }}>
+          <Stack spacing={1.5} sx={{ width: '100%' }}>
             {sortedRules.map((rule) => {
               const isStarred = starredIds.includes(rule.id);
               const isSaving = savingRuleId === rule.id;

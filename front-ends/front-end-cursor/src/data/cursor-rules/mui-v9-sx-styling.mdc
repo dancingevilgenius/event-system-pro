@@ -1,6 +1,6 @@
 ---
-description: MUI v9 sx styling and responsive breakpoints (xs/md/lg/xl) for new pages
-globs: "front-ends/front-end-cursor/**/*.{tsx,jsx}"
+description: MUI v9 sx styling and responsive breakpoints for new pages
+globs: "**/*.{tsx,jsx}"
 alwaysApply: false
 ---
 
@@ -40,12 +40,10 @@ All **new pages** and substantial UI work in `front-ends/front-end-cursor` must 
 
 ### Breakpoint tiers (authoritative)
 
-| MUI key | `min-width` | Primary design viewport | Target device |
-| --- | --- | --- | --- |
-| **xs** | `0px` | **360 × 780** CSS px (portrait) | Samsung Galaxy S24 |
-| **md** | `768px` | **820 × 1180** CSS px (portrait) | iPad (mini 768px; Air / 10th gen 820px) |
-| **lg** | `1024px` | **1024 × 1366** CSS px (portrait) | iPad Pro 12.9″ / 13″ M4 |
-| **xl** | `1280px` | **1920 × 1080** CSS px (browser viewport) | 17″ laptop and desktop monitor |
+- **xs** (`0px`) — **360 × 780** CSS px (portrait) — Samsung Galaxy S24
+- **md** (`768px`) — **820 × 1180** CSS px (portrait) — iPad (mini 768px; Air / 10th gen 820px)
+- **lg** (`1024px`) — **1024 × 1366** CSS px (portrait) — iPad Pro 12.9″ / 13″ M4
+- **xl** (`1280px`) — **1920 × 1080** CSS px (browser viewport) — 17″ laptop and desktop monitor
 
 - **xs** is the default: stack columns, full-width controls, compact padding.
 - **md** adds tablet layouts (2-column grids, row toolbars, wider dialogs).
@@ -58,9 +56,13 @@ Portrait widths above are **CSS viewport** sizes (`window.innerWidth` / `innerHe
 
 ```tsx
 // Stack: column on phone, row from tablet up
-<Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ alignItems: { md: 'center' } }}>
+<Stack
+  direction={{ xs: 'column', md: 'row' }}
+  spacing={2}
+  sx={{ alignItems: { md: 'center' } }}
+>
 
-// Grid (MUI v6+): full width on xs, half from md, quarter from lg
+// Grid: full width on xs, half from md, quarter from lg
 <Grid container spacing={2}>
   <Grid size={{ xs: 12, md: 6, lg: 3 }}>...</Grid>
 </Grid>
@@ -69,7 +71,10 @@ Portrait widths above are **CSS viewport** sizes (`window.innerWidth` / `innerHe
 <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
 
 // Container: narrow on xs/md, wider on lg/xl
-<Container maxWidth={{ xs: 'sm', md: 'md', lg: 'lg', xl: 'xl' }} sx={{ py: { xs: 4, md: 6 } }}>
+<Container
+  maxWidth={{ xs: 'sm', md: 'md', lg: 'lg', xl: 'xl' }}
+  sx={{ py: { xs: 4, md: 6 } }}
+>
 ```
 
 Prefer breakpoint objects over one-off `@media` unless matching `MOBILE_LAYOUT_MIN_WIDTH` (769px) for the legacy 360px centered column.

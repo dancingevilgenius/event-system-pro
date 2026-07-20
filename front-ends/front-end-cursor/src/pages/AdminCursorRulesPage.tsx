@@ -41,7 +41,21 @@ function RuleMetaChips({ rule }: { rule: CursorRule }) {
   return (
     <Stack direction="row" spacing={1} useFlexGap sx={{ mt: 0.5, flexWrap: 'wrap' }}>
       {rule.alwaysApply ? <Chip size="small" label="Always applied" color="primary" /> : null}
-      {rule.globs ? <Chip size="small" label={`Scope: ${rule.globs}`} variant="outlined" /> : null}
+      {rule.globs ? (
+        <Chip
+          size="small"
+          label={`Scope: ${rule.globs}`}
+          variant="outlined"
+          sx={{
+            height: 'auto',
+            maxWidth: '100%',
+            '& .MuiChip-label': {
+              whiteSpace: 'normal',
+              py: 0.5,
+            },
+          }}
+        />
+      ) : null}
     </Stack>
   );
 }
@@ -54,6 +68,8 @@ function RuleBody({ body }: { body: string }) {
       sx={{
         whiteSpace: 'pre-wrap',
         wordBreak: 'break-word',
+        overflowX: 'auto',
+        maxWidth: '100%',
         fontFamily: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
         m: 0,
       }}
@@ -154,7 +170,7 @@ export default function AdminCursorRulesPage() {
             sync rules from <code>.cursor/rules</code>.
           </Typography>
         ) : (
-          <Stack spacing={1.5} sx={{ width: '100%' }}>
+          <Stack spacing={1.5} sx={centeredContentStackSx}>
             {sortedRules.map((rule) => {
               const isStarred = starredIds.includes(rule.id);
               const isSaving = savingRuleId === rule.id;
@@ -199,7 +215,11 @@ export default function AdminCursorRulesPage() {
                           {rule.title}
                         </Typography>
                         {rule.description ? (
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ wordBreak: 'break-word' }}
+                          >
                             {rule.description}
                           </Typography>
                         ) : null}
@@ -208,7 +228,7 @@ export default function AdminCursorRulesPage() {
                     </Stack>
                   </AccordionSummary>
 
-                  <AccordionDetails>
+                  <AccordionDetails sx={{ overflow: 'hidden' }}>
                     <RuleBody body={rule.body} />
                   </AccordionDetails>
                 </Accordion>

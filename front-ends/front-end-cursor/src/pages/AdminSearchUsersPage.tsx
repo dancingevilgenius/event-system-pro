@@ -16,15 +16,17 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchUsersPage, type UserListRow } from '../api/postgrest';
+import AuditTrailCard from '../components/AuditTrailCard';
 import EditUserDialog from '../components/EditUserDialog';
 import UserAdvancedSearchDialog, {
   EMPTY_ADVANCED_USER_FILTERS,
   type UserAdvancedSearchFilters,
 } from '../components/UserAdvancedSearchDialog';
 import { EMPTY_USER_FILTERS } from '../components/UserFilterSortDialog';
-import { useIsMobileDevice } from '../hooks/useIsMobileDevice';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 
 const DESKTOP_PAGE_SIZE = 25;
+const TABLET_PAGE_SIZE = 15;
 const MOBILE_PAGE_SIZE = 10;
 const SEARCH_DEBOUNCE_MS = 300;
 
@@ -42,10 +44,41 @@ function hasActiveAdvancedFilters(filters: UserAdvancedSearchFilters): boolean {
   );
 }
 
+function SearchUserMobileCard({
+  row,
+  onEdit,
+}: {
+  row: UserListRow;
+  onEdit: (row: UserListRow) => void;
+}) {
+  return (
+    <AuditTrailCard
+      columns={2}
+      actionsAlign="right"
+      actionsInGrid
+      fields={[
+        { key: 'first', label: 'First Name', value: displayValue(row.firstName) },
+        { key: 'last', label: 'Last Name', value: displayValue(row.lastName) },
+        {
+          key: 'username',
+          label: 'Username',
+          value: displayValue(row.username),
+          columnSpan: 2,
+        },
+      ]}
+      actions={
+        <Button variant="outlined" size="small" onClick={() => onEdit(row)}>
+          Edit
+        </Button>
+      }
+    />
+  );
+}
+
 export default function AdminSearchUsersPage() {
   const navigate = useNavigate();
-  const isMobile = useIsMobileDevice();
-  const pageSize = isMobile ? MOBILE_PAGE_SIZE : DESKTOP_PAGE_SIZE;
+  const { showXsLayout, showMdLayout, showLgLayout, containerMaxWidth } = useLayoutTier();
+  const pageSize = showXsLayout ? MOBILE_PAGE_SIZE : showLgLayout ? DESKTOP_PAGE_SIZE : TABLET_PAGE_SIZE;
 
   const [page, setPage] = useState(0);
   const [rows, setRows] = useState<UserListRow[]>([]);
@@ -125,8 +158,8 @@ export default function AdminSearchUsersPage() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Paper elevation={3} sx={{ p: { xs: 2, sm: 4 } }}>
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
           Search Users
         </Typography>
@@ -135,9 +168,9 @@ export default function AdminSearchUsersPage() {
         </Typography>
 
         <Stack
-          direction={{ xs: 'column', sm: 'row' }}
+          direction={{ xs: 'column', md: 'row' }}
           spacing={1.5}
-          sx={{ mb: 2, alignItems: { xs: 'stretch', sm: 'center' } }}
+          sx={{ mb: 2, alignItems: { xs: 'stretch', md: 'center' } }}
         >
           <TextField
             fullWidth
@@ -152,13 +185,13 @@ export default function AdminSearchUsersPage() {
           <Button
             variant="outlined"
             onClick={() => setAdvancedDialogOpen(true)}
+            fullWidth={showXsLayout}
             sx={{
               flex: '0 0 auto',
               flexShrink: 0,
-              width: 'max-content',
+              width: { xs: '100%', md: 'max-content' },
               maxWidth: '100%',
               whiteSpace: 'nowrap',
-              alignSelf: { xs: 'flex-start', sm: 'center' },
             }}
           >
             Advanced Search
@@ -167,7 +200,7 @@ export default function AdminSearchUsersPage() {
         </Stack>
 
         <Stack
-          direction="row"
+          direction={{ xs: 'column', md: 'row' }}
           spacing={1}
           sx={{
             alignItems: 'center',
@@ -215,15 +248,29 @@ export default function AdminSearchUsersPage() {
           </Typography>
         )}
 
-        {!loading && !error && (
+        {!loading && !error && showXsLayout && (
+          <Stack spacing={2} sx={{ mb: 2 }}>
+            {rows.length === 0 ? (
+              <Typography variant="body2" color="text.secondary" align="center" sx={{ py: 4 }}>
+                No users found.
+              </Typography>
+            ) : (
+              rows.map((row) => (
+                <SearchUserMobileCard key={row.userId} row={row} onEdit={setEditUser} />
+              ))
+            )}
+          </Stack>
+        )}
+
+        {!loading && !error && showMdLayout && (
           <TableContainer sx={{ overflowX: 'auto' }}>
             <Table size="small" aria-label="Users table">
               <TableHead>
                 <TableRow>
-                  <TableCell>First Name</TableCell>
-                  <TableCell>Last Name</TableCell>
-                  <TableCell>Username</TableCell>
-                  <TableCell>Edit</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>First Name</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Last Name</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Username</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>Edit</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -240,11 +287,7 @@ export default function AdminSearchUsersPage() {
                       <TableCell>{displayValue(row.lastName)}</TableCell>
                       <TableCell>{displayValue(row.username)}</TableCell>
                       <TableCell>
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          onClick={() => setEditUser(row)}
-                        >
+                        <Button variant="outlined" size="small" onClick={() => setEditUser(row)}>
                           Edit
                         </Button>
                       </TableCell>
@@ -257,7 +300,12 @@ export default function AdminSearchUsersPage() {
         )}
 
         <Stack spacing={2} sx={{ mt: 3, alignItems: 'center' }}>
-          <Button variant="outlined" onClick={() => navigate('/adminhome')} sx={{ minWidth: 200 }}>
+          <Button
+            variant="outlined"
+            onClick={() => navigate('/adminhome')}
+            sx={{ minWidth: { xs: '100%', md: 200 } }}
+            fullWidth={showXsLayout}
+          >
             Back to Admin
           </Button>
         </Stack>

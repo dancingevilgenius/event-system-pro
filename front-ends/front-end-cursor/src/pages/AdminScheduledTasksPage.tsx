@@ -28,6 +28,7 @@ import {
   type ScheduledTaskRow,
 } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 import { formatReadableDateTime } from '../utils/auditTimestamps';
 import {
@@ -342,7 +343,7 @@ function ScheduleDialog({
           </AppTextField>
 
           {showTimeSelectors && (
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
+            <Stack direction={{ xs: 'column', md: 'row' }} spacing={1.5}>
               <AppTextField
                 select
                 label="Hour"
@@ -471,8 +472,9 @@ function ScheduledTaskCard({
             gap: 1.5,
             gridTemplateColumns: {
               xs: '1fr',
-              sm: 'repeat(2, minmax(0, 1fr))',
-              md: 'repeat(3, minmax(0, 1fr))',
+              md: 'repeat(2, minmax(0, 1fr))',
+              lg: 'repeat(3, minmax(0, 1fr))',
+              xl: 'repeat(4, minmax(0, 1fr))',
             },
           }}
         >
@@ -585,6 +587,7 @@ function ScheduledTaskCard({
 export default function AdminScheduledTasksPage() {
   const navigate = useNavigate();
   const { showSuccess, showProblem, showInfo, clearMessages } = useMessages();
+  const { showXsLayout, containerMaxWidth } = useLayoutTier();
 
   const [tasks, setTasks] = useState<ScheduledTaskRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -744,8 +747,8 @@ export default function AdminScheduledTasksPage() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Paper elevation={3} sx={{ p: { xs: 2, sm: 4 } }}>
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
           Scheduled Tasks
         </Typography>
@@ -794,11 +797,17 @@ export default function AdminScheduledTasksPage() {
             variant="outlined"
             disabled={loading}
             onClick={() => void loadTasks()}
-            sx={{ minWidth: 200 }}
+            sx={{ minWidth: { xs: '100%', md: 200 } }}
+            fullWidth={showXsLayout}
           >
             Refresh
           </Button>
-          <Button variant="outlined" onClick={() => navigate('/adminhome')} sx={{ minWidth: 200 }}>
+          <Button
+            variant="outlined"
+            onClick={() => navigate('/adminhome')}
+            sx={{ minWidth: { xs: '100%', md: 200 } }}
+            fullWidth={showXsLayout}
+          >
             Back to Admin
           </Button>
         </Stack>

@@ -1,4 +1,12 @@
-import { Button, CircularProgress, Container, Paper, Stack, Typography } from '@mui/material';
+import {
+  Button,
+  CircularProgress,
+  Container,
+  Grid,
+  Paper,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchEventById, fetchEventGroupByCode } from '../api/postgrest';
@@ -6,6 +14,7 @@ import AddEventButton from '../components/AddEventButton';
 import { centeredContentStackSx } from '../constants/layout';
 import { eventDetailPath, eventGroupDetailPath } from '../constants/eventRoutes';
 import { formatEventMonthYear } from '../lib/eventDisplay';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 
 const EVENT_SECTION_BUTTONS = [
   { label: 'Attendees', segment: 'attendees' },
@@ -15,6 +24,7 @@ const EVENT_SECTION_BUTTONS = [
 
 export default function AdminEventPage() {
   const navigate = useNavigate();
+  const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const { eventGroupCode = '', eventId = '' } = useParams<{
     eventGroupCode: string;
     eventId: string;
@@ -70,8 +80,8 @@ export default function AdminEventPage() {
   }, [loadEvent]);
 
   return (
-    <Container maxWidth="md" sx={{ py: 6 }}>
-      <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 }, textAlign: 'center' }}>
         <Typography variant="h4" component="h1" gutterBottom>
           {groupFullName || decodedGroupCode}
         </Typography>
@@ -91,7 +101,7 @@ export default function AdminEventPage() {
           </Typography>
         )}
 
-        {!loading && !error && (
+        {!loading && !error && showXsLayout && (
           <Stack spacing={2} sx={{ my: 3, ...centeredContentStackSx }}>
             {EVENT_SECTION_BUTTONS.map((button) => (
               <Button
@@ -107,7 +117,24 @@ export default function AdminEventPage() {
           </Stack>
         )}
 
-        <Stack spacing={2} sx={centeredContentStackSx}>
+        {!loading && !error && !showXsLayout && (
+          <Grid container spacing={2} sx={{ my: 3 }}>
+            {EVENT_SECTION_BUTTONS.map((button) => (
+              <Grid key={button.segment} size={{ xs: 12, md: 4 }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  onClick={() => navigate(`${eventBasePath}/${button.segment}`)}
+                >
+                  {button.label}
+                </Button>
+              </Grid>
+            ))}
+          </Grid>
+        )}
+
+        <Stack spacing={2} sx={showXsLayout ? centeredContentStackSx : undefined}>
           {decodedGroupCode && Number.isFinite(parsedEventId) && (
             <AddEventButton
               eventGroupCode={decodedGroupCode}

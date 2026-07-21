@@ -2,6 +2,7 @@ import {
   Button,
   CircularProgress,
   Container,
+  Grid,
   Paper,
   Stack,
   Typography,
@@ -17,9 +18,11 @@ import AddEventButton from '../components/AddEventButton';
 import { centeredContentStackSx } from '../constants/layout';
 import { EVENT_GROUPS_PATH, eventDetailPath } from '../constants/eventRoutes';
 import { formatEventMonthYear } from '../lib/eventDisplay';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 
 export default function AdminEventGroupPage() {
   const navigate = useNavigate();
+  const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const { eventGroupCode = '' } = useParams<{ eventGroupCode: string }>();
   const decodedGroupCode = decodeURIComponent(eventGroupCode);
 
@@ -67,8 +70,8 @@ export default function AdminEventGroupPage() {
   }, [loadEventGroup]);
 
   return (
-    <Container maxWidth="md" sx={{ py: 6 }}>
-      <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 }, textAlign: 'center' }}>
         <Typography variant="h4" component="h1" gutterBottom>
           {fullName || decodedGroupCode || 'Events'}
         </Typography>
@@ -85,16 +88,33 @@ export default function AdminEventGroupPage() {
           </Typography>
         )}
 
-        {!loading && !error && (
+        {!loading && !error && events.length === 0 && (
+          <Typography variant="body2" color="text.secondary" sx={{ py: 4 }}>
+            No events found for this group.
+          </Typography>
+        )}
+
+        {!loading && !error && events.length > 0 && showXsLayout && (
           <Stack spacing={2} sx={{ my: 3, ...centeredContentStackSx }}>
-            {events.length === 0 ? (
-              <Typography variant="body2" color="text.secondary">
-                No events found for this group.
-              </Typography>
-            ) : (
-              events.map((event) => (
+            {events.map((event) => (
+              <Button
+                key={event.eventId}
+                variant="contained"
+                size="large"
+                fullWidth
+                onClick={() => navigate(eventDetailPath(decodedGroupCode, event.eventId))}
+              >
+                {formatEventMonthYear(event.startDate)}
+              </Button>
+            ))}
+          </Stack>
+        )}
+
+        {!loading && !error && events.length > 0 && !showXsLayout && (
+          <Grid container spacing={2} sx={{ my: 3 }}>
+            {events.map((event) => (
+              <Grid key={event.eventId} size={{ xs: 12, md: 6, lg: 4 }}>
                 <Button
-                  key={event.eventId}
                   variant="contained"
                   size="large"
                   fullWidth
@@ -102,18 +122,18 @@ export default function AdminEventGroupPage() {
                 >
                   {formatEventMonthYear(event.startDate)}
                 </Button>
-              ))
-            )}
-          </Stack>
+              </Grid>
+            ))}
+          </Grid>
         )}
 
         {decodedGroupCode && (
-          <Stack spacing={2} sx={{ mb: 3, ...centeredContentStackSx }}>
+          <Stack spacing={2} sx={{ mb: 3, ...(showXsLayout ? centeredContentStackSx : {}) }}>
             <AddEventButton eventGroupCode={decodedGroupCode} />
           </Stack>
         )}
 
-        <Stack spacing={2} sx={centeredContentStackSx}>
+        <Stack spacing={2} sx={showXsLayout ? centeredContentStackSx : undefined}>
           <Button variant="outlined" fullWidth onClick={() => navigate(EVENT_GROUPS_PATH)}>
             Back to Event Groups
           </Button>

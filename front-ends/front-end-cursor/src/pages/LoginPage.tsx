@@ -13,6 +13,7 @@ import { login } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 import type { AppRole } from '../lib/session';
 
@@ -20,6 +21,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const { setSession } = useAuth();
   const { showProblem, showSuccess } = useMessages();
+  const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -60,18 +62,22 @@ export default function LoginPage() {
     }
   };
 
+  const formStackSx = showXsLayout
+    ? centeredContentStackSx
+    : { maxWidth: 480, mx: 'auto', width: '100%' };
+
   return (
-    <Container maxWidth="sm" sx={{ py: 6 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
           Event System Pro
         </Typography>
-        <Typography variant="body1" color="text.secondary" align="center" sx={{ mb: 3 }}>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
           Sign in to your account or register as a new user.
         </Typography>
 
         <Box component="form" onSubmit={handleLogin} noValidate>
-          <Stack spacing={2} sx={centeredContentStackSx}>
+          <Stack spacing={2} sx={formStackSx}>
             <AppTextField
               label="Username or email"
               value={identifier}
@@ -97,7 +103,7 @@ export default function LoginPage() {
             >
               {showPassword ? 'Hide password' : 'Show password'}
             </Button>
-            <Stack spacing={2} sx={centeredContentStackSx}>
+            <Stack spacing={2} sx={formStackSx}>
               <Button
                 type="submit"
                 variant="contained"
@@ -120,7 +126,7 @@ export default function LoginPage() {
 
         <Divider sx={{ my: 3 }}>or</Divider>
 
-        <Stack sx={centeredContentStackSx}>
+        <Stack sx={formStackSx}>
           <Button
             variant="outlined"
             size="large"

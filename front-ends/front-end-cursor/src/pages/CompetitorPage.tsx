@@ -6,6 +6,7 @@ import { buildStoredWsdcInfo, type WsdcDancerProfile } from '../api/wsdcRegistry
 import WsdcFindDancerSection from '../components/WsdcFindDancerSection';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 import ContestSelectionPage from './ContestSelectionPage';
 
@@ -13,6 +14,7 @@ export default function CompetitorPage() {
   const navigate = useNavigate();
   const { session } = useAuth();
   const { showProblem, showSuccess } = useMessages();
+  const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const [savedWsdcId, setSavedWsdcId] = useState<string | null>(null);
   const [loadingSaved, setLoadingSaved] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -71,18 +73,19 @@ export default function CompetitorPage() {
   }
 
   return (
-    <Container maxWidth="md" sx={{ py: 6 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
           Competitor
         </Typography>
 
         {savedWsdcId && (
-          <Typography variant="body2" align="center" sx={{ mb: 2 }}>
+          <Typography variant="body2" sx={{ mb: 2, textAlign: 'center' }}>
             Saved on your account: <strong>WSDC #{savedWsdcId}</strong>
           </Typography>
         )}
 
+        <Stack sx={showXsLayout ? centeredContentStackSx : { maxWidth: 480, mx: 'auto', width: '100%' }}>
         {!loadingSaved && (
           <WsdcFindDancerSection
             title="Look up WSDC points"
@@ -94,10 +97,11 @@ export default function CompetitorPage() {
             onConfirmWsdcId={handleConfirm}
           />
         )}
+        </Stack>
 
         <Divider sx={{ my: 3 }} />
 
-        <Stack spacing={2} sx={centeredContentStackSx}>
+        <Stack spacing={2} sx={showXsLayout ? centeredContentStackSx : { maxWidth: 480, mx: 'auto', width: '100%' }}>
           <Button variant="contained" size="large" fullWidth onClick={() => setShowContests(true)}>
             Continue to Contests
           </Button>

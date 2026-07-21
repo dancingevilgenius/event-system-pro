@@ -1,6 +1,7 @@
 import { Button, Container, Paper, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { centeredContentStackSx } from '../constants/layout';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 
 const DEMO_ITEMS = [
   {
@@ -12,10 +13,11 @@ const DEMO_ITEMS = [
 
 export default function DemoPage() {
   const navigate = useNavigate();
+  const { showXsLayout, containerMaxWidth } = useLayoutTier();
 
   return (
-    <Container maxWidth="sm" sx={{ py: 6 }}>
-      <Paper elevation={3} sx={{ p: 4, textAlign: 'center' }}>
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 }, textAlign: 'center' }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Demo
         </Typography>
@@ -23,7 +25,15 @@ export default function DemoPage() {
           Try interactive previews. More demos coming soon.
         </Typography>
 
-        <Stack spacing={2} sx={{ mb: 4, ...centeredContentStackSx }}>
+        <Stack
+          spacing={2}
+          sx={{
+            mb: 4,
+            ...(showXsLayout
+              ? centeredContentStackSx
+              : { maxWidth: 480, mx: 'auto', width: '100%' }),
+          }}
+        >
           {DEMO_ITEMS.map((item) => (
             <Button
               key={item.path}
@@ -38,7 +48,14 @@ export default function DemoPage() {
           ))}
         </Stack>
 
-        <Stack spacing={2} sx={centeredContentStackSx}>
+        <Stack
+          spacing={2}
+          sx={
+            showXsLayout
+              ? centeredContentStackSx
+              : { maxWidth: 480, mx: 'auto', width: '100%' }
+          }
+        >
           <Button variant="outlined" fullWidth onClick={() => navigate('/home-page')}>
             Back to Home
           </Button>

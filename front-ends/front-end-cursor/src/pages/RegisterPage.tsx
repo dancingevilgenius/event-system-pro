@@ -27,6 +27,7 @@ import AppPhoneNumberField from '../components/AppPhoneNumberField';
 import AppTextField from '../components/AppTextField';
 import WsdcFindDancerSection from '../components/WsdcFindDancerSection';
 import { centeredContentStackSx } from '../constants/layout';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 import { buildPhoneNumbersJson, hasCompletePhone } from '../utils/phoneNumbers';
 
@@ -116,6 +117,7 @@ function isRegisterFormComplete(form: RegisterForm): boolean {
 export default function RegisterPage() {
   const navigate = useNavigate();
   const { clearMessages, showProblem, showSuccess } = useMessages();
+  const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const [form, setForm] = useState<RegisterForm>(initialForm);
   const [recoveryOpen, setRecoveryOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -236,18 +238,22 @@ export default function RegisterPage() {
     [form.passwordRecoveryJson],
   );
 
+  const formStackSx = showXsLayout
+    ? centeredContentStackSx
+    : { maxWidth: 480, mx: 'auto', width: '100%' };
+
   return (
-    <Container maxWidth="sm" sx={{ py: 6 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
           Register
         </Typography>
-        <Typography variant="body1" color="text.secondary" align="center" sx={{ mb: 3 }}>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
           Provide at least two recovery options: email, phone, or secret questions.
         </Typography>
 
         <Box component="form" onSubmit={(event) => void handleSubmit(event)} noValidate>
-          <Stack spacing={2} sx={centeredContentStackSx}>
+          <Stack spacing={2} sx={formStackSx}>
             <AppTextField
               label="Username"
               value={form.username}
@@ -344,7 +350,7 @@ export default function RegisterPage() {
               </Typography>
             )}
 
-            <Stack spacing={2} sx={centeredContentStackSx}>
+            <Stack spacing={2} sx={formStackSx}>
               <Button
                 type="submit"
                 variant="contained"

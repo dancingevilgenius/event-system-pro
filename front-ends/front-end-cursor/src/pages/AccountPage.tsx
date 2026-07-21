@@ -13,6 +13,7 @@ import ShowRolesDialog from '../components/ShowRolesDialog';
 import ThemeSwitcher from '../components/ThemeSwitcher';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 import { MESSAGE_AUTO_DISMISS_OPTIONS } from '../lib/messagePreferences';
 
@@ -20,6 +21,7 @@ export default function AccountPage() {
   const navigate = useNavigate();
   const { session } = useAuth();
   const { messageAutoDismissMs, setMessageAutoDismissMs } = useMessages();
+  const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const [rolesOpen, setRolesOpen] = useState(false);
 
   if (!session) {
@@ -27,16 +29,23 @@ export default function AccountPage() {
   }
 
   return (
-    <Container maxWidth="sm" sx={{ py: 6 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
           Account
         </Typography>
-        <Typography variant="body1" color="text.secondary" align="center" sx={{ mb: 3 }}>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
           Signed in as <strong>{session.username}</strong>
         </Typography>
 
-        <Stack spacing={2} sx={centeredContentStackSx}>
+        <Stack
+          spacing={2}
+          sx={
+            showXsLayout
+              ? centeredContentStackSx
+              : { maxWidth: 480, mx: 'auto', width: '100%' }
+          }
+        >
           <ThemeSwitcher fullWidth />
 
           <AppTextField

@@ -25,6 +25,7 @@ import {
 } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
 import { centeredContentStackSx } from '../constants/layout';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 import { useSecretQuestions } from '../hooks/useSecretQuestions';
 import { questionTextForId } from '../utils/secretQuestions';
@@ -106,6 +107,7 @@ function stepLabelsForMethod(method: RecoveryMethod): string[] {
 export default function ForgotPasswordPage() {
   const navigate = useNavigate();
   const { clearMessages, showProblem, showSuccess } = useMessages();
+  const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const [activeStep, setActiveStep] = useState(0);
   const [recoveryMethod, setRecoveryMethod] = useState<RecoveryMethod>(readStoredMethod);
   const [identifier, setIdentifier] = useState(
@@ -349,17 +351,26 @@ export default function ForgotPasswordPage() {
   const stepOneSubmitLabel =
     recoveryMethod === 'secret_questions' ? 'Continue' : 'Send verification code';
 
+  const formStackSx = showXsLayout
+    ? centeredContentStackSx
+    : { maxWidth: 480, mx: 'auto', width: '100%' };
+
   return (
-    <Container maxWidth="sm" sx={{ py: 6 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
           Forgot Password
         </Typography>
-        <Typography variant="body1" color="text.secondary" align="center" sx={{ mb: 3 }}>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
           Reset your password in four steps.
         </Typography>
 
-        <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
+        <Stepper
+          activeStep={activeStep}
+          alternativeLabel={!showXsLayout}
+          orientation={showXsLayout ? 'vertical' : 'horizontal'}
+          sx={{ mb: 4 }}
+        >
           {steps.map((label) => (
             <Step key={label}>
               <StepLabel>{label}</StepLabel>
@@ -369,7 +380,7 @@ export default function ForgotPasswordPage() {
 
         {activeStep === 0 && (
           <Box component="form" onSubmit={handleRequest} noValidate>
-            <Stack spacing={2} sx={centeredContentStackSx}>
+            <Stack spacing={2} sx={formStackSx}>
               <ToggleButtonGroup
                 value={recoveryMethod}
                 exclusive
@@ -404,7 +415,7 @@ export default function ForgotPasswordPage() {
 
         {activeStep === 1 && recoveryMethod === 'verification_code' && (
           <Box component="form" onSubmit={handleVerify} noValidate>
-            <Stack spacing={2} sx={centeredContentStackSx}>
+            <Stack spacing={2} sx={formStackSx}>
               {email && (
                 <Typography variant="body2" color="text.secondary" align="center">
                   A verification code was sent to <strong>{email}</strong>
@@ -436,7 +447,7 @@ export default function ForgotPasswordPage() {
 
         {activeStep === 1 && recoveryMethod === 'secret_questions' && (
           <Box component="form" onSubmit={handleVerify} noValidate>
-            <Stack spacing={2} sx={{ width: '100%' }}>
+            <Stack spacing={2} sx={{ ...formStackSx, width: '100%' }}>
               {email && (
                 <Typography variant="body2" color="text.secondary" align="center">
                   Answer at least two of your saved secret questions for <strong>{email}</strong>
@@ -501,7 +512,7 @@ export default function ForgotPasswordPage() {
 
         {activeStep === 2 && (
           <Box component="form" onSubmit={handleReset} noValidate>
-            <Stack spacing={2} sx={centeredContentStackSx}>
+            <Stack spacing={2} sx={formStackSx}>
               <AppTextField
                 label="New password"
                 type={passwordInputType}
@@ -539,7 +550,7 @@ export default function ForgotPasswordPage() {
         )}
 
         {activeStep === 3 && (
-          <Stack spacing={2} sx={centeredContentStackSx}>
+          <Stack spacing={2} sx={formStackSx}>
             <Typography variant="body1" align="center">
               Your password has been updated. You can sign in with your new password.
             </Typography>

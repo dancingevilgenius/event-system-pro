@@ -11,12 +11,14 @@ import SecretQuestionsSelector, {
 import InfoMessageBox from '../components/InfoMessageBox';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 
 export default function SecretQuestionsPage() {
   const navigate = useNavigate();
   const { session } = useAuth();
   const { clearMessages, showProblem, showSuccess } = useMessages();
+  const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const [initialQuestionIds, setInitialQuestionIds] = useState<number[]>([]);
   const [loadingSetup, setLoadingSetup] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -95,21 +97,25 @@ export default function SecretQuestionsPage() {
     }
   };
 
+  const formStackSx = showXsLayout
+    ? centeredContentStackSx
+    : { maxWidth: 480, mx: 'auto', width: '100%' };
+
   return (
-    <Container maxWidth="sm" sx={{ py: 6 }}>
-      <Paper elevation={3} sx={{ p: 4, position: 'relative' }}>
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 }, position: 'relative' }}>
         <InfoMessageBox overlay>
           Choose three secret questions and answers. You can use two of them later on the
           forgot-password page. Answers are encrypted on save.
         </InfoMessageBox>
 
-        <Typography variant="h4" component="h1" gutterBottom align="center">
+        <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
           Password Recovery
         </Typography>
 
-        <Stack spacing={2} sx={centeredContentStackSx}>
+        <Stack spacing={2} sx={formStackSx}>
           {loadingSetup && (
-            <Typography variant="body2" color="text.secondary" align="center">
+            <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center' }}>
               Loading your password recovery settings…
             </Typography>
           )}

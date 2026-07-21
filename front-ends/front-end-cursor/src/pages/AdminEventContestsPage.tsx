@@ -7,9 +7,11 @@ import AddEventButton from '../components/AddEventButton';
 import { centeredContentStackSx } from '../constants/layout';
 import { eventDetailPath } from '../constants/eventRoutes';
 import { formatEventMonthYear } from '../lib/eventDisplay';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 
 export default function AdminEventContestsPage() {
   const navigate = useNavigate();
+  const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const { eventGroupCode = '', eventId = '' } = useParams<{
     eventGroupCode: string;
     eventId: string;
@@ -64,8 +66,8 @@ export default function AdminEventContestsPage() {
   }, [loadEvent]);
 
   return (
-    <Container maxWidth="md" sx={{ py: 6 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
         <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
           Contests
         </Typography>
@@ -86,9 +88,21 @@ export default function AdminEventContestsPage() {
           </Typography>
         )}
 
-        {!loading && !error && <SwingDanceContestSet />}
+        {!loading && !error && (
+          <Stack sx={showXsLayout ? undefined : { width: '100%' }}>
+            <SwingDanceContestSet />
+          </Stack>
+        )}
 
-        <Stack spacing={2} sx={{ mt: 4, ...centeredContentStackSx }}>
+        <Stack
+          spacing={2}
+          sx={{
+            mt: 4,
+            ...(showXsLayout
+              ? centeredContentStackSx
+              : { maxWidth: 480, mx: 'auto', width: '100%' }),
+          }}
+        >
           {decodedGroupCode && <AddEventButton eventGroupCode={decodedGroupCode} />}
           <Button variant="outlined" fullWidth onClick={() => navigate(eventBasePath)}>
             Back to Event

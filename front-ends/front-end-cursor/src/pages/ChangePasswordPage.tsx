@@ -12,12 +12,14 @@ import { changePassword } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 
 export default function ChangePasswordPage() {
   const navigate = useNavigate();
   const { session } = useAuth();
   const { clearMessages, showProblem, showSuccess } = useMessages();
+  const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -72,18 +74,22 @@ export default function ChangePasswordPage() {
     }
   };
 
+  const formStackSx = showXsLayout
+    ? centeredContentStackSx
+    : { maxWidth: 480, mx: 'auto', width: '100%' };
+
   return (
-    <Container maxWidth="sm" sx={{ py: 6 }}>
-      <Paper elevation={3} sx={{ p: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
           Change Password
         </Typography>
-        <Typography variant="body1" color="text.secondary" align="center" sx={{ mb: 3 }}>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
           Signed in as <strong>{session.username}</strong>
         </Typography>
 
         <Box component="form" onSubmit={handleSubmit} noValidate>
-          <Stack spacing={2} sx={centeredContentStackSx}>
+          <Stack spacing={2} sx={formStackSx}>
             <AppTextField
               label="Old password"
               type={passwordInputType}

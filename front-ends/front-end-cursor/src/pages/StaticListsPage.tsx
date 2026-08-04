@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import { fetchStaticLists, type StaticListListRow } from '../api/postgrest';
 import { centeredContentStackSx } from '../constants/layout';
 import { useLayoutTier } from '../hooks/useLayoutTier';
+import { staticListDisplayTitle } from '../lib/staticList';
 
 export default function StaticListsPage() {
   const navigate = useNavigate();
@@ -76,7 +77,7 @@ export default function StaticListsPage() {
                   navigate(`/static-list-details/${encodeURIComponent(row.listCode)}`)
                 }
               >
-                {row.listCode}
+                {staticListDisplayTitle(row.listCode)}
               </Button>
             ))}
           </Stack>
@@ -94,7 +95,7 @@ export default function StaticListsPage() {
                     navigate(`/static-list-details/${encodeURIComponent(row.listCode)}`)
                   }
                 >
-                  {row.listCode}
+                  {staticListDisplayTitle(row.listCode)}
                 </Button>
               </Grid>
             ))}

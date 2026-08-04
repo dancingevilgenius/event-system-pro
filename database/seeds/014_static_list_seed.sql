@@ -37,6 +37,19 @@ VALUES
       {"key": "YAM", "label": "Young America", "min-age": -1, "max-age": 12},
       {"key": "CUSTOM", "label": "Custom", "min-age": -1, "max-age": -1}
     ]'::json
+  ),
+  (
+    'TSL_DIVISIONS',
+    'TSL',
+    'List of competition divisions that might appear at a TSL saber event',
+    '[
+      {"key": "STD", "label": "Standard"},
+      {"key": "EXO", "label": "Exotics"},
+      {"key": "UNI", "label": "Unity"},
+      {"key": "WOM", "label": "Womens"},
+      {"key": "MAS", "label": "Masters"},
+      {"key": "TAG", "label": "Tag Teams"}
+    ]'::json
   )
 ON CONFLICT (list_code) DO UPDATE SET
   governing_body_code = EXCLUDED.governing_body_code,

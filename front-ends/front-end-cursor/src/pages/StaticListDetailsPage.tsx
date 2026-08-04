@@ -34,6 +34,7 @@ import { useMessages } from '../hooks/useMessages';
 import {
   NOT_APPLICABLE_INT,
   formatStaticListAge,
+  staticListDisplayTitle,
   staticListFieldLabel,
   staticListHasJsonField,
   truncateStaticListDescription,
@@ -392,7 +393,7 @@ export default function StaticListDetailsPage() {
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
         <Typography variant="h4" component="h1" gutterBottom align="center">
-          {record?.listCode || decodedListCode || 'Static List'}
+          {staticListDisplayTitle(record?.listCode || decodedListCode || 'Static List')}
         </Typography>
 
         {record?.shortDesc && (

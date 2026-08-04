@@ -1,16 +1,16 @@
-import { Button, CircularProgress, Container, Paper, Stack, Typography } from '@mui/material';
+import { CircularProgress, Container, Paper, Stack, Typography } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { fetchEventById, fetchEventGroupByCode } from '../api/postgrest';
 import SwingDanceContestSet from '../components/SwingDanceContestSet';
 import AddEventButton from '../components/AddEventButton';
+import PageBackButton from '../components/PageBackButton';
 import { centeredContentStackSx } from '../constants/layout';
 import { eventDetailPath } from '../constants/eventRoutes';
 import { formatEventMonthYear } from '../lib/eventDisplay';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 
 export default function AdminEventContestsPage() {
-  const navigate = useNavigate();
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const { eventGroupCode = '', eventId = '' } = useParams<{
     eventGroupCode: string;
@@ -71,6 +71,7 @@ export default function AdminEventContestsPage() {
         <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
           Contests
         </Typography>
+        <PageBackButton to={eventBasePath} label="Back to Event" />
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
           {groupFullName || decodedGroupCode}
           {eventLabel ? ` — ${eventLabel}` : ''}
@@ -104,9 +105,6 @@ export default function AdminEventContestsPage() {
           }}
         >
           {decodedGroupCode && <AddEventButton eventGroupCode={decodedGroupCode} />}
-          <Button variant="outlined" fullWidth onClick={() => navigate(eventBasePath)}>
-            Back to Event
-          </Button>
         </Stack>
       </Paper>
     </Container>

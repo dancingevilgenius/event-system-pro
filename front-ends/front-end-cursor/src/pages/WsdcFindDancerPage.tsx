@@ -1,6 +1,5 @@
-import { Alert, Button, Container, Paper, Stack, Typography } from '@mui/material';
+import { Alert, Container, Paper, Stack, Typography } from '@mui/material';
 import { useCallback, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { findUserForWsdcMatch, saveWsdcForMatchingUser } from '../api/postgrest';
 import {
   buildStoredWsdcInfo,
@@ -8,6 +7,7 @@ import {
   normalizeWsdcId,
   type WsdcDancerProfile,
 } from '../api/wsdcRegistry';
+import PageBackButton from '../components/PageBackButton';
 import WsdcFindDancerSection from '../components/WsdcFindDancerSection';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
@@ -15,7 +15,6 @@ import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 
 export default function WsdcFindDancerPage() {
-  const navigate = useNavigate();
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const { hasAnyRole } = useAuth();
   const isAdmin = hasAnyRole(['ADMIN']);
@@ -177,6 +176,7 @@ export default function WsdcFindDancerPage() {
         >
           WSDC Find Dancer
         </Typography>
+        <PageBackButton to="/adminhome" label="Back to Admin" />
 
         <Stack sx={showXsLayout ? centeredContentStackSx : { width: '100%', maxWidth: 480, mx: 'auto' }}>
         <WsdcFindDancerSection
@@ -222,12 +222,6 @@ export default function WsdcFindDancerPage() {
             {fetchTimingNote}
           </Alert>
         )}
-
-        <Stack spacing={2} sx={{ mt: 3, ...(showXsLayout ? centeredContentStackSx : { maxWidth: 480, mx: 'auto', width: '100%' }) }}>
-          <Button variant="outlined" fullWidth onClick={() => navigate('/adminhome')}>
-            Back to Admin
-          </Button>
-        </Stack>
       </Paper>
     </Container>
   );

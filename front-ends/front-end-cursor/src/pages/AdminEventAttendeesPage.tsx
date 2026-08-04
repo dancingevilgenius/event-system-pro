@@ -20,7 +20,7 @@ import {
   type GridColDef,
 } from '@mui/x-data-grid';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
   fetchEventAttendeesForEvent,
   fetchEventById,
@@ -32,6 +32,7 @@ import type { WsdcDancerProfile } from '../api/wsdcRegistry';
 import { buildStoredWsdcInfo } from '../api/wsdcRegistry';
 import AddEventButton from '../components/AddEventButton';
 import AuditTrailCard from '../components/AuditTrailCard';
+import PageBackButton from '../components/PageBackButton';
 import WsdcFindDancerSection from '../components/WsdcFindDancerSection';
 import { useEventAttendeeRealtime } from '../hooks/useEventAttendeeRealtime';
 import { useMessages } from '../hooks/useMessages';
@@ -315,7 +316,6 @@ function buildAttendeeColumns(compactTable: boolean): GridColDef<AttendeeGridRow
 }
 
 export default function AdminEventAttendeesPage() {
-  const navigate = useNavigate();
   const showMdLayout = useMediaQuery(MD_LAYOUT_QUERY);
   const showLgLayout = useMediaQuery(LG_LAYOUT_QUERY);
   const showXlLayout = useMediaQuery(XL_LAYOUT_QUERY);
@@ -527,6 +527,7 @@ export default function AdminEventAttendeesPage() {
           <Typography variant="h4" component="h1" gutterBottom align="center">
             Attendees
           </Typography>
+          <PageBackButton to={eventBasePath} label="Back to Event" />
           <Typography variant="body2" color="text.secondary" align="center">
             {headerLabel || 'Event attendees'} ({rows.length})
           </Typography>
@@ -636,14 +637,6 @@ export default function AdminEventAttendeesPage() {
 
         <Stack spacing={2} sx={{ mt: 3, alignItems: 'center' }}>
           {decodedGroupCode && <AddEventButton eventGroupCode={decodedGroupCode} fullWidth={false} />}
-          <Button
-            variant="outlined"
-            onClick={() => navigate(eventBasePath)}
-            sx={{ minWidth: { xs: '100%', md: 200 } }}
-            fullWidth={showXsLayout}
-          >
-            Back to Event
-          </Button>
         </Stack>
       </Paper>
 

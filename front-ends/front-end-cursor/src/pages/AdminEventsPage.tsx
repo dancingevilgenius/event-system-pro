@@ -25,6 +25,7 @@ import {
 import AddEventGroupDialog from '../components/AddEventGroupDialog';
 import AppTextField from '../components/AppTextField';
 import AuditTrailCard from '../components/AuditTrailCard';
+import PageBackButton from '../components/PageBackButton';
 import { EVENT_HOME_PATH, eventGroupDetailPath } from '../constants/eventRoutes';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
@@ -181,6 +182,7 @@ export default function AdminEventsPage() {
         <Typography variant="h4" component="h1" gutterBottom align="center">
           Event Groups
         </Typography>
+        <PageBackButton to={EVENT_HOME_PATH} label="Back to Event Home" />
         <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 2 }}>
           Event groups ({filteredRows.length}
           {normalizedNameFilter !== '' && filteredRows.length !== rows.length
@@ -327,16 +329,6 @@ export default function AdminEventsPage() {
           </TableContainer>
         )}
 
-        <Stack spacing={2} sx={{ mt: 3, alignItems: 'center' }}>
-          <Button
-            variant="outlined"
-            onClick={() => navigate(EVENT_HOME_PATH)}
-            fullWidth={showXsLayout}
-            sx={{ minWidth: { xs: '100%', md: 200 } }}
-          >
-            Back to Event Home
-          </Button>
-        </Stack>
       </Paper>
 
       <AddEventGroupDialog

@@ -14,9 +14,9 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { fetchUsersPage, type UserFilters, type UserListRow, type UserSort } from '../api/postgrest';
 import AuditTrailCard from '../components/AuditTrailCard';
+import PageBackButton from '../components/PageBackButton';
 import UserFilterSortDialog, {
   DEFAULT_USER_SORT,
   EMPTY_USER_FILTERS,
@@ -65,7 +65,6 @@ function CompetitorMobileCard({ row }: { row: UserListRow }) {
 }
 
 export default function AdminCompetitorsPage() {
-  const navigate = useNavigate();
   const showMdLayout = useMediaQuery(MD_LAYOUT_QUERY);
   const showLgLayout = useMediaQuery(LG_LAYOUT_QUERY);
   const showXlLayout = useMediaQuery(XL_LAYOUT_QUERY);
@@ -138,6 +137,7 @@ export default function AdminCompetitorsPage() {
         <Typography variant="h4" component="h1" gutterBottom align="center">
           Competitors
         </Typography>
+        <PageBackButton to="/adminhome" label="Back to Admin" />
         <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 2 }}>
           All users ({totalCount})
         </Typography>
@@ -264,16 +264,6 @@ export default function AdminCompetitorsPage() {
           </TableContainer>
         )}
 
-        <Stack spacing={2} sx={{ mt: 3, alignItems: 'center' }}>
-          <Button
-            variant="outlined"
-            onClick={() => navigate('/adminhome')}
-            sx={{ minWidth: { xs: '100%', md: 200 } }}
-            fullWidth={showXsLayout}
-          >
-            Back to Admin
-          </Button>
-        </Stack>
       </Paper>
 
       <UserFilterSortDialog

@@ -9,6 +9,7 @@ import {
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppTextField from '../components/AppTextField';
+import PageBackButton from '../components/PageBackButton';
 import ShowRolesDialog from '../components/ShowRolesDialog';
 import ThemeSwitcher from '../components/ThemeSwitcher';
 import { centeredContentStackSx } from '../constants/layout';
@@ -34,6 +35,7 @@ export default function AccountPage() {
         <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
           Account
         </Typography>
+        <PageBackButton to="/home" label="Back to Home" variant="text" />
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
           Signed in as <strong>{session.username}</strong>
         </Typography>
@@ -88,9 +90,6 @@ export default function AccountPage() {
             onClick={() => navigate('/secret-questions')}
           >
             Password Recovery
-          </Button>
-          <Button variant="text" fullWidth onClick={() => navigate('/home')}>
-            Back to Home
           </Button>
         </Stack>
       </Paper>

@@ -1,5 +1,6 @@
 import { Button, Container, Grid, Paper, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import PageBackButton from '../components/PageBackButton';
 import { centeredContentStackSx } from '../constants/layout';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 
@@ -15,6 +16,7 @@ export default function AdminContestsPage() {
         <Typography variant="h4" component="h1" gutterBottom>
           Contests
         </Typography>
+        <PageBackButton to="/adminhome" label="Back to Admin" />
 
         {showXsLayout ? (
           <Stack spacing={2} sx={{ my: 3, ...centeredContentStackSx }}>
@@ -46,12 +48,6 @@ export default function AdminContestsPage() {
             ))}
           </Grid>
         )}
-
-        <Stack sx={showXsLayout ? centeredContentStackSx : undefined}>
-          <Button variant="outlined" fullWidth onClick={() => navigate('/adminhome')}>
-            Back to Admin
-          </Button>
-        </Stack>
       </Paper>
     </Container>
   );

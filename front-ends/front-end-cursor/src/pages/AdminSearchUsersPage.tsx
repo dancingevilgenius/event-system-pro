@@ -14,10 +14,10 @@ import {
   Typography,
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { fetchUsersPage, type UserListRow } from '../api/postgrest';
 import AuditTrailCard from '../components/AuditTrailCard';
 import EditUserDialog from '../components/EditUserDialog';
+import PageBackButton from '../components/PageBackButton';
 import UserAdvancedSearchDialog, {
   EMPTY_ADVANCED_USER_FILTERS,
   type UserAdvancedSearchFilters,
@@ -76,7 +76,6 @@ function SearchUserMobileCard({
 }
 
 export default function AdminSearchUsersPage() {
-  const navigate = useNavigate();
   const { showXsLayout, showMdLayout, showLgLayout, containerMaxWidth } = useLayoutTier();
   const pageSize = showXsLayout ? MOBILE_PAGE_SIZE : showLgLayout ? DESKTOP_PAGE_SIZE : TABLET_PAGE_SIZE;
 
@@ -163,6 +162,7 @@ export default function AdminSearchUsersPage() {
         <Typography variant="h4" component="h1" gutterBottom align="center">
           Search Users
         </Typography>
+        <PageBackButton to="/adminhome" label="Back to Admin" />
         <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 2 }}>
           All users ({totalCount})
         </Typography>
@@ -299,16 +299,6 @@ export default function AdminSearchUsersPage() {
           </TableContainer>
         )}
 
-        <Stack spacing={2} sx={{ mt: 3, alignItems: 'center' }}>
-          <Button
-            variant="outlined"
-            onClick={() => navigate('/adminhome')}
-            sx={{ minWidth: { xs: '100%', md: 200 } }}
-            fullWidth={showXsLayout}
-          >
-            Back to Admin
-          </Button>
-        </Stack>
       </Paper>
 
       <UserAdvancedSearchDialog

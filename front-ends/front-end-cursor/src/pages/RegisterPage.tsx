@@ -25,6 +25,7 @@ import PasswordRecoveryDialog, {
 } from '../components/PasswordRecoveryDialog';
 import AppPhoneNumberField from '../components/AppPhoneNumberField';
 import AppTextField from '../components/AppTextField';
+import PageBackButton from '../components/PageBackButton';
 import WsdcFindDancerSection from '../components/WsdcFindDancerSection';
 import { centeredContentStackSx } from '../constants/layout';
 import { useLayoutTier } from '../hooks/useLayoutTier';
@@ -248,6 +249,7 @@ export default function RegisterPage() {
         <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
           Register
         </Typography>
+        <PageBackButton to="/" label="Back to Login" variant="text" />
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
           Provide at least two recovery options: email, phone, or secret questions.
         </Typography>
@@ -359,9 +361,6 @@ export default function RegisterPage() {
                 disabled={submitting || !canCreateAccount}
               >
                 {submitting ? 'Creating Account…' : 'Create Account'}
-              </Button>
-              <Button variant="text" fullWidth onClick={() => navigate('/')}>
-                Back to Login
               </Button>
             </Stack>
           </Stack>

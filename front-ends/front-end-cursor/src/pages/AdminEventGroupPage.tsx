@@ -15,6 +15,7 @@ import {
   type EventListRow,
 } from '../api/postgrest';
 import AddEventButton from '../components/AddEventButton';
+import PageBackButton from '../components/PageBackButton';
 import { centeredContentStackSx } from '../constants/layout';
 import { EVENT_GROUPS_PATH, eventDetailPath } from '../constants/eventRoutes';
 import { formatEventMonthYear } from '../lib/eventDisplay';
@@ -75,6 +76,7 @@ export default function AdminEventGroupPage() {
         <Typography variant="h4" component="h1" gutterBottom>
           {fullName || decodedGroupCode || 'Events'}
         </Typography>
+        <PageBackButton to={EVENT_GROUPS_PATH} label="Back to Event Groups" />
 
         {loading && (
           <Stack sx={{ py: 6, alignItems: 'center' }}>
@@ -132,12 +134,6 @@ export default function AdminEventGroupPage() {
             <AddEventButton eventGroupCode={decodedGroupCode} />
           </Stack>
         )}
-
-        <Stack spacing={2} sx={showXsLayout ? centeredContentStackSx : undefined}>
-          <Button variant="outlined" fullWidth onClick={() => navigate(EVENT_GROUPS_PATH)}>
-            Back to Event Groups
-          </Button>
-        </Stack>
       </Paper>
     </Container>
   );

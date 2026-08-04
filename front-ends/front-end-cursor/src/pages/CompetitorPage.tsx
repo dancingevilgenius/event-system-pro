@@ -1,8 +1,8 @@
 import { Button, Container, Divider, Paper, Stack, Typography } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { fetchUserWsdcId, setUserWsdcId } from '../api/postgrest';
 import { buildStoredWsdcInfo, type WsdcDancerProfile } from '../api/wsdcRegistry';
+import PageBackButton from '../components/PageBackButton';
 import WsdcFindDancerSection from '../components/WsdcFindDancerSection';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
@@ -11,7 +11,6 @@ import { useMessages } from '../hooks/useMessages';
 import ContestSelectionPage from './ContestSelectionPage';
 
 export default function CompetitorPage() {
-  const navigate = useNavigate();
   const { session } = useAuth();
   const { showProblem, showSuccess } = useMessages();
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
@@ -78,6 +77,7 @@ export default function CompetitorPage() {
         <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
           Competitor
         </Typography>
+        <PageBackButton to="/home" label="Back to Home" />
 
         {savedWsdcId && (
           <Typography variant="body2" sx={{ mb: 2, textAlign: 'center' }}>
@@ -104,9 +104,6 @@ export default function CompetitorPage() {
         <Stack spacing={2} sx={showXsLayout ? centeredContentStackSx : { maxWidth: 480, mx: 'auto', width: '100%' }}>
           <Button variant="contained" size="large" fullWidth onClick={() => setShowContests(true)}>
             Continue to Contests
-          </Button>
-          <Button variant="outlined" fullWidth onClick={() => navigate('/home')}>
-            Back to Home
           </Button>
         </Stack>
       </Paper>

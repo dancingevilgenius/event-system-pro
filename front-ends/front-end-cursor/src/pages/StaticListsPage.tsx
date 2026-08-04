@@ -10,6 +10,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchStaticLists, type StaticListListRow } from '../api/postgrest';
+import PageBackButton from '../components/PageBackButton';
 import { centeredContentStackSx } from '../constants/layout';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { staticListDisplayTitle } from '../lib/staticList';
@@ -46,6 +47,7 @@ export default function StaticListsPage() {
         <Typography variant="h4" component="h1" gutterBottom>
           Static Lists
         </Typography>
+        <PageBackButton to="/adminhome" label="Back to Admin" />
 
         {loading && (
           <Stack sx={{ py: 6, alignItems: 'center' }}>
@@ -101,12 +103,6 @@ export default function StaticListsPage() {
             ))}
           </Grid>
         )}
-
-        <Stack spacing={2} sx={showXsLayout ? centeredContentStackSx : undefined}>
-          <Button variant="outlined" fullWidth onClick={() => navigate('/adminhome')}>
-            Back to Admin
-          </Button>
-        </Stack>
       </Paper>
     </Container>
   );

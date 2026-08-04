@@ -1,5 +1,6 @@
 import { Button, Container, Grid, Paper, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import PageBackButton from '../components/PageBackButton';
 import { centeredContentStackSx } from '../constants/layout';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 
@@ -22,6 +23,7 @@ export default function ContestSelectionPage({
         <Typography variant="h4" component="h1" gutterBottom>
           {title}
         </Typography>
+        <PageBackButton to="/home" label="Back to Home" />
 
         {showXsLayout ? (
           <Stack spacing={2} sx={{ my: 3, ...centeredContentStackSx }}>
@@ -53,12 +55,6 @@ export default function ContestSelectionPage({
             ))}
           </Grid>
         )}
-
-        <Stack sx={showXsLayout ? centeredContentStackSx : { maxWidth: 480, mx: 'auto', width: '100%' }}>
-          <Button variant="outlined" fullWidth onClick={() => navigate('/home')}>
-            Back to Home
-          </Button>
-        </Stack>
       </Paper>
     </Container>
   );

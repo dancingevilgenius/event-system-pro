@@ -6,7 +6,6 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
-  Button,
   Chip,
   Container,
   IconButton,
@@ -15,11 +14,11 @@ import {
   Typography,
 } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   fetchUserCursorRulesStarred,
   setUserCursorRulesStarred,
 } from '../api/postgrest';
+import PageBackButton from '../components/PageBackButton';
 import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
@@ -81,7 +80,6 @@ function RuleBody({ body }: { body: string }) {
 }
 
 export default function AdminCursorRulesPage() {
-  const navigate = useNavigate();
   const { session } = useAuth();
   const { showProblem } = useMessages();
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
@@ -160,6 +158,7 @@ export default function AdminCursorRulesPage() {
         <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
           Cursor Rules
         </Typography>
+        <PageBackButton to="/adminhome" label="Back to Admin" />
 
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
           Project rules from <code>.cursor/rules</code>. Star important rules to pin them to the top.
@@ -245,20 +244,6 @@ export default function AdminCursorRulesPage() {
             })}
           </Stack>
         )}
-
-        <Stack
-          spacing={2}
-          sx={{
-            mt: 4,
-            ...(showXsLayout
-              ? centeredContentStackSx
-              : { maxWidth: 480, mx: 'auto', width: '100%' }),
-          }}
-        >
-          <Button variant="outlined" fullWidth onClick={() => navigate('/adminhome')}>
-            Back to Admin
-          </Button>
-        </Stack>
       </Paper>
     </Container>
   );

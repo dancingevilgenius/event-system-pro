@@ -13,7 +13,6 @@ import {
   Typography,
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { fetchAuditLogPage, type AuditLogRow } from '../api/postgrest';
 import AuditLogDetailDialog from '../components/AuditLogDetailDialog';
 import AuditLogFilterDialog, {
@@ -21,6 +20,7 @@ import AuditLogFilterDialog, {
   type AuditLogFilters,
 } from '../components/AuditLogFilterDialog';
 import AuditTrailCard from '../components/AuditTrailCard';
+import PageBackButton from '../components/PageBackButton';
 import PurgeAuditLogDialog from '../components/PurgeAuditLogDialog';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { formatAuditLogActor } from '../lib/auditLogDisplay';
@@ -72,7 +72,6 @@ function AuditLogMobileCard({
 }
 
 export default function AdminAuditLogPage() {
-  const navigate = useNavigate();
   const { showXsLayout, showMdLayout, showLgLayout, containerMaxWidth } = useLayoutTier();
   const pageSize = showXsLayout ? MOBILE_PAGE_SIZE : showLgLayout ? DESKTOP_PAGE_SIZE : TABLET_PAGE_SIZE;
 
@@ -135,6 +134,7 @@ export default function AdminAuditLogPage() {
         <Typography variant="h4" component="h1" gutterBottom align="center">
           Audit Log
         </Typography>
+        <PageBackButton to="/adminhome" label="Back to Admin" />
         <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 2 }}>
           {totalCount} events
         </Typography>
@@ -282,16 +282,6 @@ export default function AdminAuditLogPage() {
           </Stack>
         )}
 
-        <Stack spacing={2} sx={{ alignItems: 'center' }}>
-          <Button
-            variant="outlined"
-            onClick={() => navigate('/adminhome')}
-            fullWidth={showXsLayout}
-            sx={{ minWidth: { xs: '100%', md: 200 } }}
-          >
-            Back to Admin
-          </Button>
-        </Stack>
       </Paper>
 
       <AuditLogFilterDialog

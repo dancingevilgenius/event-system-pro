@@ -23,9 +23,10 @@ import CompetitorColorSwatchBox, {
   COLOR_SWATCH_SIZE,
 } from '../components/CompetitorColorSwatchBox';
 import JudgingScoreInput from '../components/JudgingScoreInput';
+import PageBackButton from '../components/PageBackButton';
 import PaletteOutlinedIcon from '../components/PaletteOutlinedIcon';
 import PercentCompleteBar from '../components/PercentCompleteBar';
-import { centeredContentStackSx, CONTENT_MAX_WIDTH } from '../constants/layout';
+import { centeredContentStackSx } from '../constants/layout';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import {
   createMockContestEntries,
@@ -865,6 +866,8 @@ export default function JudgingPage() {
           gap: 2,
         }}
       >
+        <PageBackButton to="/staff" label="Back to Staff" />
+
         <Stack spacing={1} sx={{ ...centeredContentStackSx, flexShrink: 0 }}>
           <PercentCompleteBar percent={percentComplete} onSubmit={handleSubmit} />
 
@@ -958,16 +961,6 @@ export default function JudgingPage() {
             ))}
           </Stack>
         </Box>
-
-        <Stack sx={{ alignItems: 'center', flexShrink: 0 }}>
-          <Button
-            variant="outlined"
-            onClick={() => navigate('/staff')}
-            sx={{ maxWidth: CONTENT_MAX_WIDTH, width: '100%' }}
-          >
-            Back to Staff
-          </Button>
-        </Stack>
       </Paper>
 
       <CompetitorColorDialog

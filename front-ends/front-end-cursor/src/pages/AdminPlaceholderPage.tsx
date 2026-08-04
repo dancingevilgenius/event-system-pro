@@ -1,6 +1,5 @@
-import { Button, Container, Paper, Stack, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { centeredContentStackSx } from '../constants/layout';
+import { Container, Paper, Typography } from '@mui/material';
+import PageBackButton from '../components/PageBackButton';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 
 type AdminPlaceholderPageProps = {
@@ -14,8 +13,7 @@ export default function AdminPlaceholderPage({
   backPath = '/adminhome',
   backLabel = 'Back to Admin',
 }: AdminPlaceholderPageProps) {
-  const navigate = useNavigate();
-  const { showXsLayout, containerMaxWidth } = useLayoutTier();
+  const { containerMaxWidth } = useLayoutTier();
 
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
@@ -23,15 +21,10 @@ export default function AdminPlaceholderPage({
         <Typography variant="h4" component="h1" gutterBottom>
           {title}
         </Typography>
+        <PageBackButton to={backPath} label={backLabel} />
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
           Coming soon.
         </Typography>
-
-        <Stack spacing={2} sx={showXsLayout ? centeredContentStackSx : { maxWidth: 480, mx: 'auto', width: '100%' }}>
-          <Button variant="outlined" fullWidth onClick={() => navigate(backPath)}>
-            {backLabel}
-          </Button>
-        </Stack>
       </Paper>
     </Container>
   );

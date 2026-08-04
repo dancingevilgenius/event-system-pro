@@ -13,7 +13,6 @@ import {
   Typography,
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   fetchGoverningBodies,
   updateGoverningBodyMoreJson,
@@ -21,6 +20,7 @@ import {
 } from '../api/postgrest';
 import AuditTrailCard from '../components/AuditTrailCard';
 import GoverningBodyMoreDialog from '../components/GoverningBodyMoreDialog';
+import PageBackButton from '../components/PageBackButton';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 
@@ -55,7 +55,6 @@ function GoverningBodyMobileCard({
 }
 
 export default function GoverningBodyPage() {
-  const navigate = useNavigate();
   const { showXsLayout, showMdLayout, showLgLayout, containerMaxWidth } = useLayoutTier();
   const { showSuccess, showProblem } = useMessages();
 
@@ -119,6 +118,7 @@ export default function GoverningBodyPage() {
         <Typography variant="h4" component="h1" gutterBottom align="center">
           Governing Bodies
         </Typography>
+        <PageBackButton to="/adminhome" label="Back to Admin" />
 
         {loading && (
           <Stack sx={{ py: 6, alignItems: 'center' }}>
@@ -188,17 +188,6 @@ export default function GoverningBodyPage() {
             </Table>
           </TableContainer>
         )}
-
-        <Stack spacing={2} sx={{ mt: 3, alignItems: 'center' }}>
-          <Button
-            variant="outlined"
-            onClick={() => navigate('/adminhome')}
-            fullWidth={showXsLayout}
-            sx={{ minWidth: { xs: '100%', md: 200 } }}
-          >
-            Back to Admin
-          </Button>
-        </Stack>
       </Paper>
 
       <GoverningBodyMoreDialog

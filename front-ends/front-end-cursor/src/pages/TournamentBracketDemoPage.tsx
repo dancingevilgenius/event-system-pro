@@ -9,8 +9,8 @@ import {
   Typography,
 } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { fetchDemoBracketCompetitors } from '../api/postgrest';
+import PageBackButton from '../components/PageBackButton';
 import TournamentBracketViewDialog from '../components/TournamentBracketViewDialog';
 import {
   buildInitialBracket,
@@ -122,7 +122,6 @@ function MatchCard({ match, onSelectWinner }: MatchCardProps) {
 }
 
 export default function TournamentBracketDemoPage() {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [bracket, setBracket] = useState<BracketState | null>(null);
@@ -179,6 +178,7 @@ export default function TournamentBracketDemoPage() {
         <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
           Tournament Bracket Demo
         </Typography>
+        <PageBackButton to="/demo" label="Back to Demo" />
         <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', mb: 3 }}>
           Single elimination · 16 random demo users · pick a winner for each match
         </Typography>
@@ -241,9 +241,6 @@ export default function TournamentBracketDemoPage() {
             onClick={() => setViewBracketOpen(true)}
           >
             View Bracket
-          </Button>
-          <Button variant="outlined" onClick={() => navigate('/demo')}>
-            Back to Demo
           </Button>
         </Stack>
       </Paper>

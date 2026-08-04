@@ -1,5 +1,6 @@
 import { Button, Container, Grid, Paper, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import PageBackButton from '../components/PageBackButton';
 import { centeredContentStackSx } from '../constants/layout';
 import { EVENT_GROUPS_PATH, EVENTS_PATH } from '../constants/eventRoutes';
 import { useLayoutTier } from '../hooks/useLayoutTier';
@@ -19,6 +20,7 @@ export default function EventHomePage() {
         <Typography variant="h4" component="h1" gutterBottom>
           Events
         </Typography>
+        <PageBackButton to="/adminhome" label="Back to Admin" />
 
         {showXsLayout ? (
           <Stack spacing={2} sx={{ my: 3, ...centeredContentStackSx }}>
@@ -50,12 +52,6 @@ export default function EventHomePage() {
             ))}
           </Grid>
         )}
-
-        <Stack spacing={2} sx={showXsLayout ? centeredContentStackSx : { maxWidth: 480, mx: 'auto', width: '100%' }}>
-          <Button variant="outlined" fullWidth onClick={() => navigate('/adminhome')}>
-            Back to Admin
-          </Button>
-        </Stack>
       </Paper>
     </Container>
   );

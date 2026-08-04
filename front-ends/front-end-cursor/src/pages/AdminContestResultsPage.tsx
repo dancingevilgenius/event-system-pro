@@ -1,6 +1,4 @@
 import {
-  Box,
-  Button,
   Container,
   Paper,
   Stack,
@@ -14,8 +12,8 @@ import {
   useMediaQuery,
 } from '@mui/material';
 import { useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import AuditTrailCard from '../components/AuditTrailCard';
+import PageBackButton from '../components/PageBackButton';
 import { buildMockContestResults } from '../data/mockContestResults';
 import type { MockContestEntry } from '../data/mockContestEntries';
 import { formatCompetitorPairNames } from '../data/legionNames';
@@ -83,7 +81,6 @@ function ContestResultMobileCard({
 }
 
 export default function AdminContestResultsPage() {
-  const navigate = useNavigate();
   const showMdLayout = useMediaQuery(MD_LAYOUT_QUERY);
   const showLgLayout = useMediaQuery(LG_LAYOUT_QUERY);
   const showXlLayout = useMediaQuery(XL_LAYOUT_QUERY);
@@ -101,6 +98,7 @@ export default function AdminContestResultsPage() {
         <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
           Relative Placement
         </Typography>
+        <PageBackButton to="/admin/contests" label="Back to Contests" />
         <Typography
           variant="body2"
           color="text.secondary"
@@ -183,15 +181,6 @@ export default function AdminContestResultsPage() {
           </TableContainer>
         )}
 
-        <Box sx={{ mt: 4, maxWidth: { xs: '100%', md: 360 }, mx: 'auto' }}>
-          <Button
-            variant="outlined"
-            fullWidth
-            onClick={() => navigate('/admin/contests')}
-          >
-            Back to Contests
-          </Button>
-        </Box>
       </Paper>
     </Container>
   );

@@ -17,7 +17,6 @@ import {
   Typography,
 } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   fetchEventGroups,
   fetchEventsForEventGroup,
@@ -32,7 +31,7 @@ import {
 } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
 import AuditTrailCard from '../components/AuditTrailCard';
-import { centeredContentStackSx, CONTENT_MAX_WIDTH } from '../constants/layout';
+import PageBackButton from '../components/PageBackButton';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 import { formatReadableDateTime } from '../utils/auditTimestamps';
@@ -144,7 +143,6 @@ function JudgePoolMobileCard({
 }
 
 export default function AdminSetEventJudgesPage() {
-  const navigate = useNavigate();
   const { showProblem, showSuccess } = useMessages();
   const { showXsLayout, showLgLayout, containerMaxWidth } = useLayoutTier();
 
@@ -372,6 +370,7 @@ export default function AdminSetEventJudgesPage() {
         <Typography variant="h4" component="h1" gutterBottom align="center">
           Set Event Judges
         </Typography>
+        <PageBackButton to="/adminhome" label="Back to Admin" />
         <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 3 }}>
           Choose an event group and event, then search users by name to build the judging pool.
         </Typography>
@@ -688,17 +687,6 @@ export default function AdminSetEventJudgesPage() {
               </Button>
             </>
           )}
-        </Stack>
-
-        <Stack spacing={2} sx={{ mt: 3, ...centeredContentStackSx }}>
-          <Button
-            variant="outlined"
-            fullWidth
-            onClick={() => navigate('/adminhome')}
-            sx={{ maxWidth: { xs: '100%', md: CONTENT_MAX_WIDTH } }}
-          >
-            Back to Admin
-          </Button>
         </Stack>
       </Paper>
     </Container>

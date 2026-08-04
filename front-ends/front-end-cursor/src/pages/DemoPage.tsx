@@ -1,5 +1,6 @@
 import { Button, Container, Paper, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import PageBackButton from '../components/PageBackButton';
 import { centeredContentStackSx } from '../constants/layout';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 
@@ -21,6 +22,7 @@ export default function DemoPage() {
         <Typography variant="h4" component="h1" gutterBottom>
           Demo
         </Typography>
+        <PageBackButton to="/home-page" label="Back to Home" />
         <Typography variant="body2" color="text.secondary" sx={{ mb: 4, fontStyle: 'italic' }}>
           Try interactive previews. More demos coming soon.
         </Typography>
@@ -46,19 +48,6 @@ export default function DemoPage() {
               {item.label}
             </Button>
           ))}
-        </Stack>
-
-        <Stack
-          spacing={2}
-          sx={
-            showXsLayout
-              ? centeredContentStackSx
-              : { maxWidth: 480, mx: 'auto', width: '100%' }
-          }
-        >
-          <Button variant="outlined" fullWidth onClick={() => navigate('/home-page')}>
-            Back to Home
-          </Button>
         </Stack>
       </Paper>
     </Container>

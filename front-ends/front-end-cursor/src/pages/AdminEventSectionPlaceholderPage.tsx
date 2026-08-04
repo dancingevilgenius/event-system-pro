@@ -1,6 +1,7 @@
-import { Button, Container, Paper, Stack, Typography } from '@mui/material';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Container, Paper, Stack, Typography } from '@mui/material';
+import { useParams } from 'react-router-dom';
 import AddEventButton from '../components/AddEventButton';
+import PageBackButton from '../components/PageBackButton';
 import { centeredContentStackSx } from '../constants/layout';
 import { eventDetailPath } from '../constants/eventRoutes';
 import { useLayoutTier } from '../hooks/useLayoutTier';
@@ -12,7 +13,6 @@ type AdminEventSectionPlaceholderPageProps = {
 export default function AdminEventSectionPlaceholderPage({
   title,
 }: AdminEventSectionPlaceholderPageProps) {
-  const navigate = useNavigate();
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const { eventGroupCode = '', eventId = '' } = useParams<{
     eventGroupCode: string;
@@ -29,16 +29,16 @@ export default function AdminEventSectionPlaceholderPage({
         <Typography variant="h4" component="h1" gutterBottom>
           {title}
         </Typography>
+        <PageBackButton to={eventBasePath} label="Back to Event" />
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
           Coming soon.
         </Typography>
 
-        <Stack spacing={2} sx={showXsLayout ? centeredContentStackSx : { maxWidth: 480, mx: 'auto', width: '100%' }}>
-          {decodedGroupCode && <AddEventButton eventGroupCode={decodedGroupCode} />}
-          <Button variant="outlined" fullWidth onClick={() => navigate(eventBasePath)}>
-            Back to Event
-          </Button>
-        </Stack>
+        {decodedGroupCode ? (
+          <Stack spacing={2} sx={showXsLayout ? centeredContentStackSx : { maxWidth: 480, mx: 'auto', width: '100%' }}>
+            <AddEventButton eventGroupCode={decodedGroupCode} />
+          </Stack>
+        ) : null}
       </Paper>
     </Container>
   );

@@ -14,11 +14,12 @@ import {
   isWsdcDancerProfile,
 } from '../api/wsdcRegistry';
 import BuildInfoDialog from '../components/BuildInfoDialog';
+import PageBackButton from '../components/PageBackButton';
 import { centeredContentStackSx } from '../constants/layout';
+import { EVENT_HOME_PATH } from '../constants/eventRoutes';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 import { usePocCounter } from '../hooks/usePocCounter';
-import { EVENT_HOME_PATH } from '../constants/eventRoutes';
 
 const ADMIN_BUTTONS = [
   { label: 'Events', path: EVENT_HOME_PATH },
@@ -179,6 +180,7 @@ export default function AdminHomePage() {
         <Typography variant="h4" component="h1" gutterBottom>
           Admin
         </Typography>
+        <PageBackButton to="/home" label="Back to Home" />
 
         <Typography variant="body1" sx={{ mb: 2 }}>
           POC counter (10s):{' '}
@@ -252,9 +254,6 @@ export default function AdminHomePage() {
           </Button>
           <Button variant="outlined" fullWidth onClick={() => setBuildInfoOpen(true)}>
             Build Info
-          </Button>
-          <Button variant="outlined" fullWidth onClick={() => navigate('/home')}>
-            Back to Home
           </Button>
         </Stack>
       </Paper>

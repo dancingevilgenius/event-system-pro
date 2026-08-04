@@ -16,6 +16,15 @@ export const TSL_DIVISIONS_LIST_CODE = 'TSL_DIVISIONS';
 /** `static_list.list_code` for WSDC swing skill / age levels. */
 export const WSDC_SKILL_LEVELS_LIST_CODE = 'WSDC_SKILL_LEVELS';
 
+/** Human-readable title for static list buttons and detail pages. */
+export function staticListDisplayTitle(listCode: string): string {
+  if (listCode === TSL_DIVISIONS_LIST_CODE) {
+    return 'TSL Divisions';
+  }
+
+  return listCode;
+}
+
 /** `static_list.list_code` for competition and event type definitions. */
 export const EVENT_TYPES_LIST_CODE = 'EVENT_TYPES';
 

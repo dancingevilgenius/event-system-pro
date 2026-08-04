@@ -18,7 +18,6 @@ import {
   Typography,
 } from '@mui/material';
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   fetchScheduledTasks,
   runScheduledTask,
@@ -28,6 +27,7 @@ import {
   type ScheduledTaskRow,
 } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
+import PageBackButton from '../components/PageBackButton';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 import { formatReadableDateTime } from '../utils/auditTimestamps';
@@ -585,7 +585,6 @@ function ScheduledTaskCard({
 }
 
 export default function AdminScheduledTasksPage() {
-  const navigate = useNavigate();
   const { showSuccess, showProblem, showInfo, clearMessages } = useMessages();
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
 
@@ -752,6 +751,7 @@ export default function AdminScheduledTasksPage() {
         <Typography variant="h4" component="h1" gutterBottom align="center">
           Scheduled Tasks
         </Typography>
+        <PageBackButton to="/adminhome" label="Back to Admin" />
         <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 2 }}>
           {tasks.length} task{tasks.length === 1 ? '' : 's'}
         </Typography>
@@ -801,14 +801,6 @@ export default function AdminScheduledTasksPage() {
             fullWidth={showXsLayout}
           >
             Refresh
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={() => navigate('/adminhome')}
-            sx={{ minWidth: { xs: '100%', md: 200 } }}
-            fullWidth={showXsLayout}
-          >
-            Back to Admin
           </Button>
         </Stack>
       </Paper>

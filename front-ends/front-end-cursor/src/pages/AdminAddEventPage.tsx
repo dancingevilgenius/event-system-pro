@@ -1,5 +1,4 @@
 import {
-  Button,
   Container,
   Paper,
   Stack,
@@ -21,7 +20,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { type SyntheticEvent, useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { fetchEventById, fetchEventGroupByCode } from '../api/postgrest';
 import AddEventDates from '../components/AddEventDates';
 import AddEventLocation from '../components/AddEventLocation';
@@ -36,7 +35,7 @@ import AddEventStaff from '../components/AddEventStaff';
 import AddEventVolunteers from '../components/AddEventVolunteers';
 import AddEventSortableSectionAccordion from '../components/AddEventSortableSectionAccordion';
 import { type AddEventSectionStatus } from '../components/AddEventSectionStatusToggle';
-import { centeredContentStackSx } from '../constants/layout';
+import PageBackButton from '../components/PageBackButton';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import {
   EVENT_GROUPS_PATH,
@@ -225,7 +224,6 @@ function renderSectionContent(
 }
 
 export default function AdminAddEventPage() {
-  const navigate = useNavigate();
   const location = useLocation();
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const locationState = (location.state as AddEventLocationState | null) ?? null;
@@ -380,6 +378,7 @@ export default function AdminAddEventPage() {
         <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
           {pageTitle}
         </Typography>
+        <PageBackButton to={backPath} label={backLabel} />
         {eventGroupName && (
           <Typography
             variant="body2"
@@ -435,11 +434,6 @@ export default function AdminAddEventPage() {
           </DndContext>
         </Stack>
 
-        <Stack spacing={2} sx={showXsLayout ? centeredContentStackSx : { maxWidth: 480, mx: 'auto', width: '100%' }}>
-          <Button variant="outlined" fullWidth onClick={() => navigate(backPath)}>
-            {backLabel}
-          </Button>
-        </Stack>
       </Paper>
     </Container>
   );

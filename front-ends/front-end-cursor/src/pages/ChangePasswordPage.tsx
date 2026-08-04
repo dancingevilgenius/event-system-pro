@@ -7,16 +7,15 @@ import {
   Typography,
 } from '@mui/material';
 import { type FormEvent, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { changePassword } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
+import PageBackButton from '../components/PageBackButton';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 
 export default function ChangePasswordPage() {
-  const navigate = useNavigate();
   const { session } = useAuth();
   const { clearMessages, showProblem, showSuccess } = useMessages();
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
@@ -84,6 +83,7 @@ export default function ChangePasswordPage() {
         <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
           Change Password
         </Typography>
+        <PageBackButton to="/account" label="Back to Account" variant="text" />
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
           Signed in as <strong>{session.username}</strong>
         </Typography>
@@ -127,9 +127,6 @@ export default function ChangePasswordPage() {
             </Button>
             <Button type="submit" variant="contained" size="large" fullWidth disabled={busy}>
               Change password
-            </Button>
-            <Button variant="text" fullWidth onClick={() => navigate('/account')}>
-              Back to Account
             </Button>
           </Stack>
         </Box>

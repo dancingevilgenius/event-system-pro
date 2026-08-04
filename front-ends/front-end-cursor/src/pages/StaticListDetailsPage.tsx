@@ -19,7 +19,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import {
   fetchStaticListByCode,
   updateStaticListJson,
@@ -28,6 +28,7 @@ import {
 } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
 import AuditTrailCard from '../components/AuditTrailCard';
+import PageBackButton from '../components/PageBackButton';
 import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
@@ -152,7 +153,6 @@ function StaticListEntryMobileCard({
 }
 
 export default function StaticListDetailsPage() {
-  const navigate = useNavigate();
   const { listCode = '' } = useParams<{ listCode: string }>();
   const decodedListCode = decodeURIComponent(listCode);
   const { hasAnyRole } = useAuth();
@@ -395,6 +395,7 @@ export default function StaticListDetailsPage() {
         <Typography variant="h4" component="h1" gutterBottom align="center">
           {staticListDisplayTitle(record?.listCode || decodedListCode || 'Static List')}
         </Typography>
+        <PageBackButton to="/static-lists" label="Back to Static Lists" />
 
         {record?.shortDesc && (
           <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 1 }}>
@@ -512,17 +513,6 @@ export default function StaticListDetailsPage() {
             </Table>
           </TableContainer>
         )}
-
-        <Stack spacing={2} sx={{ mt: 3, alignItems: 'center' }}>
-          <Button
-            variant="outlined"
-            onClick={() => navigate('/static-lists')}
-            fullWidth={showXsLayout}
-            sx={{ minWidth: { xs: '100%', md: 200 } }}
-          >
-            Back to Static Lists
-          </Button>
-        </Stack>
       </Paper>
 
       <Dialog

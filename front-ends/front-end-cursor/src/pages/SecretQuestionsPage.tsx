@@ -1,4 +1,4 @@
-import { Button, Container, Paper, Stack, Typography } from '@mui/material';
+import { Container, Paper, Stack, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -9,6 +9,7 @@ import SecretQuestionsSelector, {
   type PasswordRecoveryAnswer,
 } from '../components/SecretQuestionsSelector';
 import InfoMessageBox from '../components/InfoMessageBox';
+import PageBackButton from '../components/PageBackButton';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
@@ -112,6 +113,7 @@ export default function SecretQuestionsPage() {
         <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
           Password Recovery
         </Typography>
+        <PageBackButton to="/account" label="Back to Account" variant="text" />
 
         <Stack spacing={2} sx={formStackSx}>
           {loadingSetup && (
@@ -126,9 +128,6 @@ export default function SecretQuestionsPage() {
               saving={saving}
             />
           )}
-          <Button variant="text" fullWidth onClick={() => navigate('/account')}>
-            Back to Account
-          </Button>
         </Stack>
       </Paper>
     </Container>

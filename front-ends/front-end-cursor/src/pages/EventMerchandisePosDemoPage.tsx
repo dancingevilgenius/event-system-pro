@@ -18,7 +18,6 @@ import {
   Typography,
 } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import {
   fetchMerchandiseByCode,
   fetchEventPosContextByCode,
@@ -27,6 +26,7 @@ import {
   type EventPosContext,
 } from '../api/postgrest';
 import SalesTransactionReceiptView from '../components/SalesTransactionReceipt';
+import PageBackButton from '../components/PageBackButton';
 import {
   merchandiseLineTotal,
   summarizeCart,
@@ -130,9 +130,8 @@ function ProductCard({
 }
 
 export default function EventMerchandisePosDemoPage() {
-  const navigate = useNavigate();
   const { session } = useAuth();
-  const { showXsLayout, showMdLayout, showLgLayout, containerMaxWidth } = useLayoutTier();
+  const { showMdLayout, showLgLayout, containerMaxWidth } = useLayoutTier();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [eventContext, setEventContext] = useState<EventPosContext | null>(null);
@@ -241,14 +240,19 @@ export default function EventMerchandisePosDemoPage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Stack spacing={3}>
-        <Stack spacing={0.5} sx={{ textAlign: { xs: 'center', md: 'left' } }}>
-          <Typography variant="h4" component="h1">
+        <Box>
+          <Typography variant="h4" component="h1" sx={{ textAlign: { xs: 'center', md: 'left' } }}>
             Event Merchandise POS
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <PageBackButton to="/adminhome" label="Back to Admin" />
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ textAlign: { xs: 'center', md: 'left' } }}
+          >
             Demo register for {DEMO_EVENT_CODE}
           </Typography>
-        </Stack>
+        </Box>
 
         {loading && (
           <Stack sx={{ py: 6, alignItems: 'center' }}>
@@ -374,17 +378,6 @@ export default function EventMerchandisePosDemoPage() {
             </Grid>
           </Grid>
         )}
-
-        <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
-          <Button
-            variant="outlined"
-            onClick={() => navigate('/adminhome')}
-            fullWidth={showXsLayout}
-            sx={{ minWidth: { xs: '100%', md: 200 } }}
-          >
-            Back to Admin
-          </Button>
-        </Stack>
       </Stack>
 
       <Dialog

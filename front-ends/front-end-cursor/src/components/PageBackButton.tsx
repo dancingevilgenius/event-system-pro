@@ -1,4 +1,4 @@
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import {
   Button,
   IconButton,
@@ -47,7 +47,7 @@ export default function PageBackButton({
         ]}
       >
         <IconButton aria-label={label} onClick={() => navigate(to)} edge="start">
-          <ArrowBackIcon />
+          <ArrowCircleLeftIcon />
         </IconButton>
       </Stack>
     );

@@ -37,9 +37,6 @@ export default function PublicHomePage() {
           <Button variant="outlined" size="large" fullWidth onClick={() => navigate('/register')}>
             Register
           </Button>
-          <Button variant="outlined" size="large" fullWidth onClick={() => navigate('/demo')}>
-            Demo
-          </Button>
         </Stack>
       </Paper>
     </Container>

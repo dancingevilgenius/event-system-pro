@@ -31,6 +31,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import JudgingPage from './pages/JudgingPage';
+import ScheduleDemoPage from './pages/ScheduleDemoPage';
 import SecretQuestionsPage from './pages/SecretQuestionsPage';
 import StaffPage from './pages/StaffPage';
 import StaticListDetailsPage from './pages/StaticListDetailsPage';
@@ -50,8 +51,30 @@ export default function App() {
       <Route path="/home-page" element={<PublicHomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/demo" element={<DemoPage />} />
-      <Route path="/tournament-bracket-demo" element={<TournamentBracketDemoPage />} />
+      <Route
+        path="/demo"
+        element={
+          <ProtectedRoute roles={['ADMIN']}>
+            <DemoPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/tournament-bracket-demo"
+        element={
+          <ProtectedRoute roles={['ADMIN']}>
+            <TournamentBracketDemoPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/demo-schedule"
+        element={
+          <ProtectedRoute roles={['ADMIN']}>
+            <ScheduleDemoPage />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/event-merchandise-pos-demo"
         element={

@@ -1,6 +1,13 @@
 /** Shared max width for messages, buttons, fields, and dropdowns. */
 export const CONTENT_MAX_WIDTH = 360;
 
+/**
+ * Reference desktop CSS viewport — older 15″ laptop panel (1366 × 768).
+ * Use this size when checking xl / full-desktop layouts in devtools.
+ */
+export const DESKTOP_REFERENCE_VIEWPORT_WIDTH = 1366;
+export const DESKTOP_REFERENCE_VIEWPORT_HEIGHT = 768;
+
 /** Max width for page Containers on large desktop viewports. */
 export const DESKTOP_CONTAINER_MAX_WIDTH = 1000;
 

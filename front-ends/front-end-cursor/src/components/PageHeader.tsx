@@ -1,4 +1,4 @@
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import { Box, IconButton, Typography, type ButtonProps, type SxProps, type Theme } from '@mui/material';
 import type { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -47,7 +47,7 @@ export default function PageHeader({
           edge="start"
           sx={{ flexShrink: 0, width: ICON_SLOT_WIDTH, height: ICON_SLOT_WIDTH }}
         >
-          <ArrowBackIcon />
+          <ArrowCircleLeftIcon />
         </IconButton>
         <Typography
           variant="h4"

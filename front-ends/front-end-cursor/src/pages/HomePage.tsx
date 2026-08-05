@@ -45,9 +45,32 @@ export default function HomePage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 }, textAlign: 'center' }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Home
-        </Typography>
+        {showXsLayout ? (
+          <Box
+            sx={{
+              ...centeredContentStackSx,
+              display: 'flex',
+              flexDirection: 'row',
+              mb: 3,
+            }}
+          >
+            <Box sx={{ width: MOBILE_HEADER_ICON_SLOT, flexShrink: 0 }} aria-hidden />
+            <Typography
+              variant="h4"
+              component="h1"
+              sx={{ flex: 1, textAlign: 'center', minWidth: 0 }}
+            >
+              Home
+            </Typography>
+            <MobileHeaderIconButton label="Account" onClick={() => navigate('/account')}>
+              <ManageAccountsIcon />
+            </MobileHeaderIconButton>
+          </Box>
+        ) : (
+          <Typography variant="h4" component="h1" gutterBottom>
+            Home
+          </Typography>
+        )}
 
         {showXsLayout ? (
           <Stack spacing={2} sx={{ my: 3, ...centeredContentStackSx }}>

@@ -85,9 +85,6 @@ export default function HomePage() {
                 Admin
               </Button>
             )}
-            <Button variant="contained" size="large" fullWidth onClick={() => navigate('/account')}>
-              Account
-            </Button>
           </Stack>
         ) : (
           <Grid container spacing={2} sx={{ my: 3 }}>
@@ -108,11 +105,6 @@ export default function HomePage() {
                 </Button>
               </Grid>
             )}
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Button variant="contained" size="large" fullWidth onClick={() => navigate('/account')}>
-                Account
-              </Button>
-            </Grid>
           </Grid>
         )}
 

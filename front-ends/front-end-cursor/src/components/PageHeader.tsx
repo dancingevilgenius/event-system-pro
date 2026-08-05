@@ -1,8 +1,8 @@
-import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
-import { Box, IconButton, Typography, type ButtonProps, type SxProps, type Theme } from '@mui/material';
+import { Box, Typography, type ButtonProps, type SxProps, type Theme } from '@mui/material';
 import type { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLayoutTier } from '../hooks/useLayoutTier';
+import MobileBackIconButton, { MOBILE_BACK_ICON_SLOT } from './MobileBackIconButton';
 import PageBackButton from './PageBackButton';
 
 type PageHeaderProps = {
@@ -13,9 +13,6 @@ type PageHeaderProps = {
   /** Applied to the title Typography (desktop and mobile). */
   titleSx?: SxProps<Theme>;
 };
-
-const ICON_SLOT_WIDTH = 48;
-const BACK_ICON_FONT_SIZE = '2rem';
 
 /**
  * Page title with back navigation.
@@ -42,14 +39,7 @@ export default function PageHeader({
           mb: 3,
         }}
       >
-        <IconButton
-          aria-label={backLabel}
-          onClick={() => navigate(backTo)}
-          edge="start"
-          sx={{ flexShrink: 0, width: ICON_SLOT_WIDTH, height: ICON_SLOT_WIDTH }}
-        >
-          <ArrowCircleLeftIcon sx={{ fontSize: BACK_ICON_FONT_SIZE }} />
-        </IconButton>
+        <MobileBackIconButton label={backLabel} onClick={() => navigate(backTo)} />
         <Typography
           variant="h4"
           component="h1"
@@ -61,7 +51,7 @@ export default function PageHeader({
           {title}
         </Typography>
         {/* Balance the leading icon so the title stays visually centered. */}
-        <Box sx={{ width: ICON_SLOT_WIDTH, flexShrink: 0 }} aria-hidden />
+        <Box sx={{ width: MOBILE_BACK_ICON_SLOT, flexShrink: 0 }} aria-hidden />
       </Box>
     );
   }

@@ -1,46 +1,18 @@
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import { Box, Button, Container, Grid, Paper, Stack, Tooltip, Typography } from '@mui/material';
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { logout as logoutApi } from '../api/postgrest';
 import MobileHeaderIconButton, {
   MOBILE_HEADER_ICON_SLOT,
 } from '../components/MobileHeaderIconButton';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
-import { useMessages } from '../hooks/useMessages';
-import { setFlashSuccess } from '../lib/authMessages';
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const { logout, hasAnyRole } = useAuth();
-  const { showProblem } = useMessages();
+  const { hasAnyRole } = useAuth();
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
-  const [busy, setBusy] = useState(false);
   const isAdmin = hasAnyRole(['ADMIN']);
-
-  const handleLogOff = async () => {
-    setBusy(true);
-    try {
-      const result = await logoutApi();
-      logout();
-      if (!result.ok) {
-        showProblem(result.message);
-        navigate('/');
-        return;
-      }
-      setFlashSuccess(result.message);
-      logout();
-      navigate('/', { replace: true });
-    } catch (error) {
-      logout();
-      showProblem(error instanceof Error ? error.message : 'Sign out failed.');
-      navigate('/');
-    } finally {
-      setBusy(false);
-    }
-  };
 
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
@@ -107,19 +79,6 @@ export default function HomePage() {
             )}
           </Grid>
         )}
-
-        <Stack
-          spacing={2}
-          sx={
-            showXsLayout
-              ? centeredContentStackSx
-              : { maxWidth: 480, mx: 'auto', width: '100%' }
-          }
-        >
-          <Button variant="outlined" fullWidth disabled={busy} onClick={handleLogOff}>
-            Log Off
-          </Button>
-        </Stack>
       </Paper>
     </Container>
   );

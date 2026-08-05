@@ -8,6 +8,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { logout as logoutApi } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
 import PageHeader from '../components/PageHeader';
 import ShowRolesDialog from '../components/ShowRolesDialog';
@@ -16,14 +17,38 @@ import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
+import { setFlashSuccess } from '../lib/authMessages';
 import { MESSAGE_AUTO_DISMISS_OPTIONS } from '../lib/messagePreferences';
 
 export default function AccountPage() {
   const navigate = useNavigate();
-  const { session } = useAuth();
-  const { messageAutoDismissMs, setMessageAutoDismissMs } = useMessages();
+  const { session, logout } = useAuth();
+  const { messageAutoDismissMs, setMessageAutoDismissMs, showProblem } = useMessages();
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const [rolesOpen, setRolesOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  const handleLogOff = async () => {
+    setBusy(true);
+    try {
+      const result = await logoutApi();
+      logout();
+      if (!result.ok) {
+        showProblem(result.message);
+        navigate('/');
+        return;
+      }
+      setFlashSuccess(result.message);
+      logout();
+      navigate('/', { replace: true });
+    } catch (error) {
+      logout();
+      showProblem(error instanceof Error ? error.message : 'Sign out failed.');
+      navigate('/');
+    } finally {
+      setBusy(false);
+    }
+  };
 
   if (!session) {
     return null;
@@ -49,6 +74,10 @@ export default function AccountPage() {
               : { maxWidth: 480, mx: 'auto', width: '100%' }
           }
         >
+          <Button variant="outlined" size="large" fullWidth disabled={busy} onClick={handleLogOff}>
+            Log Off
+          </Button>
+
           <ThemeSwitcher fullWidth />
 
           <AppTextField

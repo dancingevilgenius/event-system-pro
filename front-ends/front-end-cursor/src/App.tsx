@@ -50,8 +50,22 @@ export default function App() {
       <Route path="/home-page" element={<PublicHomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/demo" element={<DemoPage />} />
-      <Route path="/tournament-bracket-demo" element={<TournamentBracketDemoPage />} />
+      <Route
+        path="/demo"
+        element={
+          <ProtectedRoute roles={['ADMIN']}>
+            <DemoPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/tournament-bracket-demo"
+        element={
+          <ProtectedRoute roles={['ADMIN']}>
+            <TournamentBracketDemoPage />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/event-merchandise-pos-demo"
         element={

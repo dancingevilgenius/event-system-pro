@@ -19,7 +19,7 @@ export default function DemoPage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 }, textAlign: 'center' }}>
-        <PageHeader title="Demo" backTo="/home-page" backLabel="Back to Home" />
+        <PageHeader title="Demo" backTo="/adminhome" backLabel="Back to Admin" />
         <Typography variant="body2" color="text.secondary" sx={{ mb: 4, fontStyle: 'italic' }}>
           Try interactive previews. More demos coming soon.
         </Typography>

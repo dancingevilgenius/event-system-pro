@@ -241,7 +241,7 @@ export default function EventMerchandisePosDemoPage() {
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Stack spacing={3}>
         <Box>
-          <PageHeader title="Event Merchandise POS" backTo="/adminhome" backLabel="Back to Admin" />
+          <PageHeader title="Merchandise" backTo="/adminhome" backLabel="Back to Admin" />
           <Typography
             variant="body2"
             color="text.secondary"

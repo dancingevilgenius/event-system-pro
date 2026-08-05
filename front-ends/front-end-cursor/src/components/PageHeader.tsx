@@ -14,7 +14,8 @@ type PageHeaderProps = {
   titleSx?: SxProps<Theme>;
 };
 
-const ICON_SLOT_WIDTH = 40;
+const ICON_SLOT_WIDTH = 48;
+const BACK_ICON_FONT_SIZE = '2rem';
 
 /**
  * Page title with back navigation.
@@ -47,7 +48,7 @@ export default function PageHeader({
           edge="start"
           sx={{ flexShrink: 0, width: ICON_SLOT_WIDTH, height: ICON_SLOT_WIDTH }}
         >
-          <ArrowCircleLeftIcon />
+          <ArrowCircleLeftIcon sx={{ fontSize: BACK_ICON_FONT_SIZE }} />
         </IconButton>
         <Typography
           variant="h4"

@@ -1,6 +1,7 @@
 import { Box, Typography, type ButtonProps, type SxProps, type Theme } from '@mui/material';
 import type { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { centeredContentStackSx } from '../constants/layout';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import MobileBackIconButton, { MOBILE_BACK_ICON_SLOT } from './MobileBackIconButton';
 import PageBackButton from './PageBackButton';
@@ -16,7 +17,8 @@ type PageHeaderProps = {
 
 /**
  * Page title with back navigation.
- * On phone-sized layouts: left-facing arrow icon on the same line as the title.
+ * On phone-sized layouts: left-facing arrow on the same line as the title,
+ * left-aligned with the centered action-button column.
  * On larger layouts: title, then a full-width text back button underneath.
  */
 export default function PageHeader({
@@ -35,8 +37,8 @@ export default function PageHeader({
         sx={{
           display: 'flex',
           alignItems: 'center',
-          width: '100%',
           mb: 3,
+          ...centeredContentStackSx,
         }}
       >
         <MobileBackIconButton label={backLabel} onClick={() => navigate(backTo)} />

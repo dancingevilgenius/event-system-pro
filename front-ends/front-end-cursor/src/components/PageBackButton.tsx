@@ -6,6 +6,7 @@ import {
   type Theme,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { centeredContentStackSx } from '../constants/layout';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import MobileBackIconButton from './MobileBackIconButton';
 
@@ -21,7 +22,8 @@ type PageBackButtonProps = {
 
 /**
  * Standalone back control (e.g. Judging, which has no page title).
- * On phone-sized layouts: icon-only left arrow on a rectangular background.
+ * On phone-sized layouts: icon-only left arrow on a rectangular background,
+ * left-aligned with the centered action-button column.
  * On larger layouts: full-width labeled button.
  * Prefer `PageHeader` when a page title is present so the arrow shares the title row.
  */
@@ -41,7 +43,7 @@ export default function PageBackButton({
       <Stack
         direction="row"
         sx={[
-          { mb: 2, alignItems: 'center', width: '100%' },
+          { mb: 2, ...centeredContentStackSx },
           ...(stackSx ? (Array.isArray(stackSx) ? stackSx : [stackSx]) : []),
         ]}
       >

@@ -1,8 +1,8 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { IconButton } from '@mui/material';
+import { Button } from '@mui/material';
 
-export const MOBILE_BACK_ICON_SLOT = 48;
-const BACK_ICON_FONT_SIZE = '2rem';
+/** Matches MUI `Button` `size="large"` height so the control lines up with page actions. */
+export const MOBILE_BACK_ICON_SLOT = '2.625rem'; // 42px
 
 type MobileBackIconButtonProps = {
   label: string;
@@ -10,29 +10,25 @@ type MobileBackIconButtonProps = {
 };
 
 /**
- * Phone-sized back control: left arrow on a rectangular background
- * (replaces the circular ArrowCircleLeft glyph).
+ * Phone-sized back control: left arrow on a rectangular outlined background.
+ * Sized to match `size="large"` action buttons and left-aligned with that column.
  */
 export default function MobileBackIconButton({ label, onClick }: MobileBackIconButtonProps) {
   return (
-    <IconButton
+    <Button
+      variant="outlined"
+      size="large"
       aria-label={label}
       onClick={onClick}
-      edge="start"
       sx={{
         flexShrink: 0,
+        minWidth: MOBILE_BACK_ICON_SLOT,
         width: MOBILE_BACK_ICON_SLOT,
         height: MOBILE_BACK_ICON_SLOT,
-        borderRadius: 1,
-        border: 1,
-        borderColor: 'divider',
-        bgcolor: 'action.hover',
-        '&:hover': {
-          bgcolor: 'action.selected',
-        },
+        p: 0,
       }}
     >
-      <ArrowBackIcon sx={{ fontSize: BACK_ICON_FONT_SIZE }} />
-    </IconButton>
+      <ArrowBackIcon />
+    </Button>
   );
 }

@@ -1,33 +1,40 @@
 import { describe, expect, it } from 'vitest';
-import { MUI_SCHEDULER_EXAMPLE_SCHEDULE } from '../data/muiSchedulerExampleSchedule';
+import { TSL_EXAMPLE_SCHEDULE } from '../data/tslExampleSchedule';
 import { parseDemoSchedule } from './parseDemoSchedule';
 
 describe('parseDemoSchedule', () => {
-  it('parses timed and all-day rows from the MUI example schedule', () => {
-    const events = parseDemoSchedule(MUI_SCHEDULER_EXAMPLE_SCHEDULE);
+  it('parses the TSL X Minneapolis example schedule', () => {
+    const events = parseDemoSchedule(TSL_EXAMPLE_SCHEDULE);
 
     expect(events.length).toBeGreaterThan(30);
     expect(events).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          title: 'Morning Run',
-          start: '2025-06-29T07:00:00',
-          end: '2025-06-29T07:45:00',
+          title: 'Charter Rep Dinner / Reception',
+          start: '2026-07-29T20:00:00',
+          end: '2026-07-29T22:00:00',
+          resource: 'hampton-inn',
         }),
         expect.objectContaining({
-          title: "Alice's Birthday",
-          allDay: true,
-          start: '2025-07-03T00:00:00',
+          title: 'Standard Day One — Groups A, B, C',
+          start: '2026-07-30T15:00:00',
+          end: '2026-07-30T16:00:00',
+          resource: 'ymca-gaviidae',
         }),
         expect.objectContaining({
-          title: '4th of July BBQ',
-          start: '2025-07-04T12:00:00',
-          end: '2025-07-04T17:00:00',
+          title: "Women's Division Tournament",
+          start: '2026-07-31T09:00:00',
+          end: '2026-07-31T10:30:00',
         }),
         expect.objectContaining({
-          title: 'Packing for Vacation',
-          start: '2025-08-02T14:00:00',
-          end: '2025-08-02T16:00:00',
+          title: 'TSL Saber Prom',
+          start: '2026-08-01T20:00:00',
+          resource: 'state-theatre',
+        }),
+        expect.objectContaining({
+          title: 'Patch-A-Palooza & Saber Games',
+          start: '2026-08-02T14:00:00',
+          end: '2026-08-02T18:00:00',
         }),
       ]),
     );
@@ -36,18 +43,20 @@ describe('parseDemoSchedule', () => {
   it('skips blank lines, comments, and malformed rows', () => {
     const events = parseDemoSchedule(`
 # comment
-2025-07-01 | 6:00 PM - 7:00 PM | Gym Class
+2026-07-30 | 6:00 PM - 7:00 PM | Gym Class | ymca-gaviidae | Note
 
 not-a-row
-2025-07-02 | weird | Bad
+2026-07-31 | weird | Bad
 `);
 
     expect(events).toEqual([
       {
         id: '1',
         title: 'Gym Class',
-        start: '2025-07-01T18:00:00',
-        end: '2025-07-01T19:00:00',
+        start: '2026-07-30T18:00:00',
+        end: '2026-07-30T19:00:00',
+        resource: 'ymca-gaviidae',
+        description: 'Note',
       },
     ]);
   });

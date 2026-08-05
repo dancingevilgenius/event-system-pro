@@ -4,6 +4,8 @@ export type ParsedScheduleEvent = {
   start: string;
   end: string;
   allDay?: boolean;
+  resource?: string;
+  description?: string;
 };
 
 const TIME_RANGE =
@@ -27,8 +29,11 @@ function toWallTime(date: string, hour12: number, minute: number, period: string
 }
 
 /**
- * Parse the demo schedule text into MUI X Scheduler events.
- * Lines: `YYYY-MM-DD | h:mm AM/PM - h:mm AM/PM | Title` or `YYYY-MM-DD | all-day | Title`.
+ * Parse demo schedule text into MUI X Scheduler events.
+ *
+ * Lines:
+ *   YYYY-MM-DD | h:mm AM/PM - h:mm AM/PM | Title [| resourceId [| Description]]
+ *   YYYY-MM-DD | all-day | Title [| resourceId [| Description]]
  */
 export function parseDemoSchedule(raw: string): ParsedScheduleEvent[] {
   const events: ParsedScheduleEvent[] = [];
@@ -45,10 +50,17 @@ export function parseDemoSchedule(raw: string): ParsedScheduleEvent[] {
       continue;
     }
 
-    const [date, timePart, ...titleParts] = parts;
-    const title = titleParts.join('|').trim();
+    const [date, timePart, title, resource, description] = parts;
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !title) {
       continue;
+    }
+
+    const extras: Pick<ParsedScheduleEvent, 'resource' | 'description'> = {};
+    if (resource) {
+      extras.resource = resource;
+    }
+    if (description) {
+      extras.description = description;
     }
 
     if (/^all-day$/i.test(timePart)) {
@@ -58,6 +70,7 @@ export function parseDemoSchedule(raw: string): ParsedScheduleEvent[] {
         start: `${date}T00:00:00`,
         end: `${date}T23:59:59`,
         allDay: true,
+        ...extras,
       });
       nextId += 1;
       continue;
@@ -74,6 +87,7 @@ export function parseDemoSchedule(raw: string): ParsedScheduleEvent[] {
       title,
       start: toWallTime(date, Number(startHour), Number(startMinute), startPeriod),
       end: toWallTime(date, Number(endHour), Number(endMinute), endPeriod),
+      ...extras,
     });
     nextId += 1;
   }

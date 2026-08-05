@@ -25,6 +25,7 @@ import EventHomePage from './pages/EventHomePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import PublicHomePage from './pages/PublicHomePage';
 import DemoPage from './pages/DemoPage';
+import EventCalendarDemoPage from './pages/EventCalendarDemoPage';
 import EventMerchandisePosDemoPage from './pages/EventMerchandisePosDemoPage';
 import GoverningBodyPage from './pages/GoverningBodyPage';
 import HomePage from './pages/HomePage';
@@ -72,6 +73,14 @@ export default function App() {
         element={
           <ProtectedRoute roles={['ADMIN']}>
             <ScheduleDemoPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/demo-event-calendar"
+        element={
+          <ProtectedRoute roles={['ADMIN']}>
+            <EventCalendarDemoPage />
           </ProtectedRoute>
         }
       />

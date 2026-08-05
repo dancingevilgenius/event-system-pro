@@ -15,6 +15,11 @@ const DEMO_ITEMS = [
     path: '/demo-schedule',
     available: true,
   },
+  {
+    label: 'Event Calendar',
+    path: '/demo-event-calendar',
+    available: true,
+  },
 ] as const;
 
 export default function DemoPage() {

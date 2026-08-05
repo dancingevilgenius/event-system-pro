@@ -7,7 +7,7 @@ import {
   normalizeWsdcId,
   type WsdcDancerProfile,
 } from '../api/wsdcRegistry';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import WsdcFindDancerSection from '../components/WsdcFindDancerSection';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
@@ -168,15 +168,11 @@ export default function WsdcFindDancerPage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
-        <Typography
-          variant="h4"
-          component="h1"
-          gutterBottom
-          sx={{ textAlign: 'center' }}
-        >
-          WSDC Find Dancer
-        </Typography>
-        <PageBackButton to="/adminhome" label="Back to Admin" />
+        <PageHeader
+          title="WSDC Find Dancer"
+          backTo="/adminhome"
+          backLabel="Back to Admin"
+        />
 
         <Stack sx={showXsLayout ? centeredContentStackSx : { width: '100%', maxWidth: 480, mx: 'auto' }}>
         <WsdcFindDancerSection

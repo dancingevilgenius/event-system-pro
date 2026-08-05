@@ -9,7 +9,7 @@ import SecretQuestionsSelector, {
   type PasswordRecoveryAnswer,
 } from '../components/SecretQuestionsSelector';
 import InfoMessageBox from '../components/InfoMessageBox';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
@@ -110,10 +110,12 @@ export default function SecretQuestionsPage() {
           forgot-password page. Answers are encrypted on save.
         </InfoMessageBox>
 
-        <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
-          Password Recovery
-        </Typography>
-        <PageBackButton to="/account" label="Back to Account" variant="text" />
+        <PageHeader
+          title="Password Recovery"
+          backTo="/account"
+          backLabel="Back to Account"
+          backVariant="text"
+        />
 
         <Stack spacing={2} sx={formStackSx}>
           {loadingSetup && (

@@ -1,5 +1,5 @@
 import { Container, Paper, Typography } from '@mui/material';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 
 type AdminPlaceholderPageProps = {
@@ -18,10 +18,7 @@ export default function AdminPlaceholderPage({
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 }, textAlign: 'center' }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          {title}
-        </Typography>
-        <PageBackButton to={backPath} label={backLabel} />
+        <PageHeader title={title} backTo={backPath} backLabel={backLabel} />
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
           Coming soon.
         </Typography>

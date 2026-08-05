@@ -32,7 +32,7 @@ import type { WsdcDancerProfile } from '../api/wsdcRegistry';
 import { buildStoredWsdcInfo } from '../api/wsdcRegistry';
 import AddEventButton from '../components/AddEventButton';
 import AuditTrailCard from '../components/AuditTrailCard';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import WsdcFindDancerSection from '../components/WsdcFindDancerSection';
 import { useEventAttendeeRealtime } from '../hooks/useEventAttendeeRealtime';
 import { useMessages } from '../hooks/useMessages';
@@ -524,10 +524,7 @@ export default function AdminEventAttendeesPage() {
           }}
         />
         <Box sx={{ textAlign: 'center', mb: 2 }}>
-          <Typography variant="h4" component="h1" gutterBottom align="center">
-            Attendees
-          </Typography>
-          <PageBackButton to={eventBasePath} label="Back to Event" />
+          <PageHeader title="Attendees" backTo={eventBasePath} backLabel="Back to Event" />
           <Typography variant="body2" color="text.secondary" align="center">
             {headerLabel || 'Event attendees'} ({rows.length})
           </Typography>

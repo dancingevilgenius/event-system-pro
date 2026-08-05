@@ -14,7 +14,7 @@ import {
   isWsdcDancerProfile,
 } from '../api/wsdcRegistry';
 import BuildInfoDialog from '../components/BuildInfoDialog';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import { centeredContentStackSx } from '../constants/layout';
 import { EVENT_HOME_PATH } from '../constants/eventRoutes';
 import { useLayoutTier } from '../hooks/useLayoutTier';
@@ -177,10 +177,7 @@ export default function AdminHomePage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 }, textAlign: 'center' }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Admin
-        </Typography>
-        <PageBackButton to="/home" label="Back to Home" />
+        <PageHeader title="Admin" backTo="/home" backLabel="Back to Home" />
 
         <Typography variant="body1" sx={{ mb: 2 }}>
           POC counter (10s):{' '}

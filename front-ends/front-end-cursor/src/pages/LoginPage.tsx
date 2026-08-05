@@ -11,7 +11,7 @@ import { type FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
@@ -70,10 +70,12 @@ export default function LoginPage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
-          Event System Pro
-        </Typography>
-        <PageBackButton to="/home-page" label="Back to Home" variant="text" />
+        <PageHeader
+          title="Event System Pro"
+          backTo="/home-page"
+          backLabel="Back to Home"
+          backVariant="text"
+        />
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
           Sign in to your account or register as a new user.
         </Typography>

@@ -1,6 +1,6 @@
 import { Button, Container, Paper, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import { centeredContentStackSx } from '../constants/layout';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 
@@ -19,10 +19,7 @@ export default function DemoPage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 }, textAlign: 'center' }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Demo
-        </Typography>
-        <PageBackButton to="/home-page" label="Back to Home" />
+        <PageHeader title="Demo" backTo="/home-page" backLabel="Back to Home" />
         <Typography variant="body2" color="text.secondary" sx={{ mb: 4, fontStyle: 'italic' }}>
           Try interactive previews. More demos coming soon.
         </Typography>

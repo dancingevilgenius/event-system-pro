@@ -35,7 +35,7 @@ import AddEventStaff from '../components/AddEventStaff';
 import AddEventVolunteers from '../components/AddEventVolunteers';
 import AddEventSortableSectionAccordion from '../components/AddEventSortableSectionAccordion';
 import { type AddEventSectionStatus } from '../components/AddEventSectionStatusToggle';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import {
   EVENT_GROUPS_PATH,
@@ -375,10 +375,7 @@ export default function AdminAddEventPage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
-          {pageTitle}
-        </Typography>
-        <PageBackButton to={backPath} label={backLabel} />
+        <PageHeader title={pageTitle} backTo={backPath} backLabel={backLabel} />
         {eventGroupName && (
           <Typography
             variant="body2"

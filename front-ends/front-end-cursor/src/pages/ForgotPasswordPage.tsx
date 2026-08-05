@@ -24,7 +24,7 @@ import {
   type SecretQuestionPrompt,
 } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import { centeredContentStackSx } from '../constants/layout';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
@@ -359,10 +359,12 @@ export default function ForgotPasswordPage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
-          Forgot Password
-        </Typography>
-        <PageBackButton to="/" label="Back to Login" variant="text" />
+        <PageHeader
+          title="Forgot Password"
+          backTo="/"
+          backLabel="Back to Login"
+          backVariant="text"
+        />
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
           Reset your password in four steps.
         </Typography>

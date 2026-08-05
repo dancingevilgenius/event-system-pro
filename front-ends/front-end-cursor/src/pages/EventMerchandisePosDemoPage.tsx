@@ -26,7 +26,7 @@ import {
   type EventPosContext,
 } from '../api/postgrest';
 import SalesTransactionReceiptView from '../components/SalesTransactionReceipt';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import {
   merchandiseLineTotal,
   summarizeCart,
@@ -241,10 +241,7 @@ export default function EventMerchandisePosDemoPage() {
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Stack spacing={3}>
         <Box>
-          <Typography variant="h4" component="h1" sx={{ textAlign: { xs: 'center', md: 'left' } }}>
-            Event Merchandise POS
-          </Typography>
-          <PageBackButton to="/adminhome" label="Back to Admin" />
+          <PageHeader title="Event Merchandise POS" backTo="/adminhome" backLabel="Back to Admin" />
           <Typography
             variant="body2"
             color="text.secondary"

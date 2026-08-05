@@ -4,6 +4,12 @@ export const CONTENT_MAX_WIDTH = 360;
 /** Max width for page Containers on large desktop viewports. */
 export const DESKTOP_CONTAINER_MAX_WIDTH = 1000;
 
+/** Min height for page shell Papers on tablet/desktop (md+). */
+export const DESKTOP_PAGE_MIN_HEIGHT = 500;
+
+/** Matches useLayoutTier MD_LAYOUT_QUERY — tablet and up. */
+export const MD_LAYOUT_MEDIA_QUERY = '(min-width:768px)';
+
 /** Min viewport width for full-width panel layout (pairs with useIsMobileDevice 768px). */
 export const MOBILE_LAYOUT_MIN_WIDTH = 769;
 

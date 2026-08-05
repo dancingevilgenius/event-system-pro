@@ -60,18 +60,18 @@ export default function HomePage() {
           </Stack>
         ) : (
           <Grid container spacing={2} sx={{ my: 3 }}>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
               <Button variant="contained" size="large" fullWidth onClick={() => navigate('/staff')}>
                 Staff
               </Button>
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
               <Button variant="contained" size="large" fullWidth onClick={() => navigate('/competitor')}>
                 Competitor
               </Button>
             </Grid>
             {isAdmin && (
-              <Grid size={{ xs: 12, md: 6 }}>
+              <Grid size={{ xs: 12, md: 6, lg: 4 }}>
                 <Button variant="contained" size="large" fullWidth onClick={() => navigate('/adminhome')}>
                   Admin
                 </Button>

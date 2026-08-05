@@ -1,4 +1,4 @@
-import { Button, Container, Paper, Stack, Typography } from '@mui/material';
+import { Button, Container, Grid, Paper, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from '../components/PageHeader';
 import { centeredContentStackSx } from '../constants/layout';
@@ -8,6 +8,11 @@ const DEMO_ITEMS = [
   {
     label: 'Tournament Bracket Demo',
     path: '/tournament-bracket-demo',
+    available: true,
+  },
+  {
+    label: 'Schedule Demo',
+    path: '/demo-schedule',
     available: true,
   },
 ] as const;
@@ -24,28 +29,38 @@ export default function DemoPage() {
           Try interactive previews. More demos coming soon.
         </Typography>
 
-        <Stack
-          spacing={2}
-          sx={{
-            mb: 4,
-            ...(showXsLayout
-              ? centeredContentStackSx
-              : { maxWidth: 480, mx: 'auto', width: '100%' }),
-          }}
-        >
-          {DEMO_ITEMS.map((item) => (
-            <Button
-              key={item.path}
-              variant="contained"
-              size="large"
-              fullWidth
-              disabled={!item.available}
-              onClick={() => navigate(item.path)}
-            >
-              {item.label}
-            </Button>
-          ))}
-        </Stack>
+        {showXsLayout ? (
+          <Stack spacing={2} sx={{ mb: 4, ...centeredContentStackSx }}>
+            {DEMO_ITEMS.map((item) => (
+              <Button
+                key={item.path}
+                variant="contained"
+                size="large"
+                fullWidth
+                disabled={!item.available}
+                onClick={() => navigate(item.path)}
+              >
+                {item.label}
+              </Button>
+            ))}
+          </Stack>
+        ) : (
+          <Grid container spacing={2} sx={{ mb: 4 }}>
+            {DEMO_ITEMS.map((item) => (
+              <Grid key={item.path} size={{ xs: 12, md: 6, lg: 4 }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  disabled={!item.available}
+                  onClick={() => navigate(item.path)}
+                >
+                  {item.label}
+                </Button>
+              </Grid>
+            ))}
+          </Grid>
+        )}
       </Paper>
     </Container>
   );

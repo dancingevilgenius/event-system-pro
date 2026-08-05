@@ -31,6 +31,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import JudgingPage from './pages/JudgingPage';
+import ScheduleDemoPage from './pages/ScheduleDemoPage';
 import SecretQuestionsPage from './pages/SecretQuestionsPage';
 import StaffPage from './pages/StaffPage';
 import StaticListDetailsPage from './pages/StaticListDetailsPage';
@@ -63,6 +64,14 @@ export default function App() {
         element={
           <ProtectedRoute roles={['ADMIN']}>
             <TournamentBracketDemoPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/demo-schedule"
+        element={
+          <ProtectedRoute roles={['ADMIN']}>
+            <ScheduleDemoPage />
           </ProtectedRoute>
         }
       />

@@ -1,7 +1,11 @@
-import { Button, Container, Grid, Paper, Stack, Typography } from '@mui/material';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import { Box, Button, Container, Grid, Paper, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { logout as logoutApi } from '../api/postgrest';
+import MobileHeaderIconButton, {
+  MOBILE_HEADER_ICON_SLOT,
+} from '../components/MobileHeaderIconButton';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';

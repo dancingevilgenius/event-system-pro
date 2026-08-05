@@ -1,8 +1,10 @@
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Button } from '@mui/material';
+import MobileHeaderIconButton, {
+  MOBILE_BACK_ICON_SLOT,
+  MOBILE_HEADER_ICON_SLOT,
+} from './MobileHeaderIconButton';
 
-/** Matches MUI `Button` `size="large"` height so the control lines up with page actions. */
-export const MOBILE_BACK_ICON_SLOT = '2.625rem'; // 42px
+export { MOBILE_BACK_ICON_SLOT, MOBILE_HEADER_ICON_SLOT };
 
 type MobileBackIconButtonProps = {
   label: string;
@@ -15,20 +17,8 @@ type MobileBackIconButtonProps = {
  */
 export default function MobileBackIconButton({ label, onClick }: MobileBackIconButtonProps) {
   return (
-    <Button
-      variant="outlined"
-      size="large"
-      aria-label={label}
-      onClick={onClick}
-      sx={{
-        flexShrink: 0,
-        minWidth: MOBILE_BACK_ICON_SLOT,
-        width: MOBILE_BACK_ICON_SLOT,
-        height: MOBILE_BACK_ICON_SLOT,
-        p: 0,
-      }}
-    >
+    <MobileHeaderIconButton label={label} onClick={onClick}>
       <ArrowBackIcon />
-    </Button>
+    </MobileHeaderIconButton>
   );
 }

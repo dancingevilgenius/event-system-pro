@@ -1,6 +1,9 @@
 /** Shared max width for messages, buttons, fields, and dropdowns. */
 export const CONTENT_MAX_WIDTH = 360;
 
+/** Max width for page Containers on large desktop viewports. */
+export const DESKTOP_CONTAINER_MAX_WIDTH = 1000;
+
 /** Min viewport width for full-width panel layout (pairs with useIsMobileDevice 768px). */
 export const MOBILE_LAYOUT_MIN_WIDTH = 769;
 

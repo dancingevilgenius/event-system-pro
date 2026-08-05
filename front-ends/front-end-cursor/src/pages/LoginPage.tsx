@@ -74,7 +74,6 @@ export default function LoginPage() {
           title="Event System Pro"
           backTo="/home-page"
           backLabel="Back to Home"
-          backVariant="text"
         />
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
           Sign in to your account or register as a new user.

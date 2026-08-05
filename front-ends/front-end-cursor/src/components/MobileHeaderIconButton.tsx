@@ -14,8 +14,8 @@ type MobileHeaderIconButtonProps = {
 };
 
 /**
- * Square outlined icon control for phone header rows (back, account, etc.).
- * Sized to match `size="large"` action buttons.
+ * Square outlined icon control for page header rows (back, account, etc.).
+ * Sized to match `size="large"` action buttons on all screen sizes.
  */
 export default function MobileHeaderIconButton({
   label,

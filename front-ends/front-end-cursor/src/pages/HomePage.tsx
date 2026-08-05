@@ -1,5 +1,5 @@
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import { Box, Button, Container, Grid, Paper, Stack, Typography } from '@mui/material';
+import { Box, Button, Container, Grid, Paper, Stack, Tooltip, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { logout as logoutApi } from '../api/postgrest';
@@ -45,32 +45,32 @@ export default function HomePage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 }, textAlign: 'center' }}>
-        {showXsLayout ? (
-          <Box
-            sx={{
-              ...centeredContentStackSx,
-              display: 'flex',
-              flexDirection: 'row',
-              mb: 3,
-            }}
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            mb: 3,
+            width: '100%',
+            ...(showXsLayout ? centeredContentStackSx : { mx: 0 }),
+          }}
+        >
+          <Box sx={{ width: MOBILE_HEADER_ICON_SLOT, flexShrink: 0 }} aria-hidden />
+          <Typography
+            variant="h4"
+            component="h1"
+            sx={{ flex: 1, textAlign: 'center', minWidth: 0 }}
           >
-            <Box sx={{ width: MOBILE_HEADER_ICON_SLOT, flexShrink: 0 }} aria-hidden />
-            <Typography
-              variant="h4"
-              component="h1"
-              sx={{ flex: 1, textAlign: 'center', minWidth: 0 }}
-            >
-              Home
-            </Typography>
-            <MobileHeaderIconButton label="Account" onClick={() => navigate('/account')}>
-              <ManageAccountsIcon />
-            </MobileHeaderIconButton>
-          </Box>
-        ) : (
-          <Typography variant="h4" component="h1" gutterBottom>
             Home
           </Typography>
-        )}
+          <Tooltip title="Account settings">
+            <span>
+              <MobileHeaderIconButton label="Account settings" onClick={() => navigate('/account')}>
+                <ManageAccountsIcon />
+              </MobileHeaderIconButton>
+            </span>
+          </Tooltip>
+        </Box>
 
         {showXsLayout ? (
           <Stack spacing={2} sx={{ my: 3, ...centeredContentStackSx }}>
@@ -108,7 +108,14 @@ export default function HomePage() {
           </Grid>
         )}
 
-        <Stack spacing={2} sx={showXsLayout ? centeredContentStackSx : { maxWidth: 480, mx: 'auto', width: '100%' }}>
+        <Stack
+          spacing={2}
+          sx={
+            showXsLayout
+              ? centeredContentStackSx
+              : { maxWidth: 480, mx: 'auto', width: '100%' }
+          }
+        >
           <Button variant="outlined" fullWidth disabled={busy} onClick={handleLogOff}>
             Log Off
           </Button>

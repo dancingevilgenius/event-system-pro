@@ -363,7 +363,6 @@ export default function ForgotPasswordPage() {
           title="Forgot Password"
           backTo="/"
           backLabel="Back to Login"
-          backVariant="text"
         />
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
           Reset your password in four steps.

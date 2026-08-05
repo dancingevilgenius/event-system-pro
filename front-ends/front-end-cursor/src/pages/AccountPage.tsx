@@ -36,7 +36,6 @@ export default function AccountPage() {
           title="Account"
           backTo="/home"
           backLabel="Back to Home"
-          backVariant="text"
         />
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
           Signed in as <strong>{session.username}</strong>

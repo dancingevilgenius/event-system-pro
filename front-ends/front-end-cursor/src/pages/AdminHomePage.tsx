@@ -201,6 +201,46 @@ export default function AdminHomePage() {
                 {button.label}
               </Button>
             ))}
+            <Button
+              variant="outlined"
+              size="large"
+              fullWidth
+              disabled={generatingAttendees}
+              onClick={() => void handleGenerateAttendees()}
+            >
+              {generatingAttendees ? 'Generating Attendees…' : 'Generate Attendees'}
+            </Button>
+            <Button
+              variant="outlined"
+              size="large"
+              fullWidth
+              disabled={startingChurn}
+              onClick={() => void handleStartRobotRiotChurn()}
+            >
+              {startingChurn
+                ? 'Starting Robot Riot Rotation…'
+                : 'Rotate Robot Riot Attendees (10 min)'}
+            </Button>
+            <Button
+              variant="outlined"
+              size="large"
+              fullWidth
+              disabled={refreshingWsdc}
+              onClick={() => void handleRefreshWsdcAttendees()}
+            >
+              {refreshingWsdc ? 'Refreshing WSDC Info…' : 'Refresh WSDC Attendee Info'}
+            </Button>
+            <Button variant="outlined" size="large" fullWidth onClick={handleTestMessages}>
+              Test Message Boxes
+            </Button>
+            <Button
+              variant="outlined"
+              size="large"
+              fullWidth
+              onClick={() => setBuildInfoOpen(true)}
+            >
+              Build Info
+            </Button>
           </Stack>
         ) : (
           <Grid container spacing={2} sx={{ my: 3 }}>
@@ -216,43 +256,58 @@ export default function AdminHomePage() {
                 </Button>
               </Grid>
             ))}
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+              <Button
+                variant="outlined"
+                size="large"
+                fullWidth
+                disabled={generatingAttendees}
+                onClick={() => void handleGenerateAttendees()}
+              >
+                {generatingAttendees ? 'Generating Attendees…' : 'Generate Attendees'}
+              </Button>
+            </Grid>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+              <Button
+                variant="outlined"
+                size="large"
+                fullWidth
+                disabled={startingChurn}
+                onClick={() => void handleStartRobotRiotChurn()}
+              >
+                {startingChurn
+                  ? 'Starting Robot Riot Rotation…'
+                  : 'Rotate Robot Riot Attendees (10 min)'}
+              </Button>
+            </Grid>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+              <Button
+                variant="outlined"
+                size="large"
+                fullWidth
+                disabled={refreshingWsdc}
+                onClick={() => void handleRefreshWsdcAttendees()}
+              >
+                {refreshingWsdc ? 'Refreshing WSDC Info…' : 'Refresh WSDC Attendee Info'}
+              </Button>
+            </Grid>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+              <Button variant="outlined" size="large" fullWidth onClick={handleTestMessages}>
+                Test Message Boxes
+              </Button>
+            </Grid>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+              <Button
+                variant="outlined"
+                size="large"
+                fullWidth
+                onClick={() => setBuildInfoOpen(true)}
+              >
+                Build Info
+              </Button>
+            </Grid>
           </Grid>
         )}
-
-        <Stack spacing={2} sx={showXsLayout ? centeredContentStackSx : undefined}>
-          <Button
-            variant="outlined"
-            fullWidth
-            disabled={generatingAttendees}
-            onClick={() => void handleGenerateAttendees()}
-          >
-            {generatingAttendees ? 'Generating Attendees…' : 'Generate Attendees'}
-          </Button>
-          <Button
-            variant="outlined"
-            fullWidth
-            disabled={startingChurn}
-            onClick={() => void handleStartRobotRiotChurn()}
-          >
-            {startingChurn
-              ? 'Starting Robot Riot Rotation…'
-              : 'Rotate Robot Riot Attendees (10 min)'}
-          </Button>
-          <Button
-            variant="outlined"
-            fullWidth
-            disabled={refreshingWsdc}
-            onClick={() => void handleRefreshWsdcAttendees()}
-          >
-            {refreshingWsdc ? 'Refreshing WSDC Info…' : 'Refresh WSDC Attendee Info'}
-          </Button>
-          <Button variant="outlined" fullWidth onClick={handleTestMessages}>
-            Test Message Boxes
-          </Button>
-          <Button variant="outlined" fullWidth onClick={() => setBuildInfoOpen(true)}>
-            Build Info
-          </Button>
-        </Stack>
       </Paper>
 
       <BuildInfoDialog open={buildInfoOpen} onClose={() => setBuildInfoOpen(false)} />

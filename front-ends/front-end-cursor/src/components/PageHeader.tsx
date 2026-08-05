@@ -35,10 +35,10 @@ export default function PageHeader({
     return (
       <Box
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          mb: 3,
           ...centeredContentStackSx,
+          display: 'flex',
+          flexDirection: 'row',
+          mb: 3,
         }}
       >
         <MobileBackIconButton label={backLabel} onClick={() => navigate(backTo)} />

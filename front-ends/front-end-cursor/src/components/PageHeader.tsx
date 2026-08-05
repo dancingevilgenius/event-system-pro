@@ -1,9 +1,12 @@
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import { Box, Typography, type ButtonProps, type SxProps, type Theme } from '@mui/material';
 import type { ReactNode } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { centeredContentStackSx } from '../constants/layout';
+import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
-import MobileBackIconButton, { MOBILE_BACK_ICON_SLOT } from './MobileBackIconButton';
+import MobileBackIconButton from './MobileBackIconButton';
+import MobileHeaderIconButton, { MOBILE_HEADER_ICON_SLOT } from './MobileHeaderIconButton';
 import PageBackButton from './PageBackButton';
 
 type PageHeaderProps = {
@@ -17,8 +20,8 @@ type PageHeaderProps = {
 
 /**
  * Page title with back navigation.
- * On phone-sized layouts: left-facing arrow on the same line as the title,
- * left-aligned with the centered action-button column.
+ * On phone-sized layouts: back arrow, title, and (when signed in) account icon
+ * on one row, aligned to the centered action-button column.
  * On larger layouts: title, then a full-width text back button underneath.
  */
 export default function PageHeader({
@@ -29,7 +32,11 @@ export default function PageHeader({
   titleSx,
 }: PageHeaderProps) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { session } = useAuth();
   const { showXsLayout } = useLayoutTier();
+
+  const showAccountIcon = Boolean(session) && location.pathname !== '/account';
 
   if (showXsLayout) {
     return (
@@ -52,8 +59,13 @@ export default function PageHeader({
         >
           {title}
         </Typography>
-        {/* Balance the leading icon so the title stays visually centered. */}
-        <Box sx={{ width: MOBILE_BACK_ICON_SLOT, flexShrink: 0 }} aria-hidden />
+        {showAccountIcon ? (
+          <MobileHeaderIconButton label="Account" onClick={() => navigate('/account')}>
+            <ManageAccountsIcon />
+          </MobileHeaderIconButton>
+        ) : (
+          <Box sx={{ width: MOBILE_HEADER_ICON_SLOT, flexShrink: 0 }} aria-hidden />
+        )}
       </Box>
     );
   }

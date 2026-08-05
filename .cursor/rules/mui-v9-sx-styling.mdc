@@ -43,12 +43,12 @@ All **new pages** and substantial UI work in `front-ends/front-end-cursor` must 
 - **xs** (`0px`) — **360 × 780** CSS px (portrait) — Samsung Galaxy S24
 - **md** (`768px`) — **820 × 1180** CSS px (portrait) — iPad (mini 768px; Air / 10th gen 820px)
 - **lg** (`1024px`) — **1024 × 1366** CSS px (portrait) — iPad Pro 12.9″ / 13″ M4
-- **xl** (`1280px`) — **1920 × 1080** CSS px (browser viewport) — 17″ laptop and desktop monitor
+- **xl** (`1280px`) — **1366 × 768** CSS px (browser viewport) — older 15″ laptop panel (see `DESKTOP_REFERENCE_VIEWPORT_*` in `constants/layout.ts`)
 
 - **xs** is the default: stack columns, full-width controls, compact padding.
 - **md** adds tablet layouts (2-column grids, row toolbars, wider dialogs).
 - **lg** uses large-tablet / small-desktop density (more columns, side panels).
-- **xl** uses full desktop width (wide tables, multi-column admin dashboards, `Container maxWidth="lg"` or `"xl"` where appropriate).
+- **xl** uses full desktop width for a 1366×768 panel (wide tables, multi-column admin dashboards, `Container` capped at `DESKTOP_CONTAINER_MAX_WIDTH`).
 
 Portrait widths above are **CSS viewport** sizes (`window.innerWidth` / `innerHeight`), not physical panel resolution.
 
@@ -95,6 +95,6 @@ MUI’s default **`sm` (600px)** is not a primary tier for this project. On **ne
 1. **360px** (xs): no horizontal scroll; primary actions reachable; text not clipped.
 2. **820px** (md): tablet layout (e.g. 2-column grids, toolbar rows) looks intentional.
 3. **1024px** (lg): iPad Pro layout uses available width (tables, filters, side content).
-4. **1920px** (xl): desktop layout does not over-stretch; use `Container` max width or sensible column caps.
+4. **1366 × 768** (xl): desktop layout fits an older 15″ panel; no over-stretch; use `Container` max width (`DESKTOP_CONTAINER_MAX_WIDTH`) or sensible column caps; avoid relying on taller-than-768 content above the fold.
 
 Resize the browser or use devtools device modes at the viewports above.

@@ -46,8 +46,13 @@ export default function PageBackButton({
           ...(stackSx ? (Array.isArray(stackSx) ? stackSx : [stackSx]) : []),
         ]}
       >
-        <IconButton aria-label={label} onClick={() => navigate(to)} edge="start">
-          <ArrowCircleLeftIcon />
+        <IconButton
+          aria-label={label}
+          onClick={() => navigate(to)}
+          edge="start"
+          sx={{ width: 48, height: 48 }}
+        >
+          <ArrowCircleLeftIcon sx={{ fontSize: '2rem' }} />
         </IconButton>
       </Stack>
     );

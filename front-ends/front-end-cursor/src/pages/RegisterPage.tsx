@@ -250,7 +250,6 @@ export default function RegisterPage() {
           title="Register"
           backTo="/"
           backLabel="Back to Login"
-          backVariant="text"
         />
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
           Provide at least two recovery options: email, phone, or secret questions.

@@ -114,7 +114,6 @@ export default function SecretQuestionsPage() {
           title="Password Recovery"
           backTo="/account"
           backLabel="Back to Account"
-          backVariant="text"
         />
 
         <Stack spacing={2} sx={formStackSx}>

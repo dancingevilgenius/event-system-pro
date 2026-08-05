@@ -12,8 +12,8 @@ type MobileBackIconButtonProps = {
 };
 
 /**
- * Phone-sized back control: left arrow on a rectangular outlined background.
- * Sized to match `size="large"` action buttons and left-aligned with that column.
+ * Back control: left arrow on a rectangular outlined background.
+ * Sized to match `size="large"` action buttons on all screen sizes.
  */
 export default function MobileBackIconButton({ label, onClick }: MobileBackIconButtonProps) {
   return (

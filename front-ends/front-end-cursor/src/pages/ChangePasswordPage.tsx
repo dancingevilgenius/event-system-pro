@@ -84,7 +84,6 @@ export default function ChangePasswordPage() {
           title="Change Password"
           backTo="/account"
           backLabel="Back to Account"
-          backVariant="text"
         />
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
           Signed in as <strong>{session.username}</strong>

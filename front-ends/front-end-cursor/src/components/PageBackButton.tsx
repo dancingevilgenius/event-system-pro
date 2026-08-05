@@ -1,7 +1,5 @@
-import ArrowCircleLeftIcon from '@mui/icons-material/ArrowCircleLeft';
 import {
   Button,
-  IconButton,
   Stack,
   type ButtonProps,
   type SxProps,
@@ -9,6 +7,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useLayoutTier } from '../hooks/useLayoutTier';
+import MobileBackIconButton from './MobileBackIconButton';
 
 type PageBackButtonProps = {
   to: string;
@@ -22,7 +21,7 @@ type PageBackButtonProps = {
 
 /**
  * Standalone back control (e.g. Judging, which has no page title).
- * On phone-sized layouts: icon-only left arrow.
+ * On phone-sized layouts: icon-only left arrow on a rectangular background.
  * On larger layouts: full-width labeled button.
  * Prefer `PageHeader` when a page title is present so the arrow shares the title row.
  */
@@ -46,14 +45,7 @@ export default function PageBackButton({
           ...(stackSx ? (Array.isArray(stackSx) ? stackSx : [stackSx]) : []),
         ]}
       >
-        <IconButton
-          aria-label={label}
-          onClick={() => navigate(to)}
-          edge="start"
-          sx={{ width: 48, height: 48 }}
-        >
-          <ArrowCircleLeftIcon sx={{ fontSize: '2rem' }} />
-        </IconButton>
+        <MobileBackIconButton label={label} onClick={() => navigate(to)} />
       </Stack>
     );
   }

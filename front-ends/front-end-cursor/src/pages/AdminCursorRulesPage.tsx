@@ -18,7 +18,7 @@ import {
   fetchUserCursorRulesStarred,
   setUserCursorRulesStarred,
 } from '../api/postgrest';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
@@ -155,10 +155,7 @@ export default function AdminCursorRulesPage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
-          Cursor Rules
-        </Typography>
-        <PageBackButton to="/adminhome" label="Back to Admin" />
+        <PageHeader title="Cursor Rules" backTo="/adminhome" backLabel="Back to Admin" />
 
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
           Project rules from <code>.cursor/rules</code>. Star important rules to pin them to the top.

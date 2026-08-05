@@ -25,7 +25,7 @@ import {
 import AddEventGroupDialog from '../components/AddEventGroupDialog';
 import AppTextField from '../components/AppTextField';
 import AuditTrailCard from '../components/AuditTrailCard';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import { EVENT_HOME_PATH, eventGroupDetailPath } from '../constants/eventRoutes';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
@@ -179,10 +179,7 @@ export default function AdminEventsPage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          Event Groups
-        </Typography>
-        <PageBackButton to={EVENT_HOME_PATH} label="Back to Event Home" />
+        <PageHeader title="Event Groups" backTo={EVENT_HOME_PATH} backLabel="Back to Event Home" />
         <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 2 }}>
           Event groups ({filteredRows.length}
           {normalizedNameFilter !== '' && filteredRows.length !== rows.length

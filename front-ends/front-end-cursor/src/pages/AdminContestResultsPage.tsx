@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { useMemo } from 'react';
 import AuditTrailCard from '../components/AuditTrailCard';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import { buildMockContestResults } from '../data/mockContestResults';
 import type { MockContestEntry } from '../data/mockContestEntries';
 import { formatCompetitorPairNames } from '../data/legionNames';
@@ -95,10 +95,11 @@ export default function AdminContestResultsPage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
-          Relative Placement
-        </Typography>
-        <PageBackButton to="/admin/contests" label="Back to Contests" />
+        <PageHeader
+          title="Relative Placement"
+          backTo="/admin/contests"
+          backLabel="Back to Contests"
+        />
         <Typography
           variant="body2"
           color="text.secondary"

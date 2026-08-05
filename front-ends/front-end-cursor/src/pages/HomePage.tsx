@@ -1,4 +1,4 @@
-import { Button, Container, Grid, Paper, Stack } from '@mui/material';
+import { Button, Container, Grid, Paper, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { logout as logoutApi } from '../api/postgrest';
@@ -41,8 +41,12 @@ export default function HomePage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 }, textAlign: 'center' }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Home
+        </Typography>
+
         {showXsLayout ? (
-          <Stack spacing={2} sx={{ mb: 3, ...centeredContentStackSx }}>
+          <Stack spacing={2} sx={{ my: 3, ...centeredContentStackSx }}>
             <Button variant="contained" size="large" fullWidth onClick={() => navigate('/staff')}>
               Staff
             </Button>
@@ -59,7 +63,7 @@ export default function HomePage() {
             </Button>
           </Stack>
         ) : (
-          <Grid container spacing={2} sx={{ mb: 3 }}>
+          <Grid container spacing={2} sx={{ my: 3 }}>
             <Grid size={{ xs: 12, md: 6 }}>
               <Button variant="contained" size="large" fullWidth onClick={() => navigate('/staff')}>
                 Staff

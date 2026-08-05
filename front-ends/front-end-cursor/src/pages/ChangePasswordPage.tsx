@@ -9,7 +9,7 @@ import {
 import { type FormEvent, useEffect, useState } from 'react';
 import { changePassword } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
@@ -80,10 +80,12 @@ export default function ChangePasswordPage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
-          Change Password
-        </Typography>
-        <PageBackButton to="/account" label="Back to Account" variant="text" />
+        <PageHeader
+          title="Change Password"
+          backTo="/account"
+          backLabel="Back to Account"
+          backVariant="text"
+        />
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
           Signed in as <strong>{session.username}</strong>
         </Typography>

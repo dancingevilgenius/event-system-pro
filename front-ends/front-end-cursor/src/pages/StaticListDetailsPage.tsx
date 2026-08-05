@@ -28,7 +28,7 @@ import {
 } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
 import AuditTrailCard from '../components/AuditTrailCard';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
@@ -392,10 +392,11 @@ export default function StaticListDetailsPage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          {staticListDisplayTitle(record?.listCode || decodedListCode || 'Static List')}
-        </Typography>
-        <PageBackButton to="/static-lists" label="Back to Static Lists" />
+        <PageHeader
+          title={staticListDisplayTitle(record?.listCode || decodedListCode || 'Static List')}
+          backTo="/static-lists"
+          backLabel="Back to Static Lists"
+        />
 
         {record?.shortDesc && (
           <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 1 }}>

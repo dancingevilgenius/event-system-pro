@@ -11,7 +11,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchEventById, fetchEventGroupByCode } from '../api/postgrest';
 import AddEventButton from '../components/AddEventButton';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import { centeredContentStackSx } from '../constants/layout';
 import { eventDetailPath, eventGroupDetailPath } from '../constants/eventRoutes';
 import { formatEventMonthYear } from '../lib/eventDisplay';
@@ -83,10 +83,11 @@ export default function AdminEventPage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 }, textAlign: 'center' }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          {groupFullName || decodedGroupCode}
-        </Typography>
-        <PageBackButton to={groupBasePath} label={`Back to ${groupFullName || 'Group'}`} />
+        <PageHeader
+          title={groupFullName || decodedGroupCode}
+          backTo={groupBasePath}
+          backLabel={`Back to ${groupFullName || 'Group'}`}
+        />
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
           {eventLabel || 'Event'}
         </Typography>

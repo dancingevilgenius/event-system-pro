@@ -27,7 +27,7 @@ import {
   type ScheduledTaskRow,
 } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 import { formatReadableDateTime } from '../utils/auditTimestamps';
@@ -748,10 +748,7 @@ export default function AdminScheduledTasksPage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          Scheduled Tasks
-        </Typography>
-        <PageBackButton to="/adminhome" label="Back to Admin" />
+        <PageHeader title="Scheduled Tasks" backTo="/adminhome" backLabel="Back to Admin" />
         <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 2 }}>
           {tasks.length} task{tasks.length === 1 ? '' : 's'}
         </Typography>

@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { fetchEventById, fetchEventGroupByCode } from '../api/postgrest';
 import SwingDanceContestSet from '../components/SwingDanceContestSet';
 import AddEventButton from '../components/AddEventButton';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import { centeredContentStackSx } from '../constants/layout';
 import { eventDetailPath } from '../constants/eventRoutes';
 import { formatEventMonthYear } from '../lib/eventDisplay';
@@ -68,10 +68,7 @@ export default function AdminEventContestsPage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
-          Contests
-        </Typography>
-        <PageBackButton to={eventBasePath} label="Back to Event" />
+        <PageHeader title="Contests" backTo={eventBasePath} backLabel="Back to Event" />
         <Typography variant="body1" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
           {groupFullName || decodedGroupCode}
           {eventLabel ? ` — ${eventLabel}` : ''}

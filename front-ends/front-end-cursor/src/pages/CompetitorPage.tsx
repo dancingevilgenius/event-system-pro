@@ -2,7 +2,7 @@ import { Button, Container, Divider, Paper, Stack, Typography } from '@mui/mater
 import { useCallback, useEffect, useState } from 'react';
 import { fetchUserWsdcId, setUserWsdcId } from '../api/postgrest';
 import { buildStoredWsdcInfo, type WsdcDancerProfile } from '../api/wsdcRegistry';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import WsdcFindDancerSection from '../components/WsdcFindDancerSection';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
@@ -74,10 +74,7 @@ export default function CompetitorPage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
-          Competitor
-        </Typography>
-        <PageBackButton to="/home" label="Back to Home" />
+        <PageHeader title="Competitor" backTo="/home" backLabel="Back to Home" />
 
         {savedWsdcId && (
           <Typography variant="body2" sx={{ mb: 2, textAlign: 'center' }}>

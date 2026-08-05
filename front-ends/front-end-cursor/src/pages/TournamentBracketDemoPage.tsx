@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { fetchDemoBracketCompetitors } from '../api/postgrest';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import TournamentBracketViewDialog from '../components/TournamentBracketViewDialog';
 import {
   buildInitialBracket,
@@ -175,10 +175,11 @@ export default function TournamentBracketDemoPage() {
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       <Paper elevation={3} sx={{ p: { xs: 2, sm: 4 } }}>
-        <Typography variant="h4" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
-          Tournament Bracket Demo
-        </Typography>
-        <PageBackButton to="/demo" label="Back to Demo" />
+        <PageHeader
+          title="Tournament Bracket Demo"
+          backTo="/demo"
+          backLabel="Back to Demo"
+        />
         <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', mb: 3 }}>
           Single elimination · 16 random demo users · pick a winner for each match
         </Typography>

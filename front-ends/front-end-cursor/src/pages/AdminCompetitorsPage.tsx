@@ -16,7 +16,7 @@ import {
 import { useCallback, useEffect, useState } from 'react';
 import { fetchUsersPage, type UserFilters, type UserListRow, type UserSort } from '../api/postgrest';
 import AuditTrailCard from '../components/AuditTrailCard';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import UserFilterSortDialog, {
   DEFAULT_USER_SORT,
   EMPTY_USER_FILTERS,
@@ -134,10 +134,7 @@ export default function AdminCompetitorsPage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          Competitors
-        </Typography>
-        <PageBackButton to="/adminhome" label="Back to Admin" />
+        <PageHeader title="Competitors" backTo="/adminhome" backLabel="Back to Admin" />
         <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 2 }}>
           All users ({totalCount})
         </Typography>

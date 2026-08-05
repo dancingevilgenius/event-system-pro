@@ -31,7 +31,7 @@ import {
 } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
 import AuditTrailCard from '../components/AuditTrailCard';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 import { formatReadableDateTime } from '../utils/auditTimestamps';
@@ -367,10 +367,7 @@ export default function AdminSetEventJudgesPage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          Set Event Judges
-        </Typography>
-        <PageBackButton to="/adminhome" label="Back to Admin" />
+        <PageHeader title="Set Event Judges" backTo="/adminhome" backLabel="Back to Admin" />
         <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 3 }}>
           Choose an event group and event, then search users by name to build the judging pool.
         </Typography>

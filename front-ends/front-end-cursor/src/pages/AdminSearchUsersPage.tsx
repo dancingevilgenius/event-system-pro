@@ -17,7 +17,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { fetchUsersPage, type UserListRow } from '../api/postgrest';
 import AuditTrailCard from '../components/AuditTrailCard';
 import EditUserDialog from '../components/EditUserDialog';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import UserAdvancedSearchDialog, {
   EMPTY_ADVANCED_USER_FILTERS,
   type UserAdvancedSearchFilters,
@@ -159,10 +159,7 @@ export default function AdminSearchUsersPage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          Search Users
-        </Typography>
-        <PageBackButton to="/adminhome" label="Back to Admin" />
+        <PageHeader title="Search Users" backTo="/adminhome" backLabel="Back to Admin" />
         <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 2 }}>
           All users ({totalCount})
         </Typography>

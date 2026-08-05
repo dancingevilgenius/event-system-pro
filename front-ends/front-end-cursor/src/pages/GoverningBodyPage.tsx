@@ -20,7 +20,7 @@ import {
 } from '../api/postgrest';
 import AuditTrailCard from '../components/AuditTrailCard';
 import GoverningBodyMoreDialog from '../components/GoverningBodyMoreDialog';
-import PageBackButton from '../components/PageBackButton';
+import PageHeader from '../components/PageHeader';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 
@@ -115,10 +115,7 @@ export default function GoverningBodyPage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          Governing Bodies
-        </Typography>
-        <PageBackButton to="/adminhome" label="Back to Admin" />
+        <PageHeader title="Governing Bodies" backTo="/adminhome" backLabel="Back to Admin" />
 
         {loading && (
           <Stack sx={{ py: 6, alignItems: 'center' }}>

@@ -1,16 +1,30 @@
-import { CircularProgress, Container, Paper, Stack, Typography } from '@mui/material';
+import {
+  Button,
+  CircularProgress,
+  Container,
+  Grid,
+  Paper,
+  Stack,
+  Typography,
+} from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { fetchEventById, fetchEventGroupByCode } from '../api/postgrest';
-import SwingDanceContestSet from '../components/SwingDanceContestSet';
+import { useNavigate, useParams } from 'react-router-dom';
+import {
+  fetchContestsForEvent,
+  fetchEventById,
+  fetchEventGroupByCode,
+  type ContestListRow,
+} from '../api/postgrest';
 import AddEventButton from '../components/AddEventButton';
 import PageHeader from '../components/PageHeader';
+import SwingDanceContestSet from '../components/SwingDanceContestSet';
 import { centeredContentStackSx } from '../constants/layout';
-import { eventDetailPath } from '../constants/eventRoutes';
+import { eventContestPath, eventDetailPath } from '../constants/eventRoutes';
 import { formatEventMonthYear } from '../lib/eventDisplay';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 
 export default function AdminEventContestsPage() {
+  const navigate = useNavigate();
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const { eventGroupCode = '', eventId = '' } = useParams<{
     eventGroupCode: string;
@@ -21,6 +35,8 @@ export default function AdminEventContestsPage() {
 
   const [groupFullName, setGroupFullName] = useState('');
   const [eventLabel, setEventLabel] = useState('');
+  const [eventCode, setEventCode] = useState('');
+  const [contests, setContests] = useState<ContestListRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,9 +53,10 @@ export default function AdminEventContestsPage() {
     setError(null);
 
     try {
-      const [group, event] = await Promise.all([
+      const [group, event, contestRows] = await Promise.all([
         fetchEventGroupByCode(decodedGroupCode),
         fetchEventById(parsedEventId),
+        fetchContestsForEvent(parsedEventId),
       ]);
 
       if (!group) {
@@ -54,6 +71,8 @@ export default function AdminEventContestsPage() {
 
       setGroupFullName(group.fullName);
       setEventLabel(formatEventMonthYear(event.startDate));
+      setEventCode(event.eventCode);
+      setContests(contestRows);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : 'Unable to load event.');
     } finally {
@@ -65,14 +84,45 @@ export default function AdminEventContestsPage() {
     void loadEvent();
   }, [loadEvent]);
 
+  const contestButtons = (
+    <Stack
+      spacing={2}
+      sx={
+        showXsLayout
+          ? { my: 3, ...centeredContentStackSx }
+          : { my: 3, maxWidth: 480, mx: 'auto', width: '100%' }
+      }
+    >
+      {contests.map((contest) => (
+        <Button
+          key={contest.contestId}
+          variant="contained"
+          size="large"
+          fullWidth
+          onClick={() =>
+            navigate(eventContestPath(decodedGroupCode, parsedEventId, contest.contestId))
+          }
+        >
+          {contest.name}
+          {contest.participantCount > 0 ? ` (${contest.participantCount})` : ''}
+        </Button>
+      ))}
+    </Stack>
+  );
+
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
         <PageHeader title="Contests" backTo={eventBasePath} backLabel="Back to Event" />
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 1, textAlign: 'center' }}>
           {groupFullName || decodedGroupCode}
           {eventLabel ? ` — ${eventLabel}` : ''}
         </Typography>
+        {eventCode ? (
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3, textAlign: 'center' }}>
+            {eventCode}
+          </Typography>
+        ) : null}
 
         {loading && (
           <Stack sx={{ py: 6, alignItems: 'center' }}>
@@ -86,7 +136,33 @@ export default function AdminEventContestsPage() {
           </Typography>
         )}
 
-        {!loading && !error && (
+        {!loading && !error && contests.length > 0 && (
+          showXsLayout ? (
+            contestButtons
+          ) : (
+            <Grid container spacing={2} sx={{ my: 2, justifyContent: 'center' }}>
+              {contests.map((contest) => (
+                <Grid key={contest.contestId} size={{ xs: 12, md: 6, lg: 4 }}>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    fullWidth
+                    onClick={() =>
+                      navigate(
+                        eventContestPath(decodedGroupCode, parsedEventId, contest.contestId),
+                      )
+                    }
+                  >
+                    {contest.name}
+                    {contest.participantCount > 0 ? ` (${contest.participantCount})` : ''}
+                  </Button>
+                </Grid>
+              ))}
+            </Grid>
+          )
+        )}
+
+        {!loading && !error && contests.length === 0 && (
           <Stack sx={showXsLayout ? undefined : { width: '100%' }}>
             <SwingDanceContestSet />
           </Stack>

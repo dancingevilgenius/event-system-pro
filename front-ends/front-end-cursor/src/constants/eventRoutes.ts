@@ -13,3 +13,24 @@ export function eventGroupDetailPath(eventGroupCode: string): string {
 export function eventDetailPath(eventGroupCode: string, eventId: number): string {
   return `${eventGroupDetailPath(eventGroupCode)}/${eventId}`;
 }
+
+export function eventContestsPath(eventGroupCode: string, eventId: number): string {
+  return `${eventDetailPath(eventGroupCode, eventId)}/contests`;
+}
+
+export function eventContestPath(
+  eventGroupCode: string,
+  eventId: number,
+  contestId: number,
+): string {
+  return `${eventContestsPath(eventGroupCode, eventId)}/${contestId}`;
+}
+
+export function eventContestStagePath(
+  eventGroupCode: string,
+  eventId: number,
+  contestId: number,
+  stage: string,
+): string {
+  return `${eventContestPath(eventGroupCode, eventId, contestId)}/stages/${encodeURIComponent(stage)}`;
+}

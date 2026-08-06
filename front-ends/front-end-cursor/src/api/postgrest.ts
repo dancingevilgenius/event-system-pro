@@ -1,5 +1,9 @@
 import { loadSession, type AppRole } from '../lib/session';
 import {
+  parseContestStageBracketJson,
+  type ContestStageBracketJson,
+} from '../lib/contestStageBrackets';
+import {
   parseContestStagePoolsJson,
   type ContestStagePoolsJson,
 } from '../lib/contestStagePools';
@@ -2400,6 +2404,90 @@ export async function persistContestStagePool(
   moreJson: Record<string, unknown> | null = null,
 ): Promise<SaveContestStagePoolResult> {
   return saveContestStagePool(contestId, stage, poolsJson, moreJson);
+}
+
+export type ContestStageBracketRow = {
+  contestStageBracketId: number;
+  contestId: number;
+  stage: string;
+  bracket: ContestStageBracketJson;
+  moreJson: Record<string, unknown> | null;
+};
+
+export type GetContestStageBracketResult = {
+  ok: boolean;
+  message?: string;
+  contest_id?: number;
+  stage?: string;
+  found?: boolean;
+  contest_stage_bracket_id?: number;
+  bracket_json?: unknown;
+  more_json?: unknown;
+};
+
+export type SaveContestStageBracketResult = {
+  ok: boolean;
+  message: string;
+  contest_stage_bracket_id?: number;
+  contest_id?: number;
+  stage?: string;
+  bracket_json?: unknown;
+  more_json?: unknown;
+};
+
+export function getContestStageBracket(contestId: number, stage: string) {
+  return callRpc<GetContestStageBracketResult>('get_contest_stage_bracket', {
+    p_contest_id: contestId,
+    p_stage: stage,
+  });
+}
+
+export function saveContestStageBracket(
+  contestId: number,
+  stage: string,
+  bracketJson: ContestStageBracketJson,
+  moreJson: Record<string, unknown> | null = null,
+) {
+  return callRpc<SaveContestStageBracketResult>('save_contest_stage_bracket', {
+    p_contest_id: contestId,
+    p_stage: stage,
+    p_bracket_json: bracketJson,
+    p_more_json: moreJson,
+  });
+}
+
+export async function fetchContestStageBracket(
+  contestId: number,
+  stage: string,
+): Promise<ContestStageBracketRow | null> {
+  const result = await getContestStageBracket(contestId, stage);
+  if (!result.ok) {
+    throw new Error(result.message ?? 'Unable to load contest stage bracket.');
+  }
+
+  if (!result.found) {
+    return null;
+  }
+
+  return {
+    contestStageBracketId: Number(result.contest_stage_bracket_id),
+    contestId: Number(result.contest_id ?? contestId),
+    stage: typeof result.stage === 'string' ? result.stage : stage,
+    bracket: parseContestStageBracketJson(result.bracket_json),
+    moreJson:
+      result.more_json && typeof result.more_json === 'object' && !Array.isArray(result.more_json)
+        ? (result.more_json as Record<string, unknown>)
+        : null,
+  };
+}
+
+export async function persistContestStageBracket(
+  contestId: number,
+  stage: string,
+  bracketJson: ContestStageBracketJson,
+  moreJson: Record<string, unknown> | null = null,
+): Promise<SaveContestStageBracketResult> {
+  return saveContestStageBracket(contestId, stage, bracketJson, moreJson);
 }
 
 export type ScheduledTaskRow = {

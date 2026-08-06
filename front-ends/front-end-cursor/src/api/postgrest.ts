@@ -1,4 +1,8 @@
 import { loadSession, type AppRole } from '../lib/session';
+import {
+  parseContestStagePoolsJson,
+  type ContestStagePoolsJson,
+} from '../lib/contestStagePools';
 import { parseMerchandiseJson, type MerchandiseJson } from '../lib/merchandise';
 import {
   NOT_APPLICABLE_INT,
@@ -2312,6 +2316,90 @@ export function judgeSearchUserToPoolMember(user: JudgeSearchUser): EventJudgePo
     lastname: user.lastName,
     email: user.email,
   };
+}
+
+export type ContestStagePoolRow = {
+  contestStagePoolId: number;
+  contestId: number;
+  stage: string;
+  pools: ContestStagePoolsJson;
+  moreJson: Record<string, unknown> | null;
+};
+
+export type GetContestStagePoolResult = {
+  ok: boolean;
+  message?: string;
+  contest_id?: number;
+  stage?: string;
+  found?: boolean;
+  contest_stage_pool_id?: number;
+  pools_json?: unknown;
+  more_json?: unknown;
+};
+
+export type SaveContestStagePoolResult = {
+  ok: boolean;
+  message: string;
+  contest_stage_pool_id?: number;
+  contest_id?: number;
+  stage?: string;
+  pools_json?: unknown;
+  more_json?: unknown;
+};
+
+export function getContestStagePool(contestId: number, stage: string) {
+  return callRpc<GetContestStagePoolResult>('get_contest_stage_pool', {
+    p_contest_id: contestId,
+    p_stage: stage,
+  });
+}
+
+export function saveContestStagePool(
+  contestId: number,
+  stage: string,
+  poolsJson: ContestStagePoolsJson,
+  moreJson: Record<string, unknown> | null = null,
+) {
+  return callRpc<SaveContestStagePoolResult>('save_contest_stage_pool', {
+    p_contest_id: contestId,
+    p_stage: stage,
+    p_pools_json: poolsJson,
+    p_more_json: moreJson,
+  });
+}
+
+export async function fetchContestStagePool(
+  contestId: number,
+  stage: string,
+): Promise<ContestStagePoolRow | null> {
+  const result = await getContestStagePool(contestId, stage);
+  if (!result.ok) {
+    throw new Error(result.message ?? 'Unable to load contest stage pool.');
+  }
+
+  if (!result.found) {
+    return null;
+  }
+
+  return {
+    contestStagePoolId: Number(result.contest_stage_pool_id),
+    contestId: Number(result.contest_id ?? contestId),
+    stage: typeof result.stage === 'string' ? result.stage : stage,
+    pools: parseContestStagePoolsJson(result.pools_json),
+    moreJson:
+      result.more_json && typeof result.more_json === 'object' && !Array.isArray(result.more_json)
+        ? (result.more_json as Record<string, unknown>)
+        : null,
+  };
+}
+
+export async function persistContestStagePool(
+  contestId: number,
+  stage: string,
+  poolsJson: ContestStagePoolsJson,
+  moreJson: Record<string, unknown> | null = null,
+): Promise<SaveContestStagePoolResult> {
+  return saveContestStagePool(contestId, stage, poolsJson, moreJson);
 }
 
 export type ScheduledTaskRow = {

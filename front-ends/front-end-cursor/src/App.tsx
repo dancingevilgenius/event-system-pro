@@ -10,7 +10,9 @@ import AdminCursorRulesPage from './pages/AdminCursorRulesPage';
 import AdminContestsPage from './pages/AdminContestsPage';
 import AdminAddEventPage from './pages/AdminAddEventPage';
 import AdminEventAttendeesPage from './pages/AdminEventAttendeesPage';
+import AdminEventContestPage from './pages/AdminEventContestPage';
 import AdminEventContestsPage from './pages/AdminEventContestsPage';
+import AdminEventContestStagePage from './pages/AdminEventContestStagePage';
 import AdminEventGroupPage from './pages/AdminEventGroupPage';
 import AdminEventPage from './pages/AdminEventPage';
 import AdminEventSectionPlaceholderPage from './pages/AdminEventSectionPlaceholderPage';
@@ -247,6 +249,22 @@ export default function App() {
         element={
           <ProtectedRoute roles={['ADMIN']}>
             <AdminEventSectionPlaceholderPage title="Competitors" />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={`${EVENT_GROUPS_PATH}/:eventGroupCode/:eventId/contests/:contestId/stages/:stage`}
+        element={
+          <ProtectedRoute roles={['ADMIN']}>
+            <AdminEventContestStagePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={`${EVENT_GROUPS_PATH}/:eventGroupCode/:eventId/contests/:contestId`}
+        element={
+          <ProtectedRoute roles={['ADMIN']}>
+            <AdminEventContestPage />
           </ProtectedRoute>
         }
       />

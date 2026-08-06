@@ -2322,6 +2322,139 @@ export function judgeSearchUserToPoolMember(user: JudgeSearchUser): EventJudgePo
   };
 }
 
+export type ContestCompetitorRef = {
+  userId: number;
+  username: string;
+  displayName: string;
+  firstName: string;
+  lastName: string;
+};
+
+export type ContestListRow = {
+  contestId: number;
+  eventId: number;
+  eventTypeCode: string;
+  name: string;
+  divisionKey: string;
+  divisionLabel: string;
+  stages: string[];
+  participantCount: number;
+  competitors: ContestCompetitorRef[];
+};
+
+type ApiContestRecord = {
+  contest_id: number;
+  event_id: number;
+  event_type_code: string;
+  competitors_json: unknown;
+  results_json: unknown;
+  more_json: unknown;
+};
+
+function parseContestCompetitor(value: unknown): ContestCompetitorRef | null {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+  const row = value as Record<string, unknown>;
+  const userId = Number(row.user_id);
+  const username = typeof row.username === 'string' ? row.username.trim() : '';
+  if (!Number.isFinite(userId) || userId <= 0 || !username) {
+    return null;
+  }
+  const firstName = typeof row.first_name === 'string' ? row.first_name.trim() : '';
+  const lastName = typeof row.last_name === 'string' ? row.last_name.trim() : '';
+  const displayName =
+    typeof row['display-name'] === 'string' && row['display-name'].trim() !== ''
+      ? row['display-name'].trim()
+      : [firstName, lastName].filter(Boolean).join(' ') || username;
+
+  return {
+    userId,
+    username,
+    displayName,
+    firstName,
+    lastName,
+  };
+}
+
+function parseContestStages(resultsJson: unknown): string[] {
+  if (!resultsJson || typeof resultsJson !== 'object' || Array.isArray(resultsJson)) {
+    return [];
+  }
+  const stages = (resultsJson as { stages?: unknown }).stages;
+  if (!Array.isArray(stages)) {
+    return [];
+  }
+  return stages
+    .filter((stage): stage is string => typeof stage === 'string' && stage.trim() !== '')
+    .map((stage) => stage.trim());
+}
+
+function mapContestListRow(row: ApiContestRecord): ContestListRow {
+  const more =
+    row.more_json && typeof row.more_json === 'object' && !Array.isArray(row.more_json)
+      ? (row.more_json as Record<string, unknown>)
+      : {};
+  const competitors = Array.isArray(row.competitors_json)
+    ? row.competitors_json
+        .map(parseContestCompetitor)
+        .filter((entry): entry is ContestCompetitorRef => entry !== null)
+    : [];
+  const divisionKey = typeof more.division_key === 'string' ? more.division_key.trim() : '';
+  const divisionLabel =
+    typeof more.division_label === 'string' ? more.division_label.trim() : '';
+  const name =
+    typeof more.name === 'string' && more.name.trim() !== ''
+      ? more.name.trim()
+      : divisionLabel || `Contest ${row.contest_id}`;
+  const participantCount =
+    typeof more.participant_count === 'number' && Number.isFinite(more.participant_count)
+      ? more.participant_count
+      : competitors.length;
+
+  return {
+    contestId: row.contest_id,
+    eventId: row.event_id,
+    eventTypeCode: row.event_type_code,
+    name,
+    divisionKey,
+    divisionLabel,
+    stages: parseContestStages(row.results_json),
+    participantCount,
+    competitors,
+  };
+}
+
+export async function fetchContestsForEvent(eventId: number): Promise<ContestListRow[]> {
+  const params = new URLSearchParams({
+    select: 'contest_id,event_id,event_type_code,competitors_json,results_json,more_json',
+    order: 'contest_id.asc',
+  });
+  params.append('event_id', `eq.${eventId}`);
+
+  const rows = await fetchJson<ApiContestRecord[]>(
+    `${POSTGREST_URL}/contest?${params.toString()}`,
+    'Unable to load contests',
+  );
+
+  return rows.map(mapContestListRow);
+}
+
+export async function fetchContestById(contestId: number): Promise<ContestListRow | null> {
+  const params = new URLSearchParams({
+    select: 'contest_id,event_id,event_type_code,competitors_json,results_json,more_json',
+  });
+  params.append('contest_id', `eq.${contestId}`);
+
+  const rows = await fetchJson<ApiContestRecord[]>(
+    `${POSTGREST_URL}/contest?${params.toString()}`,
+    'Unable to load contest',
+  );
+
+  const row = rows[0];
+  return row ? mapContestListRow(row) : null;
+}
+
 export type ContestStagePoolRow = {
   contestStagePoolId: number;
   contestId: number;

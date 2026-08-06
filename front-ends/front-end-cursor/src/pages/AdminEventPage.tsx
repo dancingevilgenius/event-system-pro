@@ -35,6 +35,7 @@ export default function AdminEventPage() {
 
   const [groupFullName, setGroupFullName] = useState('');
   const [eventLabel, setEventLabel] = useState('');
+  const [eventCode, setEventCode] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -69,6 +70,7 @@ export default function AdminEventPage() {
 
       setGroupFullName(group.fullName);
       setEventLabel(formatEventMonthYear(event.startDate));
+      setEventCode(event.eventCode);
     } catch (loadError) {
       setError(loadError instanceof Error ? loadError.message : 'Unable to load event.');
     } finally {
@@ -88,9 +90,14 @@ export default function AdminEventPage() {
           backTo={groupBasePath}
           backLabel={`Back to ${groupFullName || 'Group'}`}
         />
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: eventCode ? 1 : 3 }}>
           {eventLabel || 'Event'}
         </Typography>
+        {eventCode ? (
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            {eventCode}
+          </Typography>
+        ) : null}
 
         {loading && (
           <Stack sx={{ py: 6, alignItems: 'center' }}>

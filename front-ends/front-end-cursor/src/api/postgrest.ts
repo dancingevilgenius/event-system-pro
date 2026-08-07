@@ -1,9 +1,11 @@
 import { loadSession, type AppRole } from '../lib/session';
 import {
+  createEmptyContestStageBracketJson,
   parseContestStageBracketJson,
   type ContestStageBracketJson,
 } from '../lib/contestStageBrackets';
 import {
+  createEmptyContestStagePoolsJson,
   parseContestStagePoolsJson,
   type ContestStagePoolsJson,
 } from '../lib/contestStagePools';
@@ -2458,6 +2460,112 @@ export async function fetchContestById(contestId: number): Promise<ContestListRo
 
   const row = rows[0];
   return row ? mapContestListRow(row) : null;
+}
+
+async function allocateNextContestId(): Promise<number> {
+  const params = new URLSearchParams({
+    select: 'contest_id',
+    order: 'contest_id.desc',
+    limit: '1',
+  });
+
+  const rows = await fetchJson<Array<{ contest_id: number }>>(
+    `${POSTGREST_URL}/contest?${params.toString()}`,
+    'Unable to allocate contest id',
+  );
+
+  const maxId = rows[0]?.contest_id;
+  if (typeof maxId === 'number' && Number.isFinite(maxId) && maxId > 0) {
+    return Math.trunc(maxId) + 1;
+  }
+  return 1;
+}
+
+export type CreateTslDivisionContestInput = {
+  eventId: number;
+  eventCode: string;
+  eventTypeCode: string;
+  divisionKey: string;
+  divisionLabel: string;
+};
+
+/** Insert a TSL division contest with empty pools + elimination stage documents. */
+export async function createTslDivisionContest(
+  input: CreateTslDivisionContestInput,
+): Promise<ContestListRow> {
+  const contestId = await allocateNextContestId();
+  const today = new Date().toISOString().slice(0, 10);
+  const actor = loadSession()?.username?.trim() || 'c-agent';
+
+  const response = await fetch(`${POSTGREST_URL}/contest`, {
+    method: 'POST',
+    headers: buildAuthHeaders({
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation',
+    }),
+    body: JSON.stringify({
+      contest_id: contestId,
+      event_id: input.eventId,
+      competitors_json: [],
+      results_json: { stages: ['pools', 'primary_elim'] },
+      more_json: {
+        demo: true,
+        division_key: input.divisionKey,
+        division_label: input.divisionLabel,
+        name: input.divisionLabel,
+        participant_count: 0,
+      },
+      event_type_code: input.eventTypeCode,
+      is_active: 1,
+      is_cancelled: 0,
+      original_start_time: today,
+      created_by: actor,
+      created_date: today,
+      modified_by: actor,
+      modified_date: today,
+    }),
+  });
+
+  if (!response.ok) {
+    let message = `Unable to create contest (${response.status})`;
+    try {
+      const errorBody = (await response.json()) as RpcErrorBody;
+      if (errorBody.message) {
+        message = errorBody.message;
+      }
+    } catch {
+      // Keep default message when body is not JSON.
+    }
+    throw new Error(message);
+  }
+
+  const rows = (await response.json()) as ApiContestRecord[];
+  const row = rows[0];
+  if (!row) {
+    throw new Error('Contest create returned no rows.');
+  }
+
+  const poolsJson = createEmptyContestStagePoolsJson({
+    stage: 'pools',
+    division_key: input.divisionKey,
+    division_label: input.divisionLabel,
+    event_code: input.eventCode,
+    contest_id: contestId,
+  });
+
+  const bracketJson = createEmptyContestStageBracketJson({
+    contestId,
+    eventCode: input.eventCode,
+    divisionKey: input.divisionKey,
+    divisionLabel: input.divisionLabel,
+    size: 8,
+    stage: 'primary_elim',
+  });
+
+  await persistContestStagePool(contestId, 'pools', poolsJson);
+  await persistContestStageBracket(contestId, 'primary_elim', bracketJson);
+
+  return mapContestListRow(row);
 }
 
 export type ContestStagePoolRow = {

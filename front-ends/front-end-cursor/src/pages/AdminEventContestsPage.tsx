@@ -18,9 +18,11 @@ import {
 import AddEventButton from '../components/AddEventButton';
 import PageHeader from '../components/PageHeader';
 import SwingDanceContestSet from '../components/SwingDanceContestSet';
+import TslContestDivisionsPanel from '../components/TslContestDivisionsPanel';
 import { centeredContentStackSx } from '../constants/layout';
 import { eventContestPath, eventDetailPath } from '../constants/eventRoutes';
 import { formatEventMonthYear } from '../lib/eventDisplay';
+import { isTslContestEvent } from '../lib/tslContests';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 
 function usesSwingContestBuilder(eventTypeCode: string | null): boolean {
@@ -50,6 +52,7 @@ export default function AdminEventContestsPage() {
   const [error, setError] = useState<string | null>(null);
 
   const eventBasePath = eventDetailPath(decodedGroupCode, parsedEventId);
+  const tslEvent = isTslContestEvent(decodedGroupCode, eventTypeCode);
 
   const loadEvent = useCallback(async () => {
     if (!decodedGroupCode || !Number.isFinite(parsedEventId)) {
@@ -120,7 +123,18 @@ export default function AdminEventContestsPage() {
           </Typography>
         )}
 
-        {!loading && !error && contests.length > 0 && showXsLayout && (
+        {!loading && !error && tslEvent && (
+          <TslContestDivisionsPanel
+            eventGroupCode={decodedGroupCode}
+            eventId={parsedEventId}
+            eventCode={eventCode}
+            eventTypeCode={eventTypeCode}
+            contests={contests}
+            onContestsChanged={loadEvent}
+          />
+        )}
+
+        {!loading && !error && !tslEvent && contests.length > 0 && showXsLayout && (
           <Stack spacing={2} sx={{ my: 3, ...centeredContentStackSx }}>
             {contests.map((contest) => (
               <Button
@@ -139,7 +153,7 @@ export default function AdminEventContestsPage() {
           </Stack>
         )}
 
-        {!loading && !error && contests.length > 0 && !showXsLayout && (
+        {!loading && !error && !tslEvent && contests.length > 0 && !showXsLayout && (
           <Grid container spacing={2} sx={{ my: 2, justifyContent: 'center' }}>
             {contests.map((contest) => (
               <Grid key={contest.contestId} size={{ xs: 12, md: 6, lg: 4 }}>
@@ -159,20 +173,25 @@ export default function AdminEventContestsPage() {
           </Grid>
         )}
 
-        {!loading && !error && contests.length === 0 && usesSwingContestBuilder(eventTypeCode) && (
-          <Stack sx={showXsLayout ? undefined : { width: '100%' }}>
-            <SwingDanceContestSet />
-          </Stack>
-        )}
+        {!loading &&
+          !error &&
+          !tslEvent &&
+          contests.length === 0 &&
+          usesSwingContestBuilder(eventTypeCode) && (
+            <Stack sx={showXsLayout ? undefined : { width: '100%' }}>
+              <SwingDanceContestSet />
+            </Stack>
+          )}
 
-        {!loading && !error && contests.length === 0 && !usesSwingContestBuilder(eventTypeCode) && (
-          <Typography variant="body2" color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>
-            No contests found for this event.
-            {decodedGroupCode === 'TSL_FICTIONAL_FRACAS'
-              ? ' Re-apply seed 019_tsl_fictional_fracas_refresh.sql (or redeploy with SEED_DEV_DATA) to load Standard, Womens, Masters, and Exotics.'
-              : null}
-          </Typography>
-        )}
+        {!loading &&
+          !error &&
+          !tslEvent &&
+          contests.length === 0 &&
+          !usesSwingContestBuilder(eventTypeCode) && (
+            <Typography variant="body2" color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>
+              No contests found for this event.
+            </Typography>
+          )}
 
         <Stack
           spacing={2}

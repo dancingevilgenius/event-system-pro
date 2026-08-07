@@ -23,6 +23,14 @@ import { eventContestPath, eventDetailPath } from '../constants/eventRoutes';
 import { formatEventMonthYear } from '../lib/eventDisplay';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 
+function usesSwingContestBuilder(eventTypeCode: string | null): boolean {
+  if (!eventTypeCode) {
+    return false;
+  }
+  const normalized = eventTypeCode.toUpperCase();
+  return normalized.includes('SWING') || normalized.includes('COUPLES');
+}
+
 export default function AdminEventContestsPage() {
   const navigate = useNavigate();
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
@@ -34,6 +42,7 @@ export default function AdminEventContestsPage() {
   const parsedEventId = Number.parseInt(eventId, 10);
 
   const [groupFullName, setGroupFullName] = useState('');
+  const [eventTypeCode, setEventTypeCode] = useState<string | null>(null);
   const [eventLabel, setEventLabel] = useState('');
   const [eventCode, setEventCode] = useState('');
   const [contests, setContests] = useState<ContestListRow[]>([]);
@@ -70,6 +79,7 @@ export default function AdminEventContestsPage() {
       }
 
       setGroupFullName(group.fullName);
+      setEventTypeCode(group.eventTypeCode ?? null);
       setEventLabel(formatEventMonthYear(event.startDate));
       setEventCode(event.eventCode);
       setContests(contestRows);
@@ -83,32 +93,6 @@ export default function AdminEventContestsPage() {
   useEffect(() => {
     void loadEvent();
   }, [loadEvent]);
-
-  const contestButtons = (
-    <Stack
-      spacing={2}
-      sx={
-        showXsLayout
-          ? { my: 3, ...centeredContentStackSx }
-          : { my: 3, maxWidth: 480, mx: 'auto', width: '100%' }
-      }
-    >
-      {contests.map((contest) => (
-        <Button
-          key={contest.contestId}
-          variant="contained"
-          size="large"
-          fullWidth
-          onClick={() =>
-            navigate(eventContestPath(decodedGroupCode, parsedEventId, contest.contestId))
-          }
-        >
-          {contest.name}
-          {contest.participantCount > 0 ? ` (${contest.participantCount})` : ''}
-        </Button>
-      ))}
-    </Stack>
-  );
 
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
@@ -136,36 +120,58 @@ export default function AdminEventContestsPage() {
           </Typography>
         )}
 
-        {!loading && !error && contests.length > 0 && (
-          showXsLayout ? (
-            contestButtons
-          ) : (
-            <Grid container spacing={2} sx={{ my: 2, justifyContent: 'center' }}>
-              {contests.map((contest) => (
-                <Grid key={contest.contestId} size={{ xs: 12, md: 6, lg: 4 }}>
-                  <Button
-                    variant="contained"
-                    size="large"
-                    fullWidth
-                    onClick={() =>
-                      navigate(
-                        eventContestPath(decodedGroupCode, parsedEventId, contest.contestId),
-                      )
-                    }
-                  >
-                    {contest.name}
-                    {contest.participantCount > 0 ? ` (${contest.participantCount})` : ''}
-                  </Button>
-                </Grid>
-              ))}
-            </Grid>
-          )
+        {!loading && !error && contests.length > 0 && showXsLayout && (
+          <Stack spacing={2} sx={{ my: 3, ...centeredContentStackSx }}>
+            {contests.map((contest) => (
+              <Button
+                key={contest.contestId}
+                variant="contained"
+                size="large"
+                fullWidth
+                onClick={() =>
+                  navigate(eventContestPath(decodedGroupCode, parsedEventId, contest.contestId))
+                }
+              >
+                {contest.name}
+                {contest.participantCount > 0 ? ` (${contest.participantCount})` : ''}
+              </Button>
+            ))}
+          </Stack>
         )}
 
-        {!loading && !error && contests.length === 0 && (
+        {!loading && !error && contests.length > 0 && !showXsLayout && (
+          <Grid container spacing={2} sx={{ my: 2, justifyContent: 'center' }}>
+            {contests.map((contest) => (
+              <Grid key={contest.contestId} size={{ xs: 12, md: 6, lg: 4 }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  onClick={() =>
+                    navigate(eventContestPath(decodedGroupCode, parsedEventId, contest.contestId))
+                  }
+                >
+                  {contest.name}
+                  {contest.participantCount > 0 ? ` (${contest.participantCount})` : ''}
+                </Button>
+              </Grid>
+            ))}
+          </Grid>
+        )}
+
+        {!loading && !error && contests.length === 0 && usesSwingContestBuilder(eventTypeCode) && (
           <Stack sx={showXsLayout ? undefined : { width: '100%' }}>
             <SwingDanceContestSet />
           </Stack>
+        )}
+
+        {!loading && !error && contests.length === 0 && !usesSwingContestBuilder(eventTypeCode) && (
+          <Typography variant="body2" color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>
+            No contests found for this event.
+            {decodedGroupCode === 'TSL_FICTIONAL_FRACAS'
+              ? ' Re-apply seed 019_tsl_fictional_fracas_refresh.sql (or redeploy with SEED_DEV_DATA) to load Standard, Womens, Masters, and Exotics.'
+              : null}
+          </Typography>
         )}
 
         <Stack

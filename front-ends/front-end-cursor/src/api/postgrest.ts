@@ -1125,6 +1125,7 @@ export type EventListRow = {
 export type EventGroupDetail = {
   eventGroupCode: string;
   fullName: string;
+  eventTypeCode?: string | null;
 };
 
 export type EventAttendeeListRow = {
@@ -1160,7 +1161,7 @@ export async function fetchEventGroupByCode(
   eventGroupCode: string,
 ): Promise<EventGroupDetail | null> {
   const params = new URLSearchParams({
-    select: 'event_group_code,full_name',
+    select: 'event_group_code,full_name,event_type_code',
   });
   params.append('event_group_code', `eq.${eventGroupCode}`);
 
@@ -1174,9 +1175,13 @@ export async function fetchEventGroupByCode(
     return null;
   }
 
+  const eventTypeCode =
+    typeof row.event_type_code === 'string' ? row.event_type_code.trim() : '';
+
   return {
     eventGroupCode: row.event_group_code,
     fullName: row.full_name,
+    eventTypeCode: eventTypeCode === '' ? null : eventTypeCode,
   };
 }
 

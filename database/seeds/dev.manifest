@@ -18,4 +18,5 @@
 013_governing_body_seed.sql
 014_static_list_seed.sql
 018_tsl_fictional_fracas.sql
+019_tsl_fictional_fracas_refresh.sql
 015_local_deployment_info.sql

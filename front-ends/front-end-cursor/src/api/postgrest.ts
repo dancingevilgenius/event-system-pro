@@ -821,6 +821,7 @@ export type EventGroupListRow = {
   fullName: string;
   directors: EventGroupDirector[];
   eventTypeCode: string | null;
+  isDemo: boolean;
 };
 
 type ApiEventGroupDirector = {
@@ -835,6 +836,7 @@ type ApiEventGroupRecord = {
   full_name: string;
   directors_json?: ApiEventGroupDirector[] | null;
   event_type_code?: string | null;
+  more_json?: unknown;
 };
 
 function parseEventGroupDirectors(value: unknown): EventGroupDirector[] {
@@ -853,6 +855,15 @@ function parseEventGroupDirectors(value: unknown): EventGroupDirector[] {
     .filter((entry) => entry.username !== '');
 }
 
+function parseEventGroupIsDemo(moreJson: unknown): boolean {
+  if (!moreJson || typeof moreJson !== 'object' || Array.isArray(moreJson)) {
+    return false;
+  }
+
+  const demoFlag = (moreJson as Record<string, unknown>).demo;
+  return demoFlag === true || demoFlag === 'true';
+}
+
 type ApiEventWithAttendees = {
   event_id: number;
   event_group_code: string | null;
@@ -868,6 +879,7 @@ function mapEventGroupRow(row: ApiEventGroupRecord): EventGroupListRow {
     fullName: row.full_name,
     directors: parseEventGroupDirectors(row.directors_json),
     eventTypeCode: eventTypeCode === '' ? null : eventTypeCode,
+    isDemo: parseEventGroupIsDemo(row.more_json),
   };
 }
 
@@ -906,7 +918,7 @@ export async function fetchDemoEventGroupsWithAttendees(): Promise<EventGroupLis
   }
 
   const params = new URLSearchParams({
-    select: 'event_group_code,full_name,directors_json,event_type_code',
+    select: 'event_group_code,full_name,directors_json,event_type_code,more_json',
     order: 'full_name',
   });
   params.append('event_group_code', `in.(${eventGroupCodes.join(',')})`);
@@ -1061,7 +1073,7 @@ export async function updateEventGroupEventType(
 /** All event groups ordered by full name. */
 export async function fetchEventGroups(): Promise<EventGroupListRow[]> {
   const params = new URLSearchParams({
-    select: 'event_group_code,full_name,directors_json,event_type_code',
+    select: 'event_group_code,full_name,directors_json,event_type_code,more_json',
     order: 'full_name',
   });
 

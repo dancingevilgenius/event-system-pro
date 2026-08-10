@@ -1,7 +1,10 @@
 import {
+  Box,
   Button,
+  Checkbox,
   CircularProgress,
   Container,
+  FormControlLabel,
   MenuItem,
   Paper,
   Stack,
@@ -97,6 +100,7 @@ export default function AdminEventsPage() {
   const [rows, setRows] = useState<EventGroupListRow[]>([]);
   const [eventTypeOptions, setEventTypeOptions] = useState<StaticListEntry[]>([]);
   const [nameFilter, setNameFilter] = useState('');
+  const [demoOnly, setDemoOnly] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -127,10 +131,18 @@ export default function AdminEventsPage() {
   }, [loadEventGroups]);
 
   const normalizedNameFilter = nameFilter.trim().toLowerCase();
-  const filteredRows =
-    normalizedNameFilter === ''
-      ? rows
-      : rows.filter((row) => row.fullName.toLowerCase().includes(normalizedNameFilter));
+  const filteredRows = rows.filter((row) => {
+    if (demoOnly && !row.isDemo) {
+      return false;
+    }
+
+    if (normalizedNameFilter === '') {
+      return true;
+    }
+
+    return row.fullName.toLowerCase().includes(normalizedNameFilter);
+  });
+  const filtersActive = demoOnly || normalizedNameFilter !== '';
 
   const handleEventTypeChange = async (eventGroupCode: string, nextEventTypeCode: string) => {
     const currentRow = rows.find((row) => row.eventGroupCode === eventGroupCode);
@@ -182,37 +194,77 @@ export default function AdminEventsPage() {
         <PageHeader title="Event Groups" backTo={EVENT_HOME_PATH} backLabel="Back to Event Home" />
         <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 2 }}>
           Event groups ({filteredRows.length}
-          {normalizedNameFilter !== '' && filteredRows.length !== rows.length
-            ? ` of ${rows.length}`
-            : ''}
+          {filtersActive && filteredRows.length !== rows.length ? ` of ${rows.length}` : ''}
           )
         </Typography>
 
         <Stack
           direction={{ xs: 'column', md: 'row' }}
           spacing={2}
-          sx={{ mb: 2, justifyContent: 'center', alignItems: { xs: 'stretch', md: 'center' } }}
+          sx={{
+            mb: 2,
+            alignItems: { xs: 'stretch', md: 'center' },
+            justifyContent: 'space-between',
+          }}
         >
-          <AppTextField
-            label="Filter"
-            value={nameFilter}
-            onChange={(event) => setNameFilter(event.target.value)}
-            size="small"
-            sx={{ width: { xs: '100%', md: 260 } }}
-            slotProps={{
-              htmlInput: {
-                'aria-label': 'Filter event groups by name',
-              },
+          <Box
+            sx={{
+              flex: { md: 1 },
+              display: 'flex',
+              justifyContent: 'flex-start',
+              alignItems: 'center',
             }}
-          />
-          <Button
-            variant="contained"
-            onClick={() => setAddDialogOpen(true)}
-            fullWidth={showXsLayout}
-            sx={{ flexShrink: 0 }}
           >
-            Add Event Group
-          </Button>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={demoOnly}
+                  onChange={(event) => setDemoOnly(event.target.checked)}
+                  inputProps={{ 'aria-label': 'Show demo event groups only' }}
+                />
+              }
+              label="Demo"
+              sx={{ m: 0 }}
+            />
+          </Box>
+          <Box
+            sx={{
+              flex: { md: 1 },
+              display: 'flex',
+              justifyContent: { xs: 'stretch', md: 'center' },
+              alignItems: 'center',
+            }}
+          >
+            <AppTextField
+              label="Filter"
+              value={nameFilter}
+              onChange={(event) => setNameFilter(event.target.value)}
+              size="small"
+              sx={{ width: { xs: '100%', md: 260 } }}
+              slotProps={{
+                htmlInput: {
+                  'aria-label': 'Filter event groups by name',
+                },
+              }}
+            />
+          </Box>
+          <Box
+            sx={{
+              flex: { md: 1 },
+              display: 'flex',
+              justifyContent: { xs: 'stretch', md: 'flex-end' },
+              alignItems: 'center',
+            }}
+          >
+            <Button
+              variant="contained"
+              onClick={() => setAddDialogOpen(true)}
+              fullWidth={showXsLayout}
+              sx={{ flexShrink: 0 }}
+            >
+              Add Event Group
+            </Button>
+          </Box>
         </Stack>
 
         {loading && (

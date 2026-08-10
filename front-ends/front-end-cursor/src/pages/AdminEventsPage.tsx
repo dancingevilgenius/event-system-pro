@@ -101,6 +101,7 @@ export default function AdminEventsPage() {
   const [eventTypeOptions, setEventTypeOptions] = useState<StaticListEntry[]>([]);
   const [nameFilter, setNameFilter] = useState('');
   const [demoOnly, setDemoOnly] = useState(false);
+  const [eventTypeFilter, setEventTypeFilter] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -136,13 +137,17 @@ export default function AdminEventsPage() {
       return false;
     }
 
+    if (eventTypeFilter !== '' && (row.eventTypeCode ?? '') !== eventTypeFilter) {
+      return false;
+    }
+
     if (normalizedNameFilter === '') {
       return true;
     }
 
     return row.fullName.toLowerCase().includes(normalizedNameFilter);
   });
-  const filtersActive = demoOnly || normalizedNameFilter !== '';
+  const filtersActive = demoOnly || eventTypeFilter !== '' || normalizedNameFilter !== '';
 
   const handleEventTypeChange = async (eventGroupCode: string, nextEventTypeCode: string) => {
     const currentRow = rows.find((row) => row.eventGroupCode === eventGroupCode);
@@ -231,12 +236,43 @@ export default function AdminEventsPage() {
             sx={{
               flex: { md: 1 },
               display: 'flex',
+              justifyContent: { xs: 'stretch', md: 'flex-start' },
+              alignItems: 'center',
+            }}
+          >
+            <AppTextField
+              select
+              label="Event Type"
+              value={eventTypeFilter}
+              onChange={(event) => setEventTypeFilter(event.target.value)}
+              size="small"
+              sx={{ width: { xs: '100%', md: 220 } }}
+              slotProps={{
+                htmlInput: {
+                  'aria-label': 'Filter event groups by event type',
+                },
+              }}
+            >
+              <MenuItem value="">
+                <em>All event types</em>
+              </MenuItem>
+              {eventTypeOptions.map((entry) => (
+                <MenuItem key={entry.key} value={entry.key}>
+                  {entry.label}
+                </MenuItem>
+              ))}
+            </AppTextField>
+          </Box>
+          <Box
+            sx={{
+              flex: { md: 1 },
+              display: 'flex',
               justifyContent: { xs: 'stretch', md: 'center' },
               alignItems: 'center',
             }}
           >
             <AppTextField
-              label="Filter"
+              label="Filter by name"
               value={nameFilter}
               onChange={(event) => setNameFilter(event.target.value)}
               size="small"

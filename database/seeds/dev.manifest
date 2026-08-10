@@ -19,4 +19,5 @@
 014_static_list_seed.sql
 018_tsl_fictional_fracas.sql
 019_tsl_fictional_fracas_refresh.sql
+020_tsl_event_group_event_type.sql
 015_local_deployment_info.sql

@@ -65,6 +65,12 @@ WHERE event_group_code IN (
 )
   AND event_type_code IS NULL;
 
+-- Legacy The Saber Legion groups from baseline schema seed.
+UPDATE public.event_group
+SET event_type_code = 'SWORD_LIGHT_SABER'
+WHERE event_group_code LIKE 'TSL_%'
+  AND event_type_code IS NULL;
+
 DROP VIEW IF EXISTS api.event_group;
 
 CREATE VIEW api.event_group AS

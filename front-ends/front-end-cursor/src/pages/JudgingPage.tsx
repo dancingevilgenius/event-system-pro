@@ -26,7 +26,7 @@ import JudgingScoreInput from '../components/JudgingScoreInput';
 import PageBackButton from '../components/PageBackButton';
 import PaletteOutlinedIcon from '../components/PaletteOutlinedIcon';
 import PercentCompleteBar from '../components/PercentCompleteBar';
-import { mobileColumnSx } from '../constants/layout';
+import { CONTENT_MAX_WIDTH, mobileColumnSx } from '../constants/layout';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import {
   createMockContestEntries,
@@ -842,18 +842,29 @@ export default function JudgingPage() {
     ? entryByBib.get(duplicateScoreDialog.otherBib)
     : undefined;
 
-  const { containerMaxWidth } = useLayoutTier();
+  const { showXsLayout, containerMaxWidth } = useLayoutTier();
+  // Phone: 360px centered column. Tablet+: entry list uses nearly full viewport width.
+  const judgingContentSx = showXsLayout
+    ? mobileColumnSx
+    : { width: '100%', maxWidth: '100%', boxSizing: 'border-box' as const };
 
   return (
     <Container
-      maxWidth={containerMaxWidth}
+      maxWidth={showXsLayout ? containerMaxWidth : false}
       sx={{
-        py: { xs: 2, md: 4 },
+        py: { xs: 2, md: 3, lg: 4 },
+        px: { xs: 2, md: 3, lg: 4 },
         height: { xs: 'auto', md: '100vh' },
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
         boxSizing: 'border-box',
+        ...(showXsLayout
+          ? {}
+          : {
+              // Override theme lg/xl 1000px cap so Judging uses iPad / desktop width.
+              maxWidth: '100%',
+            }),
       }}
     >
       <Paper
@@ -865,11 +876,15 @@ export default function JudgingPage() {
           display: 'flex',
           flexDirection: 'column',
           gap: 2,
+          width: '100%',
+          maxWidth: showXsLayout ? CONTENT_MAX_WIDTH : '100%',
+          mx: showXsLayout ? 'auto' : 0,
+          boxSizing: 'border-box',
         }}
       >
         <PageBackButton to="/staff" label="Back to Staff" />
 
-        <Stack spacing={1} sx={{ ...mobileColumnSx, flexShrink: 0 }}>
+        <Stack spacing={1} sx={{ ...judgingContentSx, flexShrink: 0 }}>
           <PercentCompleteBar percent={percentComplete} onSubmit={handleSubmit} />
 
           <Select
@@ -879,6 +894,8 @@ export default function JudgingPage() {
             aria-label="Judging options"
             fullWidth
             sx={{
+              width: '100%',
+              maxWidth: '100%',
               '& .MuiSelect-select': {
                 py: 0.75,
               },
@@ -903,7 +920,7 @@ export default function JudgingPage() {
               direction={{ xs: 'column', md: 'row' }}
               spacing={1}
               sx={{
-                ...mobileColumnSx,
+                ...judgingContentSx,
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}
@@ -913,7 +930,7 @@ export default function JudgingPage() {
                 size="small"
                 onClick={handlePreviousPage}
                 disabled={safeCurrentPage === 0}
-                sx={{ minWidth: 96 }}
+                sx={{ minWidth: 96, maxWidth: showXsLayout ? CONTENT_MAX_WIDTH : 'none' }}
               >
                 Previous
               </Button>
@@ -928,7 +945,7 @@ export default function JudgingPage() {
                 size="small"
                 onClick={handleNextPage}
                 disabled={safeCurrentPage >= totalPages - 1}
-                sx={{ minWidth: 96 }}
+                sx={{ minWidth: 96, maxWidth: showXsLayout ? CONTENT_MAX_WIDTH : 'none' }}
               >
                 Next
               </Button>
@@ -944,9 +961,10 @@ export default function JudgingPage() {
             flexDirection: 'column',
             gap: 1,
             overflowY: listLayout === 'scrollable' ? 'auto' : 'visible',
+            width: '100%',
           }}
         >
-          <Stack spacing={1} sx={mobileColumnSx}>
+          <Stack spacing={1} sx={judgingContentSx}>
             {visibleEntries.map((entry) => (
               <JudgingEntryAccordion
                 key={entry.number}

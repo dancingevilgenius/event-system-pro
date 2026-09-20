@@ -832,8 +832,8 @@ The app is designed to be **usable on phones** as well as desktop — narrow, ce
 
 - Accordion **summary names** shorten progressively when horizontal space is tight (see **Name display in summary row**); uses `ResizeObserver` to react to width changes.
 - No separate mobile-only Judging layout — the same accordion UI is used at all breakpoints.
-- On **phone (xs)** the progress bar, sort dropdown, and contest entry list stay in the **360px** centered column (`mobileColumnSx`).
-- On **tablet and up (md / lg / xl)** — including iPad Pro 12.9″ — those blocks expand to the full Paper width so leader/follower names can show full first names before shortening.
+- On **phone (xs)** the page Paper, progress bar, sort dropdown, and contest entry list stay in the **360px** centered column.
+- On **tablet and up (md / lg / xl)** — including iPad Pro 12.9″ — Judging uses a **fluid full-width** `Container`/`Paper` (not the app-wide 1000px cap). Contest entry accordions span that Paper so couple titles have room for full first names before shortening.
 
 ---
 

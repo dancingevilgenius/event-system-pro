@@ -26,7 +26,7 @@ import JudgingScoreInput from '../components/JudgingScoreInput';
 import PageBackButton from '../components/PageBackButton';
 import PaletteOutlinedIcon from '../components/PaletteOutlinedIcon';
 import PercentCompleteBar from '../components/PercentCompleteBar';
-import { centeredContentStackSx } from '../constants/layout';
+import { mobileColumnSx } from '../constants/layout';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import {
   createMockContestEntries,
@@ -138,7 +138,8 @@ function summaryNameTypographySx() {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
-    flex: 1,
+    // Pack leader · follower as one title; do not split them to opposite edges.
+    flex: '0 1 auto',
   } as const;
 }
 
@@ -868,7 +869,7 @@ export default function JudgingPage() {
       >
         <PageBackButton to="/staff" label="Back to Staff" />
 
-        <Stack spacing={1} sx={{ ...centeredContentStackSx, flexShrink: 0 }}>
+        <Stack spacing={1} sx={{ ...mobileColumnSx, flexShrink: 0 }}>
           <PercentCompleteBar percent={percentComplete} onSubmit={handleSubmit} />
 
           <Select
@@ -902,10 +903,9 @@ export default function JudgingPage() {
               direction={{ xs: 'column', md: 'row' }}
               spacing={1}
               sx={{
-                ...centeredContentStackSx,
+                ...mobileColumnSx,
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                width: '100%',
               }}
             >
               <Button
@@ -946,7 +946,7 @@ export default function JudgingPage() {
             overflowY: listLayout === 'scrollable' ? 'auto' : 'visible',
           }}
         >
-          <Stack spacing={1} sx={{ ...centeredContentStackSx }}>
+          <Stack spacing={1} sx={mobileColumnSx}>
             {visibleEntries.map((entry) => (
               <JudgingEntryAccordion
                 key={entry.number}

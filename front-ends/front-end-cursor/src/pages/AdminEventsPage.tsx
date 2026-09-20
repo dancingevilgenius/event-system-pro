@@ -225,7 +225,9 @@ export default function AdminEventsPage() {
                 <Checkbox
                   checked={demoOnly}
                   onChange={(event) => setDemoOnly(event.target.checked)}
-                  inputProps={{ 'aria-label': 'Show demo event groups only' }}
+                  slotProps={{
+                    input: { 'aria-label': 'Show demo event groups only' },
+                  }}
                 />
               }
               label="Demo"

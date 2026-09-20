@@ -94,7 +94,9 @@ services:
       - default
       - dokploy-network
     env_file:
-      - .env
+      # Dokploy may materialize Environment into .env; optional for CI / local --env-file use.
+      - path: .env
+        required: false
     environment:
       DATABASE_URL: postgres://mailer:${MAILER_DB_PASSWORD:-mailer_dev_password}@postgres:5432/${POSTGRES_DB:-event_system_pro}
       SMTP_HOST: mailpit

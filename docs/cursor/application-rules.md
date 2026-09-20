@@ -791,6 +791,7 @@ Each competitor's selected colors are shown in a **square** swatch cell (`Compet
 
 - Names are shown as `Leader · Follower` in the collapsed accordion title.
 - **Leader** color swatch (when set) sits to the **left** of the leader name; **follower** swatch (when set) sits to the **right** of the follower name.
+- Leader and follower names stay **packed** as one title (not stretched to opposite edges of the row).
 - If space is tight, names shorten progressively:
   1. Both full first names
   2. Leader initial + follower full
@@ -831,6 +832,8 @@ The app is designed to be **usable on phones** as well as desktop — narrow, ce
 
 - Accordion **summary names** shorten progressively when horizontal space is tight (see **Name display in summary row**); uses `ResizeObserver` to react to width changes.
 - No separate mobile-only Judging layout — the same accordion UI is used at all breakpoints.
+- On **phone (xs)** the progress bar, sort dropdown, and contest entry list stay in the **360px** centered column (`mobileColumnSx`).
+- On **tablet and up (md / lg / xl)** — including iPad Pro 12.9″ — those blocks expand to the full Paper width so leader/follower names can show full first names before shortening.
 
 ---
 

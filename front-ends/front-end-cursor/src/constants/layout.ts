@@ -17,6 +17,12 @@ export const DESKTOP_PAGE_MIN_HEIGHT = 500;
 /** Matches useLayoutTier MD_LAYOUT_QUERY — tablet and up. */
 export const MD_LAYOUT_MEDIA_QUERY = '(min-width:768px)';
 
+/** Landscape orientation — used for tablet landscape Judging width. */
+export const LANDSCAPE_MEDIA_QUERY = '(orientation: landscape)';
+
+/** Judging Paper width on tablet+ landscape. */
+export const TABLET_LANDSCAPE_CONTENT_WIDTH = '70%';
+
 /** Min viewport width for full-width panel layout (pairs with useIsMobileDevice 768px). */
 export const MOBILE_LAYOUT_MIN_WIDTH = 769;
 

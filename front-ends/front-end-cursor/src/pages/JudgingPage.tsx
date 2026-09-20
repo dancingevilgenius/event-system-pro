@@ -12,6 +12,7 @@ import {
   Select,
   Stack,
   Typography,
+  useMediaQuery,
   type SelectChangeEvent,
 } from '@mui/material';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
@@ -26,7 +27,12 @@ import JudgingScoreInput from '../components/JudgingScoreInput';
 import PageBackButton from '../components/PageBackButton';
 import PaletteOutlinedIcon from '../components/PaletteOutlinedIcon';
 import PercentCompleteBar from '../components/PercentCompleteBar';
-import { CONTENT_MAX_WIDTH, mobileColumnSx } from '../constants/layout';
+import {
+  CONTENT_MAX_WIDTH,
+  LANDSCAPE_MEDIA_QUERY,
+  TABLET_LANDSCAPE_CONTENT_WIDTH,
+  mobileColumnSx,
+} from '../constants/layout';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import {
   createMockContestEntries,
@@ -68,6 +74,10 @@ const SUMMARY_SWATCH_GAP = 2;
 const SUMMARY_SWATCH_SLOT_COUNT = 2;
 const SUMMARY_SWATCH_COLUMN_WIDTH =
   SUMMARY_SWATCH_SLOT_COUNT * COLOR_SWATCH_SIZE + SUMMARY_SWATCH_GAP;
+/** Extra space between names and the reserved color slots. */
+const SUMMARY_NAME_SWATCH_PADDING_PX = 16;
+const SUMMARY_SWATCH_COLUMN_OUTER_WIDTH =
+  SUMMARY_SWATCH_COLUMN_WIDTH + SUMMARY_NAME_SWATCH_PADDING_PX * 2;
 
 type JudgingListLayout = 'scrollable' | 'pagination';
 
@@ -116,14 +126,14 @@ function formatSummaryFollowerName(
     : formatInitialLast(follower.first, follower.last);
 }
 
-function summaryNameColumnSx() {
+function summaryNameColumnSx(textAlign: 'left' | 'right') {
   return {
     minWidth: 0,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
     flex: 1,
-    textAlign: 'left',
+    textAlign,
   } as const;
 }
 
@@ -258,11 +268,9 @@ function CompetitorNamesText({
     }
 
     const checkFit = () => {
-      // Two theme spacing(0.5) gaps around the reserved swatch column.
-      const nameColumnGaps = 8;
       const nameColumnWidth = Math.max(
         0,
-        (container.clientWidth - SUMMARY_SWATCH_COLUMN_WIDTH - nameColumnGaps) / 2,
+        (container.clientWidth - SUMMARY_SWATCH_COLUMN_OUTER_WIDTH) / 2,
       );
 
       for (const mode of SUMMARY_NAME_MODES) {
@@ -298,14 +306,13 @@ function CompetitorNamesText({
         minWidth: 0,
         display: 'flex',
         alignItems: 'center',
-        gap: 0.5,
         overflow: 'hidden',
       }}
     >
       <Typography
         component="span"
         variant="body1"
-        sx={summaryNameColumnSx()}
+        sx={summaryNameColumnSx('right')}
       >
         {formatSummaryLeaderName(leader, nameMode)}
       </Typography>
@@ -317,8 +324,10 @@ function CompetitorNamesText({
           alignItems: 'center',
           justifyContent: 'center',
           gap: `${SUMMARY_SWATCH_GAP}px`,
-          flex: `0 0 ${SUMMARY_SWATCH_COLUMN_WIDTH}px`,
-          width: SUMMARY_SWATCH_COLUMN_WIDTH,
+          flex: `0 0 ${SUMMARY_SWATCH_COLUMN_OUTER_WIDTH}px`,
+          width: SUMMARY_SWATCH_COLUMN_OUTER_WIDTH,
+          px: `${SUMMARY_NAME_SWATCH_PADDING_PX}px`,
+          boxSizing: 'border-box',
           flexShrink: 0,
         }}
       >
@@ -343,7 +352,7 @@ function CompetitorNamesText({
       <Typography
         component="span"
         variant="body1"
-        sx={summaryNameColumnSx()}
+        sx={summaryNameColumnSx('left')}
       >
         {formatSummaryFollowerName(follower, nameMode)}
       </Typography>
@@ -835,10 +844,22 @@ export default function JudgingPage() {
     : undefined;
 
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
-  // Phone: 360px centered column. Tablet+: entry list uses nearly full viewport width.
+  const isLandscape = useMediaQuery(LANDSCAPE_MEDIA_QUERY);
+  const isTabletLandscape = !showXsLayout && isLandscape;
+  // Phone: 360px centered column. Tablet portrait: full Paper width.
+  // Tablet landscape: enclosing Paper is 70% of the viewport.
   const judgingContentSx = showXsLayout
     ? mobileColumnSx
     : { width: '100%', maxWidth: '100%', boxSizing: 'border-box' as const };
+  const judgingPaperWidthSx = showXsLayout
+    ? { width: '100%', maxWidth: CONTENT_MAX_WIDTH, mx: 'auto' }
+    : isTabletLandscape
+      ? {
+          width: TABLET_LANDSCAPE_CONTENT_WIDTH,
+          maxWidth: TABLET_LANDSCAPE_CONTENT_WIDTH,
+          mx: 'auto',
+        }
+      : { width: '100%', maxWidth: '100%', mx: 0 };
 
   return (
     <Container
@@ -868,9 +889,7 @@ export default function JudgingPage() {
           display: 'flex',
           flexDirection: 'column',
           gap: 2,
-          width: '100%',
-          maxWidth: showXsLayout ? CONTENT_MAX_WIDTH : '100%',
-          mx: showXsLayout ? 'auto' : 0,
+          ...judgingPaperWidthSx,
           boxSizing: 'border-box',
         }}
       >

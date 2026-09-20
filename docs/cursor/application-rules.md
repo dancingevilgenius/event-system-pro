@@ -557,8 +557,9 @@ App-wide MUI theming via **skins**. `AppThemeProvider` wraps the app in `main.ts
 - **Only one panel** can be open at a time.
 - **Collapsed row** (accordion title) shows aligned columns: `bib # | leader name | reserved color slots | follower name | score`
   - Leader and follower names sit in **equal-width columns** toward the center of the row (between bib and score).
-  - Names are **left-justified** in their columns so every accordion’s leader names share one left edge and follower names share another.
+  - Leader names are **right-justified** in their column; follower names are **left-justified** in theirs, so each role lines up across accordion rows.
   - Two color-swatch **slots are always reserved** between the names (even when no colors are set) so adding colors does not shift columns.
+  - Extra padding sits between the reserved color slots and the names on both sides.
 - **Expanded row** shows: **Raw Score** first, then leader and follower rows (with color picking).
 - Clicking inside expanded details **must not** collapse the accordion.
 
@@ -789,7 +790,8 @@ Each competitor's selected colors are shown in a **square** swatch cell (`Compet
 
 ## Name display in summary row
 
-- Collapsed titles use shared columns: **leader name** (left-aligned) | **reserved color slots** | **follower name** (left-aligned).
+- Collapsed titles use shared columns: **leader name** (right-aligned) | **reserved color slots** | **follower name** (left-aligned).
+- Extra padding separates the color slots from both names.
 - Leader names line up across accordion rows; follower names line up across accordion rows.
 - Color slots stay reserved even before colors are chosen so the columns do not jump.
 - If space is tight, names shorten progressively:
@@ -833,7 +835,8 @@ The app is designed to be **usable on phones** as well as desktop — narrow, ce
 - Accordion **summary names** shorten progressively when horizontal space is tight (see **Name display in summary row**); uses `ResizeObserver` to react to width changes.
 - No separate mobile-only Judging layout — the same accordion UI is used at all breakpoints.
 - On **phone (xs)** the page Paper, progress bar, sort dropdown, and contest entry list stay in the **360px** centered column.
-- On **tablet and up (md / lg / xl)** — including iPad Pro 12.9″ — Judging uses a **fluid full-width** `Container`/`Paper` (not the app-wide 1000px cap). Contest entry accordions span that Paper so couple titles have room for full first names before shortening.
+- On **tablet portrait (md+)** Judging uses a **fluid full-width** `Container`/`Paper` (not the app-wide 1000px cap).
+- On **tablet landscape (md+ and `orientation: landscape`)** the enclosing Paper is **70%** of the viewport width and centered (`TABLET_LANDSCAPE_CONTENT_WIDTH`).
 
 ---
 

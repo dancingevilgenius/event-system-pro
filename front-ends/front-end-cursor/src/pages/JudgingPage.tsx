@@ -33,7 +33,6 @@ import {
   type MockContestEntry,
 } from '../data/mockContestEntries';
 import {
-  formatCompetitorPairNames,
   formatFullFirstLast,
   formatInitialLast,
   type LegionMember,
@@ -66,7 +65,9 @@ const JUDGING_PAGE_SIZE = 10;
 const NUMBER_COLUMN_WIDTH = '2.75rem';
 const SCORE_DISPLAY_WIDTH = '5ch';
 const SUMMARY_SWATCH_GAP = 2;
-const SUMMARY_NAME_SEPARATOR = ' · ';
+const SUMMARY_SWATCH_SLOT_COUNT = 2;
+const SUMMARY_SWATCH_COLUMN_WIDTH =
+  SUMMARY_SWATCH_SLOT_COUNT * COLOR_SWATCH_SIZE + SUMMARY_SWATCH_GAP;
 
 type JudgingListLayout = 'scrollable' | 'pagination';
 
@@ -115,31 +116,22 @@ function formatSummaryFollowerName(
     : formatInitialLast(follower.first, follower.last);
 }
 
-function summarySeparatorReserve(
-  showLeaderSwatch: boolean,
-  showFollowerSwatch: boolean,
-  dotWidth: number,
-): number {
-  const iconCount = Number(showLeaderSwatch) + Number(showFollowerSwatch);
-
-  if (iconCount === 0) {
-    return dotWidth;
-  }
-
-  return (
-    iconCount * COLOR_SWATCH_SIZE +
-    (iconCount + 1) * SUMMARY_SWATCH_GAP
-  );
-}
-
-function summaryNameTypographySx() {
+function summaryNameColumnSx() {
   return {
     minWidth: 0,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
-    // Pack leader · follower as one title; do not split them to opposite edges.
-    flex: '0 1 auto',
+    flex: 1,
+    textAlign: 'left',
+  } as const;
+}
+
+function reservedSwatchSlotSx() {
+  return {
+    width: COLOR_SWATCH_SIZE,
+    height: COLOR_SWATCH_SIZE,
+    flexShrink: 0,
   } as const;
 }
 
@@ -257,7 +249,6 @@ function CompetitorNamesText({
 
   const showLeaderSwatch = hasSelectedColors(leaderColors);
   const showFollowerSwatch = hasSelectedColors(followerColors);
-  const showAnySwatch = showLeaderSwatch || showFollowerSwatch;
 
   useLayoutEffect(() => {
     const container = containerRef.current;
@@ -266,21 +257,21 @@ function CompetitorNamesText({
       return;
     }
 
-    measure.textContent = SUMMARY_NAME_SEPARATOR;
-    const dotWidth = measure.scrollWidth;
-
     const checkFit = () => {
-      const availableWidth = container.clientWidth;
-      const separatorReserve = summarySeparatorReserve(
-        showLeaderSwatch,
-        showFollowerSwatch,
-        dotWidth,
+      // Two theme spacing(0.5) gaps around the reserved swatch column.
+      const nameColumnGaps = 8;
+      const nameColumnWidth = Math.max(
+        0,
+        (container.clientWidth - SUMMARY_SWATCH_COLUMN_WIDTH - nameColumnGaps) / 2,
       );
 
       for (const mode of SUMMARY_NAME_MODES) {
-        measure.textContent = formatCompetitorPairNames(leader, follower, mode);
+        measure.textContent = formatSummaryLeaderName(leader, mode);
+        const leaderFits = measure.scrollWidth <= nameColumnWidth;
+        measure.textContent = formatSummaryFollowerName(follower, mode);
+        const followerFits = measure.scrollWidth <= nameColumnWidth;
 
-        if (measure.scrollWidth - dotWidth + separatorReserve <= availableWidth) {
+        if (leaderFits && followerFits) {
           setNameMode(mode);
           return;
         }
@@ -295,7 +286,7 @@ function CompetitorNamesText({
     observer.observe(container);
 
     return () => observer.disconnect();
-  }, [leader, follower, showLeaderSwatch, showFollowerSwatch]);
+  }, [leader, follower]);
 
   return (
     <Box
@@ -307,13 +298,14 @@ function CompetitorNamesText({
         minWidth: 0,
         display: 'flex',
         alignItems: 'center',
+        gap: 0.5,
         overflow: 'hidden',
       }}
     >
       <Typography
         component="span"
         variant="body1"
-        sx={summaryNameTypographySx()}
+        sx={summaryNameColumnSx()}
       >
         {formatSummaryLeaderName(leader, nameMode)}
       </Typography>
@@ -323,37 +315,35 @@ function CompetitorNamesText({
         sx={{
           display: 'inline-flex',
           alignItems: 'center',
+          justifyContent: 'center',
           gap: `${SUMMARY_SWATCH_GAP}px`,
+          flex: `0 0 ${SUMMARY_SWATCH_COLUMN_WIDTH}px`,
+          width: SUMMARY_SWATCH_COLUMN_WIDTH,
           flexShrink: 0,
-          mx: `${SUMMARY_SWATCH_GAP}px`,
         }}
       >
-        {showAnySwatch ? (
-          <>
-            {showLeaderSwatch ? (
-              <CompetitorColorSwatchBox
-                colors={leaderColors}
-                size={COLOR_SWATCH_SIZE}
-              />
-            ) : null}
-            {showFollowerSwatch ? (
-              <CompetitorColorSwatchBox
-                colors={followerColors}
-                size={COLOR_SWATCH_SIZE}
-              />
-            ) : null}
-          </>
+        {showLeaderSwatch ? (
+          <CompetitorColorSwatchBox
+            colors={leaderColors}
+            size={COLOR_SWATCH_SIZE}
+          />
         ) : (
-          <Typography component="span" variant="body1">
-            {SUMMARY_NAME_SEPARATOR}
-          </Typography>
+          <Box component="span" aria-hidden sx={reservedSwatchSlotSx()} />
+        )}
+        {showFollowerSwatch ? (
+          <CompetitorColorSwatchBox
+            colors={followerColors}
+            size={COLOR_SWATCH_SIZE}
+          />
+        ) : (
+          <Box component="span" aria-hidden sx={reservedSwatchSlotSx()} />
         )}
       </Box>
 
       <Typography
         component="span"
         variant="body1"
-        sx={summaryNameTypographySx()}
+        sx={summaryNameColumnSx()}
       >
         {formatSummaryFollowerName(follower, nameMode)}
       </Typography>
@@ -492,6 +482,8 @@ function JudgingEntryAccordion({
           '& .MuiAccordionSummary-content': {
             my: 0.5,
             minWidth: 0,
+            width: '100%',
+            mr: 0,
           },
         }}
       >

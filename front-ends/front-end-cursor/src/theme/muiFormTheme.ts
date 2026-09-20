@@ -1,10 +1,10 @@
 import type { Theme } from '@mui/material/styles';
-import { CONTENT_MAX_WIDTH, MOBILE_LAYOUT_MIN_WIDTH } from '../constants/layout';
+import { CONTENT_MAX_WIDTH, MD_LAYOUT_MEDIA_QUERY } from '../constants/layout';
 
 const fieldMaxWidth = {
   width: '100%',
   maxWidth: CONTENT_MAX_WIDTH,
-  [`@media (min-width: ${MOBILE_LAYOUT_MIN_WIDTH}px)`]: {
+  [`@media ${MD_LAYOUT_MEDIA_QUERY}`]: {
     maxWidth: '100%',
   },
 };

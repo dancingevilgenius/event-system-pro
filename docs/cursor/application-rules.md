@@ -555,10 +555,10 @@ App-wide MUI theming via **skins**. `AppThemeProvider` wraps the app in `main.ts
 ## Accordion behavior
 
 - **Only one panel** can be open at a time.
-- **Collapsed row** (accordion title) shows: `bib # | leader swatch · names · follower swatch | score`
-  - Leader's color cell (when set) is to the **left** of the leader name.
-  - Follower's color cell (when set) is to the **right** of the follower name.
-  - Names sit between the two swatches as `Leader · Follower`.
+- **Collapsed row** (accordion title) shows aligned columns: `bib # | leader name | reserved color slots | follower name | score`
+  - Leader and follower names sit in **equal-width columns** toward the center of the row (between bib and score).
+  - Names are **left-justified** in their columns so every accordion’s leader names share one left edge and follower names share another.
+  - Two color-swatch **slots are always reserved** between the names (even when no colors are set) so adding colors does not shift columns.
 - **Expanded row** shows: **Raw Score** first, then leader and follower rows (with color picking).
 - Clicking inside expanded details **must not** collapse the accordion.
 
@@ -659,7 +659,7 @@ When an accordion **closes** (collapse, switch panels, or change sort/filter whi
 - **X** cancels without saving.
 - Reopening shows prior selections; first click replaces top, second replaces bottom.
 - After one pick in a session, clicking the **backdrop** saves that one color and closes.
-- Color swatches appear in the collapsed summary when at least one color is set.
+- Color swatches appear in the reserved collapsed-summary slots when colors are set; empty slots keep the same width so columns stay aligned.
 - Colors are stored per **bib + role** (`leader` or `follower`).
 
 ### Color palette (8 × 8)
@@ -780,24 +780,24 @@ Each competitor's selected colors are shown in a **square** swatch cell (`Compet
 - **Bottom** color fills the **bottom half** of the square.
 - The cell is split horizontally (top over bottom), not side-by-side.
 - In the **expanded** accordion, the swatch (or palette icon when no colors are set yet) sits on the **left** of each leader/follower name; the name is to its right on the same row.
-- In the **collapsed** accordion title, the **same** split square cells appear when colors are set:
-  - **Leader** swatch: immediately to the **left** of the leader (first) name.
-  - **Follower** swatch: immediately to the **right** of the follower (second) name.
+- In the **collapsed** accordion title, the **same** split square cells appear in **reserved slots between** the names:
+  - **Leader** swatch: first reserved slot (empty space until colors are set).
+  - **Follower** swatch: second reserved slot (empty space until colors are set).
 - If only the **top** color is set (no bottom yet), the top color fills the **entire** square until a bottom color is chosen.
 
 ---
 
 ## Name display in summary row
 
-- Names are shown as `Leader · Follower` in the collapsed accordion title.
-- **Leader** color swatch (when set) sits to the **left** of the leader name; **follower** swatch (when set) sits to the **right** of the follower name.
-- Leader and follower names stay **packed** as one title (not stretched to opposite edges of the row).
+- Collapsed titles use shared columns: **leader name** (left-aligned) | **reserved color slots** | **follower name** (left-aligned).
+- Leader names line up across accordion rows; follower names line up across accordion rows.
+- Color slots stay reserved even before colors are chosen so the columns do not jump.
 - If space is tight, names shorten progressively:
   1. Both full first names
   2. Leader initial + follower full
   3. Leader full + follower initial
   4. Both initials
-- Shortening accounts for space taken by color swatches.
+- Shortening measures each name against its column (after reserving both swatch slots).
 
 ---
 
@@ -832,8 +832,8 @@ The app is designed to be **usable on phones** as well as desktop — narrow, ce
 
 - Accordion **summary names** shorten progressively when horizontal space is tight (see **Name display in summary row**); uses `ResizeObserver` to react to width changes.
 - No separate mobile-only Judging layout — the same accordion UI is used at all breakpoints.
-- On **phone (xs)** the progress bar, sort dropdown, and contest entry list stay in the **360px** centered column (`mobileColumnSx`).
-- On **tablet and up (md / lg / xl)** — including iPad Pro 12.9″ — those blocks expand to the full Paper width so leader/follower names can show full first names before shortening.
+- On **phone (xs)** the page Paper, progress bar, sort dropdown, and contest entry list stay in the **360px** centered column.
+- On **tablet and up (md / lg / xl)** — including iPad Pro 12.9″ — Judging uses a **fluid full-width** `Container`/`Paper` (not the app-wide 1000px cap). Contest entry accordions span that Paper so couple titles have room for full first names before shortening.
 
 ---
 

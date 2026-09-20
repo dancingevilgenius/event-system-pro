@@ -20,13 +20,13 @@ export const MD_LAYOUT_MEDIA_QUERY = '(min-width:768px)';
 /** Min viewport width for full-width panel layout (pairs with useIsMobileDevice 768px). */
 export const MOBILE_LAYOUT_MIN_WIDTH = 769;
 
-/** Full width on desktop; narrow centered column on mobile. */
+/** Full width on tablet+; narrow centered column on phone. */
 export const mobileColumnSx = {
   width: '100%',
   boxSizing: 'border-box',
   maxWidth: CONTENT_MAX_WIDTH,
   mx: 'auto',
-  [`@media (min-width: ${MOBILE_LAYOUT_MIN_WIDTH}px)`]: {
+  [`@media ${MD_LAYOUT_MEDIA_QUERY}`]: {
     maxWidth: '100%',
     mx: 0,
   },

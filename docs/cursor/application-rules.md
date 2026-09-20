@@ -791,6 +791,7 @@ Each competitor's selected colors are shown in a **square** swatch cell (`Compet
 
 - Names are shown as `Leader · Follower` in the collapsed accordion title.
 - **Leader** color swatch (when set) sits to the **left** of the leader name; **follower** swatch (when set) sits to the **right** of the follower name.
+- Leader and follower names stay **packed** as one title (not stretched to opposite edges of the row).
 - If space is tight, names shorten progressively:
   1. Both full first names
   2. Leader initial + follower full

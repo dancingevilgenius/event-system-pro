@@ -659,7 +659,7 @@ When an accordion **closes** (collapse, switch panels, or change sort/filter whi
 - **X** cancels without saving.
 - Reopening shows prior selections; first click replaces top, second replaces bottom.
 - After one pick in a session, clicking the **backdrop** saves that one color and closes.
-- Color swatches appear in the collapsed summary when at least one color is set.
+- Color swatches appear in the reserved collapsed-summary slots when colors are set; empty slots keep the same width so columns stay aligned.
 - Colors are stored per **bib + role** (`leader` or `follower`).
 
 ### Color palette (8 × 8)

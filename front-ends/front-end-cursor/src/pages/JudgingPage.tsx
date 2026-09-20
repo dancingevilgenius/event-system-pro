@@ -138,7 +138,8 @@ function summaryNameTypographySx() {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
-    flex: 1,
+    // Pack leader · follower as one title; do not split them to opposite edges.
+    flex: '0 1 auto',
   } as const;
 }
 

@@ -23,7 +23,9 @@ import CompetitorColorSwatch from '../components/CompetitorColorSwatch';
 import CompetitorColorSwatchBox, {
   COLOR_SWATCH_SIZE,
 } from '../components/CompetitorColorSwatchBox';
-import JudgingScoreInput from '../components/JudgingScoreInput';
+import JudgingScoreInput, {
+  type JudgingScoreInputMode,
+} from '../components/JudgingScoreInput';
 import PageBackButton from '../components/PageBackButton';
 import PaletteOutlinedIcon from '../components/PaletteOutlinedIcon';
 import PercentCompleteBar from '../components/PercentCompleteBar';
@@ -63,6 +65,7 @@ import {
   randomScoreDigitsBetween,
   resolveDuplicatePreferCurrentHigher,
   resolveDuplicatePreferOtherHigher,
+  scoreToDigits,
   type EntryScoreState,
   type JudgingScoreDigits,
 } from '../types/judgingScore';
@@ -88,7 +91,11 @@ type JudgingSortOption =
   | 'followerLastName'
   | 'unscoredOnly';
 
-type JudgingDropdownValue = JudgingSortOption | 'assignRandomScores' | JudgingListLayout;
+type JudgingDropdownValue =
+  | JudgingSortOption
+  | 'assignRandomScores'
+  | JudgingListLayout
+  | JudgingScoreInputMode;
 
 const JUDGING_DROPDOWN_OPTIONS: { value: JudgingDropdownValue; label: string }[] = [
   { value: 'bib', label: 'Sort by Bib #' },
@@ -453,7 +460,9 @@ type JudgingEntryAccordionProps = {
   onAccordionChange: (bibNumber: number, expanded: boolean) => void;
   competitorColors: Record<string, CompetitorColorRecord>;
   getEntryScore: (bibNumber: number) => EntryScoreState;
+  scoreInputMode: JudgingScoreInputMode;
   onScoreDigitChange: (bibNumber: number, index: number, value: number) => void;
+  onScoreChange: (bibNumber: number, value: number) => void;
   onPaletteClick: (target: PaletteTarget) => void;
 };
 
@@ -463,7 +472,9 @@ function JudgingEntryAccordion({
   onAccordionChange,
   competitorColors,
   getEntryScore,
+  scoreInputMode,
   onScoreDigitChange,
+  onScoreChange,
   onPaletteClick,
 }: JudgingEntryAccordionProps) {
   const entryScore = getEntryScore(entry.number);
@@ -551,7 +562,9 @@ function JudgingEntryAccordion({
         <Stack spacing={1} sx={{ width: '100%', minWidth: 0 }}>
           <JudgingScoreInput
             digits={entryScore.digits}
+            mode={scoreInputMode}
             onDigitChange={(index, value) => onScoreDigitChange(entry.number, index, value)}
+            onScoreChange={(value) => onScoreChange(entry.number, value)}
           />
           <CompetitorNameDetail
             member={entry.leader}
@@ -585,6 +598,7 @@ export default function JudgingPage() {
   const [expandedBib, setExpandedBib] = useState<number | null>(null);
   const [sortOption, setSortOption] = useState<JudgingSortOption>('bib');
   const [listLayout, setListLayout] = useState<JudgingListLayout>('scrollable');
+  const [scoreInputMode, setScoreInputMode] = useState<JudgingScoreInputMode>('slider');
   const [currentPage, setCurrentPage] = useState(0);
   const [frozenDisplayEntries, setFrozenDisplayEntries] = useState<JudgingEntry[] | null>(
     null,
@@ -655,6 +669,11 @@ export default function JudgingPage() {
 
   const handleSortChange = (event: SelectChangeEvent) => {
     const value = event.target.value as JudgingDropdownValue;
+
+    if (value === 'slider' || value === 'dropdowns') {
+      setScoreInputMode(value);
+      return;
+    }
 
     if (value === 'scrollable' || value === 'pagination') {
       if (expandedBib !== null) {
@@ -806,6 +825,13 @@ export default function JudgingPage() {
     }));
   };
 
+  const handleScoreChange = (bibNumber: number, value: number) => {
+    setScoreByBib((current) => ({
+      ...current,
+      [bibNumber]: { digits: scoreToDigits(value), touched: true },
+    }));
+  };
+
   const handleScoreDigitChange = (
     bibNumber: number,
     index: number,
@@ -924,6 +950,19 @@ export default function JudgingPage() {
             <MenuItem value="pagination" selected={listLayout === 'pagination'}>
               Pagination
             </MenuItem>
+            <Divider />
+            <MenuItem
+              value="slider"
+              sx={{ fontWeight: scoreInputMode === 'slider' ? 700 : 400 }}
+            >
+              Raw Scores as Slider
+            </MenuItem>
+            <MenuItem
+              value="dropdowns"
+              sx={{ fontWeight: scoreInputMode === 'dropdowns' ? 700 : 400 }}
+            >
+              Raw Scores as Dropdowns
+            </MenuItem>
           </Select>
 
           {listLayout === 'pagination' && displayEntries.length > 0 && (
@@ -984,7 +1023,9 @@ export default function JudgingPage() {
                 onAccordionChange={handleAccordionChange}
                 competitorColors={competitorColors}
                 getEntryScore={getEntryScore}
+                scoreInputMode={scoreInputMode}
                 onScoreDigitChange={handleScoreDigitChange}
+                onScoreChange={handleScoreChange}
                 onPaletteClick={setPaletteTarget}
               />
             ))}

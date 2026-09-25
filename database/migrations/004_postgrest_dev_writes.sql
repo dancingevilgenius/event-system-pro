@@ -22,7 +22,8 @@ GRANT INSERT, UPDATE, DELETE ON
   public.contest,
   public.competitor,
   public.judging_panel,
-  public.attendee
+  public.attendee,
+  public.tournament_bracket
 TO anon, authenticated;
 
 -- User API is read-only (password_encrypted is not exposed on api."user").

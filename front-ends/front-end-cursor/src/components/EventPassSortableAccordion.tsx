@@ -32,6 +32,7 @@ const accordionSummarySx = {
 type EventPassSortableAccordionProps = {
   pass: EventPassFormState;
   expanded: boolean;
+  disabled?: boolean;
   onAccordionChange: (event: SyntheticEvent, isExpanded: boolean) => void;
   onChange: (
     id: string,
@@ -42,11 +43,13 @@ type EventPassSortableAccordionProps = {
 export default function EventPassSortableAccordion({
   pass,
   expanded,
+  disabled = false,
   onAccordionChange,
   onChange,
 }: EventPassSortableAccordionProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: pass.id,
+    disabled,
   });
 
   const style = {
@@ -60,8 +63,9 @@ export default function EventPassSortableAccordion({
   return (
     <div ref={setNodeRef} style={style}>
       <Accordion
-        expanded={expanded}
-        onChange={onAccordionChange}
+        expanded={disabled ? false : expanded}
+        onChange={disabled ? undefined : onAccordionChange}
+        disabled={disabled}
         disableGutters
         elevation={0}
         variant="outlined"
@@ -81,9 +85,10 @@ export default function EventPassSortableAccordion({
               alignItems: 'center',
               justifyContent: 'center',
               flex: '0 0 auto',
-              color: 'text.secondary',
-              cursor: isDragging ? 'grabbing' : 'grab',
+              color: disabled ? 'action.disabled' : 'text.secondary',
+              cursor: disabled ? 'default' : isDragging ? 'grabbing' : 'grab',
               touchAction: 'none',
+              pointerEvents: disabled ? 'none' : 'auto',
             }}
             aria-label={`Drag to reorder ${displayTitle}`}
           >

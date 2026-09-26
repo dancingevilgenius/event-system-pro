@@ -2,6 +2,9 @@ import {
   Box,
   Button,
   Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
 } from '@mui/material';
 import {
   DndContext,
@@ -18,7 +21,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { type SyntheticEvent, useState } from 'react';
+import { type MouseEvent, type SyntheticEvent, useState } from 'react';
 import { mobileColumnSx } from '../constants/layout';
 import {
   createDefaultEventPass,
@@ -33,11 +36,12 @@ type AddEventPassesProps = {
   onFieldEdit?: () => void;
 };
 
+type HasPassesValue = 'yes' | 'no';
+
 export default function AddEventPasses({ onFieldEdit }: AddEventPassesProps) {
+  const [hasPasses, setHasPasses] = useState(false);
   const [passes, setPasses] = useState<EventPassFormState[]>(() => [createDefaultEventPass()]);
-  const [expandedPassId, setExpandedPassId] = useState<string | false>(
-    () => passes[0]?.id ?? false,
-  );
+  const [expandedPassId, setExpandedPassId] = useState<string | false>(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -56,7 +60,27 @@ export default function AddEventPasses({ onFieldEdit }: AddEventPassesProps) {
     onFieldEdit?.();
   };
 
+  const handleHasPassesChange = (
+    _event: MouseEvent<HTMLElement>,
+    nextValue: HasPassesValue | null,
+  ) => {
+    if (nextValue === null) {
+      return;
+    }
+
+    const enabled = nextValue === 'yes';
+    setHasPasses(enabled);
+    if (!enabled) {
+      setExpandedPassId(false);
+    }
+    onFieldEdit?.();
+  };
+
   const handleAddPass = () => {
+    if (!hasPasses) {
+      return;
+    }
+
     const nextPass = createEmptyEventPass();
     setPasses((current) => [...current, nextPass]);
     setExpandedPassId(nextPass.id);
@@ -85,6 +109,30 @@ export default function AddEventPasses({ onFieldEdit }: AddEventPassesProps) {
   return (
     <Box sx={passFieldsColumnSx}>
       <Stack spacing={1.5}>
+        <Stack
+          direction="row"
+          spacing={0.75}
+          sx={{ alignItems: 'center', justifyContent: 'center' }}
+        >
+          <Typography component="span" variant="body2" sx={{ fontWeight: 700 }}>
+            Has Passes
+          </Typography>
+          <ToggleButtonGroup
+            exclusive
+            size="small"
+            value={hasPasses ? 'yes' : 'no'}
+            onChange={handleHasPassesChange}
+            aria-label="Has Passes"
+          >
+            <ToggleButton value="no" aria-label="No">
+              No
+            </ToggleButton>
+            <ToggleButton value="yes" aria-label="Yes">
+              Yes
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Stack>
+
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={passIds} strategy={verticalListSortingStrategy}>
             <Stack spacing={1.5}>
@@ -92,7 +140,8 @@ export default function AddEventPasses({ onFieldEdit }: AddEventPassesProps) {
                 <EventPassSortableAccordion
                   key={pass.id}
                   pass={pass}
-                  expanded={expandedPassId === pass.id}
+                  expanded={hasPasses && expandedPassId === pass.id}
+                  disabled={!hasPasses}
                   onAccordionChange={handleAccordionChange(pass.id)}
                   onChange={updatePass}
                 />
@@ -102,7 +151,7 @@ export default function AddEventPasses({ onFieldEdit }: AddEventPassesProps) {
         </DndContext>
 
         <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Button variant="outlined" onClick={handleAddPass}>
+          <Button variant="outlined" onClick={handleAddPass} disabled={!hasPasses}>
             Add new pass
           </Button>
         </Box>

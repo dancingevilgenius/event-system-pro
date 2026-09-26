@@ -51,6 +51,11 @@ import {
   getScheduleTimeBlockDays,
   hasEventDatesForSchedule,
 } from '../lib/eventDates';
+import {
+  contactVenueTitleLabels,
+  EMPTY_CONTACT_VENUE_SUMMARY,
+  type ContactVenueSummary,
+} from '../lib/eventLocation';
 import { resolveEventGroupCode } from '../lib/eventGroupSession';
 import { passesAccordionTitle } from '../lib/eventPasses';
 
@@ -154,6 +159,8 @@ function sectionDisplayTitle(
   startDateLabel: string,
   passesSummary: EventPassesSummary,
   noEarlyBirdDates: boolean,
+  venueName: string,
+  contactVenueSummary: ContactVenueSummary,
 ): string {
   if (section.id === 'event_name' && status === 'finalized') {
     return eventName.trim();
@@ -169,6 +176,20 @@ function sectionDisplayTitle(
 
   if (section.id === 'early_bird_dates' && status !== 'not_started' && noEarlyBirdDates) {
     return `${section.title} - N/A`;
+  }
+
+  if (section.id === 'location' && status !== 'not_started') {
+    const venue = venueName.trim();
+    if (venue) {
+      return `${section.title} - ${venue}`;
+    }
+  }
+
+  if (section.id === 'online_links' && status !== 'not_started') {
+    const labels = contactVenueTitleLabels(contactVenueSummary);
+    if (labels.length > 0) {
+      return `${section.title} - ${labels.join(', ')}`;
+    }
   }
 
   return section.title;
@@ -213,6 +234,8 @@ function renderSectionContent(
   scheduleDatesSelected: boolean,
   onPassesSummaryChange: (summary: EventPassesSummary) => void,
   onNoEarlyBirdDatesChange: (noEarlyBirdDates: boolean) => void,
+  onVenueChange: (venue: string) => void,
+  onContactVenueSummaryChange: (summary: ContactVenueSummary) => void,
 ) {
   if (sectionId === 'event_name') {
     return (
@@ -235,7 +258,7 @@ function renderSectionContent(
   }
 
   if (sectionId === 'location') {
-    return <AddEventLocation onFieldEdit={onFieldEdit} />;
+    return <AddEventLocation onFieldEdit={onFieldEdit} onVenueChange={onVenueChange} />;
   }
 
   if (sectionId === 'passes') {
@@ -258,7 +281,12 @@ function renderSectionContent(
   }
 
   if (sectionId === 'online_links') {
-    return <AddEventOnlineLinks onFieldEdit={onFieldEdit} />;
+    return (
+      <AddEventOnlineLinks
+        onFieldEdit={onFieldEdit}
+        onSummaryChange={onContactVenueSummaryChange}
+      />
+    );
   }
 
   if (sectionId === 'important_contacts') {
@@ -312,6 +340,8 @@ export default function AdminAddEventPage() {
     passCount: 1,
   });
   const [noEarlyBirdDates, setNoEarlyBirdDates] = useState(true);
+  const [venueName, setVenueName] = useState('');
+  const [contactVenueSummary, setContactVenueSummary] = useState(EMPTY_CONTACT_VENUE_SUMMARY);
   const [eventDates, setEventDates] = useState<EventDatesFormState>(EMPTY_EVENT_DATES);
 
   const sensors = useSensors(
@@ -445,6 +475,20 @@ export default function AdminAddEventPage() {
     );
   }, []);
 
+  const handleVenueChange = useCallback((nextVenue: string) => {
+    setVenueName((current) => (current === nextVenue ? current : nextVenue));
+  }, []);
+
+  const handleContactVenueSummaryChange = useCallback((summary: ContactVenueSummary) => {
+    setContactVenueSummary((current) =>
+      current.hasWeb === summary.hasWeb
+      && current.hasPhone === summary.hasPhone
+      && current.hasSocial === summary.hasSocial
+        ? current
+        : summary,
+    );
+  }, []);
+
   const handleEventNameChange = (name: string) => {
     setEventName(name);
 
@@ -532,6 +576,8 @@ export default function AdminAddEventPage() {
                     scheduleDatesSelected,
                     handlePassesSummaryChange,
                     handleNoEarlyBirdDatesChange,
+                    handleVenueChange,
+                    handleContactVenueSummaryChange,
                   );
                   const sectionStatus = sectionStatuses[section.id];
                   const sectionTitle = sectionDisplayTitle(
@@ -541,6 +587,8 @@ export default function AdminAddEventPage() {
                     formatEventStartDateLabel(eventDates.startDateTime),
                     passesSummary,
                     noEarlyBirdDates,
+                    venueName,
+                    contactVenueSummary,
                   );
 
                   return (

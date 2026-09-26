@@ -1,7 +1,9 @@
 import { Box, Stack } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
+  contactVenueSummaryFromContact,
   EMPTY_EVENT_VENUE_CONTACT,
+  type ContactVenueSummary,
   type EventVenueContactJson,
 } from '../lib/eventLocation';
 import { mobileColumnSx } from '../constants/layout';
@@ -25,12 +27,18 @@ const contactFieldsInnerStackSx = {
 
 type AddEventOnlineLinksProps = {
   onFieldEdit?: () => void;
+  onSummaryChange?: (summary: ContactVenueSummary) => void;
 };
 
 export default function AddEventOnlineLinks({
   onFieldEdit,
+  onSummaryChange,
 }: AddEventOnlineLinksProps) {
   const [contact, setContact] = useState(EMPTY_EVENT_VENUE_CONTACT);
+
+  useEffect(() => {
+    onSummaryChange?.(contactVenueSummaryFromContact(contact));
+  }, [contact, onSummaryChange]);
 
   const updateContactField = (field: keyof EventVenueContactJson, value: string) => {
     setContact((current) => ({ ...current, [field]: value }));

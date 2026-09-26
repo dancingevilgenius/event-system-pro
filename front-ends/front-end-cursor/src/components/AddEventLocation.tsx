@@ -36,14 +36,19 @@ function FieldGroup({ title, children }: FieldGroupProps) {
 
 type AddEventLocationProps = {
   onFieldEdit?: () => void;
+  onVenueChange?: (venue: string) => void;
 };
 
-export default function AddEventLocation({ onFieldEdit }: AddEventLocationProps) {
+export default function AddEventLocation({ onFieldEdit, onVenueChange }: AddEventLocationProps) {
   const [location, setLocation] = useState(EMPTY_EVENT_LOCATION);
   const [stateOptions, setStateOptions] = useState<StaticListEntry[]>([]);
   const [countryOptions, setCountryOptions] = useState<StaticListEntry[]>([]);
   const [loadingLists, setLoadingLists] = useState(true);
   const [listError, setListError] = useState<string | null>(null);
+
+  useEffect(() => {
+    onVenueChange?.(location.venue);
+  }, [location.venue, onVenueChange]);
 
   useEffect(() => {
     let cancelled = false;

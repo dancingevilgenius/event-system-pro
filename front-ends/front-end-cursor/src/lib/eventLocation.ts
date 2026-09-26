@@ -1,3 +1,5 @@
+import { phoneHasNationalDigits } from '../utils/phoneNumbers';
+
 /** Shape of `event.location_json` used by demo seeds and the add-event form. */
 export type EventLocationJson = {
   venue: string;
@@ -44,6 +46,47 @@ export const EMPTY_EVENT_VENUE_CONTACT: EventVenueContactJson = {
   social_media_2: '',
   social_media_3: '',
 };
+
+export type ContactVenueSummary = {
+  hasWeb: boolean;
+  hasPhone: boolean;
+  hasSocial: boolean;
+};
+
+export const EMPTY_CONTACT_VENUE_SUMMARY: ContactVenueSummary = {
+  hasWeb: false,
+  hasPhone: false,
+  hasSocial: false,
+};
+
+export function contactVenueSummaryFromContact(contact: EventVenueContactJson): ContactVenueSummary {
+  return {
+    hasWeb: contact.website.trim().length > 0,
+    hasPhone: phoneHasNationalDigits(contact.phone),
+    hasSocial: [contact.social_media_1, contact.social_media_2, contact.social_media_3].some(
+      (value) => value.trim().length > 0,
+    ),
+  };
+}
+
+/** Labels for filled contact channels, in Web, Phone, Social Media order. */
+export function contactVenueTitleLabels(summary: ContactVenueSummary): string[] {
+  const labels: string[] = [];
+
+  if (summary.hasWeb) {
+    labels.push('Web');
+  }
+
+  if (summary.hasPhone) {
+    labels.push('Phone');
+  }
+
+  if (summary.hasSocial) {
+    labels.push('Social Media');
+  }
+
+  return labels;
+}
 
 export function eventVenueContactToJson(contact: EventVenueContactJson): EventVenueContactJson {
   return {

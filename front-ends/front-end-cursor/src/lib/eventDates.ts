@@ -112,3 +112,18 @@ export function getScheduleTimeBlockDays(dates: EventDatesFormState): ScheduleTi
 export function hasEventDatesForSchedule(dates: EventDatesFormState): boolean {
   return getScheduleTimeBlockDays(dates).length > 0;
 }
+
+/** Calendar date for the Date(s) accordion title, such as `Sep 25, 2026`. */
+export function formatEventStartDateLabel(startDateTime: string): string {
+  const start = parseDateTimeLocalValue(startDateTime);
+
+  if (!start) {
+    return '';
+  }
+
+  return start.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}

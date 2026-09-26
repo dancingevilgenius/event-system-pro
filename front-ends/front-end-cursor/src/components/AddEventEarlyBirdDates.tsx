@@ -9,7 +9,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from '@mui/material';
-import { type MouseEvent, useState } from 'react';
+import { type MouseEvent, useEffect, useState } from 'react';
 import { mobileColumnSx } from '../constants/layout';
 import {
   createInitialEarlyBirdWindows,
@@ -50,11 +50,19 @@ const earlyBirdTableSx = {
 
 type AddEventEarlyBirdDatesProps = {
   onFieldEdit?: () => void;
+  onNoEarlyBirdDatesChange?: (noEarlyBirdDates: boolean) => void;
 };
 
-export default function AddEventEarlyBirdDates({ onFieldEdit }: AddEventEarlyBirdDatesProps) {
+export default function AddEventEarlyBirdDates({
+  onFieldEdit,
+  onNoEarlyBirdDatesChange,
+}: AddEventEarlyBirdDatesProps) {
   const [mode, setMode] = useState<EarlyBirdDatesMode>('none');
   const [windows, setWindows] = useState<EarlyBirdWindow[]>(() => createInitialEarlyBirdWindows());
+
+  useEffect(() => {
+    onNoEarlyBirdDatesChange?.(mode === 'none');
+  }, [mode, onNoEarlyBirdDatesChange]);
 
   const updateWindow = (
     id: string,

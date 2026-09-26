@@ -21,7 +21,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { type MouseEvent, type SyntheticEvent, useState } from 'react';
+import { type MouseEvent, type SyntheticEvent, useEffect, useState } from 'react';
 import { mobileColumnSx } from '../constants/layout';
 import {
   createDefaultEventPass,
@@ -32,13 +32,22 @@ import EventPassSortableAccordion from './EventPassSortableAccordion';
 
 const passFieldsColumnSx = mobileColumnSx;
 
+export type EventPassesSummary = {
+  hasPasses: boolean;
+  passCount: number;
+};
+
 type AddEventPassesProps = {
   onFieldEdit?: () => void;
+  onSummaryChange?: (summary: EventPassesSummary) => void;
 };
 
 type HasPassesValue = 'yes' | 'no';
 
-export default function AddEventPasses({ onFieldEdit }: AddEventPassesProps) {
+export default function AddEventPasses({
+  onFieldEdit,
+  onSummaryChange,
+}: AddEventPassesProps) {
   const [hasPasses, setHasPasses] = useState(false);
   const [passes, setPasses] = useState<EventPassFormState[]>(() => [createDefaultEventPass()]);
   const [expandedPassId, setExpandedPassId] = useState<string | false>(false);
@@ -49,6 +58,10 @@ export default function AddEventPasses({ onFieldEdit }: AddEventPassesProps) {
   );
 
   const passIds = passes.map((pass) => pass.id);
+
+  useEffect(() => {
+    onSummaryChange?.({ hasPasses, passCount: passes.length });
+  }, [hasPasses, onSummaryChange, passes.length]);
 
   const updatePass = (
     id: string,

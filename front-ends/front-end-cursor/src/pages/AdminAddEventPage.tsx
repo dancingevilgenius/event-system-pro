@@ -19,14 +19,15 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { type SyntheticEvent, useEffect, useMemo, useState } from 'react';
+import { type SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { fetchEventById, fetchEventGroupByCode } from '../api/postgrest';
 import AddEventDates from '../components/AddEventDates';
+import AddEventName, { eventNameCanBeFinalized } from '../components/AddEventName';
 import AddEventLocation from '../components/AddEventLocation';
 import AddEventOnlineLinks from '../components/AddEventOnlineLinks';
 import AddEventEarlyBirdDates from '../components/AddEventEarlyBirdDates';
-import AddEventPasses from '../components/AddEventPasses';
+import AddEventPasses, { type EventPassesSummary } from '../components/AddEventPasses';
 import AddEventScheduleDays from '../components/AddEventScheduleDays';
 import AddEventRoles from '../components/AddEventRoles';
 import AddEventImportantContacts from '../components/AddEventImportantContacts';
@@ -46,10 +47,12 @@ import {
   EMPTY_EVENT_DATES,
   eventDatesFromApiTimestamps,
   type EventDatesFormState,
+  formatEventStartDateLabel,
   getScheduleTimeBlockDays,
   hasEventDatesForSchedule,
 } from '../lib/eventDates';
 import { resolveEventGroupCode } from '../lib/eventGroupSession';
+import { passesAccordionTitle } from '../lib/eventPasses';
 
 type AddEventLocationState = {
   eventGroupCode?: string;
@@ -57,6 +60,7 @@ type AddEventLocationState = {
 };
 
 type AddEventSectionId =
+  | 'event_name'
   | 'dates'
   | 'passes'
   | 'roles'
@@ -76,6 +80,7 @@ type AddEventSection = {
 };
 
 const ADD_EVENT_SECTIONS: AddEventSection[] = [
+  { id: 'event_name', title: 'Event Name', description: '' },
   { id: 'dates', title: 'Date(s)', description: '' },
   { id: 'passes', title: 'Passes', description: '' },
   { id: 'roles', title: 'Roles', description: '' },
@@ -127,6 +132,7 @@ const DEFAULT_SECTION_STATUS: AddEventSectionStatus = 'not_started';
 
 function createInitialSectionStatuses(): Record<AddEventSectionId, AddEventSectionStatus> {
   return {
+    event_name: DEFAULT_SECTION_STATUS,
     dates: DEFAULT_SECTION_STATUS,
     passes: DEFAULT_SECTION_STATUS,
     roles: DEFAULT_SECTION_STATUS,
@@ -139,6 +145,49 @@ function createInitialSectionStatuses(): Record<AddEventSectionId, AddEventSecti
     staff: DEFAULT_SECTION_STATUS,
     volunteers: DEFAULT_SECTION_STATUS,
   };
+}
+
+function sectionDisplayTitle(
+  section: AddEventSection,
+  status: AddEventSectionStatus,
+  eventName: string,
+  startDateLabel: string,
+  passesSummary: EventPassesSummary,
+  noEarlyBirdDates: boolean,
+): string {
+  if (section.id === 'event_name' && status === 'finalized') {
+    return eventName.trim();
+  }
+
+  if (section.id === 'dates' && status === 'finalized' && startDateLabel) {
+    return `${section.title} ${startDateLabel}`;
+  }
+
+  if (section.id === 'passes' && status !== 'not_started') {
+    return passesAccordionTitle(passesSummary.hasPasses, passesSummary.passCount);
+  }
+
+  if (section.id === 'early_bird_dates' && status !== 'not_started' && noEarlyBirdDates) {
+    return `${section.title} - N/A`;
+  }
+
+  return section.title;
+}
+
+function disabledStatusesForSection(
+  sectionId: AddEventSectionId,
+  eventNameReadyToFinalize: boolean,
+  scheduleDatesSelected: boolean,
+): AddEventSectionStatus[] | undefined {
+  if (sectionId === 'event_name' && !eventNameReadyToFinalize) {
+    return ['finalized'];
+  }
+
+  if (sectionId === 'schedule' && !scheduleDatesSelected) {
+    return ['in_progress', 'finalized'];
+  }
+
+  return undefined;
 }
 
 function promoteSectionToInProgress(
@@ -155,12 +204,26 @@ function promoteSectionToInProgress(
 function renderSectionContent(
   sectionId: AddEventSectionId,
   onFieldEdit: () => void,
+  eventName: string,
+  onEventNameChange: (name: string) => void,
   eventDates: EventDatesFormState,
   onEventDatesChange: (dates: EventDatesFormState) => void,
   scheduleSectionStatus: AddEventSectionStatus,
   onScheduleSectionStatusChange: (status: AddEventSectionStatus) => void,
   scheduleDatesSelected: boolean,
+  onPassesSummaryChange: (summary: EventPassesSummary) => void,
+  onNoEarlyBirdDatesChange: (noEarlyBirdDates: boolean) => void,
 ) {
+  if (sectionId === 'event_name') {
+    return (
+      <AddEventName
+        name={eventName}
+        onNameChange={onEventNameChange}
+        onFieldEdit={onFieldEdit}
+      />
+    );
+  }
+
   if (sectionId === 'dates') {
     return (
       <AddEventDates
@@ -176,7 +239,9 @@ function renderSectionContent(
   }
 
   if (sectionId === 'passes') {
-    return <AddEventPasses onFieldEdit={onFieldEdit} />;
+    return (
+      <AddEventPasses onFieldEdit={onFieldEdit} onSummaryChange={onPassesSummaryChange} />
+    );
   }
 
   if (sectionId === 'roles') {
@@ -184,7 +249,12 @@ function renderSectionContent(
   }
 
   if (sectionId === 'early_bird_dates') {
-    return <AddEventEarlyBirdDates onFieldEdit={onFieldEdit} />;
+    return (
+      <AddEventEarlyBirdDates
+        onFieldEdit={onFieldEdit}
+        onNoEarlyBirdDatesChange={onNoEarlyBirdDatesChange}
+      />
+    );
   }
 
   if (sectionId === 'online_links') {
@@ -233,9 +303,15 @@ export default function AdminAddEventPage() {
     typeof rawEventId === 'number' && Number.isFinite(rawEventId) ? rawEventId : null;
   const isEditingEvent = eventId !== null;
   const [eventGroupName, setEventGroupName] = useState('');
-  const [expandedSection, setExpandedSection] = useState<AddEventSectionId | false>('dates');
+  const [expandedSection, setExpandedSection] = useState<AddEventSectionId | false>('event_name');
   const [sectionStatuses, setSectionStatuses] = useState(createInitialSectionStatuses);
   const [sectionOrder, setSectionOrder] = useState<AddEventSectionId[]>(DEFAULT_SECTION_ORDER);
+  const [eventName, setEventName] = useState('');
+  const [passesSummary, setPassesSummary] = useState<EventPassesSummary>({
+    hasPasses: false,
+    passCount: 1,
+  });
+  const [noEarlyBirdDates, setNoEarlyBirdDates] = useState(true);
   const [eventDates, setEventDates] = useState<EventDatesFormState>(EMPTY_EVENT_DATES);
 
   const sensors = useSensors(
@@ -249,6 +325,7 @@ export default function AdminAddEventPage() {
   );
 
   const scheduleDatesSelected = hasEventDatesForSchedule(eventDates);
+  const eventNameReadyToFinalize = eventNameCanBeFinalized(eventName);
 
   const backPath =
     isEditingEvent && eventGroupCode
@@ -313,13 +390,23 @@ export default function AdminAddEventPage() {
         }
 
         const nextDates = eventDatesFromApiTimestamps(event.startDate, event.endDate);
+        const nextName = event.name ?? '';
         setEventDates(nextDates);
+        setEventName(nextName);
 
-        if (nextDates.startDateTime || nextDates.endDateTime) {
-          setSectionStatuses((current) =>
-            current.dates === 'in_progress' ? current : { ...current, dates: 'in_progress' },
-          );
-        }
+        setSectionStatuses((current) => {
+          const next = { ...current };
+
+          if (nextName.trim() && next.event_name !== 'in_progress') {
+            next.event_name = 'in_progress';
+          }
+
+          if ((nextDates.startDateTime || nextDates.endDateTime) && next.dates !== 'in_progress') {
+            next.dates = 'in_progress';
+          }
+
+          return next;
+        });
       })
       .catch(() => {
         // Keep empty dates when the event cannot be loaded.
@@ -344,8 +431,46 @@ export default function AdminAddEventPage() {
     });
   }, [scheduleDatesSelected]);
 
+  const handlePassesSummaryChange = useCallback((summary: EventPassesSummary) => {
+    setPassesSummary((current) =>
+      current.hasPasses === summary.hasPasses && current.passCount === summary.passCount
+        ? current
+        : summary,
+    );
+  }, []);
+
+  const handleNoEarlyBirdDatesChange = useCallback((nextNoEarlyBirdDates: boolean) => {
+    setNoEarlyBirdDates((current) =>
+      current === nextNoEarlyBirdDates ? current : nextNoEarlyBirdDates,
+    );
+  }, []);
+
+  const handleEventNameChange = (name: string) => {
+    setEventName(name);
+
+    if (eventNameCanBeFinalized(name)) {
+      return;
+    }
+
+    setSectionStatuses((current) => {
+      if (current.event_name !== 'finalized') {
+        return current;
+      }
+
+      return { ...current, event_name: 'in_progress' };
+    });
+  };
+
   const handleSectionStatusChange =
     (sectionId: AddEventSectionId) => (status: AddEventSectionStatus) => {
+      if (
+        sectionId === 'event_name'
+        && status === 'finalized'
+        && !eventNameCanBeFinalized(eventName)
+      ) {
+        return;
+      }
+
       setSectionStatuses((current) => ({ ...current, [sectionId]: status }));
     };
 
@@ -398,19 +523,31 @@ export default function AdminAddEventPage() {
                   const sectionContent = renderSectionContent(
                     section.id,
                     () => handleSectionFieldEdit(section.id),
+                    eventName,
+                    handleEventNameChange,
                     eventDates,
                     setEventDates,
                     sectionStatuses.schedule,
                     handleSectionStatusChange('schedule'),
                     scheduleDatesSelected,
+                    handlePassesSummaryChange,
+                    handleNoEarlyBirdDatesChange,
                   );
                   const sectionStatus = sectionStatuses[section.id];
+                  const sectionTitle = sectionDisplayTitle(
+                    section,
+                    sectionStatus,
+                    eventName,
+                    formatEventStartDateLabel(eventDates.startDateTime),
+                    passesSummary,
+                    noEarlyBirdDates,
+                  );
 
                   return (
                     <AddEventSortableSectionAccordion
                       key={section.id}
                       sectionId={section.id}
-                      sectionTitle={section.title}
+                      sectionTitle={sectionTitle}
                       sectionDescription={section.description}
                       expanded={expandedSection === section.id}
                       onAccordionChange={handleAccordionChange(section.id)}
@@ -418,11 +555,11 @@ export default function AdminAddEventPage() {
                       sectionStatus={sectionStatus}
                       onStatusChange={handleSectionStatusChange(section.id)}
                       showStatusToggle={section.id !== 'schedule'}
-                      disabledStatuses={
-                        section.id === 'schedule' && !scheduleDatesSelected
-                          ? ['in_progress', 'finalized']
-                          : undefined
-                      }
+                      disabledStatuses={disabledStatusesForSection(
+                        section.id,
+                        eventNameReadyToFinalize,
+                        scheduleDatesSelected,
+                      )}
                     />
                   );
                 })}

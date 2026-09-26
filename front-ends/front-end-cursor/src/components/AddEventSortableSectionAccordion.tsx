@@ -97,7 +97,13 @@ export default function AddEventSortableSectionAccordion({
           <Typography
             variant="subtitle1"
             component="span"
-            sx={{ fontWeight: 600, minWidth: 0 }}
+            sx={{
+              fontWeight: 600,
+              minWidth: 0,
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
           >
             {sectionTitle}
           </Typography>

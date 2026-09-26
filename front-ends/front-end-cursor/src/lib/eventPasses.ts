@@ -25,6 +25,18 @@ export function createEmptyEventPass(): EventPassFormState {
   };
 }
 
+export function passesAccordionTitle(hasPasses: boolean, passCount: number): string {
+  if (!hasPasses) {
+    return 'Passes - N/A';
+  }
+
+  if (passCount >= 1) {
+    return `Passes - ${passCount}`;
+  }
+
+  return 'Passes';
+}
+
 export function getEventPassDisplayName(name: string): string {
   const trimmed = name.trim();
   return trimmed.length > 0 ? trimmed : 'Untitled Pass';

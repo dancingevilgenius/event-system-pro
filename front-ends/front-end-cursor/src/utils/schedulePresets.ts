@@ -107,6 +107,15 @@ export function parseSchedulePreset(options: {
     if (options.intervalSeconds === 30) {
       return { ...parsed, frequency: 'once_every_30_seconds' };
     }
+    if (options.intervalSeconds === 60) {
+      return { ...parsed, frequency: 'once_a_minute' };
+    }
+    if (options.intervalSeconds === 600) {
+      return { ...parsed, frequency: 'once_every_10_minutes' };
+    }
+    if (options.intervalSeconds === 1800) {
+      return { ...parsed, frequency: 'once_every_30_minutes' };
+    }
     return parsed;
   }
 
@@ -234,14 +243,23 @@ export function buildScheduleFromPreset(
     month?: number;
   },
 ): BuiltSchedule {
-  if (frequency === 'once_every_30_seconds') {
-    return { kind: 'interval', intervalSeconds: 30 };
+  // Sub-hour presets use interval loops (refreshable without recreating the
+  // scheduler). Cron is minute-granular and only rewritten on a live refresh.
+  switch (frequency) {
+    case 'once_every_30_seconds':
+      return { kind: 'interval', intervalSeconds: 30 };
+    case 'once_a_minute':
+      return { kind: 'interval', intervalSeconds: 60 };
+    case 'once_every_10_minutes':
+      return { kind: 'interval', intervalSeconds: 600 };
+    case 'once_every_30_minutes':
+      return { kind: 'interval', intervalSeconds: 1800 };
+    default:
+      return {
+        kind: 'cron',
+        cron: buildCronFromPreset(frequency, time, options),
+      };
   }
-
-  return {
-    kind: 'cron',
-    cron: buildCronFromPreset(frequency, time, options),
-  };
 }
 
 export function buildCronFromPreset(
@@ -261,13 +279,10 @@ export function buildCronFromPreset(
 
   switch (frequency) {
     case 'once_every_30_seconds':
-      throw new Error('once_every_30_seconds uses interval_seconds, not cron');
     case 'once_a_minute':
-      return '* * * * *';
     case 'once_every_10_minutes':
-      return '*/10 * * * *';
     case 'once_every_30_minutes':
-      return '*/30 * * * *';
+      throw new Error(`${frequency} uses interval_seconds, not cron`);
     case 'once_an_hour':
       return '0 * * * *';
     case 'once_a_day':

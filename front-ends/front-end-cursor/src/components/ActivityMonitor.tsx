@@ -7,7 +7,6 @@ import {
   INACTIVITY_LOGOUT_MESSAGE,
   setFlashWarning,
 } from '../lib/authMessages';
-import { isInactivityLogoutDisabled } from '../lib/session';
 
 /** Keep well below short idle windows (e.g. 30s schedule = 30s logout). */
 const SYNC_DEBOUNCE_MS = 5 * 1000;
@@ -18,8 +17,8 @@ function isInactiveLogout(status: { ok?: boolean; active?: boolean }): boolean {
 }
 
 /**
- * Keeps server last-activity fresh for the inactivity_logout cron, and clears
- * the local session once that cron stamps inactive_logout_at.
+ * Keeps server last-activity fresh for the inactivity_logout job, and clears
+ * the local session once that job stamps inactive_logout_at.
  * Does not run its own inactivity timer.
  */
 export default function ActivityMonitor() {
@@ -32,10 +31,9 @@ export default function ActivityMonitor() {
   const loggingOutRef = useRef(false);
   const prevPathnameRef = useRef<string | null>(null);
   const sessionUserIdRef = useRef<number | null>(null);
-  const inactivityDisabled = isInactivityLogoutDisabled();
 
   const forceInactiveLogout = useCallback(() => {
-    if (inactivityDisabled || !session || loggingOutRef.current) {
+    if (!session || loggingOutRef.current) {
       return;
     }
 
@@ -44,11 +42,11 @@ export default function ActivityMonitor() {
     showWarning(INACTIVITY_LOGOUT_MESSAGE);
     logout();
     navigate('/', { replace: true });
-  }, [inactivityDisabled, logout, navigate, session, showWarning]);
+  }, [logout, navigate, session, showWarning]);
 
   const syncActivityToServer = useCallback(
     async (force = false) => {
-      if (inactivityDisabled || !session || syncingRef.current) {
+      if (!session || syncingRef.current) {
         return;
       }
 
@@ -71,11 +69,11 @@ export default function ActivityMonitor() {
         syncingRef.current = false;
       }
     },
-    [forceInactiveLogout, inactivityDisabled, session],
+    [forceInactiveLogout, session],
   );
 
   const refreshSessionStatus = useCallback(async () => {
-    if (inactivityDisabled || !session) {
+    if (!session) {
       return;
     }
 
@@ -87,15 +85,11 @@ export default function ActivityMonitor() {
     } catch {
       // Fall back to the next poll when the server is unreachable.
     }
-  }, [forceInactiveLogout, inactivityDisabled, session]);
+  }, [forceInactiveLogout, session]);
 
   const recordActivity = useCallback(() => {
-    if (inactivityDisabled) {
-      return;
-    }
-
     void syncActivityToServer();
-  }, [inactivityDisabled, syncActivityToServer]);
+  }, [syncActivityToServer]);
 
   useEffect(() => {
     loggingOutRef.current = false;
@@ -108,10 +102,6 @@ export default function ActivityMonitor() {
       return;
     }
 
-    if (inactivityDisabled) {
-      return;
-    }
-
     if (sessionUserIdRef.current === session.user_id) {
       return;
     }
@@ -119,10 +109,10 @@ export default function ActivityMonitor() {
     sessionUserIdRef.current = session.user_id;
     prevPathnameRef.current = location.pathname;
     void refreshSessionStatus();
-  }, [inactivityDisabled, location.pathname, refreshSessionStatus, session]);
+  }, [location.pathname, refreshSessionStatus, session]);
 
   useEffect(() => {
-    if (inactivityDisabled || !session) {
+    if (!session) {
       return;
     }
 
@@ -135,10 +125,10 @@ export default function ActivityMonitor() {
       prevPathnameRef.current = location.pathname;
       recordActivity();
     }
-  }, [inactivityDisabled, location.pathname, recordActivity, session]);
+  }, [location.pathname, recordActivity, session]);
 
   useEffect(() => {
-    if (inactivityDisabled || !session) {
+    if (!session) {
       return;
     }
 
@@ -164,10 +154,10 @@ export default function ActivityMonitor() {
       document.removeEventListener('click', onClick, true);
       document.removeEventListener('keydown', onKeyDown, true);
     };
-  }, [inactivityDisabled, recordActivity, session]);
+  }, [recordActivity, session]);
 
   useEffect(() => {
-    if (inactivityDisabled || !session) {
+    if (!session) {
       return;
     }
 
@@ -189,7 +179,7 @@ export default function ActivityMonitor() {
       window.clearInterval(serverSyncId);
       document.removeEventListener('visibilitychange', onVisibilityChange);
     };
-  }, [inactivityDisabled, refreshSessionStatus, session]);
+  }, [refreshSessionStatus, session]);
 
   return null;
 }

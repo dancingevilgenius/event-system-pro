@@ -207,7 +207,7 @@ export default function MessageStack({ messages, autoDismissMs, onDismiss }: Mes
           <MessageItem
             key={message.id}
             message={message}
-            autoDismissMs={autoDismissMs}
+            autoDismissMs={message.sticky ? 0 : autoDismissMs}
             isExiting={exitingIds.has(message.id)}
             exitHeight={exitHeights[message.id] ?? null}
             onRequestDismiss={handleRequestDismiss}

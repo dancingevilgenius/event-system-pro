@@ -21,6 +21,57 @@ import { secretQuestionsFromStaticListEntries } from '../utils/secretQuestions';
 const POSTGREST_URL =
   import.meta.env.VITE_POSTGREST_URL ?? (import.meta.env.DEV ? '/api' : 'http://localhost:3000');
 
+/** Fixed id for the sticky API-unreachable message box. */
+export const API_UNREACHABLE_MESSAGE_ID = 'api-unreachable';
+
+export const API_UNREACHABLE_MESSAGE = import.meta.env.DEV
+  ? 'Cannot reach the API. Is Docker Desktop running? Start PostgREST (port 3000), then try again.'
+  : 'Cannot reach the API. Check your connection and try again.';
+
+export function isNetworkError(error: unknown): boolean {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  if (error.message === API_UNREACHABLE_MESSAGE) {
+    return true;
+  }
+
+  const message = error.message.toLowerCase();
+  return (
+    error.name === 'TypeError' ||
+    error.name === 'AbortError' ||
+    message.includes('failed to fetch') ||
+    message.includes('networkerror') ||
+    message.includes('load failed') ||
+    message.includes('network request failed')
+  );
+}
+
+function apiUnreachableError(): Error {
+  return new Error(API_UNREACHABLE_MESSAGE);
+}
+
+/** True when PostgREST (via /api in dev) responds successfully. */
+export async function checkApiReachable(timeoutMs = 4000): Promise<boolean> {
+  const controller = new AbortController();
+  const timer = window.setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(`${POSTGREST_URL}/`, {
+      method: 'GET',
+      signal: controller.signal,
+      cache: 'no-store',
+      headers: buildAuthHeaders(undefined, 'omit'),
+    });
+    return response.ok;
+  } catch {
+    return false;
+  } finally {
+    window.clearTimeout(timer);
+  }
+}
+
 type RpcErrorBody = {
   message?: string;
   hint?: string;
@@ -45,33 +96,52 @@ function buildAuthHeaders(
   return headers;
 }
 
+function isGatewayOrProxyFailureStatus(status: number): boolean {
+  return status === 500 || status === 502 || status === 503 || status === 504;
+}
+
 async function callRpc<TResponse>(
   functionName: string,
   body: Record<string, unknown>,
   auth: RequestAuthMode = 'include',
 ): Promise<TResponse> {
-  const response = await fetch(`${POSTGREST_URL}/rpc/${functionName}`, {
-    method: 'POST',
-    headers: buildAuthHeaders(
-      {
-        'Content-Type': 'application/json',
-        Prefer: 'return=representation',
-      },
-      auth,
-    ),
-    body: JSON.stringify(body),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${POSTGREST_URL}/rpc/${functionName}`, {
+      method: 'POST',
+      headers: buildAuthHeaders(
+        {
+          'Content-Type': 'application/json',
+          Prefer: 'return=representation',
+        },
+        auth,
+      ),
+      body: JSON.stringify(body),
+    });
+  } catch (error) {
+    if (isNetworkError(error)) {
+      throw apiUnreachableError();
+    }
+    throw error;
+  }
 
   if (!response.ok) {
     let message = `Request failed (${response.status})`;
+    let hasJsonMessage = false;
     try {
       const errorBody = (await response.json()) as RpcErrorBody;
       if (errorBody.message) {
         message = errorBody.message;
+        hasJsonMessage = true;
       }
     } catch {
       // Keep default message when body is not JSON.
     }
+
+    if (!hasJsonMessage && isGatewayOrProxyFailureStatus(response.status)) {
+      throw apiUnreachableError();
+    }
+
     throw new Error(message);
   }
 
@@ -888,11 +958,31 @@ async function fetchJson<T>(
   errorMessage: string,
   auth: RequestAuthMode = 'include',
 ): Promise<T> {
-  const response = await fetch(url, {
-    headers: buildAuthHeaders(undefined, auth),
-  });
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      headers: buildAuthHeaders(undefined, auth),
+    });
+  } catch (error) {
+    if (isNetworkError(error)) {
+      throw apiUnreachableError();
+    }
+    throw error;
+  }
 
   if (!response.ok) {
+    if (isGatewayOrProxyFailureStatus(response.status)) {
+      let hasJsonMessage = false;
+      try {
+        const errorBody = (await response.json()) as RpcErrorBody;
+        hasJsonMessage = Boolean(errorBody.message);
+      } catch {
+        // Non-JSON body — treat 5xx as API unreachable (e.g. Vite proxy when Docker is down).
+      }
+      if (!hasJsonMessage) {
+        throw apiUnreachableError();
+      }
+    }
     throw new Error(`${errorMessage} (${response.status})`);
   }
 
@@ -2207,6 +2297,8 @@ export type JudgeSearchUser = {
   firstName: string;
   lastName: string;
   email: string;
+  city: string;
+  state: string;
 };
 
 /** Search users by first and/or last name (admin judging pool). */
@@ -2223,7 +2315,7 @@ export async function searchUsersByFirstAndLastName(
   }
 
   const params = new URLSearchParams({
-    select: 'user_id,name_json,email',
+    select: 'user_id,name_json,email,addresses_json',
     limit: String(limit),
     order: 'name_json->>last.asc,name_json->>first.asc',
   });
@@ -2237,12 +2329,17 @@ export async function searchUsersByFirstAndLastName(
   );
 
   return records
-    .map((row) => ({
-      userId: row.user_id,
-      firstName: row.name_json?.first?.trim() ?? '',
-      lastName: row.name_json?.last?.trim() ?? '',
-      email: row.email?.trim() ?? '',
-    }))
+    .map((row) => {
+      const address = primaryAddress(row.addresses_json);
+      return {
+        userId: row.user_id,
+        firstName: row.name_json?.first?.trim() ?? '',
+        lastName: row.name_json?.last?.trim() ?? '',
+        email: row.email?.trim() ?? '',
+        city: address?.city?.trim() ?? '',
+        state: address?.state_or_province?.trim() ?? '',
+      };
+    })
     .filter((user) => user.userId > 0);
 }
 
@@ -2251,6 +2348,8 @@ export type EventJudgePoolMember = {
   firstname: string;
   lastname: string;
   email: string;
+  city: string;
+  state: string;
 };
 
 type ApiEventJudgePoolMember = {
@@ -2258,6 +2357,8 @@ type ApiEventJudgePoolMember = {
   firstname?: string | null;
   lastname?: string | null;
   email?: string | null;
+  city?: string | null;
+  state?: string | null;
 };
 
 function parseEventJudgePoolMembers(value: unknown): EventJudgePoolMember[] {
@@ -2272,6 +2373,8 @@ function parseEventJudgePoolMembers(value: unknown): EventJudgePoolMember[] {
       firstname: typeof entry.firstname === 'string' ? entry.firstname.trim() : '',
       lastname: typeof entry.lastname === 'string' ? entry.lastname.trim() : '',
       email: typeof entry.email === 'string' ? entry.email.trim() : '',
+      city: typeof entry.city === 'string' ? entry.city.trim() : '',
+      state: typeof entry.state === 'string' ? entry.state.trim() : '',
     }))
     .filter((entry) => Number.isFinite(entry.userId) && entry.userId > 0);
 }
@@ -2304,6 +2407,8 @@ export function saveEventJudgingPool(eventCode: string, judges: EventJudgePoolMe
       firstname: judge.firstname,
       lastname: judge.lastname,
       email: judge.email,
+      city: judge.city,
+      state: judge.state,
     })),
   });
 }
@@ -2338,6 +2443,8 @@ export function judgeSearchUserToPoolMember(user: JudgeSearchUser): EventJudgePo
     firstname: user.firstName,
     lastname: user.lastName,
     email: user.email,
+    city: user.city,
+    state: user.state,
   };
 }
 

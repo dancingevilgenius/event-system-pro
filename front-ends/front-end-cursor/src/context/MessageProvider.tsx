@@ -5,7 +5,7 @@ import {
   readStoredMessageAutoDismissMs,
   storeMessageAutoDismissMs,
 } from '../lib/messagePreferences';
-import type { AppMessage, MessageType } from '../types/messages';
+import type { AppMessage, MessageType, ShowMessageOptions } from '../types/messages';
 import { MessageContext } from './MessageContext';
 
 type MessageProviderProps = {
@@ -34,32 +34,39 @@ export default function MessageProvider({ children }: MessageProviderProps) {
   }, []);
 
   const clearMessages = useCallback(() => {
-    setMessages([]);
+    setMessages((current) => current.filter((message) => message.sticky));
   }, []);
 
-  const showMessage = useCallback((type: MessageType, text: string) => {
-    const id = createMessageId();
-    setMessages((current) => [...current, { id, type, text }]);
+  const showMessage = useCallback((type: MessageType, text: string, options?: ShowMessageOptions) => {
+    const id = options?.id ?? createMessageId();
+    const sticky = options?.sticky === true;
+    const nextMessage: AppMessage = { id, type, text, sticky };
+
+    setMessages((current) => {
+      const withoutSameId = current.filter((message) => message.id !== id);
+      return [...withoutSameId, nextMessage];
+    });
+
     return id;
   }, []);
 
   const showSuccess = useCallback(
-    (text: string) => showMessage('success', text),
+    (text: string, options?: ShowMessageOptions) => showMessage('success', text, options),
     [showMessage],
   );
 
   const showWarning = useCallback(
-    (text: string) => showMessage('warning', text),
+    (text: string, options?: ShowMessageOptions) => showMessage('warning', text, options),
     [showMessage],
   );
 
   const showProblem = useCallback(
-    (text: string) => showMessage('problem', text),
+    (text: string, options?: ShowMessageOptions) => showMessage('problem', text, options),
     [showMessage],
   );
 
   const showInfo = useCallback(
-    (text: string) => showMessage('info', text),
+    (text: string, options?: ShowMessageOptions) => showMessage('info', text, options),
     [showMessage],
   );
 

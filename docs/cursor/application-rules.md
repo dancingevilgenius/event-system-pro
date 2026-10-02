@@ -460,7 +460,7 @@ See **Multi-section admin form pages (Add Event pattern)** for accordion / statu
 ### Set Event Judges (`/admin/set-event-judges`)
 
 - **ADMIN** only.
-- Pick event group / event, search users, build a judging pool, **Save judging pool** (`persistEventJudgingPool`).
+- Pick event group / event, search users by first/last name (results: first, last, city, state), build a judging pool, **Save to Pool** (`persistEventJudgingPool` → `event_staff_pool.judges_json`).
 
 ---
 
@@ -479,18 +479,28 @@ App-wide stacked alerts at the top of the screen (not Judging-specific). Wrapped
 
 - Multiple messages can be visible **at the same time**, stacked vertically (newest appended below prior messages).
 - Messages **auto-dismiss** after the user’s **Message display time** preference (default **3 seconds**; set on Account). Clicking a message still dismisses it immediately (collapse animation ~350ms).
+- **Sticky** messages (`sticky: true`) do **not** auto-dismiss and are **kept** when `clearMessages()` runs (Login/Register/Forgot password clears still leave them). Clicking a sticky message dismisses it.
 - New messages **slide in** from above when added.
 
 ### API and usage
 
 - Any page can call `useMessages()` (must be inside `MessageProvider`).
-- Show messages with `showSuccess(text)`, `showWarning(text)`, `showProblem(text)`, or `showInfo(text)` — each returns the new message id.
-- `clearMessages()` removes all messages immediately (no exit animation).
+- Show messages with `showSuccess(text)`, `showWarning(text)`, `showProblem(text)`, or `showInfo(text)` — each returns the new message id. Optional third argument: `{ sticky?: boolean; id?: string }` (fixed `id` replaces an existing message with that id).
+- `clearMessages()` removes all **non-sticky** messages immediately (no exit animation).
 - `dismissMessage(id)` removes a single message immediately (used internally after the collapse animation).
+
+### API unreachable (Docker / PostgREST down)
+
+- `ApiHealthMonitor` (mounted in `main.tsx` under `MessageProvider`) probes PostgREST on load, on window focus, and every **15 seconds** while unreachable.
+- When unreachable, shows a **sticky problem** message (fixed id `api-unreachable`):
+  - **Dev:** `Cannot reach the API. Is Docker Desktop running? Start PostgREST (port 3000), then try again.`
+  - **Prod:** `Cannot reach the API. Check your connection and try again.`
+- When the API recovers, the sticky message is dismissed automatically.
+- `callRpc` / `fetchJson` map network failures and non-JSON 5xx proxy responses to the same copy (so Login shows it instead of raw `Failed to fetch`).
 
 ### Page-specific behavior
 
-- **Login**, **Register**, and **Forgot password** call `clearMessages()` on mount so no stale messages carry over.
+- **Login**, **Register**, and **Forgot password** call `clearMessages()` on mount so no stale messages carry over (sticky API-unreachable messages remain).
 - **Admin home** has a **Test Message Boxes** button that clears the stack, then shows:
   - Success: `Your change has been saved.`
   - Warning: `Your event starts in less than 15 min.`

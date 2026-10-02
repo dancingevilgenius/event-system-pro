@@ -88,12 +88,8 @@ function JudgeSearchResultMobileCard({
       fields={[
         { key: 'first', label: 'First name', value: displayValue(user.firstName) },
         { key: 'last', label: 'Last name', value: displayValue(user.lastName) },
-        {
-          key: 'email',
-          label: 'Email',
-          value: displayValue(user.email),
-          columnSpan: 2,
-        },
+        { key: 'city', label: 'City', value: displayValue(user.city) },
+        { key: 'state', label: 'State', value: displayValue(user.state) },
       ]}
       actions={
         <Checkbox
@@ -126,12 +122,8 @@ function JudgePoolMobileCard({
       fields={[
         { key: 'first', label: 'First name', value: displayValue(judge.firstname) },
         { key: 'last', label: 'Last name', value: displayValue(judge.lastname) },
-        {
-          key: 'email',
-          label: 'Email',
-          value: displayValue(judge.email),
-          columnSpan: 2,
-        },
+        { key: 'city', label: 'City', value: displayValue(judge.city) },
+        { key: 'state', label: 'State', value: displayValue(judge.state) },
       ]}
       actions={
         <Button variant="outlined" size="small" color="error" onClick={onRemove}>
@@ -144,7 +136,7 @@ function JudgePoolMobileCard({
 
 export default function AdminSetEventJudgesPage() {
   const { showProblem, showSuccess } = useMessages();
-  const { showXsLayout, showLgLayout, containerMaxWidth } = useLayoutTier();
+  const { showXsLayout, containerMaxWidth } = useLayoutTier();
 
   const [eventGroups, setEventGroups] = useState<EventGroupListRow[]>([]);
   const [events, setEvents] = useState<EventListRow[]>([]);
@@ -556,13 +548,14 @@ export default function AdminSetEventJudgesPage() {
                           <TableCell padding="checkbox">Add</TableCell>
                           <TableCell>First name</TableCell>
                           <TableCell>Last name</TableCell>
-                          {showLgLayout ? <TableCell>Email</TableCell> : null}
+                          <TableCell>City</TableCell>
+                          <TableCell>State</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
                         {searchResults.length === 0 ? (
                           <TableRow>
-                            <TableCell colSpan={showLgLayout ? 4 : 3} align="center">
+                            <TableCell colSpan={5} align="center">
                               {firstNameQuery.trim() || lastNameQuery.trim()
                                 ? 'No users found.'
                                 : 'Search by first and/or last name.'}
@@ -589,9 +582,8 @@ export default function AdminSetEventJudgesPage() {
                                 </TableCell>
                                 <TableCell>{displayValue(user.firstName)}</TableCell>
                                 <TableCell>{displayValue(user.lastName)}</TableCell>
-                                {showLgLayout ? (
-                                  <TableCell>{displayValue(user.email)}</TableCell>
-                                ) : null}
+                                <TableCell>{displayValue(user.city)}</TableCell>
+                                <TableCell>{displayValue(user.state)}</TableCell>
                               </TableRow>
                             );
                           })
@@ -629,14 +621,15 @@ export default function AdminSetEventJudgesPage() {
                         <TableRow>
                           <TableCell>First name</TableCell>
                           <TableCell>Last name</TableCell>
-                          {showLgLayout ? <TableCell>Email</TableCell> : null}
+                          <TableCell>City</TableCell>
+                          <TableCell>State</TableCell>
                           <TableCell align="center">Remove</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
                         {judges.length === 0 ? (
                           <TableRow>
-                            <TableCell colSpan={showLgLayout ? 4 : 3} align="center">
+                            <TableCell colSpan={5} align="center">
                               No judges in the pool yet.
                             </TableCell>
                           </TableRow>
@@ -645,9 +638,8 @@ export default function AdminSetEventJudgesPage() {
                             <TableRow key={judge.userId} hover>
                               <TableCell>{displayValue(judge.firstname)}</TableCell>
                               <TableCell>{displayValue(judge.lastname)}</TableCell>
-                              {showLgLayout ? (
-                                <TableCell>{displayValue(judge.email)}</TableCell>
-                              ) : null}
+                              <TableCell>{displayValue(judge.city)}</TableCell>
+                              <TableCell>{displayValue(judge.state)}</TableCell>
                               <TableCell align="center">
                                 <Button
                                   variant="outlined"
@@ -680,7 +672,7 @@ export default function AdminSetEventJudgesPage() {
                 disabled={saving || loadingPool}
                 onClick={() => void handleSave()}
               >
-                {saving ? 'Saving…' : 'Save judging pool'}
+                {saving ? 'Saving…' : 'Save to Pool'}
               </Button>
             </>
           )}

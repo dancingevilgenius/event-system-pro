@@ -460,7 +460,7 @@ See **Multi-section admin form pages (Add Event pattern)** for accordion / statu
 ### Set Event Judges (`/admin/set-event-judges`)
 
 - **ADMIN** only.
-- Pick event group / event, search users by first/last name (results: first, last, city, state), build a judging pool, **Save to Pool** (`persistEventJudgingPool` → `event_staff_pool.judges_json`).
+- Pick event group / event, search users by first/last name (results: first, last, city, state), build a judging pool. **Additions and removals save immediately** via `persistEventJudgingPool` → `event_staff_pool.judges_json`.
 
 ---
 

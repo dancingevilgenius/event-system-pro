@@ -2,11 +2,11 @@ import {
   Alert,
   Box,
   Button,
-  Checkbox,
   CircularProgress,
   Container,
   MenuItem,
   Paper,
+  Radio,
   Stack,
   Table,
   TableBody,
@@ -71,14 +71,16 @@ function eventOptionLabel(event: EventListRow): string {
 
 function JudgeSearchResultMobileCard({
   user,
-  checked,
+  selected,
   alreadyInPool,
-  onToggle,
+  disabled,
+  onSelect,
 }: {
   user: JudgeSearchUser;
-  checked: boolean;
+  selected: boolean;
   alreadyInPool: boolean;
-  onToggle: () => void;
+  disabled: boolean;
+  onSelect: () => void;
 }) {
   return (
     <AuditTrailCard
@@ -92,13 +94,15 @@ function JudgeSearchResultMobileCard({
         { key: 'state', label: 'State', value: displayValue(user.state) },
       ]}
       actions={
-        <Checkbox
-          checked={checked}
-          disabled={alreadyInPool}
-          onChange={onToggle}
+        <Radio
+          checked={selected}
+          disabled={alreadyInPool || disabled}
+          onChange={onSelect}
+          value={user.userId}
+          name="judge-search-selection"
           slotProps={{
             input: {
-              'aria-label': `Add ${user.firstName} ${user.lastName} to judging pool`,
+              'aria-label': `Select ${user.firstName} ${user.lastName} to add to judging pool`,
             },
           }}
         />
@@ -109,9 +113,11 @@ function JudgeSearchResultMobileCard({
 
 function JudgePoolMobileCard({
   judge,
+  removing,
   onRemove,
 }: {
   judge: EventJudgePoolMember;
+  removing: boolean;
   onRemove: () => void;
 }) {
   return (
@@ -126,7 +132,7 @@ function JudgePoolMobileCard({
         { key: 'state', label: 'State', value: displayValue(judge.state) },
       ]}
       actions={
-        <Button variant="outlined" size="small" color="error" onClick={onRemove}>
+        <Button variant="outlined" size="small" color="error" disabled={removing} onClick={onRemove}>
           Remove
         </Button>
       }
@@ -152,12 +158,11 @@ export default function AdminSetEventJudgesPage() {
 
   const [judges, setJudges] = useState<EventJudgePoolMember[]>([]);
   const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
 
   const [firstNameQuery, setFirstNameQuery] = useState('');
   const [lastNameQuery, setLastNameQuery] = useState('');
   const [searchResults, setSearchResults] = useState<JudgeSearchUser[]>([]);
-  const [selectedUserIds, setSelectedUserIds] = useState<Set<number>>(new Set());
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [searching, setSearching] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
 
@@ -241,19 +246,17 @@ export default function AdminSetEventJudgesPage() {
     setEvents([]);
     setJudges([]);
     setSearchResults([]);
-    setSelectedUserIds(new Set());
+    setSelectedUserId(null);
     setEventsError(null);
     setPoolError(null);
-    setSaveError(null);
     void loadEventsForGroup(eventGroupCode);
   };
 
   const handleEventChange = (eventCode: string) => {
     setSelectedEventCode(eventCode);
     setSearchResults([]);
-    setSelectedUserIds(new Set());
+    setSelectedUserId(null);
     setPoolError(null);
-    setSaveError(null);
     void loadJudgingPool(eventCode);
   };
 
@@ -273,85 +276,75 @@ export default function AdminSetEventJudgesPage() {
     try {
       const results = await searchUsersByFirstAndLastName(firstName, lastName);
       setSearchResults(results);
-      setSelectedUserIds(new Set());
+
+      const onlyResult = results.length === 1 ? results[0] : null;
+      if (onlyResult && !judgeUserIds.has(onlyResult.userId)) {
+        setSelectedUserId(onlyResult.userId);
+      } else {
+        setSelectedUserId(null);
+      }
     } catch (error) {
       setSearchResults([]);
-      setSelectedUserIds(new Set());
+      setSelectedUserId(null);
       setSearchError(error instanceof Error ? error.message : 'Unable to search users.');
     } finally {
       setSearching(false);
     }
   };
 
-  const toggleSelectedUser = (userId: number) => {
-    setSelectedUserIds((current) => {
-      const next = new Set(current);
-      if (next.has(userId)) {
-        next.delete(userId);
-      } else {
-        next.add(userId);
-      }
-      return next;
-    });
-  };
-
-  const handleAddSelectedToPool = () => {
-    if (selectedUserIds.size === 0) {
-      return;
-    }
-
-    const toAdd = searchResults
-      .filter((user) => selectedUserIds.has(user.userId))
-      .map(judgeSearchUserToPoolMember);
-
-    setJudges((current) => {
-      const existing = new Set(current.map((judge) => judge.userId));
-      const merged = [...current];
-
-      for (const judge of toAdd) {
-        if (!existing.has(judge.userId)) {
-          merged.push(judge);
-          existing.add(judge.userId);
-        }
-      }
-
-      return merged;
-    });
-
-    setSelectedUserIds(new Set());
-    setSaveError(null);
-  };
-
-  const handleRemoveJudge = (userId: number) => {
-    setJudges((current) => current.filter((judge) => judge.userId !== userId));
-    setSaveError(null);
-  };
-
-  const handleSave = async () => {
+  const persistPool = async (nextJudges: EventJudgePoolMember[]): Promise<boolean> => {
     if (!selectedEventCode) {
-      return;
+      return false;
     }
 
     setSaving(true);
-    setSaveError(null);
 
     try {
-      const result = await persistEventJudgingPool(selectedEventCode, judges);
+      const result = await persistEventJudgingPool(selectedEventCode, nextJudges);
       if (!result.ok) {
-        setSaveError(result.message);
         showProblem(result.message);
-        return;
+        return false;
       }
 
-      setJudges(Array.isArray(result.judges) ? result.judges : judges);
+      setJudges(Array.isArray(result.judges) ? result.judges : nextJudges);
       showSuccess(result.message);
+      return true;
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Unable to save judging pool.';
-      setSaveError(message);
-      showProblem(message);
+      showProblem(error instanceof Error ? error.message : 'Unable to save judging pool.');
+      return false;
     } finally {
       setSaving(false);
     }
+  };
+
+  const selectSearchUser = (userId: number) => {
+    setSelectedUserId(userId);
+  };
+
+  const handleAddSelectedToPool = async () => {
+    if (selectedUserId === null || saving || !selectedEventCode) {
+      return;
+    }
+
+    const user = searchResults.find((result) => result.userId === selectedUserId);
+    if (!user || judgeUserIds.has(user.userId)) {
+      return;
+    }
+
+    const nextJudges = [...judges, judgeSearchUserToPoolMember(user)];
+    const saved = await persistPool(nextJudges);
+    if (saved) {
+      setSelectedUserId(null);
+    }
+  };
+
+  const handleRemoveJudge = async (userId: number) => {
+    if (saving || !selectedEventCode) {
+      return;
+    }
+
+    const nextJudges = judges.filter((judge) => judge.userId !== userId);
+    await persistPool(nextJudges);
   };
 
   const eventSelectionReady = Boolean(selectedEventCode && selectedEvent);
@@ -362,6 +355,7 @@ export default function AdminSetEventJudgesPage() {
         <PageHeader title="Set Event Judges" backTo="/adminhome" backLabel="Back to Admin" />
         <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 3 }}>
           Choose an event group and event, then search users by name to build the judging pool.
+          Additions and removals are saved automatically.
         </Typography>
 
         <Stack spacing={3}>
@@ -504,10 +498,10 @@ export default function AdminSetEventJudgesPage() {
                   <Button
                     variant="contained"
                     size="small"
-                    disabled={selectedUserIds.size === 0}
-                    onClick={handleAddSelectedToPool}
+                    disabled={selectedUserId === null || saving}
+                    onClick={() => void handleAddSelectedToPool()}
                   >
-                    Add selected to judging pool
+                    {saving ? 'Saving…' : 'Add selected to judging pool'}
                   </Button>
                 </Stack>
 
@@ -526,15 +520,16 @@ export default function AdminSetEventJudgesPage() {
                     ) : (
                       searchResults.map((user) => {
                         const alreadyInPool = judgeUserIds.has(user.userId);
-                        const checked = selectedUserIds.has(user.userId);
+                        const selected = selectedUserId === user.userId;
 
                         return (
                           <JudgeSearchResultMobileCard
                             key={user.userId}
                             user={user}
-                            checked={checked}
+                            selected={selected}
                             alreadyInPool={alreadyInPool}
-                            onToggle={() => toggleSelectedUser(user.userId)}
+                            disabled={saving}
+                            onSelect={() => selectSearchUser(user.userId)}
                           />
                         );
                       })
@@ -564,18 +559,20 @@ export default function AdminSetEventJudgesPage() {
                         ) : (
                           searchResults.map((user) => {
                             const alreadyInPool = judgeUserIds.has(user.userId);
-                            const checked = selectedUserIds.has(user.userId);
+                            const selected = selectedUserId === user.userId;
 
                             return (
-                              <TableRow key={user.userId} hover selected={checked}>
+                              <TableRow key={user.userId} hover selected={selected}>
                                 <TableCell padding="checkbox">
-                                  <Checkbox
-                                    checked={checked}
-                                    disabled={alreadyInPool}
-                                    onChange={() => toggleSelectedUser(user.userId)}
+                                  <Radio
+                                    checked={selected}
+                                    disabled={alreadyInPool || saving}
+                                    onChange={() => selectSearchUser(user.userId)}
+                                    value={user.userId}
+                                    name="judge-search-selection"
                                     slotProps={{
                                       input: {
-                                        'aria-label': `Add ${user.firstName} ${user.lastName} to judging pool`,
+                                        'aria-label': `Select ${user.firstName} ${user.lastName} to add to judging pool`,
                                       },
                                     }}
                                   />
@@ -609,7 +606,8 @@ export default function AdminSetEventJudgesPage() {
                         <JudgePoolMobileCard
                           key={judge.userId}
                           judge={judge}
-                          onRemove={() => handleRemoveJudge(judge.userId)}
+                          removing={saving}
+                          onRemove={() => void handleRemoveJudge(judge.userId)}
                         />
                       ))
                     )}
@@ -645,7 +643,8 @@ export default function AdminSetEventJudgesPage() {
                                   variant="outlined"
                                   size="small"
                                   color="error"
-                                  onClick={() => handleRemoveJudge(judge.userId)}
+                                  disabled={saving}
+                                  onClick={() => void handleRemoveJudge(judge.userId)}
                                 >
                                   Remove
                                 </Button>
@@ -658,22 +657,6 @@ export default function AdminSetEventJudgesPage() {
                   </TableContainer>
                 )}
               </Box>
-
-              {saveError && (
-                <Typography variant="body2" color="error">
-                  {saveError}
-                </Typography>
-              )}
-
-              <Button
-                variant="contained"
-                size="large"
-                fullWidth
-                disabled={saving || loadingPool}
-                onClick={() => void handleSave()}
-              >
-                {saving ? 'Saving…' : 'Save to Pool'}
-              </Button>
             </>
           )}
         </Stack>

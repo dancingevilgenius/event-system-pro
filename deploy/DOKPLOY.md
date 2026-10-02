@@ -155,17 +155,31 @@ Redeploy **with rebuild** after changing `VITE_MAILER_URL` or editing `Caddyfile
 
 ### Real SMTP (optional)
 
-For delivery to real inboxes, replace Mailpit SMTP in `deploy/docker-compose.dokploy.yml` mailer `environment` with your provider, for example:
+For delivery to real inboxes, set SMTP env vars in Dokploy **Environment** (see `deploy/.env.dokploy.example`). Defaults use Mailpit inside the stack.
 
-```yaml
-SMTP_HOST: smtp.sendgrid.net
-SMTP_PORT: "587"
-SMTP_SECURE: "false"
-SMTP_USER: apikey
-SMTP_PASS: ${SMTP_PASS}
+**Hostinger example:**
+
+```env
+SMTP_HOST=smtp.hostinger.com
+SMTP_PORT=465
+SMTP_SECURE=true
+SMTP_USER=no-reply@eventsystem.fun
+SMTP_PASS=your-mailbox-password
+EMAIL_FROM=Event System Pro <no-reply@eventsystem.fun>
 ```
 
-Set `SMTP_PASS` (and related vars) in Dokploy Environment. You can remove the `mailpit` service if unused.
+**SendGrid example:**
+
+```env
+SMTP_HOST=smtp.sendgrid.net
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=apikey
+SMTP_PASS=your-sendgrid-api-key
+EMAIL_FROM=Event System Pro <no-reply@eventsystem.fun>
+```
+
+Redeploy after changing SMTP vars (no compose edit required). `EMAIL_FROM` should match the authenticated mailbox. You can remove the `mailpit` service from compose if unused.
 
 ## EventSystemPro comparison
 

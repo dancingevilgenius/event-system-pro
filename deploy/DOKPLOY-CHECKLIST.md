@@ -379,7 +379,7 @@ Test-NetConnection YOUR_VPS_IP -Port 5432
 
 ## Not included yet
 
-- **Real SMTP** — test deploy uses Mailpit (captured mail only); swap mailer SMTP env for SendGrid/etc. when you need real delivery (see `deploy/DOKPLOY.md`)
+- **Real SMTP** — test deploy uses Mailpit by default (captured mail only); set `SMTP_*` env vars in Dokploy for Hostinger/SendGrid/etc. (see `deploy/DOKPLOY.md`)
 - **www → apex redirect** — configure in Dokploy if you use both hostnames
 - **Production cutover to eventsystem.pro** — only when ready; requires a separate migration plan
 

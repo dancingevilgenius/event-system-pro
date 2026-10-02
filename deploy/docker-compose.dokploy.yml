@@ -99,17 +99,17 @@ services:
         required: false
     environment:
       DATABASE_URL: postgres://mailer:${MAILER_DB_PASSWORD:-mailer_dev_password}@postgres:5432/${POSTGRES_DB:-event_system_pro}
-      SMTP_HOST: mailpit
-      SMTP_PORT: "1025"
-      SMTP_SECURE: "false"
-      EMAIL_FROM: Event System Pro <no-reply@eventsystem.fun>
-      APP_NAME: Event System Pro
+      SMTP_HOST: ${SMTP_HOST:-mailpit}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      EMAIL_FROM: ${EMAIL_FROM:-Event System Pro <no-reply@eventsystem.fun>}
+      APP_NAME: ${MAILER_APP_NAME:-Event System Pro}
       CORS_ORIGINS: ${CORS_ORIGINS:-https://eventsystem.fun}
     depends_on:
       migrate:
         condition: service_completed_successfully
-      mailpit:
-        condition: service_started
 
   scheduler:
     build:

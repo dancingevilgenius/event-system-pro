@@ -1,3 +1,4 @@
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import {
   Box,
@@ -8,19 +9,19 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
-  FormControlLabel,
   IconButton,
   MenuItem,
   Paper,
   Select,
   Stack,
-  Switch,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
   useMediaQuery,
   type SelectChangeEvent,
   type Theme,
 } from '@mui/material';
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageBackButton from '../components/PageBackButton';
 import PercentCompleteBar from '../components/PercentCompleteBar';
@@ -55,6 +56,8 @@ type NameMode = (typeof NAME_MODES)[number];
 
 type PrelimsMark = 'yes' | 'maybe' | 'no';
 
+type MarkFilter = PrelimsMark | 'unmarked';
+
 type PrelimsListKind = 'couples' | 'individuals';
 
 type PrelimsMoreJson = {
@@ -85,6 +88,11 @@ const PRELIMS_MARKS: { value: PrelimsMark; label: string }[] = [
   { value: 'no', label: 'No' },
 ];
 
+const MARK_FILTERS: { value: MarkFilter; label: string }[] = [
+  ...PRELIMS_MARKS,
+  { value: 'unmarked', label: 'Unmarked' },
+];
+
 function formatDancerName(dancer: LegionMember, useFullFirst: boolean): string {
   return useFullFirst
     ? formatFullFirstLast(dancer.first, dancer.last)
@@ -105,6 +113,32 @@ function nameColumnSx(textAlign: 'left' | 'right' | 'center') {
 
 function maybeMarkColor(theme: Theme): string {
   return theme.palette.mode === 'dark' ? '#ffe14a' : '#c4a000';
+}
+
+function filterSelectedColor(filter: MarkFilter): string | ((theme: Theme) => string) {
+  switch (filter) {
+    case 'yes':
+      return 'success.main';
+    case 'maybe':
+      return maybeMarkColor;
+    case 'no':
+      return 'error.main';
+    default:
+      return 'text.primary';
+  }
+}
+
+function emptyFilterMessage(filter: MarkFilter): string {
+  switch (filter) {
+    case 'yes':
+      return 'No dancers marked Yes.';
+    case 'maybe':
+      return 'No dancers marked Maybe.';
+    case 'no':
+      return 'No dancers marked No.';
+    default:
+      return 'All dancers are marked.';
+  }
 }
 
 function markColor(mark: PrelimsMark | undefined): string | ((theme: Theme) => string) {
@@ -299,16 +333,24 @@ type TargetProgressRowProps = {
   percent: number;
   label: string;
   overTarget: boolean;
+  onTarget: boolean;
   warningLabel: string;
+  matchedLabel: string;
   onWarningClick: () => void;
+  onBarClick: () => void;
+  barActionLabel: string;
 };
 
 function TargetProgressRow({
   percent,
   label,
   overTarget,
+  onTarget,
   warningLabel,
+  matchedLabel,
   onWarningClick,
+  onBarClick,
+  barActionLabel,
 }: TargetProgressRowProps) {
   return (
     <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center', width: '100%' }}>
@@ -324,9 +366,28 @@ function TargetProgressRow({
           <IconButton size="small" aria-label={warningLabel} color="warning" onClick={onWarningClick}>
             <WarningAmberIcon />
           </IconButton>
+        ) : onTarget ? (
+          <CheckCircleIcon color="success" role="img" aria-label={matchedLabel} />
         ) : null}
       </Box>
-      <Box sx={{ flex: 1, minWidth: 0 }}>
+      <Box
+        component="button"
+        type="button"
+        onClick={onBarClick}
+        aria-label={barActionLabel}
+        sx={{
+          flex: 1,
+          minWidth: 0,
+          p: 0,
+          m: 0,
+          border: 0,
+          bgcolor: 'transparent',
+          cursor: 'pointer',
+          font: 'inherit',
+          color: 'inherit',
+          textAlign: 'left',
+        }}
+      >
         <PercentCompleteBar percent={percent} label={label} />
       </Box>
     </Stack>
@@ -395,7 +456,7 @@ export default function PrelimsPage() {
   const mockEntries = useMemo(() => createMockContestEntries(), []);
   const [listKind, setListKind] = useState<PrelimsListKind>('couples');
   const [markByBib, setMarkByBib] = useState<Record<number, PrelimsMark>>({});
-  const [unmarkedOnly, setUnmarkedOnly] = useState(false);
+  const [markFilter, setMarkFilter] = useState<MarkFilter | null>(null);
   const [overTargetDialog, setOverTargetDialog] = useState<OverTargetMark | null>(null);
   const [dialogMark, setDialogMark] = useState<OverTargetMark>('yes');
 
@@ -421,29 +482,38 @@ export default function PrelimsPage() {
     maybeTargetCount === 0 ? 0 : (judgeMaybeCount / maybeTargetCount) * 100;
   const yesOverTarget = judgeYesCount > yesTargetCount;
   const maybeOverTarget = judgeMaybeCount > maybeTargetCount;
+  const yesOnTarget = judgeYesCount === yesTargetCount;
+  const maybeOnTarget = judgeMaybeCount === maybeTargetCount;
+  const submitDisabled =
+    judgeYesCount !== yesTargetCount ||
+    judgeMaybeCount !== maybeTargetCount ||
+    unmarkedCount > 0;
   const overTargetCopy =
     dialogMark === 'maybe'
       ? {
           title: 'Too many Maybe marks',
-          body: `Reduce the number of marked "Maybe" entries below ${maybeTargetCount}.`,
+          body: `Reduce the number Maybe marks down to ${maybeTargetCount}.`,
         }
       : {
           title: 'Too many Yes marks',
-          body: `Reduce the number of marked "Yes" entries below ${yesTargetCount}.`,
+          body: `Reduce the number Yes marks down to ${yesTargetCount}.`,
         };
 
   const openOverTargetDialog = (mark: OverTargetMark) => {
     setDialogMark(mark);
     setOverTargetDialog(mark);
   };
-  const submitDisabled =
-    judgeYesCount !== yesTargetCount ||
-    judgeMaybeCount !== maybeTargetCount ||
-    unmarkedCount > 0;
 
-  const visibleEntries = unmarkedOnly
-    ? entries.filter((entry) => markByBib[entry.number] === undefined)
-    : entries;
+  const visibleEntries =
+    markFilter === null
+      ? entries
+      : markFilter === 'unmarked'
+        ? entries.filter((entry) => markByBib[entry.number] === undefined)
+        : entries.filter((entry) => markByBib[entry.number] === markFilter);
+
+  const handleMarkFilterChange = (_event: MouseEvent<HTMLElement>, next: MarkFilter | null) => {
+    setMarkFilter(next);
+  };
 
   const handleListKindChange = (event: SelectChangeEvent) => {
     const value = event.target.value;
@@ -550,44 +620,91 @@ export default function PrelimsPage() {
             ))}
           </Select>
 
-          <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: 1,
+              width: '100%',
+            }}
+          >
+            {!submitDisabled ? (
+              <CheckCircleIcon
+                color="success"
+                role="img"
+                aria-label="Submit is ready"
+              />
+            ) : (
+              <Box sx={{ width: 24 }} aria-hidden />
+            )}
             <Button variant="contained" disabled={submitDisabled} onClick={handleSubmit}>
               Submit
             </Button>
+            <Box sx={{ width: 24 }} aria-hidden />
           </Box>
 
-          <TargetProgressRow
-            percent={judgeYesPercent}
-            label={`Yes ${judgeYesCount} / ${yesTargetCount}`}
-            overTarget={yesOverTarget}
-            warningLabel="Yes count is above the target"
-            onWarningClick={() => openOverTargetDialog('yes')}
-          />
-          <TargetProgressRow
-            percent={judgeMaybePercent}
-            label={`Maybe ${judgeMaybeCount} / ${maybeTargetCount}`}
-            overTarget={maybeOverTarget}
-            warningLabel="Maybe count is above the target"
-            onWarningClick={() => openOverTargetDialog('maybe')}
-          />
+          <ToggleButtonGroup
+            exclusive
+            fullWidth
+            size="small"
+            value={markFilter}
+            onChange={handleMarkFilterChange}
+            aria-label="Filter marks"
+          >
+            {MARK_FILTERS.map((option) => (
+              <ToggleButton
+                key={option.value}
+                value={option.value}
+                aria-label={option.label}
+                sx={{
+                  flex: 1,
+                  px: 0.5,
+                  fontWeight: 700,
+                  fontSize: { xs: '0.75rem', md: '0.8125rem' },
+                  lineHeight: 1.2,
+                  whiteSpace: 'nowrap',
+                  '&.Mui-selected': {
+                    color: filterSelectedColor(option.value),
+                  },
+                  '&.Mui-selected:hover': {
+                    color: filterSelectedColor(option.value),
+                  },
+                }}
+              >
+                {option.label}
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
 
-          <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-            <FormControlLabel
-              label="Unmarked only"
-              labelPlacement="start"
-              control={
-                <Switch
-                  size="small"
-                  checked={unmarkedOnly}
-                  onChange={(event) => setUnmarkedOnly(event.target.checked)}
-                />
-              }
-              sx={{
-                mx: 0,
-                '& .MuiFormControlLabel-label': { fontWeight: 700 },
-              }}
-            />
-          </Box>
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center', width: '100%' }}>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <TargetProgressRow
+                percent={judgeYesPercent}
+                label={`Yes ${judgeYesCount} / ${yesTargetCount}`}
+                overTarget={yesOverTarget}
+                onTarget={yesOnTarget}
+                warningLabel="Yes count is above the target"
+                matchedLabel="Yes count matches the target"
+                onWarningClick={() => openOverTargetDialog('yes')}
+                onBarClick={() => setMarkFilter('yes')}
+                barActionLabel="Filter by Yes"
+              />
+            </Box>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <TargetProgressRow
+                percent={judgeMaybePercent}
+                label={`Maybe ${judgeMaybeCount} / ${maybeTargetCount}`}
+                overTarget={maybeOverTarget}
+                onTarget={maybeOnTarget}
+                warningLabel="Maybe count is above the target"
+                matchedLabel="Maybe count matches the target"
+                onWarningClick={() => openOverTargetDialog('maybe')}
+                onBarClick={() => setMarkFilter('maybe')}
+                barActionLabel="Filter by Maybe"
+              />
+            </Box>
+          </Stack>
         </Stack>
 
         <Box
@@ -602,13 +719,13 @@ export default function PrelimsPage() {
           }}
         >
           <Stack spacing={1} sx={contentSx}>
-            {visibleEntries.length === 0 ? (
+            {visibleEntries.length === 0 && markFilter !== null ? (
               <Typography
                 variant="body2"
                 color="text.secondary"
                 sx={{ textAlign: 'center', py: 2 }}
               >
-                All dancers are marked.
+                {emptyFilterMessage(markFilter)}
               </Typography>
             ) : (
               visibleEntries.map((entry) => (

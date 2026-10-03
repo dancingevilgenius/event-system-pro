@@ -69,6 +69,16 @@ VALUES
     INTERVAL '25 hours',
     'Shift demo event start/end dates forward one day.',
     'c-agent'
+  ),
+  (
+    'check_schema_migrations',
+    'api',
+    'check_schema_migrations',
+    '0 0 * * *',
+    true,
+    INTERVAL '25 hours',
+    'Record which database/migrations scripts are not applied. Does not run them.',
+    'c-agent'
   )
 ON CONFLICT (job_name) DO UPDATE
 SET

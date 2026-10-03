@@ -2994,3 +2994,75 @@ export function setScheduledTaskInterval(
   });
 }
 
+export type SchemaMigrationRow = {
+  number: string;
+  script: string;
+  details: string;
+  applied: boolean;
+  appliedAt: string | null;
+  appliedBy: string | null;
+};
+
+type ApiSchemaMigrationRow = {
+  number?: string | null;
+  script?: string | null;
+  details?: string | null;
+  applied?: boolean | null;
+  applied_at?: string | null;
+  applied_by?: string | null;
+};
+
+type ListSchemaMigrationsResult = {
+  ok: boolean;
+  message?: string;
+  checked_at?: string | null;
+  pending_count?: number;
+  applied_count?: number;
+  migrations?: ApiSchemaMigrationRow[];
+};
+
+export type SchemaMigrationList = {
+  checkedAt: string | null;
+  pendingCount: number;
+  appliedCount: number;
+  migrations: SchemaMigrationRow[];
+};
+
+export async function fetchSchemaMigrations(): Promise<SchemaMigrationList> {
+  const result = await callRpc<ListSchemaMigrationsResult>('list_schema_migrations', {});
+
+  if (!result.ok) {
+    throw new Error(result.message ?? 'Unable to load migration scripts.');
+  }
+
+  return {
+    checkedAt: result.checked_at ?? null,
+    pendingCount: result.pending_count ?? 0,
+    appliedCount: result.applied_count ?? 0,
+    migrations: (result.migrations ?? []).map((row) => ({
+      number: row.number?.trim() ?? '',
+      script: row.script?.trim() ?? '',
+      details: row.details?.trim() ?? '',
+      applied: row.applied === true,
+      appliedAt: row.applied_at ?? null,
+      appliedBy: row.applied_by?.trim() ? row.applied_by.trim() : null,
+    })),
+  };
+}
+
+export type ApplySchemaMigrationResult = {
+  ok: boolean;
+  message?: string;
+  detail?: string | null;
+  hint?: string | null;
+  sqlstate?: string | null;
+  applied_at?: string;
+  applied_by?: string;
+};
+
+export function applySchemaMigration(filename: string) {
+  return callRpc<ApplySchemaMigrationResult>('apply_schema_migration', {
+    p_filename: filename,
+  });
+}
+

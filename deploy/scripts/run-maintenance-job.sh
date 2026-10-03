@@ -28,6 +28,11 @@ export PGPASSWORD="$SCHEDULER_DB_PASSWORD"
 START_EPOCH="$(date +%s 2>/dev/null || echo 0)"
 echo "job=${JOB_NAME} status=starting started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || echo unknown)"
 
+# Refresh the migration catalog from files before the check. Never applies SQL.
+if [ "$JOB_NAME" = "check_schema_migrations" ] && [ -x /sync-schema-migration-scripts.sh ]; then
+  /sync-schema-migration-scripts.sh || echo "job=${JOB_NAME} status=warning error_message=script_sync_failed" >&2
+fi
+
 # WSDC refresh needs outbound HTTP to worldsdc.com (handled by a dedicated script).
 if [ "$JOB_NAME" = "wsdc_attendee_refresh" ] && [ -x /wsdc-attendee-refresh.sh ]; then
   set +e

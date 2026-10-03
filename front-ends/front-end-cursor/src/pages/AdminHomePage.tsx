@@ -34,6 +34,7 @@ const ADMIN_BUTTONS = [
   { label: 'Governing Bodies', path: '/governing-body' },
   { label: 'Audit Log', path: '/admin/audit-log' },
   { label: 'Scheduled Tasks', path: '/admin/scheduled-tasks' },
+  { label: 'Migrations', path: '/migrations' },
   { label: 'Cursor Rules', path: '/admin/cursor-rules' },
   { label: 'Static Lists', path: '/static-lists' },
   { label: 'Staff', path: '/staff' },

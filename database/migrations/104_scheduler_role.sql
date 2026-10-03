@@ -24,3 +24,11 @@ GRANT EXECUTE ON FUNCTION api.inactivity_logout() TO maintenance;
 
 -- Keep local/manual superuser runs working (postgres inherits maintenance).
 GRANT maintenance TO postgres;
+
+-- Present when 138 has already created the nightly migration check.
+DO $$
+BEGIN
+  IF to_regprocedure('api.check_schema_migrations()') IS NOT NULL THEN
+    GRANT EXECUTE ON FUNCTION api.check_schema_migrations() TO maintenance;
+  END IF;
+END $$;

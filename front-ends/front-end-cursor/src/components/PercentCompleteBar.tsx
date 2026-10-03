@@ -2,14 +2,20 @@ import { Box, Button, Typography } from '@mui/material';
 
 type PercentCompleteBarProps = {
   percent: number;
-  onSubmit: () => void;
+  label?: string;
+  onSubmit?: () => void;
 };
 
-export default function PercentCompleteBar({ percent, onSubmit }: PercentCompleteBarProps) {
+export default function PercentCompleteBar({
+  percent,
+  label,
+  onSubmit,
+}: PercentCompleteBarProps) {
   const clampedPercent = Math.min(100, Math.max(0, percent));
   const displayPercent = Math.round(clampedPercent);
+  const displayLabel = label ?? `Percent Complete: ${displayPercent}%`;
 
-  if (clampedPercent >= 100) {
+  if (onSubmit && clampedPercent >= 100) {
     return (
       <Button variant="contained" fullWidth onClick={onSubmit}>
         Submit
@@ -20,7 +26,7 @@ export default function PercentCompleteBar({ percent, onSubmit }: PercentComplet
   return (
     <Box
       role="progressbar"
-      aria-label="Percent Complete"
+      aria-label={displayLabel}
       aria-valuenow={displayPercent}
       aria-valuemin={0}
       aria-valuemax={100}
@@ -60,7 +66,7 @@ export default function PercentCompleteBar({ percent, onSubmit }: PercentComplet
           color: clampedPercent > 50 ? 'primary.contrastText' : 'text.primary',
         }}
       >
-        Percent Complete: {displayPercent}%
+        {displayLabel}
       </Typography>
     </Box>
   );

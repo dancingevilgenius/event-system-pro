@@ -35,6 +35,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import JudgingPage from './pages/JudgingPage';
+import PrelimsPage from './pages/PrelimsPage';
 import ScheduleDemoPage from './pages/ScheduleDemoPage';
 import SecretQuestionsPage from './pages/SecretQuestionsPage';
 import StaffPage from './pages/StaffPage';
@@ -362,6 +363,14 @@ export default function App() {
         element={
           <ProtectedRoute roles={['STAFF']}>
             <JudgingPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/prelims"
+        element={
+          <ProtectedRoute roles={['STAFF']}>
+            <PrelimsPage />
           </ProtectedRoute>
         }
       />

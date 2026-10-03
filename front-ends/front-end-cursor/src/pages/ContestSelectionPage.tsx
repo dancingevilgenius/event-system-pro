@@ -4,18 +4,32 @@ import PageHeader from '../components/PageHeader';
 import { centeredContentStackSx } from '../constants/layout';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 
+type ContestSelectionLink = {
+  label: string;
+  route?: string;
+};
+
 type ContestSelectionPageProps = {
   title: string;
   contestRoute?: string;
+  links?: ContestSelectionLink[];
 };
 
 export default function ContestSelectionPage({
   title,
   contestRoute,
+  links,
 }: ContestSelectionPageProps) {
   const navigate = useNavigate();
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
-  const contests = ['Contest 1', 'Contest 2', 'Contest 3'];
+  const contests: ContestSelectionLink[] =
+    links ??
+    ['Contest 1', 'Contest 2', 'Contest 3'].map((label) => ({
+      label,
+      route: contestRoute,
+    }));
+  const gridSize =
+    contests.length === 4 ? { xs: 12, md: 6, lg: 6 } : { xs: 12, md: 4, lg: 4 };
 
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
@@ -26,27 +40,27 @@ export default function ContestSelectionPage({
           <Stack spacing={2} sx={{ my: 3, ...centeredContentStackSx }}>
             {contests.map((contest) => (
               <Button
-                key={contest}
+                key={contest.label}
                 variant="contained"
                 size="large"
                 fullWidth
-                onClick={() => contestRoute && navigate(contestRoute)}
+                onClick={() => contest.route && navigate(contest.route)}
               >
-                {contest}
+                {contest.label}
               </Button>
             ))}
           </Stack>
         ) : (
           <Grid container spacing={2} sx={{ my: 3 }}>
             {contests.map((contest) => (
-              <Grid key={contest} size={{ xs: 12, md: 4 }}>
+              <Grid key={contest.label} size={gridSize}>
                 <Button
                   variant="contained"
                   size="large"
                   fullWidth
-                  onClick={() => contestRoute && navigate(contestRoute)}
+                  onClick={() => contest.route && navigate(contest.route)}
                 >
-                  {contest}
+                  {contest.label}
                 </Button>
               </Grid>
             ))}

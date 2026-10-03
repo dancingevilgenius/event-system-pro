@@ -9,17 +9,46 @@ CREATE SCHEMA IF NOT EXISTS maintenance;
 CREATE TABLE IF NOT EXISTS public.schema_migrations (
   filename text PRIMARY KEY,
   applied_at timestamptz NULL DEFAULT now(),
-  applied_by varchar(128) NULL
+  applied_by_username varchar(128) NULL,
+  applied_by_name varchar(256) NULL
 );
 
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'schema_migrations'
+      AND column_name = 'applied_by'
+  ) THEN
+    ALTER TABLE public.schema_migrations
+      RENAME COLUMN applied_by TO applied_by_username;
+  END IF;
+END $$;
+
 ALTER TABLE public.schema_migrations
-  ADD COLUMN IF NOT EXISTS applied_by varchar(128) NULL;
+  ADD COLUMN IF NOT EXISTS applied_by_username varchar(128) NULL;
+
+ALTER TABLE public.schema_migrations
+  ADD COLUMN IF NOT EXISTS applied_by_name varchar(256) NULL;
 
 ALTER TABLE public.schema_migrations
   ALTER COLUMN applied_at DROP NOT NULL;
 
+UPDATE public.schema_migrations AS sm
+SET applied_by_name = NULLIF(btrim(concat_ws(
+  ' ',
+  NULLIF(btrim(u.name_json ->> 'first'), ''),
+  NULLIF(btrim(u.name_json ->> 'last'), '')
+)), '')
+FROM public."user" AS u
+WHERE sm.applied_by_name IS NULL
+  AND sm.applied_by_username IS NOT NULL
+  AND lower(u.username) = lower(sm.applied_by_username);
+
 COMMENT ON TABLE public.schema_migrations IS
-  'Ledger of migration scripts recorded as applied. applied_at and applied_by are null when the original run was not recorded.';
+  'Ledger of migration scripts recorded as applied. applied_at, applied_by_username, and applied_by_name are null when the original run was not recorded.';
 
 CREATE TABLE IF NOT EXISTS maintenance.schema_migration_catalog (
   filename text PRIMARY KEY,
@@ -226,8 +255,8 @@ DECLARE
   v_applied integer;
 BEGIN
   -- Detection only. Never executes catalog sql_body.
-  INSERT INTO public.schema_migrations (filename, applied_at, applied_by)
-  SELECT c.filename, NULL, NULL
+  INSERT INTO public.schema_migrations (filename, applied_at, applied_by_username, applied_by_name)
+  SELECT c.filename, NULL, NULL, NULL
   FROM maintenance.schema_migration_catalog AS c
   WHERE maintenance.schema_migration_probe_passed(c.probe)
     AND NOT EXISTS (
@@ -284,10 +313,11 @@ BEGIN
       c.details,
       api.schema_migration_is_applied(c.filename) AS applied,
       s.applied_at,
-      s.applied_by
+      s.applied_by_username,
+      s.applied_by_name
     FROM maintenance.schema_migration_catalog AS c
     LEFT JOIN LATERAL (
-      SELECT sm.applied_at, sm.applied_by
+      SELECT sm.applied_at, sm.applied_by_username, sm.applied_by_name
       FROM public.schema_migrations AS sm
       WHERE sm.filename = c.filename
          OR sm.filename = 'migrations/' || c.filename
@@ -317,6 +347,7 @@ DECLARE
   v_row maintenance.schema_migration_catalog%ROWTYPE;
   v_blocker text;
   v_actor text;
+  v_actor_name text;
   v_applied_at timestamptz;
   v_message text;
   v_detail text;
@@ -392,12 +423,43 @@ BEGIN
   );
   v_applied_at := date_trunc('second', clock_timestamp());
 
-  INSERT INTO public.schema_migrations (filename, applied_at, applied_by)
-  VALUES (v_filename, v_applied_at, v_actor)
+  SELECT NULLIF(btrim(concat_ws(
+    ' ',
+    NULLIF(btrim(u.name_json ->> 'first'), ''),
+    NULLIF(btrim(u.name_json ->> 'last'), '')
+  )), '')
+  INTO v_actor_name
+  FROM public."user" AS u
+  WHERE lower(u.username) = lower(v_actor)
+  LIMIT 1;
+
+  INSERT INTO public.schema_migrations (
+    filename, applied_at, applied_by_username, applied_by_name
+  )
+  VALUES (v_filename, v_applied_at, v_actor, v_actor_name)
   ON CONFLICT (filename) DO UPDATE
   SET
     applied_at = COALESCE(public.schema_migrations.applied_at, EXCLUDED.applied_at),
-    applied_by = COALESCE(public.schema_migrations.applied_by, EXCLUDED.applied_by);
+    applied_by_username = COALESCE(public.schema_migrations.applied_by_username, EXCLUDED.applied_by_username),
+    applied_by_name = COALESCE(public.schema_migrations.applied_by_name, EXCLUDED.applied_by_name);
+
+  PERFORM api.record_audit_event(
+    p_action => 'MIGRATION_APPLIED',
+    p_actor_user_id => api.current_user_id(),
+    p_actor_username => v_actor,
+    p_table_name => 'schema_migrations',
+    p_record_key => v_filename,
+    p_new_data => jsonb_build_object(
+      'filename', v_filename,
+      'script_number', v_row.script_number,
+      'applied_at', to_jsonb(api.format_activity_timestamp(v_applied_at)),
+      'applied_by_username', v_actor,
+      'applied_by_name', v_actor_name
+    ),
+    p_metadata => jsonb_build_object(
+      'details', v_row.details
+    )
+  );
 
   PERFORM api.check_schema_migrations();
 
@@ -405,7 +467,8 @@ BEGIN
     'ok', true,
     'message', v_filename || ' applied.',
     'applied_at', v_applied_at,
-    'applied_by', v_actor
+    'applied_by_username', v_actor,
+    'applied_by_name', v_actor_name
   );
 END;
 $fn$;
@@ -5835,16 +5898,20 @@ INSERT INTO maintenance.schema_migration_catalog (
 
 SELECT api.check_schema_migrations();
 
-INSERT INTO public.schema_migrations (filename, applied_at, applied_by)
+INSERT INTO public.schema_migrations (
+  filename, applied_at, applied_by_username, applied_by_name
+)
 VALUES (
   '138_schema_migration_status.sql',
   date_trunc('second', clock_timestamp()),
-  'c-agent'
+  'c-agent',
+  NULL
 )
 ON CONFLICT (filename) DO UPDATE
 SET
   applied_at = COALESCE(public.schema_migrations.applied_at, EXCLUDED.applied_at),
-  applied_by = COALESCE(public.schema_migrations.applied_by, EXCLUDED.applied_by);
+  applied_by_username = COALESCE(public.schema_migrations.applied_by_username, EXCLUDED.applied_by_username),
+  applied_by_name = COALESCE(public.schema_migrations.applied_by_name, EXCLUDED.applied_by_name);
 
 DO $$
 BEGIN

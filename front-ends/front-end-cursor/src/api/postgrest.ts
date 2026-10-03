@@ -3000,7 +3000,7 @@ export type SchemaMigrationRow = {
   details: string;
   applied: boolean;
   appliedAt: string | null;
-  appliedBy: string | null;
+  appliedByName: string | null;
 };
 
 type ApiSchemaMigrationRow = {
@@ -3009,7 +3009,7 @@ type ApiSchemaMigrationRow = {
   details?: string | null;
   applied?: boolean | null;
   applied_at?: string | null;
-  applied_by?: string | null;
+  applied_by_name?: string | null;
 };
 
 type ListSchemaMigrationsResult = {
@@ -3028,6 +3028,17 @@ export type SchemaMigrationList = {
   migrations: SchemaMigrationRow[];
 };
 
+type SchemaMigrationCheckResult = {
+  ok?: boolean;
+  pending_count?: number;
+};
+
+/** Runs the migration check and returns how many scripts are still needed. */
+export async function fetchPendingMigrationCount(): Promise<number> {
+  const result = await callRpc<SchemaMigrationCheckResult>('check_schema_migrations', {});
+  return result.pending_count ?? 0;
+}
+
 export async function fetchSchemaMigrations(): Promise<SchemaMigrationList> {
   const result = await callRpc<ListSchemaMigrationsResult>('list_schema_migrations', {});
 
@@ -3045,7 +3056,7 @@ export async function fetchSchemaMigrations(): Promise<SchemaMigrationList> {
       details: row.details?.trim() ?? '',
       applied: row.applied === true,
       appliedAt: row.applied_at ?? null,
-      appliedBy: row.applied_by?.trim() ? row.applied_by.trim() : null,
+      appliedByName: row.applied_by_name?.trim() ? row.applied_by_name.trim() : null,
     })),
   };
 }
@@ -3057,7 +3068,8 @@ export type ApplySchemaMigrationResult = {
   hint?: string | null;
   sqlstate?: string | null;
   applied_at?: string;
-  applied_by?: string;
+  applied_by_username?: string;
+  applied_by_name?: string | null;
 };
 
 export function applySchemaMigration(filename: string) {

@@ -396,7 +396,7 @@ export default function AdminMigrationsPage() {
                 <Typography variant="body2" sx={{ fontWeight: 700 }}>
                   Applied by
                 </Typography>
-                <Typography variant="body2">{displayValue(detailRow.appliedBy)}</Typography>
+                <Typography variant="body2">{displayValue(detailRow.appliedByName)}</Typography>
               </Stack>
             </Stack>
           )}

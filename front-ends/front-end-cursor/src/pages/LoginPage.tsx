@@ -9,13 +9,14 @@ import {
 } from '@mui/material';
 import { type FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login } from '../api/postgrest';
+import { fetchPendingMigrationCount, login } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
 import PageHeader from '../components/PageHeader';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
+import { pendingMigrationsMessage } from '../lib/pendingMigrations';
 import type { AppRole } from '../lib/session';
 
 export default function LoginPage() {
@@ -55,6 +56,18 @@ export default function LoginPage() {
         });
       }
       showSuccess(result.message);
+
+      if ((result.roles ?? []).includes('ADMIN')) {
+        try {
+          const pendingMessage = pendingMigrationsMessage(await fetchPendingMigrationCount());
+          if (pendingMessage) {
+            showProblem(pendingMessage, { sticky: true, id: 'pending-migrations' });
+          }
+        } catch {
+          // Login already succeeded. A failed migration check should not block home.
+        }
+      }
+
       navigate('/home');
     } catch (error) {
       showProblem(error instanceof Error ? error.message : 'Login failed.');

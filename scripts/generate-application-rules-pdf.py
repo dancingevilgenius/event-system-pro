@@ -695,7 +695,7 @@ def build_pdf() -> None:
     pdf.section_title("Local database development")
     for item in [
         "rebuild-local-database.ps1: drop DB, baseline, migrations (skip superseded-by-baseline.manifest), then seeds from dev.manifest.",
-        "dev.manifest order: 005/005a, 003, 004, 007, 008-011, 016, 012, 017, 013-014, 015.",
+        "dev.manifest order: 005/005a, 003, 004, 007, 021, 008-011, 016, 012, 017, 013-014, 015.",
         "EVENT_TYPES and SECRET_QUESTIONS are in baseline_reference_data.sql.",
         "Migrations run in prod; seeds apply when SEED_DEV_DATA=true (not on eventsystem.pro).",
         "configure-local-postgres-trust.ps1: passwordless psql on localhost (dev only).",

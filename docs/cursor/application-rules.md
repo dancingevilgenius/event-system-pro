@@ -1208,6 +1208,7 @@ Applied by **`rebuild-local-database.ps1`** locally and by **`deploy/scripts/see
 | `003` | Dummy users |
 | `004` | Owner account (`dancingevilgenius`) |
 | `007` | App roles for `dancingevilgenius` (all ten roles) |
+| `021` | App roles for `superman` (same ten roles as `dancingevilgenius`) |
 | `008`–`011` | Fictional demo event groups and instances |
 | `016` | Merchandise POS demo |
 | `012` | Demo attendees (`api.generate_demo_attendees_core` — all demo groups in recent years) |
@@ -1330,7 +1331,7 @@ Regenerate after roster changes:
 python scripts/generate-superhero-user-seed.py
 ```
 
-Example logins: **`superman`** / **`superman`**, **`batman`** / **`batman`**.
+Example logins: **`superman`** / **`superman`**, **`batman`** / **`batman`**. Seed **`021`** grants **`superman`** the same **ten app roles** as **`dancingevilgenius`**.
 
 ---
 

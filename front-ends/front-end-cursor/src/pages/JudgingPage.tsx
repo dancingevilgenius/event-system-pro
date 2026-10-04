@@ -588,8 +588,20 @@ function JudgingEntryAccordion({
 
 export default function JudgingPage() {
   const navigate = useNavigate();
-  const { showSuccess } = useMessages();
+  const { showSuccess, showInfo } = useMessages();
   const entries = useMemo(() => createMockContestEntries(), []);
+
+  useEffect(() => {
+    showInfo('Click on any color message boxes to hide them', {
+      id: 'judging-dismiss-hint',
+    });
+    showInfo('Click on any row to use slider to set a raw score', {
+      id: 'judging-row-slider-hint',
+    });
+    showInfo('Use the dropdown options to sort the contestants.', {
+      id: 'judging-sort-dropdown-hint',
+    });
+  }, [showInfo]);
   const [paletteTarget, setPaletteTarget] = useState<PaletteTarget | null>(null);
   const [competitorColors, setCompetitorColors] = useState<
     Record<string, CompetitorColorRecord>
@@ -922,6 +934,10 @@ export default function JudgingPage() {
         <PageBackButton to="/staff" label="Back to Staff" />
 
         <Stack spacing={1} sx={{ ...judgingContentSx, flexShrink: 0 }}>
+          <Typography variant="h6" component="h1" sx={{ textAlign: 'center' }}>
+            All-American Finals
+          </Typography>
+
           <PercentCompleteBar percent={percentComplete} onSubmit={handleSubmit} />
 
           <Select

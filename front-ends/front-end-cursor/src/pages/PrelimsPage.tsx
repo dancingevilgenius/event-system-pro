@@ -21,7 +21,7 @@ import {
   type SelectChangeEvent,
   type Theme,
 } from '@mui/material';
-import { useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PageBackButton from '../components/PageBackButton';
 import PercentCompleteBar from '../components/PercentCompleteBar';
@@ -41,9 +41,41 @@ import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 
 const NUMBER_COLUMN_WIDTH = '2.75rem';
+const LARGE_SCREEN_NUMBER_COLUMN_WIDTH = '3.25rem';
 const TARGET_WARNING_SLOT_WIDTH = 40;
 const PAIR_DIVIDER_WIDTH = 16;
+const ENTRY_ROW_HEIGHT = 40;
 const DANCER_NAME_FONT_SIZE = { xs: '0.8125rem', md: '1rem' } as const;
+const LARGE_SCREEN_ROW_FONT_SIZE = '1.5rem';
+const IPAD_97_MIN_CSS_PX = 768;
+
+type RowFontSize = typeof DANCER_NAME_FONT_SIZE | typeof LARGE_SCREEN_ROW_FONT_SIZE;
+
+function detectIpad97OrLargerScreen(): boolean {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  return Math.min(window.screen.width, window.screen.height) >= IPAD_97_MIN_CSS_PX;
+}
+
+function useIpad97OrLargerScreen(): boolean {
+  const [matches, setMatches] = useState(detectIpad97OrLargerScreen);
+
+  useEffect(() => {
+    const update = () => setMatches(detectIpad97OrLargerScreen());
+
+    window.addEventListener('orientationchange', update);
+    window.visualViewport?.addEventListener('resize', update);
+
+    return () => {
+      window.removeEventListener('orientationchange', update);
+      window.visualViewport?.removeEventListener('resize', update);
+    };
+  }, []);
+
+  return matches;
+}
 
 const NAME_MODES = [
   { leaderFullFirst: true, followerFullFirst: true },
@@ -56,19 +88,12 @@ type NameMode = (typeof NAME_MODES)[number];
 
 type PrelimsMark = 'yes' | 'maybe' | 'no';
 
-type MarkFilter = PrelimsMark | 'unmarked';
-
-type PrelimsListKind = 'couples' | 'individuals';
+type MarkFilter = 'all' | PrelimsMark | 'unmarked';
 
 type PrelimsMoreJson = {
   targetYesCount: number;
   targetMaybeCount: number;
 };
-
-const PRELIMS_LIST_OPTIONS: { value: PrelimsListKind; label: string }[] = [
-  { value: 'couples', label: 'Couples List' },
-  { value: 'individuals', label: 'Individual List' },
-];
 
 /** Demo stand-in for contest more_json callback targets. */
 const DEMO_PRELIMS_MORE_JSON: PrelimsMoreJson = {
@@ -89,6 +114,7 @@ const PRELIMS_MARKS: { value: PrelimsMark; label: string }[] = [
 ];
 
 const MARK_FILTERS: { value: MarkFilter; label: string }[] = [
+  { value: 'all', label: 'All' },
   ...PRELIMS_MARKS,
   { value: 'unmarked', label: 'Unmarked' },
 ];
@@ -99,15 +125,16 @@ function formatDancerName(dancer: LegionMember, useFullFirst: boolean): string {
     : formatInitialLast(dancer.first, dancer.last);
 }
 
-function nameColumnSx(textAlign: 'left' | 'right' | 'center') {
+function nameColumnSx(textAlign: 'left' | 'right' | 'center', fontSize: RowFontSize) {
   return {
     minWidth: 0,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
+    lineHeight: 1.2,
     flex: 1,
     textAlign,
-    fontSize: DANCER_NAME_FONT_SIZE,
+    fontSize,
   } as const;
 }
 
@@ -136,8 +163,10 @@ function emptyFilterMessage(filter: MarkFilter): string {
       return 'No dancers marked Maybe.';
     case 'no':
       return 'No dancers marked No.';
-    default:
+    case 'unmarked':
       return 'All dancers are marked.';
+    default:
+      return 'No dancers in this list.';
   }
 }
 
@@ -157,9 +186,10 @@ function markColor(mark: PrelimsMark | undefined): string | ((theme: Theme) => s
 type DancerNamesProps = {
   leader: LegionMember;
   follower: LegionMember | null;
+  fontSize: RowFontSize;
 };
 
-function DancerNames({ leader, follower }: DancerNamesProps) {
+function DancerNames({ leader, follower, fontSize }: DancerNamesProps) {
   const containerRef = useRef<HTMLSpanElement>(null);
   const measureRef = useRef<HTMLSpanElement>(null);
   const [nameMode, setNameMode] = useState<NameMode>(NAME_MODES[0]);
@@ -204,7 +234,7 @@ function DancerNames({ leader, follower }: DancerNamesProps) {
     observer.observe(container);
 
     return () => observer.disconnect();
-  }, [leader, follower]);
+  }, [leader, follower, fontSize]);
 
   return (
     <Box
@@ -221,7 +251,7 @@ function DancerNames({ leader, follower }: DancerNamesProps) {
     >
       {follower ? (
         <>
-          <Typography component="span" variant="body1" sx={nameColumnSx('right')}>
+          <Typography component="span" variant="body1" sx={nameColumnSx('right', fontSize)}>
             {formatDancerName(leader, nameMode.leaderFullFirst)}
           </Typography>
           <Typography
@@ -234,16 +264,18 @@ function DancerNames({ leader, follower }: DancerNamesProps) {
               width: PAIR_DIVIDER_WIDTH,
               textAlign: 'center',
               flexShrink: 0,
+              fontSize,
+              lineHeight: 1.2,
             }}
           >
             ·
           </Typography>
-          <Typography component="span" variant="body1" sx={nameColumnSx('left')}>
+          <Typography component="span" variant="body1" sx={nameColumnSx('left', fontSize)}>
             {formatDancerName(follower, nameMode.followerFullFirst)}
           </Typography>
         </>
       ) : (
-        <Typography component="span" variant="body1" sx={nameColumnSx('center')}>
+        <Typography component="span" variant="body1" sx={nameColumnSx('center', fontSize)}>
           {formatDancerName(leader, nameMode.leaderFullFirst)}
         </Typography>
       )}
@@ -257,7 +289,7 @@ function DancerNames({ leader, follower }: DancerNamesProps) {
           visibility: 'hidden',
           whiteSpace: 'nowrap',
           pointerEvents: 'none',
-          fontSize: DANCER_NAME_FONT_SIZE,
+          fontSize,
           fontFamily: (theme) => theme.typography.fontFamily,
           fontWeight: (theme) => theme.typography.body1.fontWeight,
         }}
@@ -270,9 +302,17 @@ type PrelimsMarkSelectProps = {
   bibNumber: number;
   mark: PrelimsMark | undefined;
   onChange: (mark: PrelimsMark | null) => void;
+  fontSize: RowFontSize;
+  largeScreen: boolean;
 };
 
-function PrelimsMarkSelect({ bibNumber, mark, onChange }: PrelimsMarkSelectProps) {
+function PrelimsMarkSelect({
+  bibNumber,
+  mark,
+  onChange,
+  fontSize,
+  largeScreen,
+}: PrelimsMarkSelectProps) {
   const handleChange = (event: SelectChangeEvent) => {
     const value = event.target.value;
 
@@ -284,6 +324,8 @@ function PrelimsMarkSelect({ bibNumber, mark, onChange }: PrelimsMarkSelectProps
     onChange(null);
   };
 
+  const selectWidth = largeScreen ? '8.75rem' : { xs: '6.5rem', md: '7.25rem' };
+
   return (
     <Select
       size="small"
@@ -292,26 +334,36 @@ function PrelimsMarkSelect({ bibNumber, mark, onChange }: PrelimsMarkSelectProps
       onChange={handleChange}
       aria-label={`Mark for bib ${bibNumber}`}
       sx={{
-        width: { xs: '5.75rem', md: '7.25rem' },
-        flex: { xs: '0 0 5.75rem', md: '0 0 7.25rem' },
+        width: selectWidth,
+        flex: largeScreen ? '0 0 8.75rem' : { xs: '0 0 6.5rem', md: '0 0 7.25rem' },
         flexShrink: 0,
+        height: 32,
         color: markColor(mark),
-        fontSize: DANCER_NAME_FONT_SIZE,
+        fontSize,
+        '& .MuiOutlinedInput-notchedOutline': {
+          borderWidth: 1,
+        },
         '& .MuiSelect-select': {
-          py: 0.5,
+          py: 0,
           pl: { xs: 0.75, md: 1.5 },
           pr: { xs: '1.25rem !important', md: '2rem !important' },
+          display: 'flex',
+          alignItems: 'center',
+          height: 32,
+          minHeight: '32px !important',
+          boxSizing: 'border-box',
           fontWeight: mark ? 700 : 400,
+          lineHeight: 1.2,
         },
         '& .MuiSelect-icon': {
           right: { xs: 0, md: 4 },
-          fontSize: { xs: '1rem', md: '1.5rem' },
+          fontSize: largeScreen ? '1.5rem' : { xs: '1rem', md: '1.5rem' },
         },
       }}
     >
       <MenuItem value="">
         <Box component="span" sx={{ color: 'text.secondary' }}>
-          —
+          Choose
         </Box>
       </MenuItem>
       {PRELIMS_MARKS.map((option) => (
@@ -398,9 +450,11 @@ type PrelimsEntryRowProps = {
   entry: PrelimsEntry;
   mark: PrelimsMark | undefined;
   onMarkChange: (bibNumber: number, mark: PrelimsMark | null) => void;
+  fontSize: RowFontSize;
+  largeScreen: boolean;
 };
 
-function PrelimsEntryRow({ entry, mark, onMarkChange }: PrelimsEntryRowProps) {
+function PrelimsEntryRow({ entry, mark, onMarkChange, fontSize, largeScreen }: PrelimsEntryRowProps) {
   const dancerLabel = entry.follower
     ? `${formatFullFirstLast(entry.leader.first, entry.leader.last)} and ${formatFullFirstLast(entry.follower.first, entry.follower.last)}`
     : formatFullFirstLast(entry.leader.first, entry.leader.last);
@@ -414,8 +468,10 @@ function PrelimsEntryRow({ entry, mark, onMarkChange }: PrelimsEntryRowProps) {
         minWidth: 0,
         gap: 0.5,
         px: { xs: 0.5, md: 1 },
-        py: 0.5,
-        minHeight: 40,
+        py: 0,
+        height: ENTRY_ROW_HEIGHT,
+        minHeight: ENTRY_ROW_HEIGHT,
+        overflow: 'hidden',
         border: 1,
         borderColor: 'divider',
         borderRadius: 1,
@@ -427,24 +483,28 @@ function PrelimsEntryRow({ entry, mark, onMarkChange }: PrelimsEntryRowProps) {
         component="span"
         variant="body1"
         sx={{
-          flex: `0 0 ${NUMBER_COLUMN_WIDTH}`,
-          width: NUMBER_COLUMN_WIDTH,
+          flex: `0 0 ${largeScreen ? LARGE_SCREEN_NUMBER_COLUMN_WIDTH : NUMBER_COLUMN_WIDTH}`,
+          width: largeScreen ? LARGE_SCREEN_NUMBER_COLUMN_WIDTH : NUMBER_COLUMN_WIDTH,
           fontVariantNumeric: 'tabular-nums',
           fontWeight: 600,
           textAlign: 'left',
+          fontSize,
+          lineHeight: 1.2,
         }}
       >
         {entry.number}
       </Typography>
 
       <Box sx={{ flex: 1, minWidth: 0 }}>
-        <DancerNames leader={entry.leader} follower={entry.follower} />
+        <DancerNames leader={entry.leader} follower={entry.follower} fontSize={fontSize} />
       </Box>
 
       <PrelimsMarkSelect
         bibNumber={entry.number}
         mark={mark}
         onChange={(nextMark) => onMarkChange(entry.number, nextMark)}
+        fontSize={fontSize}
+        largeScreen={largeScreen}
       />
     </Box>
   );
@@ -452,11 +512,14 @@ function PrelimsEntryRow({ entry, mark, onMarkChange }: PrelimsEntryRowProps) {
 
 export default function PrelimsPage() {
   const navigate = useNavigate();
-  const { showSuccess } = useMessages();
+  const { showSuccess, showInfo } = useMessages();
   const mockEntries = useMemo(() => createMockContestEntries(), []);
-  const [listKind, setListKind] = useState<PrelimsListKind>('couples');
+  const isIpad97OrLargerScreen = useIpad97OrLargerScreen();
+  const rowFontSize: RowFontSize = isIpad97OrLargerScreen
+    ? LARGE_SCREEN_ROW_FONT_SIZE
+    : DANCER_NAME_FONT_SIZE;
   const [markByBib, setMarkByBib] = useState<Record<number, PrelimsMark>>({});
-  const [markFilter, setMarkFilter] = useState<MarkFilter | null>(null);
+  const [markFilter, setMarkFilter] = useState<MarkFilter>('all');
   const [overTargetDialog, setOverTargetDialog] = useState<OverTargetMark | null>(null);
   const [dialogMark, setDialogMark] = useState<OverTargetMark>('yes');
 
@@ -465,14 +528,27 @@ export default function PrelimsPage() {
       mockEntries.map((entry) => ({
         number: entry.number,
         leader: entry.leader,
-        follower: listKind === 'couples' ? entry.follower : null,
+        follower: entry.follower,
       })),
-    [listKind, mockEntries],
+    [mockEntries],
   );
 
   const prelimsMoreJson = DEMO_PRELIMS_MORE_JSON;
   const yesTargetCount = prelimsMoreJson.targetYesCount;
   const maybeTargetCount = prelimsMoreJson.targetMaybeCount;
+
+  useEffect(() => {
+    showInfo(
+      `Set ${yesTargetCount} couples with "Yes" value to continue to finals`,
+      { id: 'prelims-yes-target-hint' },
+    );
+    showInfo(`Set ${maybeTargetCount} couples with "Maybe" value`, {
+      id: 'prelims-maybe-target-hint',
+    });
+    showInfo('Set all remaining couples to "No" value, after your Yes/Maybe targets are met', {
+      id: 'prelims-no-remaining-hint',
+    });
+  }, [maybeTargetCount, showInfo, yesTargetCount]);
 
   const judgeYesCount = entries.filter((entry) => markByBib[entry.number] === 'yes').length;
   const judgeMaybeCount = entries.filter((entry) => markByBib[entry.number] === 'maybe').length;
@@ -505,25 +581,14 @@ export default function PrelimsPage() {
   };
 
   const visibleEntries =
-    markFilter === null
+    markFilter === 'all'
       ? entries
       : markFilter === 'unmarked'
         ? entries.filter((entry) => markByBib[entry.number] === undefined)
         : entries.filter((entry) => markByBib[entry.number] === markFilter);
 
   const handleMarkFilterChange = (_event: MouseEvent<HTMLElement>, next: MarkFilter | null) => {
-    setMarkFilter(next);
-  };
-
-  const handleListKindChange = (event: SelectChangeEvent) => {
-    const value = event.target.value;
-
-    if (value !== 'couples' && value !== 'individuals') {
-      return;
-    }
-
-    setListKind(value);
-    setMarkByBib({});
+    setMarkFilter(next ?? 'all');
   };
 
   const handleSubmit = () => {
@@ -603,22 +668,8 @@ export default function PrelimsPage() {
 
         <Stack spacing={1} sx={{ ...contentSx, flexShrink: 0 }}>
           <Typography variant="h6" component="h1" sx={{ textAlign: 'center' }}>
-            Prelims
+            All-American Prelims
           </Typography>
-
-          <Select
-            size="small"
-            value={listKind}
-            onChange={handleListKindChange}
-            aria-label="Prelims list"
-            fullWidth
-          >
-            {PRELIMS_LIST_OPTIONS.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </Select>
 
           <Box
             sx={{
@@ -719,7 +770,7 @@ export default function PrelimsPage() {
           }}
         >
           <Stack spacing={1} sx={contentSx}>
-            {visibleEntries.length === 0 && markFilter !== null ? (
+            {visibleEntries.length === 0 && markFilter !== 'all' ? (
               <Typography
                 variant="body2"
                 color="text.secondary"
@@ -734,6 +785,8 @@ export default function PrelimsPage() {
                   entry={entry}
                   mark={markByBib[entry.number]}
                   onMarkChange={handleMarkChange}
+                  fontSize={rowFontSize}
+                  largeScreen={isIpad97OrLargerScreen}
                 />
               ))
             )}

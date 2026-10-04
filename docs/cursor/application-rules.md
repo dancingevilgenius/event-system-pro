@@ -192,7 +192,7 @@ Legacy codes **`EVENT_COORDINATOR`** and **`BALLROOM_COORDINATOR`** were renamed
 
 - Shows signed-in **username**.
 - **`ThemeSwitcher`** (Skin dropdown) — moved here from Home.
-- **Message display time** select: how long success / warning / problem / info messages stay visible before auto-dismiss. Options: **3 seconds** (default), **10 seconds**, **1 minute**, **5 minutes**, **10 minutes**. Stored in `localStorage` key `evp.messageAutoDismissMs` (`messagePreferences.ts`).
+- **Message display time** select: how long success / warning / problem / info messages stay visible before auto-dismiss. Options: **3 seconds**, **10 seconds**, **20 seconds**, **25 seconds**, **1 minute** (default), **5 minutes**, **10 minutes**. Stored in `localStorage` key `evp.messageAutoDismissMs` (`messagePreferences.ts`).
 - **Show Roles** opens `ShowRolesDialog` listing the session’s role codes (e.g. `ADMIN`), or “No roles…” when empty.
 - **Change Password** navigates to `/changepassword`.
 - **Password Recovery** navigates to `/secret-questions`.
@@ -478,7 +478,7 @@ App-wide stacked alerts at the top of the screen (not Judging-specific). Wrapped
 ### Stacking and dismissal
 
 - Multiple messages can be visible **at the same time**, stacked vertically (newest appended below prior messages).
-- Messages **auto-dismiss** after the user’s **Message display time** preference (default **3 seconds**; set on Account). Clicking a message still dismisses it immediately (collapse animation ~350ms).
+- Messages **auto-dismiss** after the user’s **Message display time** preference (default **1 minute**; set on Account). Clicking a message still dismisses it immediately (collapse animation ~350ms).
 - **Sticky** messages (`sticky: true`) do **not** auto-dismiss and are **kept** when `clearMessages()` runs (Login/Register/Forgot password clears still leave them). Clicking a sticky message dismisses it.
 - New messages **slide in** from above when added.
 

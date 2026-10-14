@@ -37,8 +37,13 @@ import {
   formatInitialLast,
   type LegionMember,
 } from '../data/legionNames';
+import { trainingTargetSx, usePageTraining } from '../hooks/usePageTraining';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
+
+const FIRST_MARK_ELEMENT_ID = 'prelims-mark-first';
+const FILTER_YES_ELEMENT_ID = 'prelims-filter-yes';
+const FILTER_MAYBE_ELEMENT_ID = 'prelims-filter-maybe';
 
 const NUMBER_COLUMN_WIDTH = '2.75rem';
 const LARGE_SCREEN_NUMBER_COLUMN_WIDTH = '3.25rem';
@@ -304,6 +309,7 @@ type PrelimsMarkSelectProps = {
   onChange: (mark: PrelimsMark | null) => void;
   fontSize: RowFontSize;
   largeScreen: boolean;
+  disabled?: boolean;
 };
 
 function PrelimsMarkSelect({
@@ -312,6 +318,7 @@ function PrelimsMarkSelect({
   onChange,
   fontSize,
   largeScreen,
+  disabled = false,
 }: PrelimsMarkSelectProps) {
   const handleChange = (event: SelectChangeEvent) => {
     const value = event.target.value;
@@ -330,6 +337,7 @@ function PrelimsMarkSelect({
     <Select
       size="small"
       displayEmpty
+      disabled={disabled}
       value={mark ?? ''}
       onChange={handleChange}
       aria-label={`Mark for bib ${bibNumber}`}
@@ -391,6 +399,7 @@ type TargetProgressRowProps = {
   onWarningClick: () => void;
   onBarClick: () => void;
   barActionLabel: string;
+  controlsDisabled?: boolean;
 };
 
 function TargetProgressRow({
@@ -403,6 +412,7 @@ function TargetProgressRow({
   onWarningClick,
   onBarClick,
   barActionLabel,
+  controlsDisabled = false,
 }: TargetProgressRowProps) {
   return (
     <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center', width: '100%' }}>
@@ -415,7 +425,13 @@ function TargetProgressRow({
         }}
       >
         {overTarget ? (
-          <IconButton size="small" aria-label={warningLabel} color="warning" onClick={onWarningClick}>
+          <IconButton
+            size="small"
+            aria-label={warningLabel}
+            color="warning"
+            disabled={controlsDisabled}
+            onClick={onWarningClick}
+          >
             <WarningAmberIcon />
           </IconButton>
         ) : onTarget ? (
@@ -426,6 +442,7 @@ function TargetProgressRow({
         component="button"
         type="button"
         onClick={onBarClick}
+        disabled={controlsDisabled}
         aria-label={barActionLabel}
         sx={{
           flex: 1,
@@ -434,7 +451,7 @@ function TargetProgressRow({
           m: 0,
           border: 0,
           bgcolor: 'transparent',
-          cursor: 'pointer',
+          cursor: controlsDisabled ? 'default' : 'pointer',
           font: 'inherit',
           color: 'inherit',
           textAlign: 'left',
@@ -452,15 +469,28 @@ type PrelimsEntryRowProps = {
   onMarkChange: (bibNumber: number, mark: PrelimsMark | null) => void;
   fontSize: RowFontSize;
   largeScreen: boolean;
+  markElementId?: string;
+  markDisabled?: boolean;
+  markHighlighted?: boolean;
 };
 
-function PrelimsEntryRow({ entry, mark, onMarkChange, fontSize, largeScreen }: PrelimsEntryRowProps) {
+function PrelimsEntryRow({
+  entry,
+  mark,
+  onMarkChange,
+  fontSize,
+  largeScreen,
+  markElementId,
+  markDisabled = false,
+  markHighlighted = false,
+}: PrelimsEntryRowProps) {
   const dancerLabel = entry.follower
     ? `${formatFullFirstLast(entry.leader.first, entry.leader.last)} and ${formatFullFirstLast(entry.follower.first, entry.follower.last)}`
     : formatFullFirstLast(entry.leader.first, entry.leader.last);
 
   return (
     <Box
+      data-prelims-entry=""
       sx={{
         display: 'flex',
         alignItems: 'center',
@@ -499,20 +529,43 @@ function PrelimsEntryRow({ entry, mark, onMarkChange, fontSize, largeScreen }: P
         <DancerNames leader={entry.leader} follower={entry.follower} fontSize={fontSize} />
       </Box>
 
-      <PrelimsMarkSelect
-        bibNumber={entry.number}
-        mark={mark}
-        onChange={(nextMark) => onMarkChange(entry.number, nextMark)}
-        fontSize={fontSize}
-        largeScreen={largeScreen}
-      />
+      <Box
+        id={markElementId}
+        sx={{
+          flexShrink: 0,
+          ...(markHighlighted ? trainingTargetSx : {}),
+        }}
+      >
+        <PrelimsMarkSelect
+          bibNumber={entry.number}
+          mark={mark}
+          disabled={markDisabled}
+          onChange={(nextMark) => onMarkChange(entry.number, nextMark)}
+          fontSize={fontSize}
+          largeScreen={largeScreen}
+        />
+      </Box>
     </Box>
   );
+}
+
+function filterElementId(filter: MarkFilter): string | undefined {
+  if (filter === 'yes') {
+    return FILTER_YES_ELEMENT_ID;
+  }
+
+  if (filter === 'maybe') {
+    return FILTER_MAYBE_ELEMENT_ID;
+  }
+
+  return undefined;
 }
 
 export default function PrelimsPage() {
   const navigate = useNavigate();
   const { showSuccess, showInfo } = useMessages();
+  const { restartNonce, trainingDisabled, isTrainingTarget, reportSelect } = usePageTraining();
+  const entryListRef = useRef<HTMLDivElement>(null);
   const mockEntries = useMemo(() => createMockContestEntries(), []);
   const isIpad97OrLargerScreen = useIpad97OrLargerScreen();
   const rowFontSize: RowFontSize = isIpad97OrLargerScreen
@@ -522,6 +575,13 @@ export default function PrelimsPage() {
   const [markFilter, setMarkFilter] = useState<MarkFilter>('all');
   const [overTargetDialog, setOverTargetDialog] = useState<OverTargetMark | null>(null);
   const [dialogMark, setDialogMark] = useState<OverTargetMark>('yes');
+  const [appliedRestartNonce, setAppliedRestartNonce] = useState(restartNonce);
+  if (appliedRestartNonce !== restartNonce) {
+    setAppliedRestartNonce(restartNonce);
+    setMarkByBib({});
+    setMarkFilter('all');
+    setOverTargetDialog(null);
+  }
 
   const entries = useMemo<PrelimsEntry[]>(
     () =>
@@ -532,10 +592,16 @@ export default function PrelimsPage() {
       })),
     [mockEntries],
   );
+  const firstBibNumber = entries[0]?.number;
+  const coachingLocksControls = trainingDisabled();
 
   const prelimsMoreJson = DEMO_PRELIMS_MORE_JSON;
   const yesTargetCount = prelimsMoreJson.targetYesCount;
   const maybeTargetCount = prelimsMoreJson.targetMaybeCount;
+
+  useLayoutEffect(() => {
+    entryListRef.current?.scrollTo({ top: 0 });
+  }, [restartNonce]);
 
   useEffect(() => {
     showInfo(
@@ -591,6 +657,10 @@ export default function PrelimsPage() {
     setMarkFilter(next ?? 'all');
   };
 
+  const selectMarkFilter = (next: MarkFilter) => {
+    setMarkFilter(next);
+  };
+
   const handleSubmit = () => {
     if (submitDisabled) {
       return;
@@ -603,6 +673,14 @@ export default function PrelimsPage() {
   };
 
   const handleMarkChange = (bibNumber: number, mark: PrelimsMark | null) => {
+    if (bibNumber === firstBibNumber) {
+      if (reportSelect(FIRST_MARK_ELEMENT_ID, mark ?? '') === 'revert') {
+        return;
+      }
+    } else if (coachingLocksControls) {
+      return;
+    }
+
     setMarkByBib((current) => {
       const next = { ...current };
 
@@ -689,7 +767,11 @@ export default function PrelimsPage() {
             ) : (
               <Box sx={{ width: 24 }} aria-hidden />
             )}
-            <Button variant="contained" disabled={submitDisabled} onClick={handleSubmit}>
+            <Button
+              variant="contained"
+              disabled={submitDisabled || coachingLocksControls}
+              onClick={handleSubmit}
+            >
               Submit
             </Button>
             <Box sx={{ width: 24 }} aria-hidden />
@@ -703,29 +785,37 @@ export default function PrelimsPage() {
             onChange={handleMarkFilterChange}
             aria-label="Filter marks"
           >
-            {MARK_FILTERS.map((option) => (
-              <ToggleButton
-                key={option.value}
-                value={option.value}
-                aria-label={option.label}
-                sx={{
-                  flex: 1,
-                  px: 0.5,
-                  fontWeight: 700,
-                  fontSize: { xs: '0.75rem', md: '0.8125rem' },
-                  lineHeight: 1.2,
-                  whiteSpace: 'nowrap',
-                  '&.Mui-selected': {
-                    color: filterSelectedColor(option.value),
-                  },
-                  '&.Mui-selected:hover': {
-                    color: filterSelectedColor(option.value),
-                  },
-                }}
-              >
-                {option.label}
-              </ToggleButton>
-            ))}
+            {MARK_FILTERS.map((option) => {
+              const elementId = filterElementId(option.value);
+
+              return (
+                <ToggleButton
+                  key={option.value}
+                  id={elementId}
+                  value={option.value}
+                  disabled={trainingDisabled(elementId)}
+                  aria-label={option.label}
+                  onClick={() => selectMarkFilter(option.value)}
+                  sx={{
+                    flex: 1,
+                    px: 0.5,
+                    fontWeight: 700,
+                    fontSize: { xs: '0.75rem', md: '0.8125rem' },
+                    lineHeight: 1.2,
+                    whiteSpace: 'nowrap',
+                    ...(elementId && isTrainingTarget(elementId) ? trainingTargetSx : {}),
+                    '&.Mui-selected': {
+                      color: filterSelectedColor(option.value),
+                    },
+                    '&.Mui-selected:hover': {
+                      color: filterSelectedColor(option.value),
+                    },
+                  }}
+                >
+                  {option.label}
+                </ToggleButton>
+              );
+            })}
           </ToggleButtonGroup>
 
           <Stack direction="row" spacing={1} sx={{ alignItems: 'center', width: '100%' }}>
@@ -740,6 +830,7 @@ export default function PrelimsPage() {
                 onWarningClick={() => openOverTargetDialog('yes')}
                 onBarClick={() => setMarkFilter('yes')}
                 barActionLabel="Filter by Yes"
+                controlsDisabled={coachingLocksControls}
               />
             </Box>
             <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -753,12 +844,14 @@ export default function PrelimsPage() {
                 onWarningClick={() => openOverTargetDialog('maybe')}
                 onBarClick={() => setMarkFilter('maybe')}
                 barActionLabel="Filter by Maybe"
+                controlsDisabled={coachingLocksControls}
               />
             </Box>
           </Stack>
         </Stack>
 
         <Box
+          ref={entryListRef}
           sx={{
             flex: 1,
             minHeight: 0,
@@ -779,16 +872,23 @@ export default function PrelimsPage() {
                 {emptyFilterMessage(markFilter)}
               </Typography>
             ) : (
-              visibleEntries.map((entry) => (
-                <PrelimsEntryRow
-                  key={entry.number}
-                  entry={entry}
-                  mark={markByBib[entry.number]}
-                  onMarkChange={handleMarkChange}
-                  fontSize={rowFontSize}
-                  largeScreen={isIpad97OrLargerScreen}
-                />
-              ))
+              visibleEntries.map((entry) => {
+                const isFirstCouple = entry.number === firstBibNumber;
+
+                return (
+                  <PrelimsEntryRow
+                    key={entry.number}
+                    entry={entry}
+                    mark={markByBib[entry.number]}
+                    onMarkChange={handleMarkChange}
+                    fontSize={rowFontSize}
+                    largeScreen={isIpad97OrLargerScreen}
+                    markElementId={isFirstCouple ? FIRST_MARK_ELEMENT_ID : undefined}
+                    markDisabled={trainingDisabled(isFirstCouple ? FIRST_MARK_ELEMENT_ID : undefined)}
+                    markHighlighted={isFirstCouple && isTrainingTarget(FIRST_MARK_ELEMENT_ID)}
+                  />
+                );
+              })
             )}
           </Stack>
         </Box>

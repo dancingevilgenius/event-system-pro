@@ -62,6 +62,11 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 | Color swatch button | `front-ends/front-end-cursor/src/components/CompetitorColorSwatch.tsx` |
 | Duplicate score dialog | `front-ends/front-end-cursor/src/components/DuplicateScoreDialog.tsx` |
 | Progress bar | `front-ends/front-end-cursor/src/components/PercentCompleteBar.tsx` |
+| Page training coach | `front-ends/front-end-cursor/src/components/PageTrainingCoach.tsx` |
+| Page training provider | `front-ends/front-end-cursor/src/context/PageTrainingProvider.tsx` |
+| Page training helpers | `front-ends/front-end-cursor/src/lib/pageTraining.ts` |
+| Training instructions table | `database/migrations/139_training_instructions.sql` |
+| Prelims | `front-ends/front-end-cursor/src/pages/PrelimsPage.tsx` |
 | Layout constants | `front-ends/front-end-cursor/src/constants/layout.ts` |
 | Event admin routes | `front-ends/front-end-cursor/src/constants/eventRoutes.ts` |
 | Add / Edit Event page | `front-ends/front-end-cursor/src/pages/AdminAddEventPage.tsx` |
@@ -192,7 +197,7 @@ Legacy codes **`EVENT_COORDINATOR`** and **`BALLROOM_COORDINATOR`** were renamed
 
 - Shows signed-in **username**.
 - **`ThemeSwitcher`** (Skin dropdown) — moved here from Home.
-- **Message display time** select: how long success / warning / problem / info messages stay visible before auto-dismiss. Options: **3 seconds**, **10 seconds**, **20 seconds**, **25 seconds**, **1 minute** (default), **5 minutes**, **10 minutes**. Stored in `localStorage` key `evp.messageAutoDismissMs` (`messagePreferences.ts`).
+- **Message display time** select: how long success / warning / problem / info messages stay visible before auto-dismiss. Options: **3 seconds**, **10 seconds**, **1 minute** (default), **5 minutes**, **10 minutes**. Stored in `localStorage` key `evp.messageAutoDismissMs` (`messagePreferences.ts`).
 - **Show Roles** opens `ShowRolesDialog` listing the session’s role codes (e.g. `ADMIN`), or “No roles…” when empty.
 - **Change Password** navigates to `/changepassword`.
 - **Password Recovery** navigates to `/secret-questions`.
@@ -1294,6 +1299,27 @@ Prefer **`jsonb`** for new columns that will be queried or merged.
 - **`StaffPage`** = `ContestSelectionPage` with `title="Staff"` and **`contestRoute="/judging"`**.
 - **`CompetitorPage`** = same layout with `title="Competitor"` and **no** `contestRoute` (buttons inert).
 - Shared layout: three **Contest 1–3** buttons, **Back to Home** → `/home`.
+- Staff also links to **Prelims** (`/prelims`).
+
+---
+
+## Page training
+
+Lessons live in **`public.training_instructions`** (migration `139_training_instructions.sql`). Audit columns are `created_date`, `created_by`, `modified_date`, and `modified_by`. The lesson document is **`steps_json`** (`jsonb`): `page`, `fromPage`, and an ordered `steps` array. Each step has `instruction`, `successMessage`, `failureMessage`, and an `interaction`.
+
+- `interaction.type` **`click`** — click the element with `elementId`.
+- `interaction.type` **`select`** — choose `option` (the option value) in the element with `elementId`.
+
+Signed-in **STAFF** or **ADMIN** can read the row through **`api.training_instructions`**. The app does not insert or update lessons.
+
+Coaching is off unless the query is **`coach=1`**.
+
+- **`/prelims`** — scoring works as usual. No instruction text area, no training bar, and no locked controls.
+- **`/prelims?coach=1`** — loads the `PRELIMS_MARKS` lesson. A read-only text area shows the current step. The training bar counts completed steps. Only the element named by the current step stays enabled. Back to Staff stays available. A wrong option on that select shows the step's failure message and is not kept. A matching action shows the success message and advances. Progress is stored in the browser under `evp.pageTraining.<instruction_code>`.
+- After the last step, the text area says training is complete, the bar is full, and the lock lifts. **Restart** begins again at step 1, sets the mark filter back to **All**, and clears marks made during the lesson. Opening `/prelims` without `coach=1` leaves coaching.
+- The training panel opens below the first two competitor rows. Drag the **Training** label to move it.
+
+The seeded Prelims steps use `#prelims-mark-first` (first couple's mark list), `#prelims-filter-yes`, and `#prelims-filter-maybe`.
 
 ---
 

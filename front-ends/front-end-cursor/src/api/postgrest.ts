@@ -1,4 +1,6 @@
+import { parseTrainingLesson } from '../lib/pageTraining';
 import { loadSession, type AppRole } from '../lib/session';
+import type { TrainingLesson } from '../types/pageTraining';
 import {
   createEmptyContestStageBracketJson,
   parseContestStageBracketJson,
@@ -3076,5 +3078,31 @@ export function applySchemaMigration(filename: string) {
   return callRpc<ApplySchemaMigrationResult>('apply_schema_migration', {
     p_filename: filename,
   });
+}
+
+type ApiTrainingInstructionRow = {
+  instruction_code: string;
+  page_path: string;
+  steps_json: unknown;
+};
+
+export async function fetchTrainingLesson(pagePath: string): Promise<TrainingLesson | null> {
+  const params = new URLSearchParams({
+    select: 'instruction_code,page_path,steps_json',
+    order: 'training_instruction_id.asc',
+    limit: '1',
+  });
+  params.append('page_path', `eq.${pagePath}`);
+
+  const rows = await fetchJson<ApiTrainingInstructionRow[]>(
+    `${POSTGREST_URL}/training_instructions?${params.toString()}`,
+    'Unable to load training lesson',
+  );
+  const row = rows[0];
+  if (!row) {
+    return null;
+  }
+
+  return parseTrainingLesson(row.steps_json, row.instruction_code, row.page_path);
 }
 

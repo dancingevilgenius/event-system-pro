@@ -32,6 +32,7 @@ const detailsOverride = {
     'session_status still uses activity_expires_at.',
   '133_inactivity_idle_timeout_config.sql': 'Idle-timeout helpers are missing.',
   '134_user_cursor_rules_starred.sql': 'api.set_user_cursor_rules_starred() is missing.',
+  '139_training_instructions.sql': 'training_instructions table is missing.',
 };
 
 const probes = {
@@ -66,6 +67,7 @@ const probes = {
     "to_regprocedure('api.inactivity_idle_timeout_seconds()') IS NOT NULL",
   '134_user_cursor_rules_starred.sql':
     "to_regprocedure('api.set_user_cursor_rules_starred(text[])') IS NOT NULL",
+  '139_training_instructions.sql': "to_regclass('public.training_instructions') IS NOT NULL",
 };
 
 function dollarQuote(value, preferredTag) {

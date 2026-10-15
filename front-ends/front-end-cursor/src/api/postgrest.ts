@@ -1816,6 +1816,75 @@ export async function updateGoverningBodyMoreJson(
   return mapGoverningBodyRow(row);
 }
 
+export type AppRoleRow = {
+  roleCode: string;
+  labels: string[];
+};
+
+type ApiAppRoleRow = {
+  role_code: string;
+  more_json: unknown;
+};
+
+export function parseAppRoleLabels(value: unknown): string[] {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return [];
+  }
+
+  const labels = (value as { Labels?: unknown }).Labels;
+  if (!Array.isArray(labels)) {
+    return [];
+  }
+
+  return labels
+    .filter((entry): entry is string => typeof entry === 'string')
+    .map((entry) => entry.trim())
+    .filter((entry) => entry !== '');
+}
+
+function mapAppRoleRow(row: ApiAppRoleRow): AppRoleRow {
+  return {
+    roleCode: row.role_code,
+    labels: parseAppRoleLabels(row.more_json),
+  };
+}
+
+export async function fetchAppRoles(): Promise<AppRoleRow[]> {
+  const rows = await fetchJson<ApiAppRoleRow[]>(
+    `${POSTGREST_URL}/app_role?select=role_code,more_json&order=role_code.asc`,
+    'Unable to load roles',
+  );
+
+  return rows.map(mapAppRoleRow);
+}
+
+type UpdateAppRoleLabelsResult = {
+  ok: boolean;
+  message?: string;
+  role_code?: string;
+  labels?: unknown;
+};
+
+export async function updateAppRoleLabels(roleCode: string, labels: string[]): Promise<AppRoleRow> {
+  const result = await callRpc<UpdateAppRoleLabelsResult>('update_app_role_labels', {
+    p_role_code: roleCode,
+    p_labels: labels,
+  });
+
+  if (!result.ok || !result.role_code) {
+    throw new Error(result.message ?? 'Unable to save role labels.');
+  }
+
+  const savedLabels = Array.isArray(result.labels)
+    ? result.labels.filter((entry): entry is string => typeof entry === 'string')
+    : labels;
+
+  return {
+    roleCode: result.role_code,
+    labels: savedLabels,
+  };
+}
+
 export type AuditLogRow = {
   auditId: number;
   occurredAt: string;

@@ -6,7 +6,7 @@ import { useLayoutTier } from '../hooks/useLayoutTier';
 
 const DEMO_ITEMS = [
   {
-    label: 'Floor Coordinator Demos',
+    label: 'Floor Parent Demos',
     path: '/floor-coordinator-demos',
     available: true,
   },

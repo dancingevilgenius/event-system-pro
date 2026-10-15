@@ -36,6 +36,7 @@ const ADMIN_BUTTONS = [
   { label: 'Migrations', path: '/migrations' },
   { label: 'Cursor Rules', path: '/admin/cursor-rules' },
   { label: 'Static Lists', path: '/static-lists' },
+  { label: 'Roles', path: '/roles' },
   { label: 'Staff', path: '/staff' },
 ] as const;
 

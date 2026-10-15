@@ -37,9 +37,8 @@ CROSS JOIN (
 WHERE u.username = 'superman'
   AND EXISTS (
     SELECT 1
-    FROM pg_constraint c
-    WHERE c.conname = 'user_app_role_role_code_check'
-      AND pg_get_constraintdef(c.oid) LIKE ('%' || r.role_code || '%')
+    FROM public.app_role ar
+    WHERE ar.role_code = r.role_code
   )
 ON CONFLICT DO NOTHING;
 

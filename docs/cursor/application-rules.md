@@ -111,7 +111,7 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 - Default route is **Public Home** (`/`). Alias: `/home-page`. Unknown URLs redirect to **`/`**.
 - **Public routes:** `/`, `/home-page`, `/login`, `/register`, `/forgot-password`, `/demo`, `/tournament-bracket-demo`.
 - **Protected routes** require a signed-in session (see **Authentication** and **Roles and route guards**).
-- Demo opens **3rd Party Library Demos** (`/third-party-library-demos`), **Judge Demos** (`/judge-demos`), and **Floor Coordinator Demos** (`/floor-coordinator-demos`).
+- Demo opens **3rd Party Library Demos** (`/third-party-library-demos`), **Judge Demos** (`/judge-demos`), and **Floor Parent Demos** (`/floor-coordinator-demos`).
 - **3rd Party Library Demos** opens **Tournament Bracket Demo** (`/tournament-bracket-demo`), **Event Calendar** (`/demo-event-calendar`), and **Schedule Demo** (`/demo-schedule`). Those pages' **Back** returns to `/third-party-library-demos`.
 - **Judge Demos** opens **Prelims** (`/judge-prelims`) and **Contest 1–3** (`/judge-finals`).
 - **Floor Coordinator Demos** opens **Couples Checkin** (`/checkin-couple`), **Leaders Checkin** (`/checkin-single?role=leader`), and **Followers Checkin** (`/checkin-single?role=follower`). Check-in **Back** returns to `/floor-coordinator-demos`.
@@ -148,10 +148,12 @@ Unauthenticated landing page (`PublicHomePage`):
 
 ### App roles
 
-Ten roles from `user_app_role` (included in login JWT `app_roles`). Codes are **uppercase**:
+Ten role codes live in **`public.app_role`**. Assignments are rows in **`user_app_role`** and are included in the login JWT `app_roles`. `user_app_role.role_code` references `app_role`.
 
-| Code | Label |
-|------|-------|
+`app_role.more_json.Labels` is an array of display strings. The first label is the role code in title case, with underscores replaced by spaces (`FLOOR_PARENT` → `Floor Parent`).
+
+| Code | First label |
+|------|-------------|
 | `ADMIN` | Admin |
 | `STAFF` | Staff |
 | `JUDGE` | Judge |
@@ -159,7 +161,7 @@ Ten roles from `user_app_role` (included in login JWT `app_roles`). Codes are **
 | `REGISTRATION` | Registration |
 | `FLOOR_PARENT` | Floor Parent |
 | `EVENT_MANAGER` | Event Manager |
-| `DJ` | DJ |
+| `DJ` | Dj |
 | `EVENT_DIRECTOR` | Event Director |
 | `COMPETITOR` | Competitor |
 
@@ -180,7 +182,7 @@ Legacy codes **`EVENT_COORDINATOR`** and **`BALLROOM_COORDINATOR`** were renamed
 | `/judge-finals`, `/judge-prelims` | `ADMIN` or `STAFF` |
 | `/judge-demos`, `/floor-coordinator-demos`, `/third-party-library-demos` | `ADMIN` |
 | `/competitor-home`, `/competitor-wsdc` | `COMPETITOR` (or `ADMIN`) |
-| `/adminhome`, `/event-home`, `/event-groups`, `/event-groups/:code`, `/event-groups/:code/:eventId` (+ `/attendees`, `/competitors`, `/contests`), `/create-event`, `/admin/contests`, `/admin/contests/contest`, `/admin/competitors`, `/admin/search-users`, `/admin/competition-entries`, `/admin/audit-log`, `/admin/scheduled-tasks`, `/admin/set-event-judges`, `/governing-body`, `/wsdc-find-dancer`, `/event-merchandise-pos-demo` | `ADMIN` |
+| `/adminhome`, `/event-home`, `/event-groups`, `/event-groups/:code`, `/event-groups/:code/:eventId` (+ `/attendees`, `/competitors`, `/contests`), `/create-event`, `/admin/contests`, `/admin/contests/contest`, `/admin/competitors`, `/admin/search-users`, `/admin/competition-entries`, `/admin/audit-log`, `/admin/scheduled-tasks`, `/admin/set-event-judges`, `/governing-body`, `/roles`, `/wsdc-find-dancer`, `/event-merchandise-pos-demo` | `ADMIN` |
 | `/admin/event-details` | Redirects to `/event-groups` |
 | `/add-event` | Redirects to `/create-event` |
 | `/admin/tournament-bracket-demo` | Redirects to `/tournament-bracket-demo` |
@@ -327,6 +329,7 @@ Forgot-password flow uses a separate stepper on **`/forgot-password`** (user ans
 | Audit Log | `/admin/audit-log` |
 | Scheduled Tasks | `/admin/scheduled-tasks` |
 | Static Lists | `/static-lists` |
+| Roles | `/roles` |
 | Staff | `/staff` |
 
 - Outlined actions below the nav stack:
@@ -402,7 +405,7 @@ See **Multi-section admin form pages (Add Event pattern)** for accordion / statu
 ### Demo hub (`/demo`)
 
 - Public page opened from Public Home **Demo**.
-- Links to **Floor Coordinator Demos**, **Judge Demos**, **Merchandise Demo** (`/event-merchandise-pos-demo`), and **3rd Party Library Demos**.
+- Links to **Floor Parent Demos**, **Judge Demos**, **Merchandise Demo** (`/event-merchandise-pos-demo`), and **3rd Party Library Demos**.
 - **Back** returns to `/adminhome`.
 
 ### Tournament bracket demo (`/tournament-bracket-demo`)
@@ -463,6 +466,12 @@ See **Multi-section admin form pages (Add Event pattern)** for accordion / statu
 - Any signed-in user can open the list hub and detail pages.
 - Hub shows a button per `list_code` → `/static-list-details/:listCode`.
 - Detail page: view entries; **edit only if the user has `ADMIN`**.
+
+### Roles (`/roles`)
+
+- **ADMIN** only. Opened from **Roles** on Admin home.
+- Table columns: **Role Code**, **Labels** (dropdown of `more_json.Labels`; one option when the array has one string), **Edit Labels**.
+- **Edit Labels** opens a popup with the labels as a comma-separated list in a text area. **Save Changes** stays disabled until that text changes, then calls **`api.update_app_role_labels`** to replace `app_role.more_json.Labels`.
 
 ### Governing bodies (`/governing-body`)
 

@@ -39,6 +39,7 @@ import GoverningBodyPage from './pages/GoverningBodyPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import RolesPage from './pages/RolesPage';
 import JudgeDemosPage from './pages/JudgeDemosPage';
 import JudgingPage from './pages/JudgingPage';
 import PrelimsPage from './pages/PrelimsPage';
@@ -201,6 +202,14 @@ export default function App() {
         element={
           <ProtectedRoute roles={['ADMIN']}>
             <GoverningBodyPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/roles"
+        element={
+          <ProtectedRoute roles={['ADMIN']}>
+            <RolesPage />
           </ProtectedRoute>
         }
       />

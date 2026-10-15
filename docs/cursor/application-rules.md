@@ -177,12 +177,12 @@ Legacy codes **`EVENT_COORDINATOR`** and **`BALLROOM_COORDINATOR`** were renamed
 
 | Route | Required role(s) |
 |-------|------------------|
-| `/home`, `/account`, `/changepassword`, `/secret-questions`, `/static-lists`, `/static-list-details/:listCode` | Any signed-in user |
+| `/home`, `/account`, `/changepassword`, `/secret-questions`, `/static-lists`, `/static-list-details/:listCode`, `/roles` | Any signed-in user |
 | `/staff` | `STAFF` (or `ADMIN`) |
 | `/judge-finals`, `/judge-prelims` | `ADMIN` or `STAFF` |
 | `/judge-demos`, `/floor-coordinator-demos`, `/third-party-library-demos` | `ADMIN` |
 | `/competitor-home`, `/competitor-wsdc` | `COMPETITOR` (or `ADMIN`) |
-| `/adminhome`, `/event-home`, `/event-groups`, `/event-groups/:code`, `/event-groups/:code/:eventId` (+ `/attendees`, `/competitors`, `/contests`), `/create-event`, `/admin/contests`, `/admin/contests/contest`, `/admin/competitors`, `/admin/search-users`, `/admin/competition-entries`, `/admin/audit-log`, `/admin/scheduled-tasks`, `/admin/set-event-judges`, `/governing-body`, `/roles`, `/wsdc-find-dancer`, `/event-merchandise-pos-demo` | `ADMIN` |
+| `/adminhome`, `/event-home`, `/event-groups`, `/event-groups/:code`, `/event-groups/:code/:eventId` (+ `/attendees`, `/competitors`, `/contests`), `/create-event`, `/admin/contests`, `/admin/contests/contest`, `/admin/competitors`, `/admin/search-users`, `/admin/competition-entries`, `/admin/audit-log`, `/admin/scheduled-tasks`, `/admin/set-event-judges`, `/governing-body`, `/wsdc-find-dancer`, `/event-merchandise-pos-demo` | `ADMIN` |
 | `/admin/event-details` | Redirects to `/event-groups` |
 | `/add-event` | Redirects to `/create-event` |
 | `/admin/tournament-bracket-demo` | Redirects to `/tournament-bracket-demo` |
@@ -469,9 +469,9 @@ See **Multi-section admin form pages (Add Event pattern)** for accordion / statu
 
 ### Roles (`/roles`)
 
-- **ADMIN** only. Opened from **Roles** on Admin home.
-- Table columns: **Role Code**, **Labels** (dropdown of `more_json.Labels`; one option when the array has one string), **Edit Labels**.
-- **Edit Labels** opens a popup with the labels as a comma-separated list in a text area. **Save Changes** stays disabled until that text changes, then calls **`api.update_app_role_labels`** to replace `app_role.more_json.Labels`.
+- Any signed-in user can open the page. **Roles** on Admin home still requires `ADMIN`.
+- Table columns: **Role Code**, **View Labels** (dropdown of `more_json.Labels`; one option when the array has one string), **Edit Labels**.
+- **Edit Labels** is enabled only when the signed-in user has the **`ADMIN`** role. Other users see the button disabled. Saving still calls **`api.update_app_role_labels`**, which rejects anyone who is not an admin. The popup shows the labels as a comma-separated list. **Save Changes** stays disabled until that text changes, then replaces `app_role.more_json.Labels`.
 
 ### Governing bodies (`/governing-body`)
 

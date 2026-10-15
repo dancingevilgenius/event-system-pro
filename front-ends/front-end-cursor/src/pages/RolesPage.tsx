@@ -13,12 +13,14 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
 import { fetchAppRoles, updateAppRoleLabels, type AppRoleRow } from '../api/postgrest';
 import EditRoleLabelsDialog from '../components/EditRoleLabelsDialog';
 import PageHeader from '../components/PageHeader';
+import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 
@@ -63,14 +65,49 @@ function RoleLabelsSelect({
   );
 }
 
+function EditLabelsButton({
+  canEdit,
+  fullWidth,
+  onClick,
+}: {
+  canEdit: boolean;
+  fullWidth?: boolean;
+  onClick: () => void;
+}) {
+  const button = (
+    <Button
+      variant="outlined"
+      size={fullWidth ? 'medium' : 'small'}
+      fullWidth={fullWidth}
+      disabled={!canEdit}
+      onClick={onClick}
+      sx={fullWidth ? { mt: 2 } : undefined}
+    >
+      Edit Labels
+    </Button>
+  );
+
+  if (canEdit) {
+    return button;
+  }
+
+  return (
+    <Tooltip title="Admin role required">
+      <span style={fullWidth ? { display: 'block', width: '100%' } : undefined}>{button}</span>
+    </Tooltip>
+  );
+}
+
 function RoleMobileCard({
   row,
   selected,
+  canEdit,
   onSelect,
   onEdit,
 }: {
   row: AppRoleRow;
   selected: string;
+  canEdit: boolean;
   onSelect: (label: string) => void;
   onEdit: () => void;
 }) {
@@ -83,17 +120,17 @@ function RoleMobileCard({
         {row.roleCode}
       </Typography>
       <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
-        Labels
+        View Labels
       </Typography>
       <RoleLabelsSelect labels={row.labels} value={selected} onChange={onSelect} />
-      <Button variant="outlined" fullWidth onClick={onEdit} sx={{ mt: 2 }}>
-        Edit Labels
-      </Button>
+      <EditLabelsButton canEdit={canEdit} fullWidth onClick={onEdit} />
     </Paper>
   );
 }
 
 export default function RolesPage() {
+  const { hasAnyRole } = useAuth();
+  const isAdmin = hasAnyRole(['ADMIN']);
   const { showXsLayout, showMdLayout, containerMaxWidth } = useLayoutTier();
   const { showSuccess, showProblem } = useMessages();
   const [rows, setRows] = useState<AppRoleRow[]>([]);
@@ -138,6 +175,10 @@ export default function RolesPage() {
   };
 
   const handleSaveLabels = async (roleCode: string, labels: string[]) => {
+    if (!isAdmin) {
+      return;
+    }
+
     if (labels.length === 0) {
       showProblem('Enter at least one label.');
       return;
@@ -166,7 +207,11 @@ export default function RolesPage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
-        <PageHeader title="Roles" backTo="/adminhome" backLabel="Back to Admin" />
+        <PageHeader
+          title="Roles"
+          backTo={isAdmin ? '/adminhome' : '/home'}
+          backLabel={isAdmin ? 'Back to Admin' : 'Back to Home'}
+        />
 
         {loading && (
           <Stack sx={{ py: 6, alignItems: 'center' }}>
@@ -192,6 +237,7 @@ export default function RolesPage() {
                   key={row.roleCode}
                   row={row}
                   selected={selectedByRole[row.roleCode] ?? ''}
+                  canEdit={isAdmin}
                   onSelect={(label) =>
                     setSelectedByRole((current) => ({ ...current, [row.roleCode]: label }))
                   }
@@ -208,7 +254,7 @@ export default function RolesPage() {
               <TableHead>
                 <TableRow>
                   <TableCell sx={{ fontWeight: 700 }}>Role Code</TableCell>
-                  <TableCell sx={{ fontWeight: 700, minWidth: 180 }}>Labels</TableCell>
+                  <TableCell sx={{ fontWeight: 700, minWidth: 180 }}>View Labels</TableCell>
                   <TableCell align="right" sx={{ fontWeight: 700 }}>
                     Edit Labels
                   </TableCell>
@@ -235,9 +281,7 @@ export default function RolesPage() {
                         />
                       </TableCell>
                       <TableCell align="right">
-                        <Button variant="outlined" size="small" onClick={() => setEditRow(row)}>
-                          Edit Labels
-                        </Button>
+                        <EditLabelsButton canEdit={isAdmin} onClick={() => setEditRow(row)} />
                       </TableCell>
                     </TableRow>
                   ))

@@ -33,6 +33,7 @@ import DemoPage from './pages/DemoPage';
 import EventCalendarDemoPage from './pages/EventCalendarDemoPage';
 import EventMerchandisePosDemoPage from './pages/EventMerchandisePosDemoPage';
 import FloorCoordinatorDemosPage from './pages/FloorCoordinatorDemosPage';
+import ThirdPartyLibraryDemosPage from './pages/ThirdPartyLibraryDemosPage';
 import GoverningBodyPage from './pages/GoverningBodyPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
@@ -86,6 +87,14 @@ export default function App() {
         element={
           <ProtectedRoute roles={['ADMIN']}>
             <FloorCoordinatorDemosPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/third-party-library-demos"
+        element={
+          <ProtectedRoute roles={['ADMIN']}>
+            <ThirdPartyLibraryDemosPage />
           </ProtectedRoute>
         }
       />

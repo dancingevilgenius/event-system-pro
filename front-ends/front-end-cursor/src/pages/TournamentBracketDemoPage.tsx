@@ -177,8 +177,8 @@ export default function TournamentBracketDemoPage() {
       <Paper elevation={3} sx={{ p: { xs: 2, sm: 4 } }}>
         <PageHeader
           title="Tournament Bracket Demo"
-          backTo="/demo"
-          backLabel="Back to Demo"
+          backTo="/third-party-library-demos"
+          backLabel="Back to 3rd Party Library Demos"
         />
         <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', mb: 3 }}>
           Single elimination · 16 random demo users · pick a winner for each match

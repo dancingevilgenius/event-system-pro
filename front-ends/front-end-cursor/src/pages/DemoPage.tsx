@@ -6,21 +6,6 @@ import { useLayoutTier } from '../hooks/useLayoutTier';
 
 const DEMO_ITEMS = [
   {
-    label: 'Tournament Bracket Demo',
-    path: '/tournament-bracket-demo',
-    available: true,
-  },
-  {
-    label: 'Schedule Demo',
-    path: '/demo-schedule',
-    available: true,
-  },
-  {
-    label: 'Event Calendar',
-    path: '/demo-event-calendar',
-    available: true,
-  },
-  {
     label: 'Floor Coordinator Demos',
     path: '/floor-coordinator-demos',
     available: true,
@@ -28,6 +13,11 @@ const DEMO_ITEMS = [
   {
     label: 'Judge Demos',
     path: '/judge-demos',
+    available: true,
+  },
+  {
+    label: '3rd Party Library Demos',
+    path: '/third-party-library-demos',
     available: true,
   },
 ] as const;

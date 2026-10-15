@@ -29,7 +29,7 @@ export default function EventCalendarDemoPage() {
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
-        <PageHeader title="Event Calendar" backTo="/demo" backLabel="Back to Demo" />
+        <PageHeader title="Event Calendar" backTo="/third-party-library-demos" backLabel="Back to 3rd Party Library Demos" />
         <Stack spacing={0.5} sx={{ mb: 2, textAlign: 'center' }}>
           <Typography variant="body2" color="text.secondary">
             TSL X schedule rendered with MUI X Event Calendar event properties

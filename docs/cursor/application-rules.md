@@ -111,7 +111,8 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 - Default route is **Public Home** (`/`). Alias: `/home-page`. Unknown URLs redirect to **`/`**.
 - **Public routes:** `/`, `/home-page`, `/login`, `/register`, `/forgot-password`, `/demo`, `/tournament-bracket-demo`.
 - **Protected routes** require a signed-in session (see **Authentication** and **Roles and route guards**).
-- Demo opens **Judge Demos** (`/judge-demos`) and **Floor Coordinator Demos** (`/floor-coordinator-demos`).
+- Demo opens **3rd Party Library Demos** (`/third-party-library-demos`), **Judge Demos** (`/judge-demos`), and **Floor Coordinator Demos** (`/floor-coordinator-demos`).
+- **3rd Party Library Demos** opens **Tournament Bracket Demo** (`/tournament-bracket-demo`), **Event Calendar** (`/demo-event-calendar`), and **Schedule Demo** (`/demo-schedule`). Those pages' **Back** returns to `/third-party-library-demos`.
 - **Judge Demos** opens **Prelims** (`/judge-prelims`) and **Contest 1–3** (`/judge-finals`).
 - **Floor Coordinator Demos** opens **Couples Checkin** (`/checkin-couple`), **Leaders Checkin** (`/checkin-single?role=leader`), and **Followers Checkin** (`/checkin-single?role=follower`). Check-in **Back** returns to `/floor-coordinator-demos`.
 - Those judge pages' **Submit** and **Back** return to `/judge-demos`.
@@ -177,7 +178,7 @@ Legacy codes **`EVENT_COORDINATOR`** and **`BALLROOM_COORDINATOR`** were renamed
 | `/home`, `/account`, `/changepassword`, `/secret-questions`, `/static-lists`, `/static-list-details/:listCode` | Any signed-in user |
 | `/staff` | `STAFF` (or `ADMIN`) |
 | `/judge-finals`, `/judge-prelims` | `ADMIN` or `STAFF` |
-| `/judge-demos`, `/floor-coordinator-demos` | `ADMIN` |
+| `/judge-demos`, `/floor-coordinator-demos`, `/third-party-library-demos` | `ADMIN` |
 | `/competitor` | `COMPETITOR` (or `ADMIN`) |
 | `/adminhome`, `/event-home`, `/event-groups`, `/event-groups/:code`, `/event-groups/:code/:eventId` (+ `/attendees`, `/competitors`, `/contests`), `/create-event`, `/admin/contests`, `/admin/contests/contest`, `/admin/competitors`, `/admin/search-users`, `/admin/competition-entries`, `/admin/audit-log`, `/admin/scheduled-tasks`, `/admin/set-event-judges`, `/governing-body`, `/wsdc-find-dancer`, `/event-merchandise-pos-demo` | `ADMIN` |
 | `/admin/event-details` | Redirects to `/event-groups` |
@@ -395,14 +396,14 @@ See **Multi-section admin form pages (Add Event pattern)** for accordion / statu
 ### Demo hub (`/demo`)
 
 - Public page opened from Public Home **Demo**.
-- Currently links to **Tournament Bracket Demo** (`/tournament-bracket-demo`).
-- **Back** returns to `/home-page`.
+- Links to **3rd Party Library Demos**, **Floor Coordinator Demos**, and **Judge Demos**.
+- **Back** returns to `/adminhome`.
 
 ### Tournament bracket demo (`/tournament-bracket-demo`)
 
 - Public interactive bracket demo (loads users from the API; picks winners).
 - Legacy `/admin/tournament-bracket-demo` redirects here.
-- Back to Demo → `/demo`.
+- Back to 3rd Party Library Demos → `/third-party-library-demos`.
 
 ### Event Merchandise POS demo (`/event-merchandise-pos-demo`)
 

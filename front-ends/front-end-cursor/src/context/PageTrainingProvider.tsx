@@ -4,8 +4,12 @@ import { fetchTrainingLesson } from '../api/postgrest';
 import PageTrainingCoach from '../components/PageTrainingCoach';
 import { useMessages } from '../hooks/useMessages';
 import {
+  DISMISS_MOVED_MESSAGE_STEP,
+  MOVE_TRAINING_PANEL_STEP,
   TRAINING_COMPLETE_TEXT,
+  TRAINING_MOVED_MESSAGE_ELEMENT_ID,
   applyTrainingEvent,
+  interactionTargetsElement,
   clearCompletedStepIds,
   currentTrainingStep,
   filterKnownCompletedStepIds,
@@ -41,7 +45,7 @@ function elementIdFromClick(target: EventTarget | null): string | null {
 
 export default function PageTrainingProvider({ children }: PageTrainingProviderProps) {
   const location = useLocation();
-  const { showSuccess, showProblem } = useMessages();
+  const { showSuccess, showProblem, dismissMessage } = useMessages();
   const coachEnabled = isCoachEnabled(location.search);
   const pagePath = location.pathname;
   const [lesson, setLesson] = useState<TrainingLesson | null>(null);
@@ -96,10 +100,34 @@ export default function PageTrainingProvider({ children }: PageTrainingProviderP
   const currentStep = lesson ? currentTrainingStep(lesson, completedStepIds) : null;
   const lessonComplete = Boolean(lesson && !currentStep);
 
+  useEffect(() => {
+    if (!coachEnabled || currentStep?.id !== DISMISS_MOVED_MESSAGE_STEP.id) {
+      dismissMessage(TRAINING_MOVED_MESSAGE_ELEMENT_ID);
+      return;
+    }
+
+    showSuccess(MOVE_TRAINING_PANEL_STEP.successMessage, {
+      id: TRAINING_MOVED_MESSAGE_ELEMENT_ID,
+      sticky: true,
+    });
+  }, [coachEnabled, currentStep?.id, dismissMessage, showSuccess]);
+
   const acceptMatch = useCallback(
     (activeLesson: TrainingLesson, step: TrainingStep, nextCompleted: string[]) => {
       setCompletedStepIds(nextCompleted);
       writeCompletedStepIds(localStorage, activeLesson.instructionCode, nextCompleted);
+      if (step.id === MOVE_TRAINING_PANEL_STEP.id) {
+        showSuccess(step.successMessage, {
+          id: TRAINING_MOVED_MESSAGE_ELEMENT_ID,
+          sticky: true,
+        });
+        return;
+      }
+
+      if (step.id === DISMISS_MOVED_MESSAGE_STEP.id) {
+        return;
+      }
+
       showSuccess(step.successMessage);
     },
     [showSuccess],
@@ -149,7 +177,7 @@ export default function PageTrainingProvider({ children }: PageTrainingProviderP
         return true;
       }
 
-      return elementId !== currentStep.interaction.elementId;
+      return !interactionTargetsElement(currentStep.interaction, elementId);
     },
     [coachEnabled, currentStep, lesson, lessonComplete],
   );
@@ -160,7 +188,7 @@ export default function PageTrainingProvider({ children }: PageTrainingProviderP
         return false;
       }
 
-      return currentStep.interaction.elementId === elementId;
+      return interactionTargetsElement(currentStep.interaction, elementId);
     },
     [coachEnabled, currentStep, lessonComplete],
   );
@@ -196,6 +224,39 @@ export default function PageTrainingProvider({ children }: PageTrainingProviderP
     [acceptMatch, coachEnabled, completedStepIds, lesson, lessonComplete, showProblem, trainingDisabled],
   );
 
+  const reportDrag = useCallback(
+    (elementId: string, moved: boolean) => {
+      if (!coachEnabled || !lesson || lessonComplete) {
+        return;
+      }
+
+      if (!moved) {
+        if (
+          currentStep?.interaction.type === 'drag' &&
+          currentStep.interaction.elementId === elementId
+        ) {
+          showProblem(currentStep.failureMessage);
+        }
+        return;
+      }
+
+      const result = applyTrainingEvent(lesson, completedStepIds, {
+        type: 'drag',
+        elementId,
+      });
+
+      if (result.status === 'failure') {
+        showProblem(result.step.failureMessage);
+        return;
+      }
+
+      if (result.status === 'match') {
+        acceptMatch(lesson, result.step, result.completedStepIds);
+      }
+    },
+    [acceptMatch, coachEnabled, completedStepIds, currentStep, lesson, lessonComplete, showProblem],
+  );
+
   const restartLesson = useCallback(() => {
     if (!lesson) {
       return;
@@ -217,6 +278,7 @@ export default function PageTrainingProvider({ children }: PageTrainingProviderP
       trainingDisabled,
       isTrainingTarget,
       reportSelect,
+      reportDrag,
     }),
     [
       coachEnabled,
@@ -225,6 +287,7 @@ export default function PageTrainingProvider({ children }: PageTrainingProviderP
       isTrainingTarget,
       lesson,
       lessonComplete,
+      reportDrag,
       reportSelect,
       restartNonce,
       restartLesson,

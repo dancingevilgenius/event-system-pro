@@ -53,17 +53,63 @@ describe('isCoachEnabled', () => {
 });
 
 describe('parseTrainingLesson', () => {
-  it('parses click and select steps', () => {
+  it('parses click and select steps and starts with moving the training box', () => {
     const parsed = lesson();
     expect(parsed.title).toBe('All-American Prelims');
     expect(parsed.fromPage).toBe('/staff');
-    expect(parsed.steps).toHaveLength(2);
+    expect(parsed.steps).toHaveLength(4);
     expect(parsed.steps[0].interaction).toEqual({
+      type: 'drag',
+      elementId: 'page-training-coach',
+    });
+    expect(parsed.steps[1].interaction).toEqual({
+      type: 'click',
+      elementId: 'training-box-moved-message',
+    });
+    expect(parsed.steps[1].instruction).toBe(
+      'Click on any color message box to hide it. Click on the green message box to move to the next step.',
+    );
+    expect(parsed.steps[2].interaction).toEqual({
       type: 'select',
       elementId: 'prelims-mark-first',
       option: 'yes',
     });
-    expect(parsed.steps[1].interaction.type).toBe('click');
+    expect(parsed.steps[3].interaction.type).toBe('click');
+  });
+
+  it('does not add a second move step when the lesson already starts with one', () => {
+    const parsed = parseTrainingLesson(
+      {
+        title: 'Already moves',
+        steps: [
+          {
+            id: 'move-training-panel',
+            instruction: 'Custom move text that is replaced.',
+            successMessage: 'Moved.',
+            failureMessage: 'Drag it.',
+            interaction: { type: 'drag', elementId: 'page-training-coach' },
+          },
+          {
+            id: 'mark-yes',
+            instruction: 'Choose Yes.',
+            successMessage: 'Yes.',
+            failureMessage: 'Choose Yes.',
+            interaction: { type: 'select', elementId: 'prelims-mark-first', option: 'yes' },
+          },
+        ],
+      },
+      'PRELIMS_MARKS',
+      '/prelims',
+    );
+
+    expect(parsed?.steps.map((step) => step.id)).toEqual([
+      'move-training-panel',
+      'dismiss-training-moved-message',
+      'mark-yes',
+    ]);
+    expect(parsed?.steps[0].instruction).toBe(
+      'Move the training box to another spot on the screen.\nThe popup can be dragged by the header, which has the 6-dot icon on it.',
+    );
   });
 
   it('rejects a select step that has no option', () => {
@@ -88,53 +134,121 @@ describe('parseTrainingLesson', () => {
 });
 
 describe('applyTrainingEvent', () => {
-  it('matches a select of the named option and advances', () => {
+  it('matches a drag of the training box and advances', () => {
     const parsed = lesson();
     const result = applyTrainingEvent(parsed, [], {
-      type: 'select',
-      elementId: 'prelims-mark-first',
-      option: 'yes',
+      type: 'drag',
+      elementId: 'page-training-coach',
     });
 
     expect(result.status).toBe('match');
     if (result.status !== 'match') {
       return;
     }
-    expect(result.completedStepIds).toEqual(['mark-yes']);
+    expect(result.completedStepIds).toEqual(['move-training-panel']);
+    expect(currentTrainingStep(parsed, result.completedStepIds)?.id).toBe(
+      'dismiss-training-moved-message',
+    );
+  });
+
+  it('matches a click on the green moved message and advances', () => {
+    const parsed = lesson();
+    const result = applyTrainingEvent(parsed, ['move-training-panel'], {
+      type: 'click',
+      elementId: 'training-box-moved-message',
+    });
+
+    expect(result.status).toBe('match');
+    if (result.status !== 'match') {
+      return;
+    }
+    expect(result.completedStepIds).toEqual([
+      'move-training-panel',
+      'dismiss-training-moved-message',
+    ]);
+    expect(currentTrainingStep(parsed, result.completedStepIds)?.id).toBe('mark-yes');
+  });
+
+  it('ignores a click on a different message during the green-box step', () => {
+    const parsed = lesson();
+    const result = applyTrainingEvent(parsed, ['move-training-panel'], {
+      type: 'click',
+      elementId: 'some-other-message',
+    });
+
+    expect(result).toEqual({ status: 'ignore' });
+  });
+
+  it('matches a select of the named option and advances', () => {
+    const parsed = lesson();
+    const result = applyTrainingEvent(
+      parsed,
+      ['move-training-panel', 'dismiss-training-moved-message'],
+      {
+        type: 'select',
+        elementId: 'prelims-mark-first',
+        option: 'yes',
+      },
+    );
+
+    expect(result.status).toBe('match');
+    if (result.status !== 'match') {
+      return;
+    }
+    expect(result.completedStepIds).toEqual([
+      'move-training-panel',
+      'dismiss-training-moved-message',
+      'mark-yes',
+    ]);
     expect(currentTrainingStep(parsed, result.completedStepIds)?.id).toBe('filter-yes');
-    expect(trainingPercent(parsed, result.completedStepIds)).toBe(50);
-    expect(trainingProgressLabel(parsed, result.completedStepIds)).toBe('Training: 2 of 2');
+    expect(trainingPercent(parsed, result.completedStepIds)).toBe(75);
+    expect(trainingProgressLabel(parsed, result.completedStepIds)).toBe('Training: 4 of 4');
   });
 
   it('fails a select of a different option and does not advance', () => {
     const parsed = lesson();
-    const result = applyTrainingEvent(parsed, [], {
-      type: 'select',
-      elementId: 'prelims-mark-first',
-      option: 'maybe',
-    });
+    const result = applyTrainingEvent(
+      parsed,
+      ['move-training-panel', 'dismiss-training-moved-message'],
+      {
+        type: 'select',
+        elementId: 'prelims-mark-first',
+        option: 'maybe',
+      },
+    );
 
     expect(result).toEqual({
       status: 'failure',
-      step: parsed.steps[0],
+      step: parsed.steps[2],
     });
-    expect(currentTrainingStep(parsed, [])?.id).toBe('mark-yes');
+    expect(
+      currentTrainingStep(parsed, ['move-training-panel', 'dismiss-training-moved-message'])?.id,
+    ).toBe('mark-yes');
   });
 
   it('matches a click on the named element', () => {
     const parsed = lesson();
-    const result = applyTrainingEvent(parsed, ['mark-yes'], {
-      type: 'click',
-      elementId: 'prelims-filter-yes',
-    });
+    const result = applyTrainingEvent(
+      parsed,
+      ['move-training-panel', 'dismiss-training-moved-message', 'mark-yes'],
+      {
+        type: 'click',
+        elementId: 'prelims-filter-yes',
+      },
+    );
 
     expect(result.status).toBe('match');
     if (result.status !== 'match') {
       return;
     }
-    expect(result.completedStepIds).toEqual(['mark-yes', 'filter-yes']);
+    expect(result.completedStepIds).toEqual([
+      'move-training-panel',
+      'dismiss-training-moved-message',
+      'mark-yes',
+      'filter-yes',
+    ]);
     expect(trainingPercent(parsed, result.completedStepIds)).toBe(100);
-    expect(trainingProgressLabel(parsed, result.completedStepIds)).toBe('Training: 2 of 2');
+    expect(trainingProgressLabel(parsed, result.completedStepIds)).toBe('Training: 4 of 4');
   });
 
   it('ignores a click on a different element', () => {
@@ -145,6 +259,63 @@ describe('applyTrainingEvent', () => {
     });
 
     expect(result).toEqual({ status: 'ignore' });
+  });
+
+  it('matches No on any couple after the second and rejects the second couple', () => {
+    const parsed = parseTrainingLesson(
+      {
+        title: 'Later rows',
+        steps: [
+          {
+            id: 'mark-no',
+            instruction: 'On any couple after the second, choose No.',
+            successMessage: 'No mark recorded.',
+            failureMessage: 'Choose No on a couple after the second.',
+            interaction: {
+              type: 'select',
+              elementId: 'prelims-mark-row-after-2',
+              option: 'no',
+              anyRowAfterSecond: true,
+            },
+          },
+        ],
+      },
+      'PRELIMS_MARKS',
+      '/prelims',
+    );
+
+    expect(parsed?.steps[2].interaction).toEqual({
+      type: 'select',
+      elementId: 'prelims-mark-row-after-2',
+      option: 'no',
+      anyRowAfterSecond: true,
+    });
+
+    if (!parsed) {
+      return;
+    }
+
+    const completed = ['move-training-panel', 'dismiss-training-moved-message'];
+    const thirdRow = applyTrainingEvent(parsed, completed, {
+      type: 'select',
+      elementId: 'prelims-mark-row-3',
+      option: 'no',
+    });
+    expect(thirdRow.status).toBe('match');
+
+    const secondRow = applyTrainingEvent(parsed, completed, {
+      type: 'select',
+      elementId: 'prelims-mark-row-2',
+      option: 'no',
+    });
+    expect(secondRow).toEqual({ status: 'ignore' });
+
+    const wrongOption = applyTrainingEvent(parsed, completed, {
+      type: 'select',
+      elementId: 'prelims-mark-row-4',
+      option: 'yes',
+    });
+    expect(wrongOption.status).toBe('failure');
   });
 });
 

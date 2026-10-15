@@ -19,10 +19,12 @@ export type MockContestEntry = {
   follower: LegionMember;
 };
 
-export function createMockContestEntries(): MockContestEntry[] {
+export function createMockContestEntries(
+  count: number = MOCK_CONTEST_ENTRY_COUNT,
+): MockContestEntry[] {
   const numbers = new Set<number>();
 
-  while (numbers.size < MOCK_CONTEST_ENTRY_COUNT) {
+  while (numbers.size < count) {
     numbers.add(Math.floor(Math.random() * 999) + 1);
   }
 

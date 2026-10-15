@@ -19,7 +19,63 @@ export type TrainingSelectEvent = {
   option: string;
 };
 
-export type TrainingDomEvent = TrainingClickEvent | TrainingSelectEvent;
+export type TrainingDragEvent = {
+  type: 'drag';
+  elementId: string;
+};
+
+export type TrainingDomEvent = TrainingClickEvent | TrainingSelectEvent | TrainingDragEvent;
+
+export const MOVE_TRAINING_PANEL_ELEMENT_ID = 'page-training-coach';
+export const TRAINING_MOVED_MESSAGE_ELEMENT_ID = 'training-box-moved-message';
+export const MARK_ROW_ELEMENT_PREFIX = 'prelims-mark-row-';
+
+export function markRowElementId(rowNumber: number): string {
+  return `${MARK_ROW_ELEMENT_PREFIX}${rowNumber}`;
+}
+
+export function markRowNumber(elementId: string): number | null {
+  if (!elementId.startsWith(MARK_ROW_ELEMENT_PREFIX)) {
+    return null;
+  }
+
+  const rowNumber = Number(elementId.slice(MARK_ROW_ELEMENT_PREFIX.length));
+  if (!Number.isInteger(rowNumber) || rowNumber < 1) {
+    return null;
+  }
+
+  return rowNumber;
+}
+
+export function interactionTargetsElement(
+  interaction: TrainingInteraction,
+  elementId: string,
+): boolean {
+  if (interaction.type === 'select' && interaction.anyRowAfterSecond) {
+    const rowNumber = markRowNumber(elementId);
+    return rowNumber !== null && rowNumber > 2;
+  }
+
+  return interaction.elementId === elementId;
+}
+
+export const MOVE_TRAINING_PANEL_STEP: TrainingStep = {
+  id: 'move-training-panel',
+  instruction:
+    'Move the training box to another spot on the screen.\nThe popup can be dragged by the header, which has the 6-dot icon on it.',
+  successMessage: 'Training box moved.',
+  failureMessage: 'Drag the training box by its heading.',
+  interaction: { type: 'drag', elementId: MOVE_TRAINING_PANEL_ELEMENT_ID },
+};
+
+export const DISMISS_MOVED_MESSAGE_STEP: TrainingStep = {
+  id: 'dismiss-training-moved-message',
+  instruction:
+    'Click on any color message box to hide it. Click on the green message box to move to the next step.',
+  successMessage: 'Message hidden.',
+  failureMessage: 'Click the green message box that says Training box moved.',
+  interaction: { type: 'click', elementId: TRAINING_MOVED_MESSAGE_ELEMENT_ID },
+};
 
 export type TrainingApplyResult =
   | { status: 'ignore' }
@@ -118,13 +174,22 @@ function parseInteraction(value: unknown): TrainingInteraction | null {
     return { type: 'click', elementId };
   }
 
+  if (value.type === 'drag') {
+    return { type: 'drag', elementId };
+  }
+
   if (value.type === 'select') {
     const option = requiredText(value.option);
     if (!option) {
       return null;
     }
 
-    return { type: 'select', elementId, option };
+    return {
+      type: 'select',
+      elementId,
+      option,
+      ...(value.anyRowAfterSecond === true ? { anyRowAfterSecond: true } : {}),
+    };
   }
 
   return null;
@@ -176,8 +241,15 @@ export function parseTrainingLesson(
     pagePath: path,
     title,
     fromPage,
-    steps: steps as TrainingStep[],
+    steps: withLeadingCoachSteps(steps as TrainingStep[]),
   };
+}
+
+function withLeadingCoachSteps(steps: readonly TrainingStep[]): TrainingStep[] {
+  const rest = steps.filter(
+    (step) => step.id !== MOVE_TRAINING_PANEL_STEP.id && step.id !== DISMISS_MOVED_MESSAGE_STEP.id,
+  );
+  return [MOVE_TRAINING_PANEL_STEP, DISMISS_MOVED_MESSAGE_STEP, ...rest];
 }
 
 function safeJsonParse(value: string): unknown {
@@ -189,7 +261,7 @@ function safeJsonParse(value: string): unknown {
 }
 
 function eventsMatch(interaction: TrainingInteraction, event: TrainingDomEvent): boolean {
-  if (interaction.type !== event.type || interaction.elementId !== event.elementId) {
+  if (interaction.type !== event.type || !interactionTargetsElement(interaction, event.elementId)) {
     return false;
   }
 
@@ -197,7 +269,7 @@ function eventsMatch(interaction: TrainingInteraction, event: TrainingDomEvent):
     return interaction.option === event.option;
   }
 
-  return interaction.type === 'click';
+  return interaction.type === 'click' || interaction.type === 'drag';
 }
 
 export function applyTrainingEvent(
@@ -211,7 +283,7 @@ export function applyTrainingEvent(
   }
 
   const { interaction } = step;
-  if (interaction.elementId !== event.elementId || interaction.type !== event.type) {
+  if (interaction.type !== event.type || !interactionTargetsElement(interaction, event.elementId)) {
     return { status: 'ignore' };
   }
 

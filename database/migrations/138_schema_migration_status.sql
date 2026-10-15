@@ -5952,11 +5952,25 @@ INSERT INTO public.training_instructions (
     "title": "All-American Prelims",
     "steps": [
       {
+        "id": "move-training-panel",
+        "instruction": "Move the training box to another spot on the screen.\nThe popup can be dragged by the header, which has the 6-dot icon on it.",
+        "successMessage": "Training box moved.",
+        "failureMessage": "Drag the training box by its heading.",
+        "interaction": { "type": "drag", "elementId": "page-training-coach" }
+      },
+      {
+        "id": "dismiss-training-moved-message",
+        "instruction": "Click on any color message box to hide it. Click on the green message box to move to the next step.",
+        "successMessage": "Message hidden.",
+        "failureMessage": "Click the green message box that says Training box moved.",
+        "interaction": { "type": "click", "elementId": "training-box-moved-message" }
+      },
+      {
         "id": "mark-yes",
         "instruction": "On the first couple, open the mark list and choose Yes.",
         "successMessage": "Yes mark recorded.",
         "failureMessage": "That was not Yes. Choose Yes on the first couple.",
-        "interaction": { "type": "select", "elementId": "prelims-mark-first", "option": "yes" }
+        "interaction": { "type": "select", "elementId": "prelims-mark-row-1", "option": "yes" }
       },
       {
         "id": "filter-yes",
@@ -5966,25 +5980,32 @@ INSERT INTO public.training_instructions (
         "interaction": { "type": "click", "elementId": "prelims-filter-yes" }
       },
       {
+        "id": "filter-all",
+        "instruction": "Click the All filter to view all competitors.",
+        "successMessage": "Showing all competitors.",
+        "failureMessage": "Click the All filter.",
+        "interaction": { "type": "click", "elementId": "prelims-filter-all" }
+      },
+      {
         "id": "mark-maybe",
-        "instruction": "On the first couple, choose Maybe.",
-        "successMessage": "Maybe mark recorded.",
-        "failureMessage": "That was not Maybe. Choose Maybe on the first couple.",
-        "interaction": { "type": "select", "elementId": "prelims-mark-first", "option": "maybe" }
+        "instruction": "On the second couple, open the mark list and choose Alternate.",
+        "successMessage": "Alternate mark recorded.",
+        "failureMessage": "That was not Alternate. Choose Alternate on the second couple.",
+        "interaction": { "type": "select", "elementId": "prelims-mark-row-2", "option": "maybe" }
       },
       {
         "id": "filter-maybe",
-        "instruction": "Click the Maybe filter.",
-        "successMessage": "Showing couples marked Maybe.",
-        "failureMessage": "Click the Maybe filter.",
+        "instruction": "Click the Alternate filter.",
+        "successMessage": "Showing couples marked Alternate.",
+        "failureMessage": "Click the Alternate filter.",
         "interaction": { "type": "click", "elementId": "prelims-filter-maybe" }
       },
       {
         "id": "mark-no",
-        "instruction": "On the first couple, choose No.",
+        "instruction": "On any couple after the second, choose No.",
         "successMessage": "No mark recorded. Training complete.",
-        "failureMessage": "That was not No. Choose No on the first couple.",
-        "interaction": { "type": "select", "elementId": "prelims-mark-first", "option": "no" }
+        "failureMessage": "That was not No. Choose No on a couple after the second.",
+        "interaction": { "type": "select", "elementId": "prelims-mark-row-after-2", "option": "no", "anyRowAfterSecond": true }
       }
     ]
   }$steps$::jsonb,
@@ -5996,6 +6017,212 @@ ON CONFLICT (instruction_code) DO UPDATE SET
 
 NOTIFY pgrst, 'reload schema';$sqlbody$,
   $sort$139_training_instructions.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$140_prelims_alternate_label.sql$fn$,
+  $num$140$num$,
+  $details$Prelims coaching copy still says Maybe.$details$,
+  $probe$EXISTS (SELECT 1 FROM public.training_instructions WHERE instruction_code = 'PRELIMS_MARKS' AND position('Maybe' in steps_json::text) = 0 AND position('Alternate' in steps_json::text) > 0)$probe$,
+  $sqlbody$-- Rename prelims coaching copy from Maybe to Alternate.
+-- Run: psql -U postgres -d event_system_pro -f database/migrations/140_prelims_alternate_label.sql
+
+
+UPDATE public.training_instructions
+SET steps_json = replace(steps_json::text, 'Maybe', 'Alternate')::jsonb
+WHERE instruction_code = 'PRELIMS_MARKS'
+  AND position('Maybe' in steps_json::text) > 0;$sqlbody$,
+  $sort$140_prelims_alternate_label.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$141_training_move_panel_step.sql$fn$,
+  $num$141$num$,
+  $details$Training lessons do not start by moving the training box.$details$,
+  $probe$EXISTS (SELECT 1 FROM public.training_instructions WHERE instruction_code = 'PRELIMS_MARKS' AND steps_json->'steps'->0->>'id' = 'move-training-panel')$probe$,
+  $sqlbody$-- Start every stored prelims lesson by moving the training box.
+-- Run: psql -U postgres -d event_system_pro -f database/migrations/141_training_move_panel_step.sql
+
+
+UPDATE public.training_instructions
+SET steps_json = jsonb_set(
+  steps_json,
+  '{steps}',
+  jsonb_build_array(
+    $move${
+      "id": "move-training-panel",
+      "instruction": "Move the training box to another spot on the screen.\nThe popup can be dragged by the header, which has the 6-dot icon on it.",
+      "successMessage": "Training box moved.",
+      "failureMessage": "Drag the training box by its heading.",
+      "interaction": { "type": "drag", "elementId": "page-training-coach" }
+    }$move$::jsonb
+  ) || COALESCE(
+    (
+      SELECT jsonb_agg(step ORDER BY ordinality)
+      FROM jsonb_array_elements(steps_json->'steps') WITH ORDINALITY AS listed(step, ordinality)
+      WHERE step->>'id' IS DISTINCT FROM 'move-training-panel'
+    ),
+    '[]'::jsonb
+  )
+)
+WHERE instruction_code = 'PRELIMS_MARKS'
+  AND COALESCE(steps_json->'steps'->0->>'id', '') IS DISTINCT FROM 'move-training-panel';$sqlbody$,
+  $sort$141_training_move_panel_step.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$142_training_drag_header_hint.sql$fn$,
+  $num$142$num$,
+  $details$The first coaching step does not mention the 6-dot drag icon.$details$,
+  $probe$EXISTS (SELECT 1 FROM public.training_instructions WHERE instruction_code = 'PRELIMS_MARKS' AND position('6-dot icon' in COALESCE(steps_json->'steps'->0->>'instruction', '')) > 0)$probe$,
+  $sqlbody$-- Tell the first coaching step that the training box is dragged by its header.
+-- Run: psql -U postgres -d event_system_pro -f database/migrations/142_training_drag_header_hint.sql
+
+
+UPDATE public.training_instructions
+SET steps_json = jsonb_set(
+  steps_json,
+  '{steps,0,instruction}',
+  to_jsonb($hint$Move the training box to another spot on the screen.
+The popup can be dragged by the header, which has the 6-dot icon on it.$hint$::text)
+)
+WHERE instruction_code = 'PRELIMS_MARKS'
+  AND steps_json->'steps'->0->>'id' = 'move-training-panel'
+  AND position('6-dot icon' in COALESCE(steps_json->'steps'->0->>'instruction', '')) = 0;$sqlbody$,
+  $sort$142_training_drag_header_hint.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$143_training_dismiss_moved_message.sql$fn$,
+  $num$143$num$,
+  $details$The second coaching step does not click the green Training box moved message.$details$,
+  $probe$EXISTS (SELECT 1 FROM public.training_instructions WHERE instruction_code = 'PRELIMS_MARKS' AND steps_json->'steps'->1->>'id' = 'dismiss-training-moved-message')$probe$,
+  $sqlbody$-- Make the second coaching step a click on the green "Training box moved" message.
+-- Run: psql -U postgres -d event_system_pro -f database/migrations/143_training_dismiss_moved_message.sql
+
+
+UPDATE public.training_instructions
+SET steps_json = jsonb_set(
+  steps_json,
+  '{steps}',
+  jsonb_insert(
+    COALESCE(
+      (
+        SELECT jsonb_agg(step ORDER BY ordinality)
+        FROM jsonb_array_elements(steps_json->'steps') WITH ORDINALITY AS listed(step, ordinality)
+        WHERE step->>'id' IS DISTINCT FROM 'dismiss-training-moved-message'
+      ),
+      '[]'::jsonb
+    ),
+    '{1}',
+    $dismiss${
+      "id": "dismiss-training-moved-message",
+      "instruction": "Click on any color message box to hide it. Click on the green message box to move to the next step.",
+      "successMessage": "Message hidden.",
+      "failureMessage": "Click the green message box that says Training box moved.",
+      "interaction": { "type": "click", "elementId": "training-box-moved-message" }
+    }$dismiss$::jsonb,
+    false
+  )
+)
+WHERE instruction_code = 'PRELIMS_MARKS'
+  AND NOT EXISTS (
+    SELECT 1
+    FROM jsonb_array_elements(steps_json->'steps') AS step
+    WHERE step->>'id' = 'dismiss-training-moved-message'
+  );$sqlbody$,
+  $sort$143_training_dismiss_moved_message.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$144_training_all_filter_and_later_rows.sql$fn$,
+  $num$144$num$,
+  $details$Prelims coaching does not click All, mark Alternate on the second couple, or mark No on a later couple.$details$,
+  $probe$EXISTS (SELECT 1 FROM public.training_instructions WHERE instruction_code = 'PRELIMS_MARKS' AND steps_json->'steps'->4->>'id' = 'filter-all' AND steps_json->'steps'->5->'interaction'->>'elementId' = 'prelims-mark-row-2' AND COALESCE(steps_json->'steps'->7->'interaction'->>'anyRowAfterSecond', '') = 'true')$probe$,
+  $sqlbody$-- Prelims coaching: click All, mark Alternate on the second couple, and mark No on a later couple.
+-- Run: psql -U postgres -d event_system_pro -f database/migrations/144_training_all_filter_and_later_rows.sql
+
+
+UPDATE public.training_instructions
+SET steps_json = jsonb_set(
+  steps_json,
+  '{steps}',
+  $steps$[
+    {
+      "id": "move-training-panel",
+      "instruction": "Move the training box to another spot on the screen.\nThe popup can be dragged by the header, which has the 6-dot icon on it.",
+      "successMessage": "Training box moved.",
+      "failureMessage": "Drag the training box by its heading.",
+      "interaction": { "type": "drag", "elementId": "page-training-coach" }
+    },
+    {
+      "id": "dismiss-training-moved-message",
+      "instruction": "Click on any color message box to hide it. Click on the green message box to move to the next step.",
+      "successMessage": "Message hidden.",
+      "failureMessage": "Click the green message box that says Training box moved.",
+      "interaction": { "type": "click", "elementId": "training-box-moved-message" }
+    },
+    {
+      "id": "mark-yes",
+      "instruction": "On the first couple, open the mark list and choose Yes.",
+      "successMessage": "Yes mark recorded.",
+      "failureMessage": "That was not Yes. Choose Yes on the first couple.",
+      "interaction": { "type": "select", "elementId": "prelims-mark-row-1", "option": "yes" }
+    },
+    {
+      "id": "filter-yes",
+      "instruction": "Click the Yes filter to review that couple.",
+      "successMessage": "Showing couples marked Yes.",
+      "failureMessage": "Click the Yes filter.",
+      "interaction": { "type": "click", "elementId": "prelims-filter-yes" }
+    },
+    {
+      "id": "filter-all",
+      "instruction": "Click the All filter to view all competitors.",
+      "successMessage": "Showing all competitors.",
+      "failureMessage": "Click the All filter.",
+      "interaction": { "type": "click", "elementId": "prelims-filter-all" }
+    },
+    {
+      "id": "mark-maybe",
+      "instruction": "On the second couple, open the mark list and choose Alternate.",
+      "successMessage": "Alternate mark recorded.",
+      "failureMessage": "That was not Alternate. Choose Alternate on the second couple.",
+      "interaction": { "type": "select", "elementId": "prelims-mark-row-2", "option": "maybe" }
+    },
+    {
+      "id": "filter-maybe",
+      "instruction": "Click the Alternate filter.",
+      "successMessage": "Showing couples marked Alternate.",
+      "failureMessage": "Click the Alternate filter.",
+      "interaction": { "type": "click", "elementId": "prelims-filter-maybe" }
+    },
+    {
+      "id": "mark-no",
+      "instruction": "On any couple after the second, choose No.",
+      "successMessage": "No mark recorded. Training complete.",
+      "failureMessage": "That was not No. Choose No on a couple after the second.",
+      "interaction": { "type": "select", "elementId": "prelims-mark-row-after-2", "option": "no", "anyRowAfterSecond": true }
+    }
+  ]$steps$::jsonb
+)
+WHERE instruction_code = 'PRELIMS_MARKS';$sqlbody$,
+  $sort$144_training_all_filter_and_later_rows.sql$sort$,
   'c-agent'
 );
 

@@ -546,7 +546,7 @@ App-wide MUI theming via **skins**. `AppThemeProvider` wraps the app in `main.ts
 
 ## Judging page — competitor data
 
-- Each session shows **20 couples** (accordion rows).
+- Each session shows **7 couples** (accordion rows).
 - Each couple has:
   - A **bib number** (1–999, unique within the set, sorted ascending)
   - A **Leader** and **Follower** (first + last name)
@@ -631,7 +631,7 @@ Dropdown options:
 ## Progress and submit
 
 - Top of page shows **Percent Complete** bar (replaces the old "Judging" header).
-- Progress = couples with **non-zero raw score** ÷ 20 × 100.
+- Progress = couples with **non-zero raw score** ÷ couple count × 100.
 - Display text: `Percent Complete: X%`.
 - At **100%**, the bar becomes a **Submit** button (navigates to `/staff`).
 
@@ -1307,19 +1307,20 @@ Prefer **`jsonb`** for new columns that will be queried or merged.
 
 Lessons live in **`public.training_instructions`** (migration `139_training_instructions.sql`). Audit columns are `created_date`, `created_by`, `modified_date`, and `modified_by`. The lesson document is **`steps_json`** (`jsonb`): `page`, `fromPage`, and an ordered `steps` array. Each step has `instruction`, `successMessage`, `failureMessage`, and an `interaction`.
 
+- `interaction.type` **`drag`** — drag the element with `elementId`. Every lesson starts with this step on `#page-training-coach`, even when the stored JSON omits it. The next step clicks `#training-box-moved-message`, the green "Training box moved." message. That message stays until it is clicked. Clicking any other message hides it and does not advance the lesson.
 - `interaction.type` **`click`** — click the element with `elementId`.
-- `interaction.type` **`select`** — choose `option` (the option value) in the element with `elementId`.
+- `interaction.type` **`select`** — choose `option` (the option value) in the element with `elementId`. `anyRowAfterSecond` accepts that option on any competitor row after the second.
 
 Signed-in **STAFF** or **ADMIN** can read the row through **`api.training_instructions`**. The app does not insert or update lessons.
 
 Coaching is off unless the query is **`coach=1`**.
 
 - **`/prelims`** — scoring works as usual. No instruction text area, no training bar, and no locked controls.
-- **`/prelims?coach=1`** — loads the `PRELIMS_MARKS` lesson. A read-only text area shows the current step. The training bar counts completed steps. Only the element named by the current step stays enabled. Back to Staff stays available. A wrong option on that select shows the step's failure message and is not kept. A matching action shows the success message and advances. Progress is stored in the browser under `evp.pageTraining.<instruction_code>`.
-- After the last step, the text area says training is complete, the bar is full, and the lock lifts. **Restart** begins again at step 1, sets the mark filter back to **All**, and clears marks made during the lesson. Opening `/prelims` without `coach=1` leaves coaching.
-- The training panel opens below the first two competitor rows. Drag the **Training** label to move it.
+- **`/prelims?coach=1`** — loads the `PRELIMS_MARKS` lesson and hides the three "Set N couples" hints. A read-only text area shows the current step. The training bar counts completed steps. Only the element named by the current step stays enabled. On the No step, every couple after the second stays enabled. Back to Staff stays available. A wrong option on that select shows the step's failure message and is not kept. A matching action shows the success message and advances. Progress is stored in the browser under `evp.pageTraining.<instruction_code>`.
+- After the last step, the text area says training is complete, the bar is full, and the lock lifts. **Restart** begins again at step 1, sets the mark filter back to **All**, and clears marks made during the lesson. Opening `/prelims` without `coach=1` leaves coaching and shows the three hints again.
+- The training panel opens below the first two competitor rows. The first step of every lesson is to drag that panel. The heading has a 6-dot drag icon on the right. Drag the **Training** heading to move it. The second step asks the user to click the green **Training box moved** message.
 
-The seeded Prelims steps use `#prelims-mark-first` (first couple's mark list), `#prelims-filter-yes`, and `#prelims-filter-maybe`.
+The seeded Prelims steps use `#prelims-mark-row-1` (first couple), `#prelims-mark-row-2` (second couple), any later `#prelims-mark-row-N` for No, `#prelims-filter-yes`, `#prelims-filter-all`, and `#prelims-filter-maybe`. After the Yes filter, step 5 clicks All so the later couples are on screen. Alternate is marked on the second couple. No is marked on any couple after the second, and that step shows all competitors again.
 
 ---
 

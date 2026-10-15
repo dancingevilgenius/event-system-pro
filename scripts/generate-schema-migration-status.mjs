@@ -33,6 +33,13 @@ const detailsOverride = {
   '133_inactivity_idle_timeout_config.sql': 'Idle-timeout helpers are missing.',
   '134_user_cursor_rules_starred.sql': 'api.set_user_cursor_rules_starred() is missing.',
   '139_training_instructions.sql': 'training_instructions table is missing.',
+  '140_prelims_alternate_label.sql': 'Prelims coaching copy still says Maybe.',
+  '141_training_move_panel_step.sql': 'Training lessons do not start by moving the training box.',
+  '142_training_drag_header_hint.sql': 'The first coaching step does not mention the 6-dot drag icon.',
+  '143_training_dismiss_moved_message.sql':
+    'The second coaching step does not click the green Training box moved message.',
+  '144_training_all_filter_and_later_rows.sql':
+    'Prelims coaching does not click All, mark Alternate on the second couple, or mark No on a later couple.',
 };
 
 const probes = {
@@ -68,6 +75,16 @@ const probes = {
   '134_user_cursor_rules_starred.sql':
     "to_regprocedure('api.set_user_cursor_rules_starred(text[])') IS NOT NULL",
   '139_training_instructions.sql': "to_regclass('public.training_instructions') IS NOT NULL",
+  '140_prelims_alternate_label.sql':
+    "EXISTS (SELECT 1 FROM public.training_instructions WHERE instruction_code = 'PRELIMS_MARKS' AND position('Maybe' in steps_json::text) = 0 AND position('Alternate' in steps_json::text) > 0)",
+  '141_training_move_panel_step.sql':
+    "EXISTS (SELECT 1 FROM public.training_instructions WHERE instruction_code = 'PRELIMS_MARKS' AND steps_json->'steps'->0->>'id' = 'move-training-panel')",
+  '142_training_drag_header_hint.sql':
+    "EXISTS (SELECT 1 FROM public.training_instructions WHERE instruction_code = 'PRELIMS_MARKS' AND position('6-dot icon' in COALESCE(steps_json->'steps'->0->>'instruction', '')) > 0)",
+  '143_training_dismiss_moved_message.sql':
+    "EXISTS (SELECT 1 FROM public.training_instructions WHERE instruction_code = 'PRELIMS_MARKS' AND steps_json->'steps'->1->>'id' = 'dismiss-training-moved-message')",
+  '144_training_all_filter_and_later_rows.sql':
+    "EXISTS (SELECT 1 FROM public.training_instructions WHERE instruction_code = 'PRELIMS_MARKS' AND steps_json->'steps'->4->>'id' = 'filter-all' AND steps_json->'steps'->5->'interaction'->>'elementId' = 'prelims-mark-row-2' AND COALESCE(steps_json->'steps'->7->'interaction'->>'anyRowAfterSecond', '') = 'true')",
 };
 
 function dollarQuote(value, preferredTag) {

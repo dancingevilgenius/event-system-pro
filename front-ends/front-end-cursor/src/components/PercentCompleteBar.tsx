@@ -4,12 +4,15 @@ type PercentCompleteBarProps = {
   percent: number;
   label?: string;
   onSubmit?: () => void;
+  /** Smaller wrapping label so several bars can share one phone row. */
+  dense?: boolean;
 };
 
 export default function PercentCompleteBar({
   percent,
   label,
   onSubmit,
+  dense = false,
 }: PercentCompleteBarProps) {
   const clampedPercent = Math.min(100, Math.max(0, percent));
   const displayPercent = Math.round(clampedPercent);
@@ -63,6 +66,10 @@ export default function PercentCompleteBar({
           alignItems: 'center',
           justifyContent: 'center',
           fontWeight: 600,
+          textAlign: 'center',
+          lineHeight: dense ? 1.15 : undefined,
+          px: dense ? 0.25 : 0,
+          fontSize: dense ? { xs: '0.7rem', md: '0.875rem' } : undefined,
           color: clampedPercent > 50 ? 'primary.contrastText' : 'text.primary',
         }}
       >

@@ -1,4 +1,7 @@
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import DoneIcon from '@mui/icons-material/Done';
+import NotInterestedIcon from '@mui/icons-material/NotInterested';
+import SpellcheckIcon from '@mui/icons-material/Spellcheck';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import {
   Box,
@@ -19,10 +22,9 @@ import {
   Typography,
   useMediaQuery,
   type SelectChangeEvent,
-  type Theme,
 } from '@mui/material';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import PageBackButton from '../components/PageBackButton';
 import PercentCompleteBar from '../components/PercentCompleteBar';
 import {
@@ -37,12 +39,19 @@ import {
   formatInitialLast,
   type LegionMember,
 } from '../data/legionNames';
+import {
+  CONTEST_TITLE_FONT_SIZE,
+  LARGE_SCREEN_CONTEST_TITLE_FONT_SIZE,
+  useIpad97OrLargerScreen,
+  type ContestTitleFontSize,
+} from '../hooks/useContestTitleFontSize';
 import { trainingTargetSx, usePageTraining } from '../hooks/usePageTraining';
+import { isCoachEnabled, markRowElementId } from '../lib/pageTraining';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 
-const FIRST_MARK_ELEMENT_ID = 'prelims-mark-first';
 const FILTER_YES_ELEMENT_ID = 'prelims-filter-yes';
+const FILTER_ALL_ELEMENT_ID = 'prelims-filter-all';
 const FILTER_MAYBE_ELEMENT_ID = 'prelims-filter-maybe';
 
 const NUMBER_COLUMN_WIDTH = '2.75rem';
@@ -50,37 +59,8 @@ const LARGE_SCREEN_NUMBER_COLUMN_WIDTH = '3.25rem';
 const TARGET_WARNING_SLOT_WIDTH = 40;
 const PAIR_DIVIDER_WIDTH = 16;
 const ENTRY_ROW_HEIGHT = 40;
-const DANCER_NAME_FONT_SIZE = { xs: '0.8125rem', md: '1rem' } as const;
-const LARGE_SCREEN_ROW_FONT_SIZE = '1.5rem';
-const IPAD_97_MIN_CSS_PX = 768;
 
-type RowFontSize = typeof DANCER_NAME_FONT_SIZE | typeof LARGE_SCREEN_ROW_FONT_SIZE;
-
-function detectIpad97OrLargerScreen(): boolean {
-  if (typeof window === 'undefined') {
-    return false;
-  }
-
-  return Math.min(window.screen.width, window.screen.height) >= IPAD_97_MIN_CSS_PX;
-}
-
-function useIpad97OrLargerScreen(): boolean {
-  const [matches, setMatches] = useState(detectIpad97OrLargerScreen);
-
-  useEffect(() => {
-    const update = () => setMatches(detectIpad97OrLargerScreen());
-
-    window.addEventListener('orientationchange', update);
-    window.visualViewport?.addEventListener('resize', update);
-
-    return () => {
-      window.removeEventListener('orientationchange', update);
-      window.visualViewport?.removeEventListener('resize', update);
-    };
-  }, []);
-
-  return matches;
-}
+type RowFontSize = ContestTitleFontSize;
 
 const NAME_MODES = [
   { leaderFullFirst: true, followerFullFirst: true },
@@ -101,8 +81,9 @@ type PrelimsMoreJson = {
 };
 
 /** Demo stand-in for contest more_json callback targets. */
+const PRELIMS_COUPLE_COUNT = 12;
 const DEMO_PRELIMS_MORE_JSON: PrelimsMoreJson = {
-  targetYesCount: 10,
+  targetYesCount: 5,
   targetMaybeCount: 2,
 };
 
@@ -114,7 +95,7 @@ type PrelimsEntry = {
 
 const PRELIMS_MARKS: { value: PrelimsMark; label: string }[] = [
   { value: 'yes', label: 'Yes' },
-  { value: 'maybe', label: 'Maybe' },
+  { value: 'maybe', label: 'Alternate' },
   { value: 'no', label: 'No' },
 ];
 
@@ -143,21 +124,25 @@ function nameColumnSx(textAlign: 'left' | 'right' | 'center', fontSize: RowFontS
   } as const;
 }
 
-function maybeMarkColor(theme: Theme): string {
-  return theme.palette.mode === 'dark' ? '#ffe14a' : '#c4a000';
+function markButtonFill(mark: PrelimsMark | undefined): string | undefined {
+  switch (mark) {
+    case 'yes':
+      return '#e5f6ea';
+    case 'maybe':
+      return '#fff6d4';
+    case 'no':
+      return '#fde8e8';
+    default:
+      return undefined;
+  }
 }
 
-function filterSelectedColor(filter: MarkFilter): string | ((theme: Theme) => string) {
-  switch (filter) {
-    case 'yes':
-      return 'success.main';
-    case 'maybe':
-      return maybeMarkColor;
-    case 'no':
-      return 'error.main';
-    default:
-      return 'text.primary';
+function filterButtonFill(filter: MarkFilter): string | undefined {
+  if (filter === 'yes' || filter === 'maybe' || filter === 'no') {
+    return markButtonFill(filter);
   }
+
+  return undefined;
 }
 
 function emptyFilterMessage(filter: MarkFilter): string {
@@ -165,26 +150,13 @@ function emptyFilterMessage(filter: MarkFilter): string {
     case 'yes':
       return 'No dancers marked Yes.';
     case 'maybe':
-      return 'No dancers marked Maybe.';
+      return 'No dancers marked Alternate.';
     case 'no':
       return 'No dancers marked No.';
     case 'unmarked':
       return 'All dancers are marked.';
     default:
       return 'No dancers in this list.';
-  }
-}
-
-function markColor(mark: PrelimsMark | undefined): string | ((theme: Theme) => string) {
-  switch (mark) {
-    case 'yes':
-      return 'success.main';
-    case 'maybe':
-      return maybeMarkColor;
-    case 'no':
-      return 'error.main';
-    default:
-      return 'text.secondary';
   }
 }
 
@@ -331,7 +303,8 @@ function PrelimsMarkSelect({
     onChange(null);
   };
 
-  const selectWidth = largeScreen ? '8.75rem' : { xs: '6.5rem', md: '7.25rem' };
+  const selectWidth = largeScreen ? '11.5rem' : { xs: '8.25rem', md: '9.5rem' };
+  const markFill = markButtonFill(mark);
 
   return (
     <Select
@@ -341,13 +314,23 @@ function PrelimsMarkSelect({
       value={mark ?? ''}
       onChange={handleChange}
       aria-label={`Mark for bib ${bibNumber}`}
+      MenuProps={{
+        sx: { zIndex: (theme) => theme.zIndex.snackbar + 3 },
+      }}
       sx={{
         width: selectWidth,
-        flex: largeScreen ? '0 0 8.75rem' : { xs: '0 0 6.5rem', md: '0 0 7.25rem' },
+        flex: largeScreen ? '0 0 11.5rem' : { xs: '0 0 8.25rem', md: '0 0 9.5rem' },
         flexShrink: 0,
         height: 32,
-        color: markColor(mark),
+        color: mark ? '#000' : 'text.secondary',
+        bgcolor: markFill,
         fontSize,
+        '&:hover': {
+          bgcolor: markFill,
+        },
+        '&.Mui-focused': {
+          bgcolor: markFill,
+        },
         '& .MuiOutlinedInput-notchedOutline': {
           borderWidth: 1,
         },
@@ -362,10 +345,12 @@ function PrelimsMarkSelect({
           boxSizing: 'border-box',
           fontWeight: mark ? 700 : 400,
           lineHeight: 1.2,
+          color: 'inherit',
         },
         '& .MuiSelect-icon': {
           right: { xs: 0, md: 4 },
           fontSize: largeScreen ? '1.5rem' : { xs: '1rem', md: '1.5rem' },
+          color: mark ? '#000' : undefined,
         },
       }}
     >
@@ -375,11 +360,7 @@ function PrelimsMarkSelect({
         </Box>
       </MenuItem>
       {PRELIMS_MARKS.map((option) => (
-        <MenuItem
-          key={option.value}
-          value={option.value}
-          sx={{ color: markColor(option.value), fontWeight: 700 }}
-        >
+        <MenuItem key={option.value} value={option.value} sx={{ color: 'text.primary', fontWeight: 700 }}>
           {option.label}
         </MenuItem>
       ))}
@@ -387,7 +368,7 @@ function PrelimsMarkSelect({
   );
 }
 
-type OverTargetMark = 'yes' | 'maybe';
+type OverTargetMark = 'yes' | 'maybe' | 'no';
 
 type TargetProgressRowProps = {
   percent: number;
@@ -416,28 +397,30 @@ function TargetProgressRow({
 }: TargetProgressRowProps) {
   return (
     <Stack direction="row" spacing={0.5} sx={{ alignItems: 'center', width: '100%' }}>
-      <Box
-        sx={{
-          width: TARGET_WARNING_SLOT_WIDTH,
-          flexShrink: 0,
-          display: 'flex',
-          justifyContent: 'center',
-        }}
-      >
-        {overTarget ? (
-          <IconButton
-            size="small"
-            aria-label={warningLabel}
-            color="warning"
-            disabled={controlsDisabled}
-            onClick={onWarningClick}
-          >
-            <WarningAmberIcon />
-          </IconButton>
-        ) : onTarget ? (
-          <CheckCircleIcon color="success" role="img" aria-label={matchedLabel} />
-        ) : null}
-      </Box>
+      {overTarget || onTarget ? (
+        <Box
+          sx={{
+            width: { xs: 28, md: TARGET_WARNING_SLOT_WIDTH },
+            flexShrink: 0,
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          {overTarget ? (
+            <IconButton
+              size="small"
+              aria-label={warningLabel}
+              color="warning"
+              disabled={controlsDisabled}
+              onClick={onWarningClick}
+            >
+              <WarningAmberIcon />
+            </IconButton>
+          ) : (
+            <CheckCircleIcon color="success" role="img" aria-label={matchedLabel} />
+          )}
+        </Box>
+      ) : null}
       <Box
         component="button"
         type="button"
@@ -457,7 +440,7 @@ function TargetProgressRow({
           textAlign: 'left',
         }}
       >
-        <PercentCompleteBar percent={percent} label={label} />
+        <PercentCompleteBar percent={percent} label={label} dense />
       </Box>
     </Stack>
   );
@@ -506,6 +489,9 @@ function PrelimsEntryRow({
         borderColor: 'divider',
         borderRadius: 1,
         boxSizing: 'border-box',
+        ...(markHighlighted
+          ? { position: 'relative', zIndex: (theme) => theme.zIndex.snackbar + 2 }
+          : {}),
       }}
       aria-label={`Bib ${entry.number}, ${dancerLabel}`}
     >
@@ -530,7 +516,21 @@ function PrelimsEntryRow({
       </Box>
 
       <Box
+        aria-hidden
+        sx={{
+          width: largeScreen ? 28 : 22,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+        }}
+      >
+        {mark ? <MarkChoiceIcon mark={mark} largeScreen={largeScreen} /> : null}
+      </Box>
+
+      <Box
         id={markElementId}
+        data-training-target={markHighlighted ? '' : undefined}
         sx={{
           flexShrink: 0,
           ...(markHighlighted ? trainingTargetSx : {}),
@@ -549,9 +549,33 @@ function PrelimsEntryRow({
   );
 }
 
+const PRELIMS_YES_HINT_ID = 'prelims-yes-target-hint';
+const PRELIMS_ALTERNATE_HINT_ID = 'prelims-maybe-target-hint';
+const PRELIMS_NO_HINT_ID = 'prelims-no-remaining-hint';
+
+function markChoiceIcon(mark: PrelimsMark) {
+  switch (mark) {
+    case 'yes':
+      return DoneIcon;
+    case 'maybe':
+      return SpellcheckIcon;
+    case 'no':
+      return NotInterestedIcon;
+  }
+}
+
+function MarkChoiceIcon({ mark, largeScreen }: { mark: PrelimsMark; largeScreen: boolean }) {
+  const Icon = markChoiceIcon(mark);
+  return <Icon sx={{ fontSize: largeScreen ? 26 : 20 }} />;
+}
+
 function filterElementId(filter: MarkFilter): string | undefined {
   if (filter === 'yes') {
     return FILTER_YES_ELEMENT_ID;
+  }
+
+  if (filter === 'all') {
+    return FILTER_ALL_ELEMENT_ID;
   }
 
   if (filter === 'maybe') {
@@ -563,14 +587,16 @@ function filterElementId(filter: MarkFilter): string | undefined {
 
 export default function PrelimsPage() {
   const navigate = useNavigate();
-  const { showSuccess, showInfo } = useMessages();
+  const location = useLocation();
+  const coaching = isCoachEnabled(location.search);
+  const { showSuccess, showInfo, dismissMessage } = useMessages();
   const { restartNonce, trainingDisabled, isTrainingTarget, reportSelect } = usePageTraining();
   const entryListRef = useRef<HTMLDivElement>(null);
-  const mockEntries = useMemo(() => createMockContestEntries(), []);
+  const mockEntries = useMemo(() => createMockContestEntries(PRELIMS_COUPLE_COUNT), []);
   const isIpad97OrLargerScreen = useIpad97OrLargerScreen();
   const rowFontSize: RowFontSize = isIpad97OrLargerScreen
-    ? LARGE_SCREEN_ROW_FONT_SIZE
-    : DANCER_NAME_FONT_SIZE;
+    ? LARGE_SCREEN_CONTEST_TITLE_FONT_SIZE
+    : CONTEST_TITLE_FONT_SIZE;
   const [markByBib, setMarkByBib] = useState<Record<number, PrelimsMark>>({});
   const [markFilter, setMarkFilter] = useState<MarkFilter>('all');
   const [overTargetDialog, setOverTargetDialog] = useState<OverTargetMark | null>(null);
@@ -592,40 +618,65 @@ export default function PrelimsPage() {
       })),
     [mockEntries],
   );
-  const firstBibNumber = entries[0]?.number;
+  const rowNumberByBib = useMemo(() => {
+    const rowNumbers = new Map<number, number>();
+    entries.forEach((entry, index) => {
+      rowNumbers.set(entry.number, index + 1);
+    });
+    return rowNumbers;
+  }, [entries]);
   const coachingLocksControls = trainingDisabled();
+  const laterRowIsTarget = isTrainingTarget(markRowElementId(3));
 
   const prelimsMoreJson = DEMO_PRELIMS_MORE_JSON;
   const yesTargetCount = prelimsMoreJson.targetYesCount;
   const maybeTargetCount = prelimsMoreJson.targetMaybeCount;
+
+  useEffect(() => {
+    if (laterRowIsTarget && markFilter !== 'all') {
+      setMarkFilter('all');
+    }
+  }, [laterRowIsTarget, markFilter]);
 
   useLayoutEffect(() => {
     entryListRef.current?.scrollTo({ top: 0 });
   }, [restartNonce]);
 
   useEffect(() => {
+    if (coaching) {
+      dismissMessage(PRELIMS_YES_HINT_ID);
+      dismissMessage(PRELIMS_ALTERNATE_HINT_ID);
+      dismissMessage(PRELIMS_NO_HINT_ID);
+      return;
+    }
+
     showInfo(
       `Set ${yesTargetCount} couples with "Yes" value to continue to finals`,
-      { id: 'prelims-yes-target-hint' },
+      { id: PRELIMS_YES_HINT_ID },
     );
-    showInfo(`Set ${maybeTargetCount} couples with "Maybe" value`, {
-      id: 'prelims-maybe-target-hint',
+    showInfo(`Set ${maybeTargetCount} couples with "Alternate" value`, {
+      id: PRELIMS_ALTERNATE_HINT_ID,
     });
-    showInfo('Set all remaining couples to "No" value, after your Yes/Maybe targets are met', {
-      id: 'prelims-no-remaining-hint',
+    showInfo('Set all remaining couples to "No" value, after your Yes/Alternate targets are met', {
+      id: PRELIMS_NO_HINT_ID,
     });
-  }, [maybeTargetCount, showInfo, yesTargetCount]);
+  }, [coaching, dismissMessage, maybeTargetCount, showInfo, yesTargetCount]);
 
   const judgeYesCount = entries.filter((entry) => markByBib[entry.number] === 'yes').length;
   const judgeMaybeCount = entries.filter((entry) => markByBib[entry.number] === 'maybe').length;
+  const judgeNoCount = entries.filter((entry) => markByBib[entry.number] === 'no').length;
   const unmarkedCount = entries.filter((entry) => markByBib[entry.number] === undefined).length;
+  const noTargetCount = Math.max(0, entries.length - yesTargetCount - maybeTargetCount);
   const judgeYesPercent = yesTargetCount === 0 ? 0 : (judgeYesCount / yesTargetCount) * 100;
   const judgeMaybePercent =
     maybeTargetCount === 0 ? 0 : (judgeMaybeCount / maybeTargetCount) * 100;
+  const judgeNoPercent = noTargetCount === 0 ? 0 : (judgeNoCount / noTargetCount) * 100;
   const yesOverTarget = judgeYesCount > yesTargetCount;
   const maybeOverTarget = judgeMaybeCount > maybeTargetCount;
+  const noOverTarget = judgeNoCount > noTargetCount;
   const yesOnTarget = judgeYesCount === yesTargetCount;
   const maybeOnTarget = judgeMaybeCount === maybeTargetCount;
+  const noOnTarget = judgeNoCount === noTargetCount;
   const submitDisabled =
     judgeYesCount !== yesTargetCount ||
     judgeMaybeCount !== maybeTargetCount ||
@@ -633,13 +684,18 @@ export default function PrelimsPage() {
   const overTargetCopy =
     dialogMark === 'maybe'
       ? {
-          title: 'Too many Maybe marks',
-          body: `Reduce the number Maybe marks down to ${maybeTargetCount}.`,
+          title: 'Too many Alternate marks',
+          body: `Reduce the number Alternate marks down to ${maybeTargetCount}.`,
         }
-      : {
-          title: 'Too many Yes marks',
-          body: `Reduce the number Yes marks down to ${yesTargetCount}.`,
-        };
+      : dialogMark === 'no'
+        ? {
+            title: 'Too many No marks',
+            body: `Reduce the number No marks down to ${noTargetCount}.`,
+          }
+        : {
+            title: 'Too many Yes marks',
+            body: `Reduce the number Yes marks down to ${yesTargetCount}.`,
+          };
 
   const openOverTargetDialog = (mark: OverTargetMark) => {
     setDialogMark(mark);
@@ -667,17 +723,14 @@ export default function PrelimsPage() {
     }
 
     showSuccess(
-      `Prelims submitted with ${judgeYesCount} yes and ${judgeMaybeCount} maybe.`,
+      `Prelims submitted with ${judgeYesCount} yes and ${judgeMaybeCount} alternate.`,
     );
     navigate('/staff');
   };
 
   const handleMarkChange = (bibNumber: number, mark: PrelimsMark | null) => {
-    if (bibNumber === firstBibNumber) {
-      if (reportSelect(FIRST_MARK_ELEMENT_ID, mark ?? '') === 'revert') {
-        return;
-      }
-    } else if (coachingLocksControls) {
+    const rowNumber = rowNumberByBib.get(bibNumber);
+    if (rowNumber && reportSelect(markRowElementId(rowNumber), mark ?? '') === 'revert') {
       return;
     }
 
@@ -787,6 +840,7 @@ export default function PrelimsPage() {
           >
             {MARK_FILTERS.map((option) => {
               const elementId = filterElementId(option.value);
+              const selectedFill = filterButtonFill(option.value);
 
               return (
                 <ToggleButton
@@ -805,10 +859,16 @@ export default function PrelimsPage() {
                     whiteSpace: 'nowrap',
                     ...(elementId && isTrainingTarget(elementId) ? trainingTargetSx : {}),
                     '&.Mui-selected': {
-                      color: filterSelectedColor(option.value),
+                      color: '#000',
+                      bgcolor: selectedFill,
                     },
                     '&.Mui-selected:hover': {
-                      color: filterSelectedColor(option.value),
+                      color: '#000',
+                      bgcolor: selectedFill,
+                    },
+                    '&.Mui-selected.Mui-disabled': {
+                      color: '#000',
+                      bgcolor: selectedFill,
                     },
                   }}
                 >
@@ -836,14 +896,28 @@ export default function PrelimsPage() {
             <Box sx={{ flex: 1, minWidth: 0 }}>
               <TargetProgressRow
                 percent={judgeMaybePercent}
-                label={`Maybe ${judgeMaybeCount} / ${maybeTargetCount}`}
+                label={`Alternate ${judgeMaybeCount} / ${maybeTargetCount}`}
                 overTarget={maybeOverTarget}
                 onTarget={maybeOnTarget}
-                warningLabel="Maybe count is above the target"
-                matchedLabel="Maybe count matches the target"
+                warningLabel="Alternate count is above the target"
+                matchedLabel="Alternate count matches the target"
                 onWarningClick={() => openOverTargetDialog('maybe')}
                 onBarClick={() => setMarkFilter('maybe')}
-                barActionLabel="Filter by Maybe"
+                barActionLabel="Filter by Alternate"
+                controlsDisabled={coachingLocksControls}
+              />
+            </Box>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <TargetProgressRow
+                percent={judgeNoPercent}
+                label={`No ${judgeNoCount} / ${noTargetCount}`}
+                overTarget={noOverTarget}
+                onTarget={noOnTarget}
+                warningLabel="No count is above the target"
+                matchedLabel="No count matches the target"
+                onWarningClick={() => openOverTargetDialog('no')}
+                onBarClick={() => setMarkFilter('no')}
+                barActionLabel="Filter by No"
                 controlsDisabled={coachingLocksControls}
               />
             </Box>
@@ -873,7 +947,8 @@ export default function PrelimsPage() {
               </Typography>
             ) : (
               visibleEntries.map((entry) => {
-                const isFirstCouple = entry.number === firstBibNumber;
+                const rowNumber = rowNumberByBib.get(entry.number) ?? 0;
+                const markElementId = markRowElementId(rowNumber);
 
                 return (
                   <PrelimsEntryRow
@@ -883,9 +958,9 @@ export default function PrelimsPage() {
                     onMarkChange={handleMarkChange}
                     fontSize={rowFontSize}
                     largeScreen={isIpad97OrLargerScreen}
-                    markElementId={isFirstCouple ? FIRST_MARK_ELEMENT_ID : undefined}
-                    markDisabled={trainingDisabled(isFirstCouple ? FIRST_MARK_ELEMENT_ID : undefined)}
-                    markHighlighted={isFirstCouple && isTrainingTarget(FIRST_MARK_ELEMENT_ID)}
+                    markElementId={markElementId}
+                    markDisabled={trainingDisabled(markElementId)}
+                    markHighlighted={isTrainingTarget(markElementId)}
                   />
                 );
               })

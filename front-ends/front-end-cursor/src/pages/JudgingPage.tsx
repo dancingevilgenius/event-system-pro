@@ -35,6 +35,12 @@ import {
   TABLET_LANDSCAPE_CONTENT_WIDTH,
   mobileColumnSx,
 } from '../constants/layout';
+import {
+  CONTEST_TITLE_FONT_SIZE,
+  LARGE_SCREEN_CONTEST_TITLE_FONT_SIZE,
+  useIpad97OrLargerScreen,
+  type ContestTitleFontSize,
+} from '../hooks/useContestTitleFontSize';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import {
   createMockContestEntries,
@@ -71,7 +77,9 @@ import {
 } from '../types/judgingScore';
 
 const JUDGING_PAGE_SIZE = 10;
+const JUDGING_COUPLE_COUNT = 7;
 const NUMBER_COLUMN_WIDTH = '2.75rem';
+const LARGE_SCREEN_NUMBER_COLUMN_WIDTH = '3.25rem';
 const SCORE_DISPLAY_WIDTH = '5ch';
 const SUMMARY_SWATCH_GAP = 2;
 const SUMMARY_SWATCH_SLOT_COUNT = 2;
@@ -133,14 +141,16 @@ function formatSummaryFollowerName(
     : formatInitialLast(follower.first, follower.last);
 }
 
-function summaryNameColumnSx(textAlign: 'left' | 'right') {
+function summaryNameColumnSx(textAlign: 'left' | 'right', fontSize: ContestTitleFontSize) {
   return {
     minWidth: 0,
     overflow: 'hidden',
     textOverflow: 'ellipsis',
     whiteSpace: 'nowrap',
+    lineHeight: 1.2,
     flex: 1,
     textAlign,
+    fontSize,
   } as const;
 }
 
@@ -252,6 +262,7 @@ type CompetitorNamesTextProps = {
   follower: LegionMember;
   leaderColors: CompetitorColorRecord;
   followerColors: CompetitorColorRecord;
+  fontSize: ContestTitleFontSize;
 };
 
 function CompetitorNamesText({
@@ -259,6 +270,7 @@ function CompetitorNamesText({
   follower,
   leaderColors,
   followerColors,
+  fontSize,
 }: CompetitorNamesTextProps) {
   const containerRef = useRef<HTMLSpanElement>(null);
   const measureRef = useRef<HTMLSpanElement>(null);
@@ -301,7 +313,7 @@ function CompetitorNamesText({
     observer.observe(container);
 
     return () => observer.disconnect();
-  }, [leader, follower]);
+  }, [leader, follower, fontSize]);
 
   return (
     <Box
@@ -319,7 +331,7 @@ function CompetitorNamesText({
       <Typography
         component="span"
         variant="body1"
-        sx={summaryNameColumnSx('right')}
+        sx={summaryNameColumnSx('right', fontSize)}
       >
         {formatSummaryLeaderName(leader, nameMode)}
       </Typography>
@@ -359,7 +371,7 @@ function CompetitorNamesText({
       <Typography
         component="span"
         variant="body1"
-        sx={summaryNameColumnSx('left')}
+        sx={summaryNameColumnSx('left', fontSize)}
       >
         {formatSummaryFollowerName(follower, nameMode)}
       </Typography>
@@ -373,7 +385,7 @@ function CompetitorNamesText({
           visibility: 'hidden',
           whiteSpace: 'nowrap',
           pointerEvents: 'none',
-          fontSize: (theme) => theme.typography.body1.fontSize,
+          fontSize,
           fontFamily: (theme) => theme.typography.fontFamily,
           fontWeight: (theme) => theme.typography.body1.fontWeight,
         }}
@@ -464,6 +476,8 @@ type JudgingEntryAccordionProps = {
   onScoreDigitChange: (bibNumber: number, index: number, value: number) => void;
   onScoreChange: (bibNumber: number, value: number) => void;
   onPaletteClick: (target: PaletteTarget) => void;
+  titleFontSize: ContestTitleFontSize;
+  largeScreen: boolean;
 };
 
 function JudgingEntryAccordion({
@@ -476,6 +490,8 @@ function JudgingEntryAccordion({
   onScoreDigitChange,
   onScoreChange,
   onPaletteClick,
+  titleFontSize,
+  largeScreen,
 }: JudgingEntryAccordionProps) {
   const entryScore = getEntryScore(entry.number);
   const leaderColors =
@@ -520,11 +536,13 @@ function JudgingEntryAccordion({
             component="span"
             variant="body1"
             sx={{
-              flex: `0 0 ${NUMBER_COLUMN_WIDTH}`,
-              width: NUMBER_COLUMN_WIDTH,
+              flex: `0 0 ${largeScreen ? LARGE_SCREEN_NUMBER_COLUMN_WIDTH : NUMBER_COLUMN_WIDTH}`,
+              width: largeScreen ? LARGE_SCREEN_NUMBER_COLUMN_WIDTH : NUMBER_COLUMN_WIDTH,
               fontVariantNumeric: 'tabular-nums',
               fontWeight: 600,
               textAlign: 'left',
+              fontSize: titleFontSize,
+              lineHeight: 1.2,
             }}
           >
             {entry.number}
@@ -536,6 +554,7 @@ function JudgingEntryAccordion({
               follower={entry.follower}
               leaderColors={leaderColors}
               followerColors={followerColors}
+              fontSize={titleFontSize}
             />
           </Box>
 
@@ -548,6 +567,8 @@ function JudgingEntryAccordion({
               flexShrink: 0,
               fontVariantNumeric: 'tabular-nums',
               textAlign: 'right',
+              fontSize: titleFontSize,
+              lineHeight: 1.2,
             }}
           >
             {entryScore.touched ? formatScoreDisplay(entryScore.digits) : ''}
@@ -589,7 +610,11 @@ function JudgingEntryAccordion({
 export default function JudgingPage() {
   const navigate = useNavigate();
   const { showSuccess, showInfo } = useMessages();
-  const entries = useMemo(() => createMockContestEntries(), []);
+  const entries = useMemo(() => createMockContestEntries(JUDGING_COUPLE_COUNT), []);
+  const largeScreen = useIpad97OrLargerScreen();
+  const titleFontSize = largeScreen
+    ? LARGE_SCREEN_CONTEST_TITLE_FONT_SIZE
+    : CONTEST_TITLE_FONT_SIZE;
 
   useEffect(() => {
     showInfo('Click on any color message boxes to hide them', {
@@ -1043,6 +1068,8 @@ export default function JudgingPage() {
                 onScoreDigitChange={handleScoreDigitChange}
                 onScoreChange={handleScoreChange}
                 onPaletteClick={setPaletteTarget}
+                titleFontSize={titleFontSize}
+                largeScreen={largeScreen}
               />
             ))}
           </Stack>

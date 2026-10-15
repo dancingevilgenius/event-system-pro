@@ -12,6 +12,7 @@ export type PageTrainingContextValue = {
   trainingDisabled: (elementId?: string) => boolean;
   isTrainingTarget: (elementId: string) => boolean;
   reportSelect: (elementId: string, option: string) => TrainingSelectReport;
+  reportDrag: (elementId: string, moved: boolean) => void;
 };
 
 export const PageTrainingContext = createContext<PageTrainingContextValue | null>(null);

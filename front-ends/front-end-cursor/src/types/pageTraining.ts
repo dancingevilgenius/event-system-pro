@@ -7,9 +7,19 @@ export type TrainingSelectInteraction = {
   type: 'select';
   elementId: string;
   option: string;
+  /** Any competitor row after the second matches, instead of elementId alone. */
+  anyRowAfterSecond?: boolean;
 };
 
-export type TrainingInteraction = TrainingClickInteraction | TrainingSelectInteraction;
+export type TrainingDragInteraction = {
+  type: 'drag';
+  elementId: string;
+};
+
+export type TrainingInteraction =
+  | TrainingClickInteraction
+  | TrainingSelectInteraction
+  | TrainingDragInteraction;
 
 export type TrainingStep = {
   id: string;

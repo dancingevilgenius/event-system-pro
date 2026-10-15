@@ -1,8 +1,10 @@
 import { Alert, Box } from '@mui/material';
 import { motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { AppMessage, MessageType } from '../types/messages';
 import { CONTENT_MAX_WIDTH } from '../constants/layout';
+import { trainingTargetSx } from '../hooks/usePageTraining';
+import { TRAINING_MOVED_MESSAGE_ELEMENT_ID } from '../lib/pageTraining';
+import type { AppMessage, MessageType } from '../types/messages';
 
 const messageStyles: Record<
   MessageType,
@@ -103,6 +105,7 @@ function MessageItem({
       }}
     >
       <Alert
+        id={message.id}
         onClick={handleClick}
         severity={
           message.type === 'problem'
@@ -120,9 +123,18 @@ function MessageItem({
           bgcolor: styles.bgcolor,
           color: styles.color,
           borderColor: styles.borderColor,
+          fontSize: '1.25rem',
+          lineHeight: 1.5,
+          fontWeight: (theme) => theme.typography.body1.fontWeight,
           '& .MuiAlert-icon': {
             color: styles.borderColor,
           },
+          '& .MuiAlert-message': {
+            fontSize: 'inherit',
+            lineHeight: 'inherit',
+            fontWeight: 'inherit',
+          },
+          ...(message.id === TRAINING_MOVED_MESSAGE_ELEMENT_ID ? trainingTargetSx : null),
         }}
       >
         {message.text}

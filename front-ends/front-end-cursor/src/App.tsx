@@ -25,6 +25,7 @@ import AdminSearchUsersPage from './pages/AdminSearchUsersPage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
 import CheckinCouplePage from './pages/CheckinCouplePage';
 import CheckinSinglePage from './pages/CheckinSinglePage';
+import CompetitorHomePage from './pages/CompetitorHomePage';
 import CompetitorPage from './pages/CompetitorPage';
 import EventHomePage from './pages/EventHomePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
@@ -427,7 +428,16 @@ export default function App() {
       />
       <Route path="/prelims" element={<RedirectKeepingSearch to="/judge-prelims" />} />
       <Route
-        path="/competitor"
+        path="/competitor-home"
+        element={
+          <ProtectedRoute roles={['COMPETITOR']}>
+            <CompetitorHomePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/competitor" element={<RedirectKeepingSearch to="/competitor-wsdc" />} />
+      <Route
+        path="/competitor-wsdc"
         element={
           <ProtectedRoute roles={['COMPETITOR']}>
             <CompetitorPage />

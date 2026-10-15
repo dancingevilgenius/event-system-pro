@@ -1,6 +1,6 @@
 import { Button, Container, Divider, Paper, Stack, Typography } from '@mui/material';
 import { useCallback, useEffect, useState } from 'react';
-import { fetchUserWsdcId, setUserWsdcId } from '../api/postgrest';
+import { fetchUserPersonName, fetchUserWsdcId, setUserWsdcId } from '../api/postgrest';
 import { buildStoredWsdcInfo, type WsdcDancerProfile } from '../api/wsdcRegistry';
 import PageHeader from '../components/PageHeader';
 import WsdcFindDancerSection from '../components/WsdcFindDancerSection';
@@ -10,11 +10,17 @@ import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 import ContestSelectionPage from './ContestSelectionPage';
 
+function formatWsdcPageTitle(firstName: string, lastName: string): string {
+  const name = [firstName.trim(), lastName.trim()].filter(Boolean).join(' ');
+  return name ? `${name} WSDC` : 'WSDC';
+}
+
 export default function CompetitorPage() {
   const { session } = useAuth();
   const { showProblem, showSuccess } = useMessages();
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const [savedWsdcId, setSavedWsdcId] = useState<string | null>(null);
+  const [pageTitle, setPageTitle] = useState('');
   const [loadingSaved, setLoadingSaved] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showContests, setShowContests] = useState(false);
@@ -22,15 +28,21 @@ export default function CompetitorPage() {
   const loadSaved = useCallback(async () => {
     if (!session?.user_id) {
       setSavedWsdcId(null);
+      setPageTitle('WSDC');
       setLoadingSaved(false);
       return;
     }
 
     setLoadingSaved(true);
     try {
-      const wsdcId = await fetchUserWsdcId(session.user_id);
+      const [wsdcId, name] = await Promise.all([
+        fetchUserWsdcId(session.user_id),
+        fetchUserPersonName(session.user_id),
+      ]);
       setSavedWsdcId(wsdcId);
+      setPageTitle(formatWsdcPageTitle(name.firstName, name.lastName));
     } catch (error) {
+      setPageTitle('WSDC');
       showProblem(error instanceof Error ? error.message : 'Unable to load saved WSDC ID.');
     } finally {
       setLoadingSaved(false);
@@ -68,13 +80,13 @@ export default function CompetitorPage() {
   };
 
   if (showContests) {
-    return <ContestSelectionPage title="Competitor" />;
+    return <ContestSelectionPage title={pageTitle} />;
   }
 
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
-        <PageHeader title="Competitor" backTo="/home" backLabel="Back to Home" />
+        <PageHeader title={pageTitle} backTo="/home" backLabel="Back to Home" />
 
         {savedWsdcId && (
           <Typography variant="body2" sx={{ mb: 2, textAlign: 'center' }}>

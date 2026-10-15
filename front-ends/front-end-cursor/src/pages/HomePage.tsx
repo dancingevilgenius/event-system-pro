@@ -49,7 +49,7 @@ export default function HomePage() {
             <Button variant="contained" size="large" fullWidth onClick={() => navigate('/staff')}>
               Staff
             </Button>
-            <Button variant="contained" size="large" fullWidth onClick={() => navigate('/competitor')}>
+            <Button variant="contained" size="large" fullWidth onClick={() => navigate('/competitor-home')}>
               Competitor
             </Button>
             {isAdmin && (
@@ -66,7 +66,7 @@ export default function HomePage() {
               </Button>
             </Grid>
             <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-              <Button variant="contained" size="large" fullWidth onClick={() => navigate('/competitor')}>
+              <Button variant="contained" size="large" fullWidth onClick={() => navigate('/competitor-home')}>
                 Competitor
               </Button>
             </Grid>

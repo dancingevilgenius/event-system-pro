@@ -258,10 +258,11 @@ def build_pdf() -> None:
     ]:
         pdf.bullet(item)
 
-    pdf.subsection_title("Competitor page (/competitor) - placeholder")
+    pdf.subsection_title("Competitor page (/competitor-wsdc)")
     for item in [
-        "Opened from the Competitor button on Home.",
-        'Page title: Competitor (ContestSelectionPage with title="Competitor").',
+        "Competitor Home (/competitor-home) is opened from Home and holds the My WSDC # button.",
+        "Opened from the My WSDC # button on Competitor Home. /competitor redirects here.",
+        "Page title: <First name> <Last name> WSDC from the signed-in user's name_json.",
         "Three full-width buttons: Contest 1, Contest 2, Contest 3.",
         "Contest buttons are placeholders - they do not navigate anywhere (no contestRoute).",
         "Back to Home button navigates to /home.",

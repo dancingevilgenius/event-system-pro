@@ -2123,6 +2123,28 @@ export function saveWsdcForMatchingUser(params: {
   });
 }
 
+export type UserPersonName = {
+  firstName: string;
+  lastName: string;
+};
+
+export async function fetchUserPersonName(userId: number): Promise<UserPersonName> {
+  const params = new URLSearchParams({
+    select: 'name_json',
+  });
+  params.append('user_id', `eq.${userId}`);
+
+  const rows = await fetchJson<Array<{ name_json: ApiUserRecord['name_json'] }>>(
+    `${POSTGREST_URL}/user?${params.toString()}`,
+    'Unable to load user name',
+  );
+
+  return {
+    firstName: rows[0]?.name_json?.first?.trim() ?? '',
+    lastName: rows[0]?.name_json?.last?.trim() ?? '',
+  };
+}
+
 export async function fetchUserWsdcId(userId: number): Promise<string | null> {
   const params = new URLSearchParams({
     select: 'additional_info_json',

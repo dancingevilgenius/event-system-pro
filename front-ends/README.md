@@ -24,7 +24,8 @@ npm run dev
 | `/register` | New user registration (name, address, phone) |
 | `/home` | Staff / Competitor role selection |
 | `/staff` | Staff contest list (Contest 1–3) |
-| `/competitor` | Competitor contest list (Contest 1–3) |
+| `/competitor-home` | Competitor Home |
+| `/competitor-wsdc` | My WSDC # (title is `<First> <Last> WSDC`) |
 
 ### Theming / skins
 

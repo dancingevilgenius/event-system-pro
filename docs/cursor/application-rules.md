@@ -179,7 +179,7 @@ Legacy codes **`EVENT_COORDINATOR`** and **`BALLROOM_COORDINATOR`** were renamed
 | `/staff` | `STAFF` (or `ADMIN`) |
 | `/judge-finals`, `/judge-prelims` | `ADMIN` or `STAFF` |
 | `/judge-demos`, `/floor-coordinator-demos`, `/third-party-library-demos` | `ADMIN` |
-| `/competitor` | `COMPETITOR` (or `ADMIN`) |
+| `/competitor-home`, `/competitor-wsdc` | `COMPETITOR` (or `ADMIN`) |
 | `/adminhome`, `/event-home`, `/event-groups`, `/event-groups/:code`, `/event-groups/:code/:eventId` (+ `/attendees`, `/competitors`, `/contests`), `/create-event`, `/admin/contests`, `/admin/contests/contest`, `/admin/competitors`, `/admin/search-users`, `/admin/competition-entries`, `/admin/audit-log`, `/admin/scheduled-tasks`, `/admin/set-event-judges`, `/governing-body`, `/wsdc-find-dancer`, `/event-merchandise-pos-demo` | `ADMIN` |
 | `/admin/event-details` | Redirects to `/event-groups` |
 | `/add-event` | Redirects to `/create-event` |
@@ -190,7 +190,7 @@ Legacy codes **`EVENT_COORDINATOR`** and **`BALLROOM_COORDINATOR`** were renamed
 ## Home page (`/home`)
 
 - After login, the user lands on **Home** (role hub).
-- Buttons (top to bottom): **Staff** (`/staff`), **Competitor** (`/competitor`), **Admin** (`/adminhome`) — **only when the user has the `ADMIN` role** — then **Account** (`/account`).
+- Buttons (top to bottom): **Staff** (`/staff`), **Competitor** (`/competitor-home`), **Admin** (`/adminhome`) — **only when the user has the `ADMIN` role** — then **Account** (`/account`).
 - **Skin** lives on **Account**, not Home.
 - **Log Off** calls logout, clears session, and returns to **`/`** (public home).
 - **Test Message Boxes** is on **Admin** home, not Home (see **Admin section**).
@@ -379,10 +379,17 @@ See **Multi-section admin form pages (Add Event pattern)** for accordion / statu
 
 ---
 
-## Competitor page (`/competitor`) — placeholder
+## Competitor Home (`/competitor-home`)
 
-- Route: **`/competitor`**, opened from the **Competitor** button on Home (requires `COMPETITOR` or `ADMIN` role).
-- Page title: **Competitor** (`ContestSelectionPage` with `title="Competitor"`).
+- Route: **`/competitor-home`**, opened from the **Competitor** button on Home (requires `COMPETITOR` or `ADMIN` role).
+- Page title: **Competitor Home**.
+- Button: **My WSDC #** (`/competitor-wsdc`).
+- **Back to Home** returns to `/home`.
+
+## Competitor page (`/competitor-wsdc`)
+
+- Route: **`/competitor-wsdc`**, opened from the **My WSDC #** button on Competitor Home (requires `COMPETITOR` or `ADMIN` role). **`/competitor`** redirects here.
+- Page title: **`<First name> <Last name> WSDC`** from the signed-in user's `name_json` (falls back to **WSDC** when the name is empty). The same title is used on the contest list.
 - Shows three full-width contest buttons: **Contest 1**, **Contest 2**, **Contest 3**.
 - Contest buttons are **placeholders** — they do **not** navigate anywhere (`contestRoute` is not set).
 - **Back to Home** button navigates to `/home`.
@@ -1302,7 +1309,7 @@ Prefer **`jsonb`** for new columns that will be queried or merged.
 ## Staff and contest selection
 
 - **`StaffPage`** shows the Staff title. Judge demo buttons live on **Judge Demos** (`/judge-demos`): **Prelims** (`/judge-prelims`) and **Contest 1–3** (`/judge-finals`).
-- **`CompetitorPage`** = `ContestSelectionPage` with `title="Competitor"` and **no** `contestRoute` (buttons inert).
+- **`CompetitorPage`** opens at **`/competitor-wsdc`**. Its contest list uses `ContestSelectionPage` with the user's **`<First name> <Last name> WSDC`** title and **no** `contestRoute` (buttons inert).
 - **Back to Home** → `/home`.
 
 ---

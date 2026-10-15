@@ -1,0 +1,59 @@
+import { Button, Container, Grid, Paper, Stack } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import PageHeader from '../components/PageHeader';
+import { centeredContentStackSx } from '../constants/layout';
+import { useLayoutTier } from '../hooks/useLayoutTier';
+
+const FLOOR_COORDINATOR_DEMOS = [
+  { label: 'Couples Checkin', path: '/checkin-couple' },
+  { label: 'Leaders Checkin', path: '/checkin-single?role=leader' },
+  { label: 'Followers Checkin', path: '/checkin-single?role=follower' },
+] as const;
+
+export default function FloorCoordinatorDemosPage() {
+  const navigate = useNavigate();
+  const { showXsLayout, containerMaxWidth } = useLayoutTier();
+
+  return (
+    <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 }, textAlign: 'center' }}>
+        <PageHeader
+          title="Floor Coordinator Demos"
+          backTo="/demo"
+          backLabel="Back to Demo"
+        />
+
+        {showXsLayout ? (
+          <Stack spacing={2} sx={{ my: 3, ...centeredContentStackSx }}>
+            {FLOOR_COORDINATOR_DEMOS.map((item) => (
+              <Button
+                key={item.label}
+                variant="contained"
+                size="large"
+                fullWidth
+                onClick={() => navigate(item.path)}
+              >
+                {item.label}
+              </Button>
+            ))}
+          </Stack>
+        ) : (
+          <Grid container spacing={2} sx={{ my: 3 }}>
+            {FLOOR_COORDINATOR_DEMOS.map((item) => (
+              <Grid key={item.label} size={{ xs: 12, md: 6, lg: 4 }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  onClick={() => navigate(item.path)}
+                >
+                  {item.label}
+                </Button>
+              </Grid>
+            ))}
+          </Grid>
+        )}
+      </Paper>
+    </Container>
+  );
+}

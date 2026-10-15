@@ -896,7 +896,7 @@ export default function JudgingPage() {
     showSuccess(
       `Scores submitted with ${submission.placements.length} placements derived (1st = highest score).`,
     );
-    navigate('/staff');
+    navigate('/judge-demos');
   };
 
   const duplicateDialogCurrentEntry = duplicateScoreDialog
@@ -956,7 +956,7 @@ export default function JudgingPage() {
           boxSizing: 'border-box',
         }}
       >
-        <PageBackButton to="/staff" label="Back to Staff" />
+        <PageBackButton to="/judge-demos" label="Back to Judge Demos" />
 
         <Stack spacing={1} sx={{ ...judgingContentSx, flexShrink: 0 }}>
           <Typography variant="h6" component="h1" sx={{ textAlign: 'center' }}>

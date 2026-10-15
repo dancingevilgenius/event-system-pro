@@ -6,6 +6,8 @@ type PercentCompleteBarProps = {
   onSubmit?: () => void;
   /** Smaller wrapping label so several bars can share one phone row. */
   dense?: boolean;
+  /** Fill color once the displayed percent reaches 100. */
+  completeColor?: 'success';
 };
 
 export default function PercentCompleteBar({
@@ -13,10 +15,15 @@ export default function PercentCompleteBar({
   label,
   onSubmit,
   dense = false,
+  completeColor,
 }: PercentCompleteBarProps) {
   const clampedPercent = Math.min(100, Math.max(0, percent));
   const displayPercent = Math.round(clampedPercent);
   const displayLabel = label ?? `Percent Complete: ${displayPercent}%`;
+  const isComplete = displayPercent === 100 && completeColor === 'success';
+  const fillColor = isComplete ? 'success.main' : 'primary.main';
+  const labelColor =
+    clampedPercent > 50 ? (isComplete ? 'success.contrastText' : 'primary.contrastText') : 'text.primary';
 
   if (onSubmit && clampedPercent >= 100) {
     return (
@@ -51,7 +58,7 @@ export default function PercentCompleteBar({
           top: 0,
           bottom: 0,
           width: `${clampedPercent}%`,
-          bgcolor: 'primary.main',
+          bgcolor: fillColor,
           transition: 'width 0.3s ease',
         }}
       />
@@ -70,7 +77,7 @@ export default function PercentCompleteBar({
           lineHeight: dense ? 1.15 : undefined,
           px: dense ? 0.25 : 0,
           fontSize: dense ? { xs: '0.7rem', md: '0.875rem' } : undefined,
-          color: clampedPercent > 50 ? 'primary.contrastText' : 'text.primary',
+          color: labelColor,
         }}
       >
         {displayLabel}

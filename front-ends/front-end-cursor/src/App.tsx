@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import ActivityMonitor from './components/ActivityMonitor';
 import LoginFlashHandler from './components/LoginFlashHandler';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -23,6 +23,8 @@ import AdminMigrationsPage from './pages/AdminMigrationsPage';
 import AdminScheduledTasksPage from './pages/AdminScheduledTasksPage';
 import AdminSearchUsersPage from './pages/AdminSearchUsersPage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
+import CheckinCouplePage from './pages/CheckinCouplePage';
+import CheckinSinglePage from './pages/CheckinSinglePage';
 import CompetitorPage from './pages/CompetitorPage';
 import EventHomePage from './pages/EventHomePage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
@@ -30,10 +32,12 @@ import PublicHomePage from './pages/PublicHomePage';
 import DemoPage from './pages/DemoPage';
 import EventCalendarDemoPage from './pages/EventCalendarDemoPage';
 import EventMerchandisePosDemoPage from './pages/EventMerchandisePosDemoPage';
+import FloorCoordinatorDemosPage from './pages/FloorCoordinatorDemosPage';
 import GoverningBodyPage from './pages/GoverningBodyPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import JudgeDemosPage from './pages/JudgeDemosPage';
 import JudgingPage from './pages/JudgingPage';
 import PrelimsPage from './pages/PrelimsPage';
 import ScheduleDemoPage from './pages/ScheduleDemoPage';
@@ -45,6 +49,11 @@ import TournamentBracketDemoPage from './pages/TournamentBracketDemoPage';
 import WsdcFindDancerPage from './pages/WsdcFindDancerPage';
 import AdminSetEventJudgesPage from './pages/AdminSetEventJudgesPage';
 import { CREATE_EVENT_PATH, EVENT_HOME_PATH, EVENT_GROUPS_PATH, EVENTS_PATH } from './constants/eventRoutes';
+
+function RedirectKeepingSearch({ to }: { to: string }) {
+  const location = useLocation();
+  return <Navigate to={`${to}${location.search}${location.hash}`} replace />;
+}
 
 export default function App() {
   return (
@@ -61,6 +70,22 @@ export default function App() {
         element={
           <ProtectedRoute roles={['ADMIN']}>
             <DemoPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/judge-demos"
+        element={
+          <ProtectedRoute roles={['ADMIN']}>
+            <JudgeDemosPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/floor-coordinator-demos"
+        element={
+          <ProtectedRoute roles={['ADMIN']}>
+            <FloorCoordinatorDemosPage />
           </ProtectedRoute>
         }
       />
@@ -93,6 +118,22 @@ export default function App() {
         element={
           <ProtectedRoute roles={['ADMIN']}>
             <EventMerchandisePosDemoPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/checkin-single"
+        element={
+          <ProtectedRoute roles={['ADMIN']}>
+            <CheckinSinglePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/checkin-couple"
+        element={
+          <ProtectedRoute roles={['ADMIN']}>
+            <CheckinCouplePage />
           </ProtectedRoute>
         }
       />
@@ -359,21 +400,23 @@ export default function App() {
         }
       />
       <Route
-        path="/judging"
+        path="/judge-finals"
         element={
-          <ProtectedRoute roles={['STAFF']}>
+          <ProtectedRoute roles={['ADMIN', 'STAFF']}>
             <JudgingPage />
           </ProtectedRoute>
         }
       />
+      <Route path="/judging" element={<RedirectKeepingSearch to="/judge-finals" />} />
       <Route
-        path="/prelims"
+        path="/judge-prelims"
         element={
-          <ProtectedRoute roles={['STAFF']}>
+          <ProtectedRoute roles={['ADMIN', 'STAFF']}>
             <PrelimsPage />
           </ProtectedRoute>
         }
       />
+      <Route path="/prelims" element={<RedirectKeepingSearch to="/judge-prelims" />} />
       <Route
         path="/competitor"
         element={

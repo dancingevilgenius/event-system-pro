@@ -13,7 +13,7 @@ import {
 import type { TrainingLesson } from '../types/pageTraining';
 
 const lessonJson = {
-  page: '/prelims',
+  page: '/judge-prelims',
   fromPage: '/staff',
   title: 'All-American Prelims',
   steps: [
@@ -35,7 +35,7 @@ const lessonJson = {
 };
 
 function lesson(): TrainingLesson {
-  const parsed = parseTrainingLesson(lessonJson, 'PRELIMS_MARKS', '/prelims');
+  const parsed = parseTrainingLesson(lessonJson, 'PRELIMS_MARKS', '/judge-prelims');
   if (!parsed) {
     throw new Error('fixture lesson failed to parse');
   }
@@ -99,7 +99,7 @@ describe('parseTrainingLesson', () => {
         ],
       },
       'PRELIMS_MARKS',
-      '/prelims',
+      '/judge-prelims',
     );
 
     expect(parsed?.steps.map((step) => step.id)).toEqual([
@@ -127,7 +127,7 @@ describe('parseTrainingLesson', () => {
         ],
       },
       'PRELIMS_MARKS',
-      '/prelims',
+      '/judge-prelims',
     );
     expect(parsed).toBeNull();
   });
@@ -281,7 +281,7 @@ describe('applyTrainingEvent', () => {
         ],
       },
       'PRELIMS_MARKS',
-      '/prelims',
+      '/judge-prelims',
     );
 
     expect(parsed?.steps[2].interaction).toEqual({

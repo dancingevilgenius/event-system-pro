@@ -111,8 +111,11 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 - Default route is **Public Home** (`/`). Alias: `/home-page`. Unknown URLs redirect to **`/`**.
 - **Public routes:** `/`, `/home-page`, `/login`, `/register`, `/forgot-password`, `/demo`, `/tournament-bracket-demo`.
 - **Protected routes** require a signed-in session (see **Authentication** and **Roles and route guards**).
-- Staff reaches Judging via **Staff → Contest**, which navigates to `/judging`.
-- Judging **Submit** and **Back to Staff** both return to `/staff`.
+- Demo opens **Judge Demos** (`/judge-demos`) and **Floor Coordinator Demos** (`/floor-coordinator-demos`).
+- **Judge Demos** opens **Prelims** (`/judge-prelims`) and **Contest 1–3** (`/judge-finals`).
+- **Floor Coordinator Demos** opens **Couples Checkin** (`/checkin-couple`), **Leaders Checkin** (`/checkin-single?role=leader`), and **Followers Checkin** (`/checkin-single?role=follower`). Check-in **Back** returns to `/floor-coordinator-demos`.
+- Those judge pages' **Submit** and **Back** return to `/judge-demos`.
+- `/judging` redirects to `/judge-finals`. `/prelims` redirects to `/judge-prelims` and keeps the query string.
 
 ---
 
@@ -172,7 +175,9 @@ Legacy codes **`EVENT_COORDINATOR`** and **`BALLROOM_COORDINATOR`** were renamed
 | Route | Required role(s) |
 |-------|------------------|
 | `/home`, `/account`, `/changepassword`, `/secret-questions`, `/static-lists`, `/static-list-details/:listCode` | Any signed-in user |
-| `/staff`, `/judging` | `STAFF` (or `ADMIN`) |
+| `/staff` | `STAFF` (or `ADMIN`) |
+| `/judge-finals`, `/judge-prelims` | `ADMIN` or `STAFF` |
+| `/judge-demos`, `/floor-coordinator-demos` | `ADMIN` |
 | `/competitor` | `COMPETITOR` (or `ADMIN`) |
 | `/adminhome`, `/event-home`, `/event-groups`, `/event-groups/:code`, `/event-groups/:code/:eventId` (+ `/attendees`, `/competitors`, `/contests`), `/create-event`, `/admin/contests`, `/admin/contests/contest`, `/admin/competitors`, `/admin/search-users`, `/admin/competition-entries`, `/admin/audit-log`, `/admin/scheduled-tasks`, `/admin/set-event-judges`, `/governing-body`, `/wsdc-find-dancer`, `/event-merchandise-pos-demo` | `ADMIN` |
 | `/admin/event-details` | Redirects to `/event-groups` |
@@ -1296,10 +1301,9 @@ Prefer **`jsonb`** for new columns that will be queried or merged.
 
 ## Staff and contest selection
 
-- **`StaffPage`** = `ContestSelectionPage` with `title="Staff"` and **`contestRoute="/judging"`**.
-- **`CompetitorPage`** = same layout with `title="Competitor"` and **no** `contestRoute` (buttons inert).
-- Shared layout: three **Contest 1–3** buttons, **Back to Home** → `/home`.
-- Staff also links to **Prelims** (`/prelims`).
+- **`StaffPage`** shows the Staff title. Judge demo buttons live on **Judge Demos** (`/judge-demos`): **Prelims** (`/judge-prelims`) and **Contest 1–3** (`/judge-finals`).
+- **`CompetitorPage`** = `ContestSelectionPage` with `title="Competitor"` and **no** `contestRoute` (buttons inert).
+- **Back to Home** → `/home`.
 
 ---
 
@@ -1315,9 +1319,9 @@ Signed-in **STAFF** or **ADMIN** can read the row through **`api.training_instru
 
 Coaching is off unless the query is **`coach=1`**.
 
-- **`/prelims`** — scoring works as usual. No instruction text area, no training bar, and no locked controls.
-- **`/prelims?coach=1`** — loads the `PRELIMS_MARKS` lesson and hides the three "Set N couples" hints. A read-only text area shows the current step. The training bar counts completed steps. Only the element named by the current step stays enabled. On the No step, every couple after the second stays enabled. Back to Staff stays available. A wrong option on that select shows the step's failure message and is not kept. A matching action shows the success message and advances. Progress is stored in the browser under `evp.pageTraining.<instruction_code>`.
-- After the last step, the text area says training is complete, the bar is full, and the lock lifts. **Restart** begins again at step 1, sets the mark filter back to **All**, and clears marks made during the lesson. Opening `/prelims` without `coach=1` leaves coaching and shows the three hints again.
+- **`/judge-prelims`** — scoring works as usual. No instruction text area, no training bar, and no locked controls.
+- **`/judge-prelims?coach=1`** — loads the `PRELIMS_MARKS` lesson and hides the three "Set N couples" hints. A read-only text area shows the current step. The training bar counts completed steps. Only the element named by the current step stays enabled. On the No step, every couple after the second stays enabled. Back to Judge Demos stays available. A wrong option on that select shows the step's failure message and is not kept. A matching action shows the success message and advances. Progress is stored in the browser under `evp.pageTraining.<instruction_code>`.
+- After the last step, the text area says training is complete, the bar is full, and the lock lifts. **Restart** begins again at step 1, sets the mark filter back to **All**, and clears marks made during the lesson. Opening `/judge-prelims` without `coach=1` leaves coaching and shows the three hints again.
 - The training panel opens below the first two competitor rows. The first step of every lesson is to drag that panel. The heading has a 6-dot drag icon on the right. Drag the **Training** heading to move it. The second step asks the user to click the green **Training box moved** message.
 
 The seeded Prelims steps use `#prelims-mark-row-1` (first couple), `#prelims-mark-row-2` (second couple), any later `#prelims-mark-row-N` for No, `#prelims-filter-yes`, `#prelims-filter-all`, and `#prelims-filter-maybe`. After the Yes filter, step 5 clicks All so the later couples are on screen. Alternate is marked on the second couple. No is marked on any couple after the second, and that step shows all competitors again.

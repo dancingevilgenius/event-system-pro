@@ -20,6 +20,16 @@ const DEMO_ITEMS = [
     path: '/demo-event-calendar',
     available: true,
   },
+  {
+    label: 'Floor Coordinator Demos',
+    path: '/floor-coordinator-demos',
+    available: true,
+  },
+  {
+    label: 'Judge Demos',
+    path: '/judge-demos',
+    available: true,
+  },
 ] as const;
 
 export default function DemoPage() {
@@ -38,7 +48,7 @@ export default function DemoPage() {
           <Stack spacing={2} sx={{ mb: 4, ...centeredContentStackSx }}>
             {DEMO_ITEMS.map((item) => (
               <Button
-                key={item.path}
+                key={item.label}
                 variant="contained"
                 size="large"
                 fullWidth
@@ -52,7 +62,7 @@ export default function DemoPage() {
         ) : (
           <Grid container spacing={2} sx={{ mb: 4 }}>
             {DEMO_ITEMS.map((item) => (
-              <Grid key={item.path} size={{ xs: 12, md: 6, lg: 4 }}>
+              <Grid key={item.label} size={{ xs: 12, md: 6, lg: 4 }}>
                 <Button
                   variant="contained"
                   size="large"

@@ -19,13 +19,16 @@ import {
   Stack,
   ToggleButton,
   ToggleButtonGroup,
+  Tooltip,
   Typography,
   useMediaQuery,
   type SelectChangeEvent,
 } from '@mui/material';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import PageBackButton from '../components/PageBackButton';
+import MobileBackIconButton, {
+  MOBILE_HEADER_ICON_SLOT,
+} from '../components/MobileBackIconButton';
 import PercentCompleteBar from '../components/PercentCompleteBar';
 import {
   CONTENT_MAX_WIDTH,
@@ -49,6 +52,7 @@ import { trainingTargetSx, usePageTraining } from '../hooks/usePageTraining';
 import { isCoachEnabled, markRowElementId } from '../lib/pageTraining';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
+import { formatBackTooltip } from '../utils/backTooltip';
 
 const FILTER_YES_ELEMENT_ID = 'prelims-filter-yes';
 const FILTER_ALL_ELEMENT_ID = 'prelims-filter-all';
@@ -725,7 +729,7 @@ export default function PrelimsPage() {
     showSuccess(
       `Prelims submitted with ${judgeYesCount} yes and ${judgeMaybeCount} alternate.`,
     );
-    navigate('/staff');
+    navigate('/judge-demos');
   };
 
   const handleMarkChange = (bibNumber: number, mark: PrelimsMark | null) => {
@@ -748,6 +752,7 @@ export default function PrelimsPage() {
   };
 
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
+  const backTooltip = formatBackTooltip('Back to Judge Demos');
   const isLandscape = useMediaQuery(LANDSCAPE_MEDIA_QUERY);
   const isTabletLandscape = !showXsLayout && isLandscape;
   const contentSx = showXsLayout
@@ -795,12 +800,29 @@ export default function PrelimsPage() {
           boxSizing: 'border-box',
         }}
       >
-        <PageBackButton to="/staff" label="Back to Staff" />
-
         <Stack spacing={1} sx={{ ...contentSx, flexShrink: 0 }}>
-          <Typography variant="h6" component="h1" sx={{ textAlign: 'center' }}>
-            All-American Prelims
-          </Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              width: '100%',
+            }}
+          >
+            <Tooltip title={backTooltip}>
+              <span>
+                <MobileBackIconButton label={backTooltip} onClick={() => navigate('/judge-demos')} />
+              </span>
+            </Tooltip>
+            <Typography
+              variant="h6"
+              component="h1"
+              sx={{ flex: 1, textAlign: 'center', minWidth: 0 }}
+            >
+              All-American Prelims
+            </Typography>
+            <Box sx={{ width: MOBILE_HEADER_ICON_SLOT, flexShrink: 0 }} aria-hidden />
+          </Box>
 
           <Box
             sx={{

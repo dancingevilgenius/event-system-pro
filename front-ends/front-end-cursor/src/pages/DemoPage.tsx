@@ -16,6 +16,11 @@ const DEMO_ITEMS = [
     available: true,
   },
   {
+    label: 'Merchandise Demo',
+    path: '/event-merchandise-pos-demo',
+    available: true,
+  },
+  {
     label: '3rd Party Library Demos',
     path: '/third-party-library-demos',
     available: true,

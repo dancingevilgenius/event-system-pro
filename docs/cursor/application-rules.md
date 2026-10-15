@@ -321,7 +321,6 @@ Forgot-password flow uses a separate stepper on **`/forgot-password`** (user ans
 | Competitors | `/admin/competitors` |
 | Users | `/admin/search-users` |
 | Competition Entries | `/admin/competition-entries` (placeholder) |
-| Event Merchandise POS | `/event-merchandise-pos-demo` |
 | WSDC Find Dancer | `/wsdc-find-dancer` |
 | Set Event Judges | `/admin/set-event-judges` |
 | Governing Bodies | `/governing-body` |
@@ -396,7 +395,7 @@ See **Multi-section admin form pages (Add Event pattern)** for accordion / statu
 ### Demo hub (`/demo`)
 
 - Public page opened from Public Home **Demo**.
-- Links to **3rd Party Library Demos**, **Floor Coordinator Demos**, and **Judge Demos**.
+- Links to **Floor Coordinator Demos**, **Judge Demos**, **Merchandise Demo** (`/event-merchandise-pos-demo`), and **3rd Party Library Demos**.
 - **Back** returns to `/adminhome`.
 
 ### Tournament bracket demo (`/tournament-bracket-demo`)
@@ -407,9 +406,9 @@ See **Multi-section admin form pages (Add Event pattern)** for accordion / statu
 
 ### Event Merchandise POS demo (`/event-merchandise-pos-demo`)
 
-- **ADMIN** only (linked from Admin home, not the public Demo hub).
+- **ADMIN** only, opened from **Merchandise Demo** on `/demo`.
 - Demo checkout/receipt flow for seeded merchandise event data (`016_merchandise_pos_demo.sql`).
-- **Back to Admin** → `/adminhome`.
+- **Back to Demo** → `/demo`.
 
 ---
 

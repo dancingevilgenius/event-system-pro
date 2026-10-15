@@ -5,8 +5,6 @@ export const DEFAULT_MESSAGE_AUTO_DISMISS_MS = 60000;
 export const MESSAGE_AUTO_DISMISS_OPTIONS = [
   { label: '3 seconds', value: 3000 },
   { label: '10 seconds', value: 10000 },
-  { label: '20 seconds', value: 20000 },
-  { label: '25 seconds', value: 25000 },
   { label: '1 minute', value: 60000 },
   { label: '5 minutes', value: 300000 },
   { label: '10 minutes', value: 600000 },

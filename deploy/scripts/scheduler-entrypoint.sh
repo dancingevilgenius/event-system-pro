@@ -44,6 +44,14 @@ install_crontab "$CRONTAB_BODY"
 echo "scheduler: installed crontab from maintenance.job_definition:"
 sed 's/^/scheduler:   /' /etc/crontabs/root
 
+# Register database/migrations scripts baked into this image. The nightly cron
+# still repeats the check; this run is what makes a new deploy show up on
+# /migrations without waiting until midnight.
+echo "scheduler: registering migration scripts from /sql/migrations"
+if ! /run-maintenance-job.sh check_schema_migrations; then
+  echo "scheduler: WARNING check_schema_migrations failed; nightly run will retry" >&2
+fi
+
 # Refreshable interval loops: pick up jobs added after boot (e.g. timed admin-started jobs)
 # and stop loops when the job_definition row is removed or schedule mode changes.
 INTERVAL_STATE_DIR="$(mktemp -d)"

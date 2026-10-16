@@ -29,6 +29,33 @@ function broadcastCounter(value) {
   broadcastJson({ type: 'poc_counter', value });
 }
 
+function broadcastContestRosterChange(payloadText) {
+  let contestId = null;
+  let eventId = null;
+  let op = null;
+
+  try {
+    const parsed = JSON.parse(payloadText || '{}');
+    contestId = Number(parsed.contest_id);
+    const rawEventId = Number(parsed.event_id);
+    eventId = Number.isFinite(rawEventId) && rawEventId > 0 ? rawEventId : null;
+    op = typeof parsed.op === 'string' ? parsed.op : null;
+  } catch {
+    return;
+  }
+
+  if (!Number.isFinite(contestId) || contestId <= 0) {
+    return;
+  }
+
+  broadcastJson({
+    type: 'contest_roster_change',
+    contestId,
+    eventId,
+    op,
+  });
+}
+
 function broadcastAttendeeChange(payloadText) {
   let eventId = null;
   let op = null;
@@ -70,6 +97,7 @@ async function startNotifyListener() {
   await listenClient.connect();
   await listenClient.query('LISTEN system_config_poc_counter');
   await listenClient.query('LISTEN event_attendee_change');
+  await listenClient.query('LISTEN contest_roster_change');
 
   listenClient.on('notification', (message) => {
     if (message.channel === 'system_config_poc_counter') {
@@ -79,6 +107,11 @@ async function startNotifyListener() {
 
     if (message.channel === 'event_attendee_change') {
       broadcastAttendeeChange(message.payload ?? '{}');
+      return;
+    }
+
+    if (message.channel === 'contest_roster_change') {
+      broadcastContestRosterChange(message.payload ?? '{}');
     }
   });
 
@@ -119,7 +152,7 @@ webSocketServer.on('connection', (socket) => {
 server.listen(Number(PORT), () => {
   console.log(`Realtime listening on http://localhost:${PORT}`);
   console.log(`WebSocket path: /ws`);
-  console.log('Listening: system_config_poc_counter, event_attendee_change');
+  console.log('Listening: system_config_poc_counter, event_attendee_change, contest_roster_change');
 });
 
 void startNotifyListener().catch((error) => {

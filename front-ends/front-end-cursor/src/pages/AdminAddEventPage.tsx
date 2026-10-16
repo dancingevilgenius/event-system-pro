@@ -19,11 +19,21 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { type SyntheticEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import { type SyntheticEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { fetchEventById, fetchEventGroupByCode } from '../api/postgrest';
+import {
+  fetchEventById,
+  fetchEventGroupByCode,
+  saveEventDraft,
+  saveEventRoleAssignments,
+  type EventRoleAssignment,
+} from '../api/postgrest';
 import AddEventDates from '../components/AddEventDates';
-import AddEventName, { eventNameCanBeFinalized } from '../components/AddEventName';
+import AddEventName, {
+  eventNameCanBeFinalized,
+  eventNameUnlocksOtherSections,
+  MIN_EVENT_NAME_LENGTH_TO_CONTINUE,
+} from '../components/AddEventName';
 import AddEventLocation from '../components/AddEventLocation';
 import AddEventOnlineLinks from '../components/AddEventOnlineLinks';
 import AddEventEarlyBirdDates from '../components/AddEventEarlyBirdDates';
@@ -38,13 +48,12 @@ import AddEventSortableSectionAccordion from '../components/AddEventSortableSect
 import { type AddEventSectionStatus } from '../components/AddEventSectionStatusToggle';
 import PageHeader from '../components/PageHeader';
 import { useLayoutTier } from '../hooks/useLayoutTier';
-import {
-  EVENT_GROUPS_PATH,
-  eventDetailPath,
-  eventGroupDetailPath,
-} from '../constants/eventRoutes';
+import { useMessages } from '../hooks/useMessages';
+import { EVENT_GROUPS_PATH, eventGroupDetailPath } from '../constants/eventRoutes';
+import { parseDateTimeLocalValue } from '../lib/eventDuration';
 import {
   EMPTY_EVENT_DATES,
+  isEventDatesValid,
   eventDatesFromApiTimestamps,
   type EventDatesFormState,
   formatEventStartDateLabel,
@@ -211,6 +220,37 @@ function disabledStatusesForSection(
   return undefined;
 }
 
+function draftDateFields(dates: EventDatesFormState): {
+  startDate: string | null;
+  endDate: string | null;
+} | null {
+  const startEmpty = dates.startDateTime.trim() === '';
+  const endEmpty = dates.endDateTime.trim() === '';
+  if (startEmpty && endEmpty) {
+    return { startDate: null, endDate: null };
+  }
+
+  if (!isEventDatesValid(dates)) {
+    return null;
+  }
+
+  const start = parseDateTimeLocalValue(dates.startDateTime);
+  if (!start) {
+    return null;
+  }
+
+  if (dates.mode === 'single_day') {
+    return { startDate: start.toISOString(), endDate: null };
+  }
+
+  const end = parseDateTimeLocalValue(dates.endDateTime);
+  if (!end) {
+    return null;
+  }
+
+  return { startDate: start.toISOString(), endDate: end.toISOString() };
+}
+
 function promoteSectionToInProgress(
   current: Record<AddEventSectionId, AddEventSectionStatus>,
   sectionId: AddEventSectionId,
@@ -236,6 +276,8 @@ function renderSectionContent(
   onNoEarlyBirdDatesChange: (noEarlyBirdDates: boolean) => void,
   onVenueChange: (venue: string) => void,
   onContactVenueSummaryChange: (summary: ContactVenueSummary) => void,
+  eventId: number | null,
+  onSaveRoles: (roles: EventRoleAssignment[]) => void,
 ) {
   if (sectionId === 'event_name') {
     return (
@@ -268,7 +310,13 @@ function renderSectionContent(
   }
 
   if (sectionId === 'roles') {
-    return <AddEventRoles onFieldEdit={onFieldEdit} />;
+    return (
+      <AddEventRoles
+        eventId={eventId}
+        onSaveRoles={onSaveRoles}
+        onFieldEdit={onFieldEdit}
+      />
+    );
   }
 
   if (sectionId === 'early_bird_dates') {
@@ -323,6 +371,7 @@ function renderSectionContent(
 
 export default function AdminAddEventPage() {
   const location = useLocation();
+  const { showProblem } = useMessages();
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const locationState = (location.state as AddEventLocationState | null) ?? null;
   const eventGroupCode = resolveEventGroupCode(locationState) ?? '';
@@ -343,6 +392,97 @@ export default function AdminAddEventPage() {
   const [venueName, setVenueName] = useState('');
   const [contactVenueSummary, setContactVenueSummary] = useState(EMPTY_CONTACT_VENUE_SUMMARY);
   const [eventDates, setEventDates] = useState<EventDatesFormState>(EMPTY_EVENT_DATES);
+  const [savedEventId, setSavedEventId] = useState<number | null>(eventId);
+  const [draftReady, setDraftReady] = useState(eventId === null);
+  const savedEventIdRef = useRef<number | null>(eventId);
+  const draftReadyRef = useRef(eventId === null);
+  const eventNameRef = useRef(eventName);
+  const eventDatesRef = useRef(eventDates);
+  const eventGroupCodeRef = useRef(eventGroupCode);
+  const saveQueueRef = useRef(Promise.resolve());
+
+  useEffect(() => {
+    savedEventIdRef.current = eventId;
+    setSavedEventId(eventId);
+    const ready = eventId === null;
+    draftReadyRef.current = ready;
+    setDraftReady(ready);
+  }, [eventId]);
+
+  useEffect(() => {
+    eventNameRef.current = eventName;
+  }, [eventName]);
+
+  useEffect(() => {
+    eventDatesRef.current = eventDates;
+  }, [eventDates]);
+
+  useEffect(() => {
+    eventGroupCodeRef.current = eventGroupCode;
+  }, [eventGroupCode]);
+
+  const enqueueEventSave = useCallback(
+    (task: (currentEventId: number | null) => Promise<number>) => {
+      saveQueueRef.current = saveQueueRef.current
+        .catch(() => undefined)
+        .then(async () => {
+          try {
+            const nextId = await task(savedEventIdRef.current);
+            savedEventIdRef.current = nextId;
+            setSavedEventId((current) => (current === nextId ? current : nextId));
+          } catch (saveError) {
+            showProblem(saveError instanceof Error ? saveError.message : 'Unable to save the event.');
+          }
+        });
+    },
+    [showProblem],
+  );
+
+  const handleSaveRoles = useCallback(
+    (roles: EventRoleAssignment[]) => {
+      enqueueEventSave((currentEventId) =>
+        saveEventRoleAssignments({
+          eventId: currentEventId,
+          eventGroupCode: eventGroupCodeRef.current,
+          eventName: eventNameRef.current,
+          roles,
+        }),
+      );
+    },
+    [enqueueEventSave],
+  );
+
+  useEffect(() => {
+    if (!eventGroupCode) {
+      return;
+    }
+
+    const handle = window.setTimeout(() => {
+      if (!draftReadyRef.current) {
+        return;
+      }
+
+      const name = eventNameRef.current.trim();
+      const currentEventId = savedEventIdRef.current;
+      if (name.length < MIN_EVENT_NAME_LENGTH_TO_CONTINUE && currentEventId === null) {
+        return;
+      }
+
+      const dates = draftDateFields(eventDatesRef.current);
+      enqueueEventSave((eventIdToSave) =>
+        saveEventDraft({
+          eventId: eventIdToSave,
+          eventGroupCode: eventGroupCodeRef.current,
+          name,
+          startDate: dates?.startDate ?? null,
+          endDate: dates?.endDate ?? null,
+          updateDates: dates !== null,
+        }),
+      );
+    }, 400);
+
+    return () => window.clearTimeout(handle);
+  }, [draftReady, enqueueEventSave, eventDates, eventGroupCode, eventName]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -356,19 +496,20 @@ export default function AdminAddEventPage() {
 
   const scheduleDatesSelected = hasEventDatesForSchedule(eventDates);
   const eventNameReadyToFinalize = eventNameCanBeFinalized(eventName);
+  const otherSectionsEnabled = eventNameUnlocksOtherSections(eventName);
 
-  const backPath =
-    isEditingEvent && eventGroupCode
-      ? eventDetailPath(eventGroupCode, eventId)
-      : eventGroupCode
-        ? eventGroupDetailPath(eventGroupCode)
-        : EVENT_GROUPS_PATH;
-  const backLabel =
-    isEditingEvent && eventGroupCode
-      ? 'Back to Event'
-      : eventGroupCode
-        ? 'Back to Event Group'
-        : 'Back to Event Groups';
+  useEffect(() => {
+    if (otherSectionsEnabled) {
+      return;
+    }
+
+    setExpandedSection((current) => (current === 'event_name' ? current : false));
+  }, [otherSectionsEnabled]);
+
+  const backPath = eventGroupCode
+    ? eventGroupDetailPath(eventGroupCode)
+    : EVENT_GROUPS_PATH;
+  const backLabel = eventGroupCode ? 'Back to Event Group' : 'Back to Event Groups';
   const pageTitle = isEditingEvent
     ? eventGroupCode
       ? `Edit Event for ${eventGroupCode}`
@@ -423,6 +564,10 @@ export default function AdminAddEventPage() {
         const nextName = event.name ?? '';
         setEventDates(nextDates);
         setEventName(nextName);
+        eventNameRef.current = nextName;
+        eventDatesRef.current = nextDates;
+        draftReadyRef.current = true;
+        setDraftReady(true);
 
         setSectionStatuses((current) => {
           const next = { ...current };
@@ -525,6 +670,10 @@ export default function AdminAddEventPage() {
   const handleAccordionChange =
     (sectionId: AddEventSectionId) =>
     (_event: SyntheticEvent, isExpanded: boolean) => {
+      if (sectionId !== 'event_name' && !otherSectionsEnabled) {
+        return;
+      }
+
       setExpandedSection(isExpanded ? sectionId : false);
     };
 
@@ -578,6 +727,8 @@ export default function AdminAddEventPage() {
                     handleNoEarlyBirdDatesChange,
                     handleVenueChange,
                     handleContactVenueSummaryChange,
+                    savedEventId,
+                    handleSaveRoles,
                   );
                   const sectionStatus = sectionStatuses[section.id];
                   const sectionTitle = sectionDisplayTitle(
@@ -608,6 +759,7 @@ export default function AdminAddEventPage() {
                         eventNameReadyToFinalize,
                         scheduleDatesSelected,
                       )}
+                      disabled={section.id !== 'event_name' && !otherSectionsEnabled}
                     />
                   );
                 })}

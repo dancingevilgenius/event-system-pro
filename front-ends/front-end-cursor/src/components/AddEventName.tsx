@@ -1,6 +1,11 @@
 import AppTextField from './AppTextField';
 
 export const MIN_EVENT_NAME_LENGTH = 5;
+export const MIN_EVENT_NAME_LENGTH_TO_CONTINUE = 3;
+
+export function eventNameUnlocksOtherSections(name: string): boolean {
+  return name.trim().length >= MIN_EVENT_NAME_LENGTH_TO_CONTINUE;
+}
 
 export function eventNameCanBeFinalized(name: string): boolean {
   return name.trim().length >= MIN_EVENT_NAME_LENGTH;

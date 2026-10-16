@@ -17,15 +17,35 @@ import {
 import AddEventButton from '../components/AddEventButton';
 import PageHeader from '../components/PageHeader';
 import { centeredContentStackSx } from '../constants/layout';
-import { EVENT_GROUPS_PATH, eventDetailPath } from '../constants/eventRoutes';
-import { formatEventMonthYear } from '../lib/eventDisplay';
+import { CREATE_EVENT_PATH, EVENT_GROUPS_PATH } from '../constants/eventRoutes';
 import { useLayoutTier } from '../hooks/useLayoutTier';
+import { formatEventMonthYear } from '../lib/eventDisplay';
+import { rememberEventGroupCode } from '../lib/eventGroupSession';
+
+function eventListLabel(event: EventListRow): string {
+  const name = event.name?.trim() || event.eventCode || 'Untitled event';
+  if (!event.startDate) {
+    return name;
+  }
+
+  return `${name} (${formatEventMonthYear(event.startDate)})`;
+}
 
 export default function AdminEventGroupPage() {
   const navigate = useNavigate();
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const { eventGroupCode = '' } = useParams<{ eventGroupCode: string }>();
   const decodedGroupCode = decodeURIComponent(eventGroupCode);
+
+  const openSavedEvent = (eventId: number) => {
+    rememberEventGroupCode(decodedGroupCode);
+    navigate(CREATE_EVENT_PATH, {
+      state: {
+        eventGroupCode: decodedGroupCode,
+        eventId,
+      },
+    });
+  };
 
   const [fullName, setFullName] = useState('');
   const [events, setEvents] = useState<EventListRow[]>([]);
@@ -105,9 +125,10 @@ export default function AdminEventGroupPage() {
                 variant="contained"
                 size="large"
                 fullWidth
-                onClick={() => navigate(eventDetailPath(decodedGroupCode, event.eventId))}
+                onClick={() => openSavedEvent(event.eventId)}
+                sx={{ whiteSpace: 'normal', textAlign: 'center' }}
               >
-                {formatEventMonthYear(event.startDate)}
+                {eventListLabel(event)}
               </Button>
             ))}
           </Stack>
@@ -121,9 +142,10 @@ export default function AdminEventGroupPage() {
                   variant="contained"
                   size="large"
                   fullWidth
-                  onClick={() => navigate(eventDetailPath(decodedGroupCode, event.eventId))}
+                  onClick={() => openSavedEvent(event.eventId)}
+                  sx={{ whiteSpace: 'normal', textAlign: 'center', height: '100%' }}
                 >
-                  {formatEventMonthYear(event.startDate)}
+                  {eventListLabel(event)}
                 </Button>
               </Grid>
             ))}

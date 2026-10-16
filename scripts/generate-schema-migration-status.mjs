@@ -40,6 +40,8 @@ const detailsOverride = {
     'The second coaching step does not click the green Training box moved message.',
   '144_training_all_filter_and_later_rows.sql':
     'Prelims coaching does not click All, mark Alternate on the second couple, or mark No on a later couple.',
+  '148_event_assign_event_code_definer.sql':
+    'Signed-in users cannot insert an event because the event-code trigger cannot read the event table.',
 };
 
 const probes = {
@@ -85,6 +87,8 @@ const probes = {
     "EXISTS (SELECT 1 FROM public.training_instructions WHERE instruction_code = 'PRELIMS_MARKS' AND steps_json->'steps'->1->>'id' = 'dismiss-training-moved-message')",
   '144_training_all_filter_and_later_rows.sql':
     "EXISTS (SELECT 1 FROM public.training_instructions WHERE instruction_code = 'PRELIMS_MARKS' AND steps_json->'steps'->4->>'id' = 'filter-all' AND steps_json->'steps'->5->'interaction'->>'elementId' = 'prelims-mark-row-2' AND COALESCE(steps_json->'steps'->7->'interaction'->>'anyRowAfterSecond', '') = 'true')",
+  '148_event_assign_event_code_definer.sql':
+    "EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace WHERE n.nspname = 'public' AND p.proname = 'event_assign_event_code' AND p.prosecdef)",
 };
 
 function dollarQuote(value, preferredTag) {

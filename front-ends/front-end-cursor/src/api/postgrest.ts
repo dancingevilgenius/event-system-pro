@@ -1330,6 +1330,265 @@ export async function fetchEventById(
   };
 }
 
+export type EventRoleAssignment = {
+  roleCode: string;
+  used: boolean;
+  label: string;
+  count: number | null;
+};
+
+type StoredEventRole = {
+  role_code: string;
+  used: boolean;
+  label: string;
+  count: number | null;
+};
+
+const EVENT_ROLE_COUNT_MIN = 1;
+const EVENT_ROLE_COUNT_MAX = 10;
+
+export function clampEventRoleCount(value: unknown): number {
+  const count = typeof value === 'number' ? value : Number(value);
+  if (!Number.isInteger(count) || count < EVENT_ROLE_COUNT_MIN || count > EVENT_ROLE_COUNT_MAX) {
+    return EVENT_ROLE_COUNT_MIN;
+  }
+
+  return count;
+}
+
+function moreJsonObject(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return {};
+  }
+
+  return { ...(value as Record<string, unknown>) };
+}
+
+export function parseEventRoleAssignments(moreJson: unknown): EventRoleAssignment[] {
+  const roles = moreJsonObject(moreJson).roles;
+  if (!Array.isArray(roles)) {
+    return [];
+  }
+
+  return roles.flatMap((entry) => {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+      return [];
+    }
+
+    const record = entry as Partial<StoredEventRole>;
+    const roleCode = typeof record.role_code === 'string' ? record.role_code.trim() : '';
+    if (roleCode === '') {
+      return [];
+    }
+
+    return [
+      {
+        roleCode,
+        used: record.used === true,
+        label: typeof record.label === 'string' ? record.label : '',
+        count: roleCode === 'COMPETITOR' ? null : clampEventRoleCount(record.count),
+      },
+    ];
+  });
+}
+
+async function readApiErrorMessage(response: Response, fallback: string): Promise<string> {
+  try {
+    const errorBody = (await response.json()) as RpcErrorBody;
+    if (errorBody.message) {
+      return errorBody.message;
+    }
+  } catch {
+    // Keep the fallback when the body is not JSON.
+  }
+
+  return fallback;
+}
+
+export async function fetchEventMoreJson(eventId: number): Promise<Record<string, unknown>> {
+  const params = new URLSearchParams({
+    select: 'more_json',
+  });
+  params.append('event_id', `eq.${eventId}`);
+
+  const rows = await fetchJson<Array<{ more_json: unknown }>>(
+    `${POSTGREST_URL}/event?${params.toString()}`,
+    'Unable to load event roles',
+  );
+
+  return moreJsonObject(rows[0]?.more_json);
+}
+
+async function countryCodeForEventGroup(eventGroupCode: string): Promise<string> {
+  const params = new URLSearchParams({
+    select: 'country_code',
+    limit: '1',
+  });
+  params.append('event_group_code', `eq.${eventGroupCode}`);
+
+  const rows = await fetchJson<Array<{ country_code: string | null }>>(
+    `${POSTGREST_URL}/event?${params.toString()}`,
+    'Unable to load event country',
+  );
+  const countryCode = rows[0]?.country_code?.trim() ?? '';
+  return countryCode === '' ? 'USA' : countryCode;
+}
+
+export async function saveEventRoleAssignments(input: {
+  eventId: number | null;
+  eventGroupCode: string;
+  eventName: string;
+  roles: EventRoleAssignment[];
+}): Promise<number> {
+  const storedRoles: StoredEventRole[] = input.roles.map((role) => ({
+    role_code: role.roleCode,
+    used: role.used,
+    label: role.label,
+    count: role.roleCode === 'COMPETITOR' ? null : clampEventRoleCount(role.count),
+  }));
+
+  if (input.eventId !== null) {
+    const moreJson = await fetchEventMoreJson(input.eventId);
+    const response = await fetch(
+      `${POSTGREST_URL}/event?event_id=eq.${input.eventId}`,
+      {
+        method: 'PATCH',
+        headers: buildAuthHeaders({
+          'Content-Type': 'application/json',
+          Prefer: 'return=representation',
+        }),
+        body: JSON.stringify({
+          more_json: {
+            ...moreJson,
+            roles: storedRoles,
+          },
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(await readApiErrorMessage(response, 'Unable to save event roles.'));
+    }
+
+    return input.eventId;
+  }
+
+  const eventGroupCode = input.eventGroupCode.trim();
+  if (eventGroupCode === '') {
+    throw new Error('Choose an event group before saving roles.');
+  }
+
+  const username = loadSession()?.username?.trim() ?? '';
+  if (username === '') {
+    throw new Error('Sign in to save event roles.');
+  }
+
+  const eventName = input.eventName.trim();
+  const response = await fetch(`${POSTGREST_URL}/event`, {
+    method: 'POST',
+    headers: buildAuthHeaders({
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation',
+    }),
+    body: JSON.stringify({
+      event_group_code: eventGroupCode,
+      country_code: await countryCodeForEventGroup(eventGroupCode),
+      created_by: username,
+      ...(eventName === '' ? {} : { name: eventName }),
+      more_json: {
+        roles: storedRoles,
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(await readApiErrorMessage(response, 'Unable to save event roles.'));
+  }
+
+  const rows = (await response.json()) as Array<{ event_id?: number }>;
+  const eventId = rows[0]?.event_id;
+  if (typeof eventId !== 'number') {
+    throw new Error('Saving event roles did not return an event.');
+  }
+
+  return eventId;
+}
+
+export async function saveEventDraft(input: {
+  eventId: number | null;
+  eventGroupCode: string;
+  name: string;
+  startDate: string | null;
+  endDate: string | null;
+  updateDates: boolean;
+}): Promise<number> {
+  const username = loadSession()?.username?.trim() ?? '';
+  if (username === '') {
+    throw new Error('Sign in to save the event.');
+  }
+
+  const name = input.name.trim();
+  const dateFields = input.updateDates
+    ? { start_date: input.startDate, end_date: input.endDate }
+    : {};
+
+  if (input.eventId !== null) {
+    const response = await fetch(
+      `${POSTGREST_URL}/event?event_id=eq.${input.eventId}`,
+      {
+        method: 'PATCH',
+        headers: buildAuthHeaders({
+          'Content-Type': 'application/json',
+          Prefer: 'return=representation',
+        }),
+        body: JSON.stringify({
+          name: name === '' ? null : name,
+          modified_by: username,
+          ...dateFields,
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(await readApiErrorMessage(response, 'Unable to save the event.'));
+    }
+
+    return input.eventId;
+  }
+
+  const eventGroupCode = input.eventGroupCode.trim();
+  if (eventGroupCode === '') {
+    throw new Error('Choose an event group before saving the event.');
+  }
+
+  const response = await fetch(`${POSTGREST_URL}/event`, {
+    method: 'POST',
+    headers: buildAuthHeaders({
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation',
+    }),
+    body: JSON.stringify({
+      event_group_code: eventGroupCode,
+      country_code: await countryCodeForEventGroup(eventGroupCode),
+      created_by: username,
+      name,
+      ...dateFields,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(await readApiErrorMessage(response, 'Unable to save the event.'));
+  }
+
+  const rows = (await response.json()) as Array<{ event_id?: number }>;
+  const eventId = rows[0]?.event_id;
+  if (typeof eventId !== 'number') {
+    throw new Error('Saving the event did not return an event.');
+  }
+
+  return eventId;
+}
+
 type ApiAttendeeWithUser = {
   attendee_id: number;
   user: {

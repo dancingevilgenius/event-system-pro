@@ -1,10 +1,8 @@
 import {
   Box,
   Button,
-  Checkbox,
   CircularProgress,
   Container,
-  FormControlLabel,
   MenuItem,
   Paper,
   Stack,
@@ -33,6 +31,8 @@ import { EVENT_HOME_PATH, eventGroupDetailPath } from '../constants/eventRoutes'
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 import { EVENT_TYPES_LIST_CODE } from '../lib/staticList';
+
+type DemoFilter = 'all' | 'demo' | 'non-demo';
 
 function displayValue(value: string): string {
   return value.trim() === '' ? '—' : value;
@@ -100,7 +100,7 @@ export default function AdminEventsPage() {
   const [rows, setRows] = useState<EventGroupListRow[]>([]);
   const [eventTypeOptions, setEventTypeOptions] = useState<StaticListEntry[]>([]);
   const [nameFilter, setNameFilter] = useState('');
-  const [demoOnly, setDemoOnly] = useState(false);
+  const [demoFilter, setDemoFilter] = useState<DemoFilter>('all');
   const [eventTypeFilter, setEventTypeFilter] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -133,7 +133,11 @@ export default function AdminEventsPage() {
 
   const normalizedNameFilter = nameFilter.trim().toLowerCase();
   const filteredRows = rows.filter((row) => {
-    if (demoOnly && !row.isDemo) {
+    if (demoFilter === 'demo' && !row.isDemo) {
+      return false;
+    }
+
+    if (demoFilter === 'non-demo' && row.isDemo) {
       return false;
     }
 
@@ -147,7 +151,8 @@ export default function AdminEventsPage() {
 
     return row.fullName.toLowerCase().includes(normalizedNameFilter);
   });
-  const filtersActive = demoOnly || eventTypeFilter !== '' || normalizedNameFilter !== '';
+  const filtersActive =
+    demoFilter !== 'all' || eventTypeFilter !== '' || normalizedNameFilter !== '';
 
   const handleEventTypeChange = async (eventGroupCode: string, nextEventTypeCode: string) => {
     const currentRow = rows.find((row) => row.eventGroupCode === eventGroupCode);
@@ -220,19 +225,23 @@ export default function AdminEventsPage() {
               alignItems: 'center',
             }}
           >
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={demoOnly}
-                  onChange={(event) => setDemoOnly(event.target.checked)}
-                  slotProps={{
-                    input: { 'aria-label': 'Show demo event groups only' },
-                  }}
-                />
-              }
+            <AppTextField
+              select
               label="Demo"
-              sx={{ m: 0 }}
-            />
+              value={demoFilter}
+              onChange={(event) => setDemoFilter(event.target.value as DemoFilter)}
+              size="small"
+              sx={{ width: { xs: '100%', md: 160 } }}
+              slotProps={{
+                htmlInput: {
+                  'aria-label': 'Filter event groups by demo status',
+                },
+              }}
+            >
+              <MenuItem value="all">All</MenuItem>
+              <MenuItem value="demo">Demo</MenuItem>
+              <MenuItem value="non-demo">Non-Demo</MenuItem>
+            </AppTextField>
           </Box>
           <Box
             sx={{

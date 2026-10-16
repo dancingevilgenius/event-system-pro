@@ -1,5 +1,6 @@
 import CloseIcon from '@mui/icons-material/Close';
 import ErrorOutlinedIcon from '@mui/icons-material/ErrorOutlined';
+import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
 import {
   Button,
   CircularProgress,
@@ -24,6 +25,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   applySchemaMigration,
+  fetchSchedulerHeartbeat,
   fetchSchemaMigrations,
   type ApplySchemaMigrationResult,
   type SchemaMigrationRow,
@@ -33,9 +35,12 @@ import PageHeader from '../components/PageHeader';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 import { diagnoseMigrationFailure } from '../lib/migrationFailure';
+import { schedulerHeartbeatIsHealthy } from '../lib/schedulerHeartbeat';
 import { formatReadableDateTime } from '../utils/auditTimestamps';
 
 const FAILURE_REVIEW_MS = 700;
+const HEARTBEAT_POLL_MS = 15_000;
+const HEARTBEAT_CLOCK_MS = 5_000;
 
 type MigrationFailureDialog = {
   script: string;
@@ -95,7 +100,11 @@ export default function AdminMigrationsPage() {
   const [detailRow, setDetailRow] = useState<SchemaMigrationRow | null>(null);
   const [failureDialog, setFailureDialog] = useState<MigrationFailureDialog | null>(null);
   const [failureOpen, setFailureOpen] = useState(false);
+  const [heartbeatAt, setHeartbeatAt] = useState<string | null>(null);
+  const [heartbeatKnown, setHeartbeatKnown] = useState(false);
+  const [nowMs, setNowMs] = useState(() => Date.now());
   const failureToken = useRef(0);
+  const heartbeatHealthy = heartbeatKnown && schedulerHeartbeatIsHealthy(heartbeatAt, nowMs);
 
   const pendingCount = rows.filter((row) => !row.applied).length;
   const visibleRows = showMissingOnly ? rows.filter((row) => !row.applied) : rows;
@@ -121,6 +130,32 @@ export default function AdminMigrationsPage() {
   useEffect(() => {
     void loadMigrations();
   }, [loadMigrations]);
+
+  const loadHeartbeat = useCallback(async () => {
+    try {
+      const status = await fetchSchedulerHeartbeat();
+      setHeartbeatAt(status.heartbeatAt);
+    } catch {
+      setHeartbeatAt(null);
+    } finally {
+      setHeartbeatKnown(true);
+      setNowMs(Date.now());
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadHeartbeat();
+    const poll = window.setInterval(() => {
+      void loadHeartbeat();
+    }, HEARTBEAT_POLL_MS);
+    const clock = window.setInterval(() => {
+      setNowMs(Date.now());
+    }, HEARTBEAT_CLOCK_MS);
+    return () => {
+      window.clearInterval(poll);
+      window.clearInterval(clock);
+    };
+  }, [loadHeartbeat]);
 
   const showFailure = useCallback(async (script: string, result: ApplySchemaMigrationResult | Error) => {
     const message = result instanceof Error
@@ -225,6 +260,30 @@ export default function AdminMigrationsPage() {
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
         <PageHeader title="Migrations" backTo="/adminhome" backLabel="Back to Admin" />
+
+        {heartbeatKnown && (
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{ mb: 2, alignItems: 'center', flexWrap: 'wrap' }}
+          >
+            <MonitorHeartIcon
+              sx={{ color: heartbeatHealthy ? 'success.main' : 'error.main' }}
+              aria-hidden
+            />
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 700,
+                color: heartbeatHealthy ? 'success.main' : 'error.main',
+              }}
+            >
+              {heartbeatHealthy
+                ? 'Scheduler heartbeat is healthy'
+                : 'Scheduler heartbeat is failing!'}
+            </Typography>
+          </Stack>
+        )}
 
         <Stack spacing={2} sx={{ mb: 2, alignItems: { xs: 'center', md: 'flex-start' } }}>
           <FormControlLabel

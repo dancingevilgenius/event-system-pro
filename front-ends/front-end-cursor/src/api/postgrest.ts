@@ -1,5 +1,6 @@
 import { parseTrainingLesson } from '../lib/pageTraining';
 import { compareSchemaMigrationRowsDescending } from '../lib/schemaMigrationOrder';
+import { schedulerHeartbeatIsHealthy } from '../lib/schedulerHeartbeat';
 import { loadSession, type AppRole } from '../lib/session';
 import { eventLocationToJson, type EventLocationJson } from '../lib/eventLocation';
 import { trimSavedText } from '../utils/trimSavedText';
@@ -4084,6 +4085,31 @@ type SchemaMigrationCheckResult = {
 export async function fetchPendingMigrationCount(): Promise<number> {
   const result = await callRpc<SchemaMigrationCheckResult>('check_schema_migrations', {});
   return result.pending_count ?? 0;
+}
+
+type SchedulerHeartbeatStatusResult = {
+  ok?: boolean;
+  message?: string;
+  healthy?: boolean;
+  heartbeat_at?: string | null;
+};
+
+export type SchedulerHeartbeatStatus = {
+  heartbeatAt: string | null;
+  healthy: boolean;
+};
+
+export async function fetchSchedulerHeartbeat(nowMs = Date.now()): Promise<SchedulerHeartbeatStatus> {
+  const result = await callRpc<SchedulerHeartbeatStatusResult>('scheduler_heartbeat_status', {});
+  if (!result.ok) {
+    throw new Error(result.message ?? 'Unable to load the scheduler heartbeat.');
+  }
+
+  const heartbeatAt = result.heartbeat_at ?? null;
+  return {
+    heartbeatAt,
+    healthy: schedulerHeartbeatIsHealthy(heartbeatAt, nowMs),
+  };
 }
 
 export async function fetchSchemaMigrations(): Promise<SchemaMigrationList> {

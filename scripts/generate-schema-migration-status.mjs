@@ -285,6 +285,8 @@ BEGIN
 
   v_sql := replace(p_sql, E'\\r\\n', E'\\n');
   v_sql := replace(v_sql, E'\\r', E'\\n');
+  -- psql meta-commands such as \\connect are not SQL.
+  v_sql := regexp_replace(v_sql, E'(^|\\n)[ \\t]*\\\\\\\\[^\\n]*', E'\\\\1', 'g');
   v_len := length(v_sql);
 
   WHILE v_i <= v_len LOOP

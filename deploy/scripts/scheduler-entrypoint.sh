@@ -165,12 +165,25 @@ sync_interval_loops() {
   rm -f "$DESIRED_FILE"
 }
 
+touch_scheduler_heartbeat() {
+  set +e
+  psql -h "$PGHOST" -U "$SCHEDULER_DB_USER" -d "$POSTGRES_DB" -v ON_ERROR_STOP=1 -q \
+    -c "SELECT api.touch_scheduler_heartbeat();" >/dev/null 2>&1
+  TOUCH_EXIT=$?
+  set -e
+  if [ "$TOUCH_EXIT" -ne 0 ]; then
+    echo "scheduler: WARNING heartbeat stamp failed" >&2
+  fi
+}
+
 echo "scheduler: syncing schedules (refresh every ${INTERVAL_REFRESH_SECONDS}s)"
 sync_crontab
 sync_interval_loops
+touch_scheduler_heartbeat
 (
   while true; do
     sleep "$INTERVAL_REFRESH_SECONDS"
+    touch_scheduler_heartbeat
     sync_crontab
     sync_interval_loops
   done

@@ -610,6 +610,8 @@ function JudgingEntryAccordion({
 export default function JudgingPage() {
   const navigate = useNavigate();
   const { showSuccess, showInfo } = useMessages();
+  // Mock roster. When this page loads contest_entry for a contestId, call
+  // useContestRosterRealtime and silently replace entries only. Keep scoreByBib.
   const entries = useMemo(() => createMockContestEntries(JUDGING_COUPLE_COUNT), []);
   const largeScreen = useIpad97OrLargerScreen();
   const titleFontSize = largeScreen

@@ -596,6 +596,8 @@ export default function PrelimsPage() {
   const { showSuccess, showInfo, dismissMessage } = useMessages();
   const { restartNonce, trainingDisabled, isTrainingTarget, reportSelect } = usePageTraining();
   const entryListRef = useRef<HTMLDivElement>(null);
+  // Mock roster. When this page loads contest_entry for a contestId, call
+  // useContestRosterRealtime and silently replace entries only. Keep markByBib.
   const mockEntries = useMemo(() => createMockContestEntries(PRELIMS_COUPLE_COUNT), []);
   const isIpad97OrLargerScreen = useIpad97OrLargerScreen();
   const rowFontSize: RowFontSize = isIpad97OrLargerScreen

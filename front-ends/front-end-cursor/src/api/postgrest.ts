@@ -1434,6 +1434,339 @@ async function countryCodeForEventGroup(eventGroupCode: string): Promise<string>
   return countryCode === '' ? 'USA' : countryCode;
 }
 
+export type EventStaffMember = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  primaryRoleCode: string;
+  secondaryRoleCode: string;
+};
+
+export type EventStaffState = {
+  hasStaff: boolean;
+  members: EventStaffMember[];
+};
+
+type StoredEventStaffMember = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  primary_role_code: string;
+  secondary_role_code: string;
+};
+
+function parseStaffMember(entry: unknown): EventStaffMember | null {
+  if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+    return null;
+  }
+
+  const record = entry as Partial<StoredEventStaffMember>;
+  const firstName = typeof record.first_name === 'string' ? record.first_name : '';
+  const lastName = typeof record.last_name === 'string' ? record.last_name : '';
+  const primaryRoleCode = typeof record.primary_role_code === 'string' ? record.primary_role_code : '';
+  const secondaryRoleCode =
+    typeof record.secondary_role_code === 'string' ? record.secondary_role_code : '';
+  const hasContent =
+    firstName.trim() !== ''
+    || lastName.trim() !== ''
+    || primaryRoleCode.trim() !== ''
+    || secondaryRoleCode.trim() !== '';
+  if (!hasContent) {
+    return null;
+  }
+
+  const id = typeof record.id === 'string' && record.id.trim() !== '' ? record.id : crypto.randomUUID();
+  return {
+    id,
+    firstName,
+    lastName,
+    primaryRoleCode,
+    secondaryRoleCode,
+  };
+}
+
+export function parseEventStaff(moreJson: unknown): EventStaffState {
+  const staff = moreJsonObject(moreJson).staff;
+  if (!staff || typeof staff !== 'object' || Array.isArray(staff)) {
+    return { hasStaff: false, members: [] };
+  }
+
+  const record = staff as { has_staff?: unknown; people?: unknown };
+  const people = Array.isArray(record.people) ? record.people : [];
+  return {
+    hasStaff: record.has_staff === true,
+    members: people.flatMap((entry) => {
+      const member = parseStaffMember(entry);
+      return member ? [member] : [];
+    }),
+  };
+}
+
+function storedStaffMembers(members: EventStaffMember[]): StoredEventStaffMember[] {
+  return members.flatMap((member) => {
+    const firstName = member.firstName.trim();
+    const lastName = member.lastName.trim();
+    const primaryRoleCode = member.primaryRoleCode.trim();
+    const secondaryRoleCode = member.secondaryRoleCode.trim();
+    if (
+      firstName === ''
+      && lastName === ''
+      && primaryRoleCode === ''
+      && secondaryRoleCode === ''
+    ) {
+      return [];
+    }
+
+    return [
+      {
+        id: member.id,
+        first_name: firstName,
+        last_name: lastName,
+        primary_role_code: primaryRoleCode,
+        secondary_role_code: secondaryRoleCode,
+      },
+    ];
+  });
+}
+
+export type EventContestDraft = {
+  id: string;
+  divisionKey: string;
+  divisionLabel: string;
+  skillLevelKey: string;
+  skillLevelLabel: string;
+};
+
+export type EventContestsState = {
+  hasContests: boolean;
+  contests: EventContestDraft[];
+};
+
+type StoredEventContest = {
+  id: string;
+  division_key: string;
+  division_label: string;
+  skill_level_key: string;
+  skill_level_label: string;
+};
+
+function parseContestDraft(entry: unknown): EventContestDraft | null {
+  if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+    return null;
+  }
+
+  const record = entry as Partial<StoredEventContest>;
+  const divisionKey = typeof record.division_key === 'string' ? record.division_key.trim() : '';
+  const skillLevelKey = typeof record.skill_level_key === 'string' ? record.skill_level_key.trim() : '';
+  if (divisionKey === '' || skillLevelKey === '') {
+    return null;
+  }
+
+  const id = typeof record.id === 'string' && record.id.trim() !== '' ? record.id : crypto.randomUUID();
+  return {
+    id,
+    divisionKey,
+    divisionLabel: typeof record.division_label === 'string' ? record.division_label : divisionKey,
+    skillLevelKey,
+    skillLevelLabel: typeof record.skill_level_label === 'string' ? record.skill_level_label : skillLevelKey,
+  };
+}
+
+export function parseEventContests(moreJson: unknown): EventContestsState {
+  const contests = moreJsonObject(moreJson).contests;
+  if (!contests || typeof contests !== 'object' || Array.isArray(contests)) {
+    return { hasContests: false, contests: [] };
+  }
+
+  const record = contests as { has_contests?: unknown; items?: unknown };
+  const items = Array.isArray(record.items) ? record.items : [];
+  return {
+    hasContests: record.has_contests === true,
+    contests: items.flatMap((entry) => {
+      const contest = parseContestDraft(entry);
+      return contest ? [contest] : [];
+    }),
+  };
+}
+
+function storedContestItems(contests: EventContestDraft[]): StoredEventContest[] {
+  return contests.flatMap((contest) => {
+    const divisionKey = contest.divisionKey.trim();
+    const skillLevelKey = contest.skillLevelKey.trim();
+    if (divisionKey === '' || skillLevelKey === '') {
+      return [];
+    }
+
+    return [
+      {
+        id: contest.id,
+        division_key: divisionKey,
+        division_label: contest.divisionLabel.trim() || divisionKey,
+        skill_level_key: skillLevelKey,
+        skill_level_label: contest.skillLevelLabel.trim() || skillLevelKey,
+      },
+    ];
+  });
+}
+
+export async function saveEventContests(input: {
+  eventId: number | null;
+  eventGroupCode: string;
+  eventName: string;
+  contests: EventContestsState;
+}): Promise<number> {
+  const storedContests = {
+    has_contests: input.contests.hasContests,
+    items: storedContestItems(input.contests.contests),
+  };
+
+  const username = loadSession()?.username?.trim() ?? '';
+  if (username === '') {
+    throw new Error('Sign in to save event contests.');
+  }
+
+  if (input.eventId !== null) {
+    const moreJson = await fetchEventMoreJson(input.eventId);
+    const response = await fetch(
+      `${POSTGREST_URL}/event?event_id=eq.${input.eventId}`,
+      {
+        method: 'PATCH',
+        headers: buildAuthHeaders({
+          'Content-Type': 'application/json',
+          Prefer: 'return=representation',
+        }),
+        body: JSON.stringify({
+          modified_by: username,
+          more_json: {
+            ...moreJson,
+            contests: storedContests,
+          },
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(await readApiErrorMessage(response, 'Unable to save event contests.'));
+    }
+
+    return input.eventId;
+  }
+
+  const eventGroupCode = input.eventGroupCode.trim();
+  if (eventGroupCode === '') {
+    throw new Error('Choose an event group before saving contests.');
+  }
+
+  const eventName = input.eventName.trim();
+  const response = await fetch(`${POSTGREST_URL}/event`, {
+    method: 'POST',
+    headers: buildAuthHeaders({
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation',
+    }),
+    body: JSON.stringify({
+      event_group_code: eventGroupCode,
+      country_code: await countryCodeForEventGroup(eventGroupCode),
+      created_by: username,
+      ...(eventName === '' ? {} : { name: eventName }),
+      more_json: {
+        contests: storedContests,
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(await readApiErrorMessage(response, 'Unable to save event contests.'));
+  }
+
+  const rows = (await response.json()) as Array<{ event_id?: number }>;
+  const eventId = rows[0]?.event_id;
+  if (typeof eventId !== 'number') {
+    throw new Error('Saving event contests did not return an event.');
+  }
+
+  return eventId;
+}
+
+export async function saveEventStaff(input: {
+  eventId: number | null;
+  eventGroupCode: string;
+  eventName: string;
+  staff: EventStaffState;
+}): Promise<number> {
+  const storedStaff = {
+    has_staff: input.staff.hasStaff,
+    people: storedStaffMembers(input.staff.members),
+  };
+
+  const username = loadSession()?.username?.trim() ?? '';
+  if (username === '') {
+    throw new Error('Sign in to save event staff.');
+  }
+
+  if (input.eventId !== null) {
+    const moreJson = await fetchEventMoreJson(input.eventId);
+    const response = await fetch(
+      `${POSTGREST_URL}/event?event_id=eq.${input.eventId}`,
+      {
+        method: 'PATCH',
+        headers: buildAuthHeaders({
+          'Content-Type': 'application/json',
+          Prefer: 'return=representation',
+        }),
+        body: JSON.stringify({
+          modified_by: username,
+          more_json: {
+            ...moreJson,
+            staff: storedStaff,
+          },
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(await readApiErrorMessage(response, 'Unable to save event staff.'));
+    }
+
+    return input.eventId;
+  }
+
+  const eventGroupCode = input.eventGroupCode.trim();
+  if (eventGroupCode === '') {
+    throw new Error('Choose an event group before saving staff.');
+  }
+
+  const eventName = input.eventName.trim();
+  const response = await fetch(`${POSTGREST_URL}/event`, {
+    method: 'POST',
+    headers: buildAuthHeaders({
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation',
+    }),
+    body: JSON.stringify({
+      event_group_code: eventGroupCode,
+      country_code: await countryCodeForEventGroup(eventGroupCode),
+      created_by: username,
+      ...(eventName === '' ? {} : { name: eventName }),
+      more_json: {
+        staff: storedStaff,
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(await readApiErrorMessage(response, 'Unable to save event staff.'));
+  }
+
+  const rows = (await response.json()) as Array<{ event_id?: number }>;
+  const eventId = rows[0]?.event_id;
+  if (typeof eventId !== 'number') {
+    throw new Error('Saving event staff did not return an event.');
+  }
+
+  return eventId;
+}
+
 export async function saveEventRoleAssignments(input: {
   eventId: number | null;
   eventGroupCode: string;

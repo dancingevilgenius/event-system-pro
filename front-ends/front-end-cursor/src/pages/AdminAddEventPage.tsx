@@ -25,11 +25,17 @@ import {
   fetchEventById,
   fetchEventGroupByCode,
   fetchEventMoreJson,
+  parseEventContests,
+  parseEventStaff,
   parseStoredSectionStatuses,
+  saveEventContests,
   saveEventDraft,
   saveEventRoleAssignments,
   saveEventSectionStatuses,
+  saveEventStaff,
+  type EventContestsState,
   type EventRoleAssignment,
+  type EventStaffState,
   type StoredSectionStatus,
 } from '../api/postgrest';
 import AddEventDates from '../components/AddEventDates';
@@ -46,7 +52,7 @@ import AddEventScheduleDays from '../components/AddEventScheduleDays';
 import AddEventRoles from '../components/AddEventRoles';
 import AddEventImportantContacts from '../components/AddEventImportantContacts';
 import AddEventContests, { type EventContestsSummary } from '../components/AddEventContests';
-import AddEventStaff from '../components/AddEventStaff';
+import AddEventStaff, { type EventStaffSummary } from '../components/AddEventStaff';
 import AddEventVolunteers from '../components/AddEventVolunteers';
 import AddEventSortableSectionAccordion from '../components/AddEventSortableSectionAccordion';
 import { type AddEventSectionStatus } from '../components/AddEventSectionStatusToggle';
@@ -202,6 +208,7 @@ function sectionDisplayTitle(
   contactVenueSummary: ContactVenueSummary,
   hasContests: boolean,
   contestCount: number,
+  hasStaff: boolean,
 ): string {
   if (section.id === 'event_name' && status === 'finalized') {
     return eventName.trim();
@@ -241,6 +248,10 @@ function sectionDisplayTitle(
     return `${section.title} - ${contestCount}`;
   }
 
+  if (section.id === 'staff' && status === 'finalized' && !hasStaff) {
+    return `${section.title} - N/A`;
+  }
+
   return section.title;
 }
 
@@ -250,6 +261,7 @@ function sectionIsFinalizedNotApplicable(
   passesSummary: EventPassesSummary,
   noEarlyBirdDates: boolean,
   hasContests: boolean,
+  hasStaff: boolean,
 ): boolean {
   if (status !== 'finalized') {
     return false;
@@ -267,6 +279,10 @@ function sectionIsFinalizedNotApplicable(
     return !hasContests;
   }
 
+  if (sectionId === 'staff') {
+    return !hasStaff;
+  }
+
   return false;
 }
 
@@ -276,6 +292,7 @@ function withFinalizedNotApplicableAtEnd(
   passesSummary: EventPassesSummary,
   noEarlyBirdDates: boolean,
   hasContests: boolean,
+  hasStaff: boolean,
 ): AddEventSectionId[] {
   const remaining: AddEventSectionId[] = [];
   const sunk: AddEventSectionId[] = [];
@@ -288,6 +305,7 @@ function withFinalizedNotApplicableAtEnd(
         passesSummary,
         noEarlyBirdDates,
         hasContests,
+        hasStaff,
       )
     ) {
       sunk.push(sectionId);
@@ -375,6 +393,10 @@ function renderSectionContent(
   onSaveRoles: (roles: EventRoleAssignment[]) => void,
   eventTypeCode: string | null,
   onContestsSummaryChange: (summary: EventContestsSummary) => void,
+  onSaveContests: (contests: EventContestsState) => void,
+  staffExpanded: boolean,
+  onStaffSummaryChange: (summary: EventStaffSummary) => void,
+  onSaveStaff: (staff: EventStaffState) => void,
 ) {
   if (sectionId === 'event_name') {
     return (
@@ -441,9 +463,11 @@ function renderSectionContent(
   if (sectionId === 'contests') {
     return (
       <AddEventContests
+        eventId={eventId}
         eventTypeCode={eventTypeCode}
         onFieldEdit={onFieldEdit}
         onSummaryChange={onContestsSummaryChange}
+        onSaveContests={onSaveContests}
       />
     );
   }
@@ -462,7 +486,15 @@ function renderSectionContent(
   }
 
   if (sectionId === 'staff') {
-    return <AddEventStaff onFieldEdit={onFieldEdit} />;
+    return (
+      <AddEventStaff
+        eventId={eventId}
+        expanded={staffExpanded}
+        onFieldEdit={onFieldEdit}
+        onSummaryChange={onStaffSummaryChange}
+        onSaveStaff={onSaveStaff}
+      />
+    );
   }
 
   if (sectionId === 'volunteers') {
@@ -496,6 +528,7 @@ export default function AdminAddEventPage() {
   const [noEarlyBirdDates, setNoEarlyBirdDates] = useState(true);
   const [hasContests, setHasContests] = useState(false);
   const [contestCount, setContestCount] = useState(0);
+  const [hasStaff, setHasStaff] = useState(false);
   const [venueName, setVenueName] = useState('');
   const [contactVenueSummary, setContactVenueSummary] = useState(EMPTY_CONTACT_VENUE_SUMMARY);
   const [eventDates, setEventDates] = useState<EventDatesFormState>(EMPTY_EVENT_DATES);
@@ -563,6 +596,34 @@ export default function AdminAddEventPage() {
     [enqueueEventSave],
   );
 
+  const handleSaveContests = useCallback(
+    (contests: EventContestsState) => {
+      enqueueEventSave((currentEventId) =>
+        saveEventContests({
+          eventId: currentEventId,
+          eventGroupCode: eventGroupCodeRef.current,
+          eventName: eventNameRef.current,
+          contests,
+        }),
+      );
+    },
+    [enqueueEventSave],
+  );
+
+  const handleSaveStaff = useCallback(
+    (staff: EventStaffState) => {
+      enqueueEventSave((currentEventId) =>
+        saveEventStaff({
+          eventId: currentEventId,
+          eventGroupCode: eventGroupCodeRef.current,
+          eventName: eventNameRef.current,
+          staff,
+        }),
+      );
+    },
+    [enqueueEventSave],
+  );
+
   useEffect(() => {
     if (!eventGroupCode) {
       return;
@@ -607,8 +668,9 @@ export default function AdminAddEventPage() {
       passesSummary,
       noEarlyBirdDates,
       hasContests,
+      hasStaff,
     ),
-    [hasContests, noEarlyBirdDates, passesSummary, sectionOrder, sectionStatuses],
+    [hasContests, hasStaff, noEarlyBirdDates, passesSummary, sectionOrder, sectionStatuses],
   );
 
   const orderedSections = useMemo(
@@ -688,6 +750,11 @@ export default function AdminAddEventPage() {
         const nextDates = eventDatesFromApiTimestamps(event.startDate, event.endDate);
         const nextName = event.name ?? '';
         const storedStatuses = parseStoredSectionStatuses(moreJson);
+        const storedStaff = parseEventStaff(moreJson);
+        const storedContests = parseEventContests(moreJson);
+        setHasStaff(storedStaff.hasStaff);
+        setHasContests(storedContests.hasContests);
+        setContestCount(storedContests.contests.length);
         setEventDates(nextDates);
         setEventName(nextName);
         eventNameRef.current = nextName;
@@ -748,6 +815,10 @@ export default function AdminAddEventPage() {
   const handleContestsSummaryChange = useCallback((summary: EventContestsSummary) => {
     setHasContests((current) => (current === summary.hasContests ? current : summary.hasContests));
     setContestCount((current) => (current === summary.contestCount ? current : summary.contestCount));
+  }, []);
+
+  const handleStaffSummaryChange = useCallback((summary: EventStaffSummary) => {
+    setHasStaff((current) => (current === summary.hasStaff ? current : summary.hasStaff));
   }, []);
 
   const handleNoEarlyBirdDatesChange = useCallback((nextNoEarlyBirdDates: boolean) => {
@@ -844,6 +915,7 @@ export default function AdminAddEventPage() {
         passesSummary,
         noEarlyBirdDates,
         hasContests,
+        hasStaff,
       );
       const oldIndex = displayed.indexOf(activeId);
       const newIndex = displayed.indexOf(overId);
@@ -859,6 +931,7 @@ export default function AdminAddEventPage() {
             passesSummary,
             noEarlyBirdDates,
             hasContests,
+            hasStaff,
           ),
         ),
       );
@@ -919,6 +992,10 @@ export default function AdminAddEventPage() {
                     handleSaveRoles,
                     eventTypeCode,
                     handleContestsSummaryChange,
+                    handleSaveContests,
+                    expandedSection === 'staff',
+                    handleStaffSummaryChange,
+                    handleSaveStaff,
                   );
                   const sectionStatus = sectionStatuses[section.id];
                   const sectionTitle = sectionDisplayTitle(
@@ -932,6 +1009,7 @@ export default function AdminAddEventPage() {
                     contactVenueSummary,
                     hasContests,
                     contestCount,
+                    hasStaff,
                   );
 
                   return (

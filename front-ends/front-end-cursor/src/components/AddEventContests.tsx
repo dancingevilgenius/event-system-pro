@@ -30,8 +30,15 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { type MouseEvent, useEffect, useState } from 'react';
-import { fetchSortedStaticListEntries, type StaticListEntry } from '../api/postgrest';
+import { type MouseEvent, useEffect, useRef, useState } from 'react';
+import {
+  fetchEventMoreJson,
+  fetchSortedStaticListEntries,
+  parseEventContests,
+  type EventContestDraft,
+  type EventContestsState,
+  type StaticListEntry,
+} from '../api/postgrest';
 import { mobileColumnSx } from '../constants/layout';
 import { useMessages } from '../hooks/useMessages';
 import { buildDefaultSwingContestTitle } from '../lib/swingDanceContest';
@@ -49,20 +56,14 @@ export type EventContestsSummary = {
 };
 
 type AddEventContestsProps = {
+  eventId: number | null;
   eventTypeCode?: string | null;
   onFieldEdit?: () => void;
   onSummaryChange?: (summary: EventContestsSummary) => void;
+  onSaveContests: (contests: EventContestsState) => void;
 };
 
 type HasContestsValue = 'yes' | 'no';
-
-type EventContestDraft = {
-  id: string;
-  divisionKey: string;
-  divisionLabel: string;
-  skillLevelKey: string;
-  skillLevelLabel: string;
-};
 
 function eventTypeIncludesSwing(eventTypeCode: string | null | undefined): boolean {
   return (eventTypeCode ?? '').toLowerCase().includes('swing');
@@ -134,13 +135,21 @@ function SortableContestRow({
 }
 
 export default function AddEventContests({
+  eventId,
   eventTypeCode,
   onFieldEdit,
   onSummaryChange,
+  onSaveContests,
 }: AddEventContestsProps) {
   const { showInfo, showProblem } = useMessages();
   const [hasContests, setHasContests] = useState(false);
   const [contests, setContests] = useState<EventContestDraft[]>([]);
+  const [loadingSaved, setLoadingSaved] = useState(eventId !== null);
+  const hasContestsRef = useRef(hasContests);
+  const contestsRef = useRef(contests);
+  const dirtyRef = useRef(false);
+  const onSaveContestsRef = useRef(onSaveContests);
+  const [loaded, setLoaded] = useState(eventId === null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingContestId, setEditingContestId] = useState<string | null>(null);
   const [divisionKey, setDivisionKey] = useState('');
@@ -157,8 +166,71 @@ export default function AddEventContests({
   );
 
   useEffect(() => {
+    hasContestsRef.current = hasContests;
+  }, [hasContests]);
+
+  useEffect(() => {
+    contestsRef.current = contests;
+  }, [contests]);
+
+  useEffect(() => {
+    onSaveContestsRef.current = onSaveContests;
+  }, [onSaveContests]);
+
+  useEffect(() => {
+    if (!loaded) {
+      return;
+    }
+
     onSummaryChange?.({ hasContests, contestCount: contests.length });
-  }, [contests.length, hasContests, onSummaryChange]);
+  }, [contests.length, hasContests, loaded, onSummaryChange]);
+
+  useEffect(() => {
+    if (eventId === null) {
+      setLoadingSaved(false);
+      setLoaded(true);
+      return;
+    }
+
+    let cancelled = false;
+    setLoadingSaved(true);
+
+    void fetchEventMoreJson(eventId)
+      .then((moreJson) => {
+        if (cancelled || dirtyRef.current) {
+          return;
+        }
+
+        const saved = parseEventContests(moreJson);
+        hasContestsRef.current = saved.hasContests;
+        contestsRef.current = saved.contests;
+        setHasContests(saved.hasContests);
+        setContests(saved.contests);
+      })
+      .catch(() => {
+        if (!cancelled && !dirtyRef.current) {
+          setHasContests(false);
+          setContests([]);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoadingSaved(false);
+          setLoaded(true);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [eventId]);
+
+  const persistContests = (nextHasContests: boolean, nextContests: EventContestDraft[]) => {
+    onSaveContestsRef.current({
+      hasContests: nextHasContests,
+      contests: nextContests,
+    });
+  };
 
   useEffect(() => {
     if (!dialogOpen || listsLoaded) {
@@ -210,8 +282,12 @@ export default function AddEventContests({
       return;
     }
 
-    setHasContests(nextValue === 'yes');
+    const nextHasContests = nextValue === 'yes';
+    hasContestsRef.current = nextHasContests;
+    setHasContests(nextHasContests);
+    dirtyRef.current = true;
     onFieldEdit?.();
+    persistContests(nextHasContests, contestsRef.current);
   };
 
   const closeDialog = () => {
@@ -244,8 +320,12 @@ export default function AddEventContests({
   };
 
   const handleDeleteContest = (contestId: string) => {
-    setContests((current) => current.filter((contest) => contest.id !== contestId));
+    const next = contestsRef.current.filter((contest) => contest.id !== contestId);
+    contestsRef.current = next;
+    setContests(next);
+    dirtyRef.current = true;
     onFieldEdit?.();
+    persistContests(hasContestsRef.current, next);
   };
 
   const handleSave = () => {
@@ -264,22 +344,22 @@ export default function AddEventContests({
       skillLevelLabel: skillLevel.label,
     };
 
-    setContests((current) => {
-      if (editingContestId) {
-        return current.map((contest) =>
+    const next = editingContestId
+      ? contestsRef.current.map((contest) =>
           contest.id === editingContestId ? { ...contest, ...nextContest } : contest,
-        );
-      }
-
-      return [
-        ...current,
-        {
-          id: crypto.randomUUID(),
-          ...nextContest,
-        },
-      ];
-    });
+        )
+      : [
+          ...contestsRef.current,
+          {
+            id: crypto.randomUUID(),
+            ...nextContest,
+          },
+        ];
+    contestsRef.current = next;
+    setContests(next);
+    dirtyRef.current = true;
     onFieldEdit?.();
+    persistContests(hasContestsRef.current, next);
     closeDialog();
   };
 
@@ -289,16 +369,19 @@ export default function AddEventContests({
       return;
     }
 
-    setContests((current) => {
-      const oldIndex = current.findIndex((contest) => contest.id === active.id);
-      const newIndex = current.findIndex((contest) => contest.id === over.id);
-      if (oldIndex < 0 || newIndex < 0) {
-        return current;
-      }
+    const current = contestsRef.current;
+    const oldIndex = current.findIndex((contest) => contest.id === active.id);
+    const newIndex = current.findIndex((contest) => contest.id === over.id);
+    if (oldIndex < 0 || newIndex < 0) {
+      return;
+    }
 
-      return arrayMove(current, oldIndex, newIndex);
-    });
+    const next = arrayMove(current, oldIndex, newIndex);
+    contestsRef.current = next;
+    setContests(next);
+    dirtyRef.current = true;
     onFieldEdit?.();
+    persistContests(hasContestsRef.current, next);
   };
 
   const canSave = divisionKey !== '' && skillLevelKey !== '' && !loadingLists && !listError;
@@ -321,6 +404,7 @@ export default function AddEventContests({
             value={hasContests ? 'yes' : 'no'}
             onChange={handleHasContestsChange}
             aria-label="Has Contests"
+            disabled={loadingSaved}
           >
             <ToggleButton value="no" aria-label="No">
               No

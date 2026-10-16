@@ -1,4 +1,5 @@
 import { Box, Stack, Typography } from '@mui/material';
+import { ACCORDION_TABLE_ROW_GAP } from '../constants/layout';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 
 type AddEventImportantContactsProps = {
@@ -30,7 +31,7 @@ export default function AddEventImportantContacts(_props: AddEventImportantConta
 
   if (showXsLayout) {
     return (
-      <Stack spacing={1}>
+      <Stack spacing={ACCORDION_TABLE_ROW_GAP}>
         {CONTACT_COLUMNS.map((column) => (
           <Box key={column.key}>
             <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
@@ -49,7 +50,7 @@ export default function AddEventImportantContacts(_props: AddEventImportantConta
         display: 'grid',
         gridTemplateColumns: 'minmax(0, 1.1fr) minmax(0, 1.6fr) max-content',
         columnGap: 2,
-        rowGap: 1,
+        rowGap: ACCORDION_TABLE_ROW_GAP,
         alignItems: 'center',
         justifyContent: 'start',
         justifyItems: 'start',

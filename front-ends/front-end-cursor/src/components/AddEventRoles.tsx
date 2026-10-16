@@ -17,6 +17,7 @@ import {
   type AppRoleRow,
   type EventRoleAssignment,
 } from '../api/postgrest';
+import { ACCORDION_TABLE_ROW_GAP } from '../constants/layout';
 
 type AddEventRolesProps = {
   eventId: number | null;
@@ -62,6 +63,10 @@ function measureTextWidth(text: string, font = '16px Roboto, Helvetica, Arial, s
 
 function roleCountIsApplicable(roleCode: string): boolean {
   return roleCode !== 'COMPETITOR';
+}
+
+function listedEventRoles(roles: AppRoleRow[]): AppRoleRow[] {
+  return roles.filter((role) => role.roleCode !== 'ADMIN');
 }
 
 function selectWidthForOptions(options: string[]): number {
@@ -157,8 +162,9 @@ export default function AddEventRoles({
         existingEventId === null ? Promise.resolve(null) : fetchEventMoreJson(existingEventId),
       ]);
       const saved = moreJson === null ? [] : parseEventRoleAssignments(moreJson);
-      setRoles(rows);
-      setSelection((current) => selectionFromRoles(rows, saved, current));
+      const listed = listedEventRoles(rows);
+      setRoles(listed);
+      setSelection((current) => selectionFromRoles(listed, saved, current));
     } catch (loadError) {
       setRoles([]);
       setError(loadError instanceof Error ? loadError.message : 'Unable to load roles.');
@@ -237,7 +243,7 @@ export default function AddEventRoles({
         display: 'grid',
         gridTemplateColumns: `auto auto ${labelWidth}px max-content`,
         columnGap: { xs: 1, md: 2 },
-        rowGap: 1,
+        rowGap: ACCORDION_TABLE_ROW_GAP,
         alignItems: 'center',
         justifyContent: 'start',
         justifyItems: 'start',
@@ -297,7 +303,7 @@ export default function AddEventRoles({
               </Select>
             </FormControl>
             {roleCountIsApplicable(role.roleCode) ? (
-              <FormControl size="small" sx={{ width: countWidth }}>
+              <FormControl size="small" disabled={!row.used} sx={{ width: countWidth }}>
                 <Select
                   value={row.count}
                   onChange={(event) =>

@@ -24,9 +24,13 @@ import { useLocation } from 'react-router-dom';
 import {
   fetchEventById,
   fetchEventGroupByCode,
+  fetchEventMoreJson,
+  parseStoredSectionStatuses,
   saveEventDraft,
   saveEventRoleAssignments,
+  saveEventSectionStatuses,
   type EventRoleAssignment,
+  type StoredSectionStatus,
 } from '../api/postgrest';
 import AddEventDates from '../components/AddEventDates';
 import AddEventName, {
@@ -144,6 +148,32 @@ const ADD_EVENT_SECTIONS_BY_ID = Object.fromEntries(
 
 const DEFAULT_SECTION_STATUS: AddEventSectionStatus = 'not_started';
 
+const STATUS_TO_STORED: Record<AddEventSectionStatus, StoredSectionStatus> = {
+  not_started: 'NOT_STARTED',
+  in_progress: 'IN_PROGRESS',
+  finalized: 'FINALIZED',
+};
+
+const STORED_TO_STATUS: Record<StoredSectionStatus, AddEventSectionStatus> = {
+  NOT_STARTED: 'not_started',
+  IN_PROGRESS: 'in_progress',
+  FINALIZED: 'finalized',
+};
+
+function applyStoredSectionStatuses(
+  current: Record<AddEventSectionId, AddEventSectionStatus>,
+  stored: Record<string, StoredSectionStatus>,
+): Record<AddEventSectionId, AddEventSectionStatus> {
+  const next = { ...current };
+  for (const sectionId of DEFAULT_SECTION_ORDER) {
+    const saved = stored[sectionId];
+    if (saved) {
+      next[sectionId] = STORED_TO_STATUS[saved];
+    }
+  }
+  return next;
+}
+
 function createInitialSectionStatuses(): Record<AddEventSectionId, AddEventSectionStatus> {
   return {
     event_name: DEFAULT_SECTION_STATUS,
@@ -202,6 +232,47 @@ function sectionDisplayTitle(
   }
 
   return section.title;
+}
+
+function sectionIsFinalizedNotApplicable(
+  sectionId: AddEventSectionId,
+  status: AddEventSectionStatus,
+  passesSummary: EventPassesSummary,
+  noEarlyBirdDates: boolean,
+): boolean {
+  if (status !== 'finalized') {
+    return false;
+  }
+
+  if (sectionId === 'passes') {
+    return !passesSummary.hasPasses;
+  }
+
+  if (sectionId === 'early_bird_dates') {
+    return noEarlyBirdDates;
+  }
+
+  return false;
+}
+
+function withFinalizedNotApplicableAtEnd(
+  order: AddEventSectionId[],
+  statuses: Record<AddEventSectionId, AddEventSectionStatus>,
+  passesSummary: EventPassesSummary,
+  noEarlyBirdDates: boolean,
+): AddEventSectionId[] {
+  const remaining: AddEventSectionId[] = [];
+  const sunk: AddEventSectionId[] = [];
+
+  for (const sectionId of order) {
+    if (sectionIsFinalizedNotApplicable(sectionId, statuses[sectionId], passesSummary, noEarlyBirdDates)) {
+      sunk.push(sectionId);
+    } else {
+      remaining.push(sectionId);
+    }
+  }
+
+  return [...remaining, ...sunk];
 }
 
 function disabledStatusesForSection(
@@ -382,6 +453,7 @@ export default function AdminAddEventPage() {
   const [eventGroupName, setEventGroupName] = useState('');
   const [expandedSection, setExpandedSection] = useState<AddEventSectionId | false>('event_name');
   const [sectionStatuses, setSectionStatuses] = useState(createInitialSectionStatuses);
+  const sectionStatusesRef = useRef(sectionStatuses);
   const [sectionOrder, setSectionOrder] = useState<AddEventSectionId[]>(DEFAULT_SECTION_ORDER);
   const [eventName, setEventName] = useState('');
   const [passesSummary, setPassesSummary] = useState<EventPassesSummary>({
@@ -420,6 +492,10 @@ export default function AdminAddEventPage() {
   useEffect(() => {
     eventGroupCodeRef.current = eventGroupCode;
   }, [eventGroupCode]);
+
+  useEffect(() => {
+    sectionStatusesRef.current = sectionStatuses;
+  }, [sectionStatuses]);
 
   const enqueueEventSave = useCallback(
     (task: (currentEventId: number | null) => Promise<number>) => {
@@ -489,9 +565,19 @@ export default function AdminAddEventPage() {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
+  const displayedSectionIds = useMemo(
+    () => withFinalizedNotApplicableAtEnd(
+      sectionOrder,
+      sectionStatuses,
+      passesSummary,
+      noEarlyBirdDates,
+    ),
+    [noEarlyBirdDates, passesSummary, sectionOrder, sectionStatuses],
+  );
+
   const orderedSections = useMemo(
-    () => sectionOrder.map((sectionId) => ADD_EVENT_SECTIONS_BY_ID[sectionId]),
-    [sectionOrder],
+    () => displayedSectionIds.map((sectionId) => ADD_EVENT_SECTIONS_BY_ID[sectionId]),
+    [displayedSectionIds],
   );
 
   const scheduleDatesSelected = hasEventDatesForSchedule(eventDates);
@@ -550,8 +636,8 @@ export default function AdminAddEventPage() {
 
     let cancelled = false;
 
-    void fetchEventById(eventId)
-      .then((event) => {
+    void Promise.all([fetchEventById(eventId), fetchEventMoreJson(eventId)])
+      .then(([event, moreJson]) => {
         if (cancelled) {
           return;
         }
@@ -562,6 +648,7 @@ export default function AdminAddEventPage() {
 
         const nextDates = eventDatesFromApiTimestamps(event.startDate, event.endDate);
         const nextName = event.name ?? '';
+        const storedStatuses = parseStoredSectionStatuses(moreJson);
         setEventDates(nextDates);
         setEventName(nextName);
         eventNameRef.current = nextName;
@@ -570,16 +657,21 @@ export default function AdminAddEventPage() {
         setDraftReady(true);
 
         setSectionStatuses((current) => {
-          const next = { ...current };
+          const next = applyStoredSectionStatuses(current, storedStatuses);
 
-          if (nextName.trim() && next.event_name !== 'in_progress') {
+          if (!storedStatuses.event_name && nextName.trim() && next.event_name !== 'in_progress') {
             next.event_name = 'in_progress';
           }
 
-          if ((nextDates.startDateTime || nextDates.endDateTime) && next.dates !== 'in_progress') {
+          if (
+            !storedStatuses.dates
+            && (nextDates.startDateTime || nextDates.endDateTime)
+            && next.dates !== 'in_progress'
+          ) {
             next.dates = 'in_progress';
           }
 
+          sectionStatusesRef.current = next;
           return next;
         });
       })
@@ -660,7 +752,23 @@ export default function AdminAddEventPage() {
         return;
       }
 
-      setSectionStatuses((current) => ({ ...current, [sectionId]: status }));
+      if (sectionStatusesRef.current[sectionId] === status) {
+        return;
+      }
+
+      const next = { ...sectionStatusesRef.current, [sectionId]: status };
+      sectionStatusesRef.current = next;
+      setSectionStatuses(next);
+      enqueueEventSave((currentEventId) =>
+        saveEventSectionStatuses({
+          eventId: currentEventId,
+          eventGroupCode: eventGroupCodeRef.current,
+          eventName: eventNameRef.current,
+          sectionStatuses: {
+            [sectionId]: STATUS_TO_STORED[status],
+          },
+        }),
+      );
     };
 
   const handleSectionFieldEdit = (sectionId: AddEventSectionId) => {
@@ -683,10 +791,44 @@ export default function AdminAddEventPage() {
       return;
     }
 
+    const activeId = active.id as AddEventSectionId;
+    const overId = over.id as AddEventSectionId;
     setSectionOrder((current) => {
-      const oldIndex = current.indexOf(active.id as AddEventSectionId);
-      const newIndex = current.indexOf(over.id as AddEventSectionId);
-      return arrayMove(current, oldIndex, newIndex);
+      const displayed = withFinalizedNotApplicableAtEnd(
+        current,
+        sectionStatuses,
+        passesSummary,
+        noEarlyBirdDates,
+      );
+      const oldIndex = displayed.indexOf(activeId);
+      const newIndex = displayed.indexOf(overId);
+      if (oldIndex < 0 || newIndex < 0) {
+        return current;
+      }
+
+      const sunk = new Set(
+        displayed.filter((sectionId) =>
+          sectionIsFinalizedNotApplicable(
+            sectionId,
+            sectionStatuses[sectionId],
+            passesSummary,
+            noEarlyBirdDates,
+          ),
+        ),
+      );
+      const nextNonSunk = arrayMove(displayed, oldIndex, newIndex).filter(
+        (sectionId) => !sunk.has(sectionId),
+      );
+      let cursor = 0;
+      return current.map((sectionId) => {
+        if (sunk.has(sectionId)) {
+          return sectionId;
+        }
+
+        const nextId = nextNonSunk[cursor];
+        cursor += 1;
+        return nextId;
+      });
     });
   };
 
@@ -710,7 +852,7 @@ export default function AdminAddEventPage() {
             collisionDetection={closestCenter}
             onDragEnd={handleSectionDragEnd}
           >
-            <SortableContext items={sectionOrder} strategy={verticalListSortingStrategy}>
+            <SortableContext items={displayedSectionIds} strategy={verticalListSortingStrategy}>
               <Stack spacing={1.5}>
                 {orderedSections.map((section) => {
                   const sectionContent = renderSectionContent(

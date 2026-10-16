@@ -13,6 +13,7 @@ import AddEventSectionStatusIcon from './AddEventSectionStatusIcon';
 import AddEventSectionStatusToggle, {
   type AddEventSectionStatus,
 } from './AddEventSectionStatusToggle';
+import { ACCORDION_TABLE_ROW_GAP } from '../constants/layout';
 import DragHandleIcon from './DragHandleIcon';
 
 const accordionSummarySx = {
@@ -112,7 +113,17 @@ export default function AddEventSortableSectionAccordion({
           </Typography>
           <AddEventSectionStatusIcon status={sectionStatus} sectionTitle={sectionTitle} />
         </AccordionSummary>
-        <AccordionDetails sx={{ px: 2, pb: 2, pt: 0 }}>
+        <AccordionDetails
+          sx={{
+            px: 2,
+            pb: 2,
+            pt: 0,
+            '& .MuiTable-root': {
+              borderCollapse: 'separate',
+              borderSpacing: `0 ${ACCORDION_TABLE_ROW_GAP}`,
+            },
+          }}
+        >
           <Stack spacing={2}>
             {sectionContent ?? (
               <Typography variant="body2" color="text.secondary">

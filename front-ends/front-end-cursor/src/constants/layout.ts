@@ -1,6 +1,9 @@
 /** Shared max width for messages, buttons, fields, and dropdowns. */
 export const CONTENT_MAX_WIDTH = 360;
 
+/** Vertical space between rows in create-event accordion tables. */
+export const ACCORDION_TABLE_ROW_GAP = '10px';
+
 /**
  * Reference desktop CSS viewport — older 15″ laptop panel (1366 × 768).
  * Use this size when checking xl / full-desktop layouts in devtools.

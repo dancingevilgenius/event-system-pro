@@ -6,7 +6,7 @@ import {
   type ContactVenueSummary,
   type EventVenueContactJson,
 } from '../lib/eventLocation';
-import { mobileColumnSx } from '../constants/layout';
+import { ACCORDION_TABLE_ROW_GAP, mobileColumnSx } from '../constants/layout';
 import AppPhoneNumberField from './AppPhoneNumberField';
 import AppTextField from './AppTextField';
 
@@ -21,7 +21,7 @@ const contactFieldsColumnSx = mobileColumnSx;
 const contactFieldsInnerStackSx = {
   display: 'grid',
   gridTemplateColumns: 'minmax(0, 1fr)',
-  rowGap: 2,
+  rowGap: ACCORDION_TABLE_ROW_GAP,
   width: '100%',
 } as const;
 

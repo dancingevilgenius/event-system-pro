@@ -1589,6 +1589,107 @@ export async function saveEventDraft(input: {
   return eventId;
 }
 
+export type StoredSectionStatus = 'NOT_STARTED' | 'IN_PROGRESS' | 'FINALIZED';
+
+const STORED_SECTION_STATUSES = new Set<StoredSectionStatus>([
+  'NOT_STARTED',
+  'IN_PROGRESS',
+  'FINALIZED',
+]);
+
+export function parseStoredSectionStatuses(moreJson: unknown): Record<string, StoredSectionStatus> {
+  const raw = moreJsonObject(moreJson).section_statuses;
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
+    return {};
+  }
+
+  const statuses: Record<string, StoredSectionStatus> = {};
+  for (const [sectionId, value] of Object.entries(raw)) {
+    if (typeof value === 'string' && STORED_SECTION_STATUSES.has(value as StoredSectionStatus)) {
+      statuses[sectionId] = value as StoredSectionStatus;
+    }
+  }
+
+  return statuses;
+}
+
+export async function saveEventSectionStatuses(input: {
+  eventId: number | null;
+  eventGroupCode: string;
+  eventName: string;
+  sectionStatuses: Record<string, StoredSectionStatus>;
+}): Promise<number> {
+  const username = loadSession()?.username?.trim() ?? '';
+  if (username === '') {
+    throw new Error('Sign in to save the event.');
+  }
+
+  if (input.eventId !== null) {
+    const moreJson = await fetchEventMoreJson(input.eventId);
+    const response = await fetch(
+      `${POSTGREST_URL}/event?event_id=eq.${input.eventId}`,
+      {
+        method: 'PATCH',
+        headers: buildAuthHeaders({
+          'Content-Type': 'application/json',
+          Prefer: 'return=representation',
+        }),
+        body: JSON.stringify({
+          modified_by: username,
+          more_json: {
+            ...moreJson,
+            section_statuses: {
+              ...parseStoredSectionStatuses(moreJson),
+              ...input.sectionStatuses,
+            },
+          },
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(await readApiErrorMessage(response, 'Unable to save section status.'));
+    }
+
+    return input.eventId;
+  }
+
+  const eventGroupCode = input.eventGroupCode.trim();
+  if (eventGroupCode === '') {
+    throw new Error('Choose an event group before saving the event.');
+  }
+
+  const eventName = input.eventName.trim();
+  const response = await fetch(`${POSTGREST_URL}/event`, {
+    method: 'POST',
+    headers: buildAuthHeaders({
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation',
+    }),
+    body: JSON.stringify({
+      event_group_code: eventGroupCode,
+      country_code: await countryCodeForEventGroup(eventGroupCode),
+      created_by: username,
+      ...(eventName === '' ? {} : { name: eventName }),
+      more_json: {
+        section_statuses: input.sectionStatuses,
+      },
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(await readApiErrorMessage(response, 'Unable to save section status.'));
+  }
+
+  const rows = (await response.json()) as Array<{ event_id?: number }>;
+  const eventId = rows[0]?.event_id;
+  if (typeof eventId !== 'number') {
+    throw new Error('Saving section status did not return an event.');
+  }
+
+  return eventId;
+}
+
 type ApiAttendeeWithUser = {
   attendee_id: number;
   user: {

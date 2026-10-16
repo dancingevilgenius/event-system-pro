@@ -1,4 +1,5 @@
 import { parseTrainingLesson } from '../lib/pageTraining';
+import { compareSchemaMigrationRowsDescending } from '../lib/schemaMigrationOrder';
 import { loadSession, type AppRole } from '../lib/session';
 import { eventLocationToJson, type EventLocationJson } from '../lib/eventLocation';
 import { trimSavedText } from '../utils/trimSavedText';
@@ -4096,14 +4097,16 @@ export async function fetchSchemaMigrations(): Promise<SchemaMigrationList> {
     checkedAt: result.checked_at ?? null,
     pendingCount: result.pending_count ?? 0,
     appliedCount: result.applied_count ?? 0,
-    migrations: (result.migrations ?? []).map((row) => ({
-      number: row.number?.trim() ?? '',
-      script: row.script?.trim() ?? '',
-      details: row.details?.trim() ?? '',
-      applied: row.applied === true,
-      appliedAt: row.applied_at ?? null,
-      appliedByName: row.applied_by_name?.trim() ? row.applied_by_name.trim() : null,
-    })),
+    migrations: (result.migrations ?? [])
+      .map((row) => ({
+        number: row.number?.trim() ?? '',
+        script: row.script?.trim() ?? '',
+        details: row.details?.trim() ?? '',
+        applied: row.applied === true,
+        appliedAt: row.applied_at ?? null,
+        appliedByName: row.applied_by_name?.trim() ? row.applied_by_name.trim() : null,
+      }))
+      .sort(compareSchemaMigrationRowsDescending),
   };
 }
 

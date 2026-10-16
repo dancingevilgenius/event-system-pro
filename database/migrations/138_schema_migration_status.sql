@@ -304,7 +304,7 @@ BEGIN
 
   v_check := api.check_schema_migrations();
 
-  SELECT COALESCE(json_agg(row_to_json(x) ORDER BY x.script), '[]'::json)
+  SELECT COALESCE(json_agg(row_to_json(x) ORDER BY NULLIF(x.number, '')::integer DESC, x.script DESC), '[]'::json)
   INTO v_rows
   FROM (
     SELECT

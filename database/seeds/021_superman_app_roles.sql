@@ -25,6 +25,9 @@ CROSS JOIN (
       ('EVENT_MANAGER'),
       ('DJ'),
       ('EVENT_DIRECTOR'),
+      ('INSTRUCTOR'),
+      ('SETUP'),
+      ('TEARDOWN'),
       ('COMPETITOR')
   ) AS v(role_code)
   WHERE NOT EXISTS (

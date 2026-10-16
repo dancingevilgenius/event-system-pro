@@ -22,6 +22,9 @@ export type AppRole =
   | 'EVENT_MANAGER'
   | 'DJ'
   | 'EVENT_DIRECTOR'
+  | 'INSTRUCTOR'
+  | 'SETUP'
+  | 'TEARDOWN'
   | 'COMPETITOR';
 
 export type UserSession = {
@@ -42,6 +45,9 @@ const APP_ROLES: AppRole[] = [
   'EVENT_MANAGER',
   'DJ',
   'EVENT_DIRECTOR',
+  'INSTRUCTOR',
+  'SETUP',
+  'TEARDOWN',
   'COMPETITOR',
 ];
 

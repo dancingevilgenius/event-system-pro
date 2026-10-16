@@ -108,6 +108,9 @@ FROM (
       ('EVENT_MANAGER'),
       ('DJ'),
       ('EVENT_DIRECTOR'),
+      ('INSTRUCTOR'),
+      ('SETUP'),
+      ('TEARDOWN'),
       ('COMPETITOR')
   ) AS roles(role_code)
 ) AS labeled

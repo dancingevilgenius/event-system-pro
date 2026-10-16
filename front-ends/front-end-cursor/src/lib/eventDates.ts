@@ -65,6 +65,28 @@ export function eventDatesFromApiTimestamps(
   };
 }
 
+export function eventDateModeFromMoreJson(moreJson: unknown): EventDateMode | null {
+  if (!moreJson || typeof moreJson !== 'object' || Array.isArray(moreJson)) {
+    return null;
+  }
+
+  const mode = (moreJson as { date_mode?: unknown }).date_mode;
+  return mode === 'single_day' || mode === 'multi_day' ? mode : null;
+}
+
+/** Keep a hidden end date when the event is shown as a single day. */
+export function applyStoredDateMode(
+  dates: EventDatesFormState,
+  moreJson: unknown,
+): EventDatesFormState {
+  const mode = eventDateModeFromMoreJson(moreJson);
+  if (!mode || mode === dates.mode) {
+    return dates;
+  }
+
+  return { ...dates, mode };
+}
+
 export type ScheduleTimeBlockDay = {
   id: string;
   title: string;

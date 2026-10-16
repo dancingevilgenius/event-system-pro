@@ -70,11 +70,6 @@ export default function AddEventDates({
       return;
     }
 
-    if (nextMode === 'single_day') {
-      updateDates({ mode: nextMode, endDateTime: '' });
-      return;
-    }
-
     updateDates({ mode: nextMode });
   };
 

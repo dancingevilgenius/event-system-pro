@@ -35,6 +35,7 @@ type AppPhoneNumberFieldProps = {
   label?: string;
   value?: string;
   onChange: (phone: string) => void;
+  onBlur?: () => void;
   defaultCountry?: CountryIso2;
   fullWidth?: boolean;
   autoComplete?: string;
@@ -44,6 +45,7 @@ export default function AppPhoneNumberField({
   label = 'Phone',
   value = '',
   onChange,
+  onBlur,
   defaultCountry = 'us',
   fullWidth = true,
   autoComplete = 'tel',
@@ -75,6 +77,7 @@ export default function AppPhoneNumberField({
           fullWidth={fullWidth}
           value={inputValue}
           onChange={handlePhoneValueChange}
+          onBlur={onBlur}
           inputRef={inputRef}
           autoComplete={autoComplete}
           type="tel"

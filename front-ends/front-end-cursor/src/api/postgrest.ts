@@ -1,5 +1,7 @@
 import { parseTrainingLesson } from '../lib/pageTraining';
 import { loadSession, type AppRole } from '../lib/session';
+import { eventLocationToJson, type EventLocationJson } from '../lib/eventLocation';
+import { trimSavedText } from '../utils/trimSavedText';
 import type { TrainingLesson } from '../types/pageTraining';
 import {
   createEmptyContestStageBracketJson,
@@ -1504,10 +1506,10 @@ export function parseEventStaff(moreJson: unknown): EventStaffState {
 
 function storedStaffMembers(members: EventStaffMember[]): StoredEventStaffMember[] {
   return members.flatMap((member) => {
-    const firstName = member.firstName.trim();
-    const lastName = member.lastName.trim();
-    const primaryRoleCode = member.primaryRoleCode.trim();
-    const secondaryRoleCode = member.secondaryRoleCode.trim();
+    const firstName = trimSavedText(member.firstName);
+    const lastName = trimSavedText(member.lastName);
+    const primaryRoleCode = trimSavedText(member.primaryRoleCode);
+    const secondaryRoleCode = trimSavedText(member.secondaryRoleCode);
     if (
       firstName === ''
       && lastName === ''
@@ -1529,12 +1531,19 @@ function storedStaffMembers(members: EventStaffMember[]): StoredEventStaffMember
   });
 }
 
+export const SCORING_JUDGE_COUNTS = [3, 5, 7] as const;
+
+export type ScoringJudgeCount = (typeof SCORING_JUDGE_COUNTS)[number];
+
 export type EventContestDraft = {
   id: string;
   divisionKey: string;
   divisionLabel: string;
   skillLevelKey: string;
   skillLevelLabel: string;
+  headJudgeStaffId: string;
+  scoringJudgeCount: ScoringJudgeCount | null;
+  scoringJudgeStaffIds: string[];
 };
 
 export type EventContestsState = {
@@ -1548,7 +1557,36 @@ type StoredEventContest = {
   division_label: string;
   skill_level_key: string;
   skill_level_label: string;
+  head_judge_staff_id?: string;
+  scoring_judge_count?: number | null;
+  scoring_judge_staff_ids?: string[];
 };
+
+function parseScoringJudgeCount(value: unknown): ScoringJudgeCount | null {
+  const count = typeof value === 'number' ? value : Number.NaN;
+  return count === 3 || count === 5 || count === 7 ? count : null;
+}
+
+function parseScoringJudgeStaffIds(value: unknown, count: ScoringJudgeCount | null): string[] {
+  if (count === null) {
+    return [];
+  }
+
+  const raw = Array.isArray(value) ? value : [];
+  const seen = new Set<string>();
+  const ids = raw.slice(0, count).map((entry) => {
+    const staffId = typeof entry === 'string' ? entry.trim() : '';
+    if (staffId === '' || seen.has(staffId)) {
+      return '';
+    }
+    seen.add(staffId);
+    return staffId;
+  });
+  while (ids.length < count) {
+    ids.push('');
+  }
+  return ids;
+}
 
 function parseContestDraft(entry: unknown): EventContestDraft | null {
   if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
@@ -1563,12 +1601,17 @@ function parseContestDraft(entry: unknown): EventContestDraft | null {
   }
 
   const id = typeof record.id === 'string' && record.id.trim() !== '' ? record.id : crypto.randomUUID();
+  const scoringJudgeCount = parseScoringJudgeCount(record.scoring_judge_count);
   return {
     id,
     divisionKey,
     divisionLabel: typeof record.division_label === 'string' ? record.division_label : divisionKey,
     skillLevelKey,
     skillLevelLabel: typeof record.skill_level_label === 'string' ? record.skill_level_label : skillLevelKey,
+    headJudgeStaffId:
+      typeof record.head_judge_staff_id === 'string' ? record.head_judge_staff_id.trim() : '',
+    scoringJudgeCount,
+    scoringJudgeStaffIds: parseScoringJudgeStaffIds(record.scoring_judge_staff_ids, scoringJudgeCount),
   };
 }
 
@@ -1589,10 +1632,23 @@ export function parseEventContests(moreJson: unknown): EventContestsState {
   };
 }
 
+function existingJsonArray(value: unknown): unknown[] | null {
+  return Array.isArray(value) ? value : null;
+}
+
+/** Choosing No must not replace stored rows with an empty list. */
+function rowsForHiddenSection(keepExisting: boolean, nextRows: unknown[], existingRows: unknown): unknown[] {
+  if (!keepExisting || nextRows.length > 0) {
+    return nextRows;
+  }
+
+  return existingJsonArray(existingRows) ?? nextRows;
+}
+
 function storedContestItems(contests: EventContestDraft[]): StoredEventContest[] {
   return contests.flatMap((contest) => {
-    const divisionKey = contest.divisionKey.trim();
-    const skillLevelKey = contest.skillLevelKey.trim();
+    const divisionKey = trimSavedText(contest.divisionKey);
+    const skillLevelKey = trimSavedText(contest.skillLevelKey);
     if (divisionKey === '' || skillLevelKey === '') {
       return [];
     }
@@ -1601,9 +1657,12 @@ function storedContestItems(contests: EventContestDraft[]): StoredEventContest[]
       {
         id: contest.id,
         division_key: divisionKey,
-        division_label: contest.divisionLabel.trim() || divisionKey,
+        division_label: trimSavedText(contest.divisionLabel) || divisionKey,
         skill_level_key: skillLevelKey,
-        skill_level_label: contest.skillLevelLabel.trim() || skillLevelKey,
+        skill_level_label: trimSavedText(contest.skillLevelLabel) || skillLevelKey,
+        head_judge_staff_id: trimSavedText(contest.headJudgeStaffId ?? ''),
+        scoring_judge_count: contest.scoringJudgeCount ?? null,
+        scoring_judge_staff_ids: contest.scoringJudgeStaffIds ?? [],
       },
     ];
   });
@@ -1615,11 +1674,6 @@ export async function saveEventContests(input: {
   eventName: string;
   contests: EventContestsState;
 }): Promise<number> {
-  const storedContests = {
-    has_contests: input.contests.hasContests,
-    items: storedContestItems(input.contests.contests),
-  };
-
   const username = loadSession()?.username?.trim() ?? '';
   if (username === '') {
     throw new Error('Sign in to save event contests.');
@@ -1627,6 +1681,19 @@ export async function saveEventContests(input: {
 
   if (input.eventId !== null) {
     const moreJson = await fetchEventMoreJson(input.eventId);
+    const existingContests = moreJson.contests;
+    const existingItems =
+      existingContests && typeof existingContests === 'object' && !Array.isArray(existingContests)
+        ? (existingContests as { items?: unknown }).items
+        : null;
+    const storedContests = {
+      has_contests: input.contests.hasContests,
+      items: rowsForHiddenSection(
+        !input.contests.hasContests,
+        storedContestItems(input.contests.contests),
+        existingItems,
+      ),
+    };
     const response = await fetch(
       `${POSTGREST_URL}/event?event_id=eq.${input.eventId}`,
       {
@@ -1657,7 +1724,7 @@ export async function saveEventContests(input: {
     throw new Error('Choose an event group before saving contests.');
   }
 
-  const eventName = input.eventName.trim();
+  const eventName = trimSavedText(input.eventName);
   const response = await fetch(`${POSTGREST_URL}/event`, {
     method: 'POST',
     headers: buildAuthHeaders({
@@ -1670,7 +1737,10 @@ export async function saveEventContests(input: {
       created_by: username,
       ...(eventName === '' ? {} : { name: eventName }),
       more_json: {
-        contests: storedContests,
+        contests: {
+          has_contests: input.contests.hasContests,
+          items: storedContestItems(input.contests.contests),
+        },
       },
     }),
   });
@@ -1688,17 +1758,122 @@ export async function saveEventContests(input: {
   return eventId;
 }
 
+export function parseEventLocation(value: unknown): EventLocationJson {
+  let record: unknown = value;
+  if (typeof value === 'string') {
+    try {
+      record = JSON.parse(value) as unknown;
+    } catch {
+      record = null;
+    }
+  }
+
+  const source =
+    record && typeof record === 'object' && !Array.isArray(record)
+      ? (record as Record<string, unknown>)
+      : {};
+  const text = (key: keyof EventLocationJson) =>
+    typeof source[key] === 'string' ? source[key] : '';
+
+  return eventLocationToJson({
+    venue: text('venue'),
+    street: text('street'),
+    city: text('city'),
+    state: text('state'),
+    country: text('country'),
+    map_url: text('map_url'),
+  });
+}
+
+export async function fetchEventLocation(eventId: number): Promise<EventLocationJson> {
+  const params = new URLSearchParams({
+    select: 'location_json',
+  });
+  params.append('event_id', `eq.${eventId}`);
+
+  const rows = await fetchJson<Array<{ location_json: unknown }>>(
+    `${POSTGREST_URL}/event?${params.toString()}`,
+    'Unable to load event location',
+  );
+
+  return parseEventLocation(rows[0]?.location_json);
+}
+
+export async function saveEventLocation(input: {
+  eventId: number | null;
+  eventGroupCode: string;
+  eventName: string;
+  location: EventLocationJson;
+}): Promise<number> {
+  const location = eventLocationToJson(input.location);
+  const username = loadSession()?.username?.trim() ?? '';
+  if (username === '') {
+    throw new Error('Sign in to save the event location.');
+  }
+
+  if (input.eventId !== null) {
+    const response = await fetch(
+      `${POSTGREST_URL}/event?event_id=eq.${input.eventId}`,
+      {
+        method: 'PATCH',
+        headers: buildAuthHeaders({
+          'Content-Type': 'application/json',
+          Prefer: 'return=representation',
+        }),
+        body: JSON.stringify({
+          modified_by: username,
+          location_json: location,
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(await readApiErrorMessage(response, 'Unable to save the event location.'));
+    }
+
+    return input.eventId;
+  }
+
+  const eventGroupCode = input.eventGroupCode.trim();
+  if (eventGroupCode === '') {
+    throw new Error('Choose an event group before saving the location.');
+  }
+
+  const eventName = trimSavedText(input.eventName);
+  const response = await fetch(`${POSTGREST_URL}/event`, {
+    method: 'POST',
+    headers: buildAuthHeaders({
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation',
+    }),
+    body: JSON.stringify({
+      event_group_code: eventGroupCode,
+      country_code: await countryCodeForEventGroup(eventGroupCode),
+      created_by: username,
+      ...(eventName === '' ? {} : { name: eventName }),
+      location_json: location,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(await readApiErrorMessage(response, 'Unable to save the event location.'));
+  }
+
+  const rows = (await response.json()) as Array<{ event_id?: number }>;
+  const eventId = rows[0]?.event_id;
+  if (typeof eventId !== 'number') {
+    throw new Error('Saving the event location did not return an event.');
+  }
+
+  return eventId;
+}
+
 export async function saveEventStaff(input: {
   eventId: number | null;
   eventGroupCode: string;
   eventName: string;
   staff: EventStaffState;
 }): Promise<number> {
-  const storedStaff = {
-    has_staff: input.staff.hasStaff,
-    people: storedStaffMembers(input.staff.members),
-  };
-
   const username = loadSession()?.username?.trim() ?? '';
   if (username === '') {
     throw new Error('Sign in to save event staff.');
@@ -1706,6 +1881,19 @@ export async function saveEventStaff(input: {
 
   if (input.eventId !== null) {
     const moreJson = await fetchEventMoreJson(input.eventId);
+    const existingStaff = moreJson.staff;
+    const existingPeople =
+      existingStaff && typeof existingStaff === 'object' && !Array.isArray(existingStaff)
+        ? (existingStaff as { people?: unknown }).people
+        : null;
+    const storedStaff = {
+      has_staff: input.staff.hasStaff,
+      people: rowsForHiddenSection(
+        !input.staff.hasStaff,
+        storedStaffMembers(input.staff.members),
+        existingPeople,
+      ),
+    };
     const response = await fetch(
       `${POSTGREST_URL}/event?event_id=eq.${input.eventId}`,
       {
@@ -1736,7 +1924,7 @@ export async function saveEventStaff(input: {
     throw new Error('Choose an event group before saving staff.');
   }
 
-  const eventName = input.eventName.trim();
+  const eventName = trimSavedText(input.eventName);
   const response = await fetch(`${POSTGREST_URL}/event`, {
     method: 'POST',
     headers: buildAuthHeaders({
@@ -1749,7 +1937,10 @@ export async function saveEventStaff(input: {
       created_by: username,
       ...(eventName === '' ? {} : { name: eventName }),
       more_json: {
-        staff: storedStaff,
+        staff: {
+          has_staff: input.staff.hasStaff,
+          people: storedStaffMembers(input.staff.members),
+        },
       },
     }),
   });
@@ -1767,6 +1958,58 @@ export async function saveEventStaff(input: {
   return eventId;
 }
 
+export type StaffRegistrationStatus = 'registered' | 'partial' | 'none';
+
+export type StaffRegistrationMatch = {
+  status: StaffRegistrationStatus;
+  username: string | null;
+  isAdmin: boolean;
+};
+
+export async function lookupStaffRegistration(
+  people: Array<{ id: string; firstName: string; lastName: string }>,
+): Promise<Record<string, StaffRegistrationMatch>> {
+  if (people.length === 0) {
+    return {};
+  }
+
+  const result = await callRpc<{
+    ok?: boolean;
+    matches?: Array<{
+      id?: string;
+      status?: string;
+      username?: string | null;
+      is_admin?: boolean;
+    }>;
+  }>('lookup_staff_registration', {
+    p_people: people.map((person) => ({
+      id: person.id,
+      first_name: person.firstName.trim(),
+      last_name: person.lastName.trim(),
+    })),
+  });
+
+  if (!result.ok) {
+    return {};
+  }
+
+  const matches: Record<string, StaffRegistrationMatch> = {};
+  for (const match of result.matches ?? []) {
+    if (!match.id) {
+      continue;
+    }
+    if (match.status === 'registered' || match.status === 'partial' || match.status === 'none') {
+      const username = match.username?.trim() ?? '';
+      matches[match.id] = {
+        status: match.status,
+        username: username === '' ? null : username,
+        isAdmin: match.is_admin === true,
+      };
+    }
+  }
+  return matches;
+}
+
 export async function saveEventRoleAssignments(input: {
   eventId: number | null;
   eventGroupCode: string;
@@ -1776,7 +2019,7 @@ export async function saveEventRoleAssignments(input: {
   const storedRoles: StoredEventRole[] = input.roles.map((role) => ({
     role_code: role.roleCode,
     used: role.used,
-    label: role.label,
+    label: trimSavedText(role.label),
     count: role.roleCode === 'COMPETITOR' ? null : clampEventRoleCount(role.count),
   }));
 
@@ -1816,7 +2059,7 @@ export async function saveEventRoleAssignments(input: {
     throw new Error('Sign in to save event roles.');
   }
 
-  const eventName = input.eventName.trim();
+  const eventName = trimSavedText(input.eventName);
   const response = await fetch(`${POSTGREST_URL}/event`, {
     method: 'POST',
     headers: buildAuthHeaders({
@@ -1854,18 +2097,33 @@ export async function saveEventDraft(input: {
   startDate: string | null;
   endDate: string | null;
   updateDates: boolean;
+  /** Single day hides the end date. Leave the stored end date in place. */
+  updateEndDate?: boolean;
+  dateMode?: 'single_day' | 'multi_day' | null;
 }): Promise<number> {
   const username = loadSession()?.username?.trim() ?? '';
   if (username === '') {
     throw new Error('Sign in to save the event.');
   }
 
-  const name = input.name.trim();
+  const name = trimSavedText(input.name);
   const dateFields = input.updateDates
-    ? { start_date: input.startDate, end_date: input.endDate }
+    ? {
+        start_date: input.startDate,
+        ...(input.updateEndDate === false ? {} : { end_date: input.endDate }),
+      }
     : {};
 
   if (input.eventId !== null) {
+    const moreJsonPatch =
+      input.dateMode == null
+        ? {}
+        : {
+            more_json: {
+              ...(await fetchEventMoreJson(input.eventId)),
+              date_mode: input.dateMode,
+            },
+          };
     const response = await fetch(
       `${POSTGREST_URL}/event?event_id=eq.${input.eventId}`,
       {
@@ -1878,6 +2136,7 @@ export async function saveEventDraft(input: {
           name: name === '' ? null : name,
           modified_by: username,
           ...dateFields,
+          ...moreJsonPatch,
         }),
       },
     );
@@ -1906,6 +2165,7 @@ export async function saveEventDraft(input: {
       created_by: username,
       name,
       ...dateFields,
+      ...(input.dateMode == null ? {} : { more_json: { date_mode: input.dateMode } }),
     }),
   });
 
@@ -1992,7 +2252,7 @@ export async function saveEventSectionStatuses(input: {
     throw new Error('Choose an event group before saving the event.');
   }
 
-  const eventName = input.eventName.trim();
+  const eventName = trimSavedText(input.eventName);
   const response = await fetch(`${POSTGREST_URL}/event`, {
     method: 'POST',
     headers: buildAuthHeaders({

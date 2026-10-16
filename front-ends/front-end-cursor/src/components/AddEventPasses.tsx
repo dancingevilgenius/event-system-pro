@@ -146,28 +146,31 @@ export default function AddEventPasses({
           </ToggleButtonGroup>
         </Stack>
 
-        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-          <SortableContext items={passIds} strategy={verticalListSortingStrategy}>
-            <Stack spacing={1.5}>
-              {passes.map((pass) => (
-                <EventPassSortableAccordion
-                  key={pass.id}
-                  pass={pass}
-                  expanded={hasPasses && expandedPassId === pass.id}
-                  disabled={!hasPasses}
-                  onAccordionChange={handleAccordionChange(pass.id)}
-                  onChange={updatePass}
-                />
-              ))}
-            </Stack>
-          </SortableContext>
-        </DndContext>
+        {hasPasses ? (
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext items={passIds} strategy={verticalListSortingStrategy}>
+              <Stack spacing={1.5}>
+                {passes.map((pass) => (
+                  <EventPassSortableAccordion
+                    key={pass.id}
+                    pass={pass}
+                    expanded={expandedPassId === pass.id}
+                    onAccordionChange={handleAccordionChange(pass.id)}
+                    onChange={updatePass}
+                  />
+                ))}
+              </Stack>
+            </SortableContext>
+          </DndContext>
+        ) : null}
 
-        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Button variant="outlined" onClick={handleAddPass} disabled={!hasPasses}>
-            Add new pass
-          </Button>
-        </Box>
+        {hasPasses ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Button variant="outlined" onClick={handleAddPass}>
+              Add new pass
+            </Button>
+          </Box>
+        ) : null}
       </Stack>
     </Box>
   );

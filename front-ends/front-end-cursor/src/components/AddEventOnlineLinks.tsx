@@ -7,6 +7,7 @@ import {
   type EventVenueContactJson,
 } from '../lib/eventLocation';
 import { ACCORDION_TABLE_ROW_GAP, mobileColumnSx } from '../constants/layout';
+import { trimSavedText } from '../utils/trimSavedText';
 import AppPhoneNumberField from './AppPhoneNumberField';
 import AppTextField from './AppTextField';
 
@@ -45,6 +46,16 @@ export default function AddEventOnlineLinks({
     onFieldEdit?.();
   };
 
+  const trimContactField = (field: keyof EventVenueContactJson) => {
+    setContact((current) => {
+      const trimmed = trimSavedText(current[field]);
+      if (trimmed === current[field]) {
+        return current;
+      }
+      return { ...current, [field]: trimmed };
+    });
+  };
+
   return (
     <Box sx={contactFieldsColumnSx}>
       <Stack spacing={2} sx={contactFieldsInnerStackSx}>
@@ -53,6 +64,7 @@ export default function AddEventOnlineLinks({
             label="Web Page"
             value={contact.website}
             onChange={(event) => updateContactField('website', event.target.value)}
+            onBlur={() => trimContactField('website')}
             fullWidth
             autoComplete="url"
           />
@@ -62,6 +74,7 @@ export default function AddEventOnlineLinks({
             label="Phone Number"
             value={contact.phone}
             onChange={(phone) => updateContactField('phone', phone)}
+            onBlur={() => trimContactField('phone')}
             fullWidth
           />
         </Box>
@@ -70,6 +83,7 @@ export default function AddEventOnlineLinks({
             label="Social Media 1"
             value={contact.social_media_1}
             onChange={(event) => updateContactField('social_media_1', event.target.value)}
+            onBlur={() => trimContactField('social_media_1')}
             fullWidth
             autoComplete="url"
           />
@@ -79,6 +93,7 @@ export default function AddEventOnlineLinks({
             label="Social Media 2"
             value={contact.social_media_2}
             onChange={(event) => updateContactField('social_media_2', event.target.value)}
+            onBlur={() => trimContactField('social_media_2')}
             fullWidth
             autoComplete="url"
           />
@@ -88,6 +103,7 @@ export default function AddEventOnlineLinks({
             label="Social Media 3"
             value={contact.social_media_3}
             onChange={(event) => updateContactField('social_media_3', event.target.value)}
+            onBlur={() => trimContactField('social_media_3')}
             fullWidth
             autoComplete="url"
           />

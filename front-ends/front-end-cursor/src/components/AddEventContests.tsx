@@ -3,6 +3,7 @@ import {
   Button,
   CircularProgress,
   Dialog,
+  Divider,
   DialogActions,
   DialogContent,
   DialogTitle,
@@ -35,8 +36,10 @@ import {
   fetchEventMoreJson,
   fetchSortedStaticListEntries,
   parseEventContests,
+  parseEventStaff,
   type EventContestDraft,
   type EventContestsState,
+  type ScoringJudgeCount,
   type StaticListEntry,
 } from '../api/postgrest';
 import { mobileColumnSx } from '../constants/layout';
@@ -64,6 +67,31 @@ type AddEventContestsProps = {
 };
 
 type HasContestsValue = 'yes' | 'no';
+
+type ContestJudgeOption = {
+  staffId: string;
+  label: string;
+};
+
+const JUDGE_ROLE_CODES = new Set(['JUDGE', 'HEAD_JUDGE']);
+
+const fieldLabelSx = { fontWeight: 700 };
+
+function staffJudgeLabel(firstName: string, lastName: string): string {
+  return [firstName.trim(), lastName.trim()].filter((part) => part !== '').join(' ');
+}
+
+function isContestJudge(primaryRoleCode: string, secondaryRoleCode: string): boolean {
+  return JUDGE_ROLE_CODES.has(primaryRoleCode) || JUDGE_ROLE_CODES.has(secondaryRoleCode);
+}
+
+function resizeScoringJudgeIds(current: string[], count: ScoringJudgeCount): string[] {
+  const next = current.slice(0, count);
+  while (next.length < count) {
+    next.push('');
+  }
+  return next;
+}
 
 function eventTypeIncludesSwing(eventTypeCode: string | null | undefined): boolean {
   return (eventTypeCode ?? '').toLowerCase().includes('swing');
@@ -154,6 +182,10 @@ export default function AddEventContests({
   const [editingContestId, setEditingContestId] = useState<string | null>(null);
   const [divisionKey, setDivisionKey] = useState('');
   const [skillLevelKey, setSkillLevelKey] = useState('');
+  const [headJudgeStaffId, setHeadJudgeStaffId] = useState('');
+  const [scoringJudgeCount, setScoringJudgeCount] = useState<ScoringJudgeCount | null>(null);
+  const [scoringJudgeIds, setScoringJudgeIds] = useState<string[]>([]);
+  const [judgeOptions, setJudgeOptions] = useState<ContestJudgeOption[]>([]);
   const [divisions, setDivisions] = useState<StaticListEntry[]>([]);
   const [skillLevels, setSkillLevels] = useState<StaticListEntry[]>([]);
   const [loadingLists, setLoadingLists] = useState(false);
@@ -274,6 +306,43 @@ export default function AddEventContests({
     };
   }, [dialogOpen, listsLoaded]);
 
+  useEffect(() => {
+    if (!dialogOpen || eventId === null) {
+      return;
+    }
+
+    let cancelled = false;
+    void fetchEventMoreJson(eventId)
+      .then((moreJson) => {
+        if (cancelled) {
+          return;
+        }
+
+        const staff = parseEventStaff(moreJson);
+        setJudgeOptions(
+          staff.members.flatMap((member) => {
+            if (!isContestJudge(member.primaryRoleCode, member.secondaryRoleCode)) {
+              return [];
+            }
+            const label = staffJudgeLabel(member.firstName, member.lastName);
+            if (label === '') {
+              return [];
+            }
+            return [{ staffId: member.id, label }];
+          }),
+        );
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setJudgeOptions([]);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [dialogOpen, eventId]);
+
   const handleHasContestsChange = (
     _event: MouseEvent<HTMLElement>,
     nextValue: HasContestsValue | null,
@@ -294,6 +363,9 @@ export default function AddEventContests({
     setDialogOpen(false);
     setDivisionKey('');
     setSkillLevelKey('');
+    setHeadJudgeStaffId('');
+    setScoringJudgeCount(null);
+    setScoringJudgeIds([]);
   };
 
   const handleAddContest = () => {
@@ -309,6 +381,9 @@ export default function AddEventContests({
     setEditingContestId(null);
     setDivisionKey('');
     setSkillLevelKey('');
+    setHeadJudgeStaffId('');
+    setScoringJudgeCount(null);
+    setScoringJudgeIds([]);
     setDialogOpen(true);
   };
 
@@ -316,6 +391,12 @@ export default function AddEventContests({
     setEditingContestId(contest.id);
     setDivisionKey(contest.divisionKey);
     setSkillLevelKey(contest.skillLevelKey);
+    const savedCount = contest.scoringJudgeCount ?? null;
+    setHeadJudgeStaffId(contest.headJudgeStaffId ?? '');
+    setScoringJudgeCount(savedCount);
+    setScoringJudgeIds(
+      savedCount === null ? [] : resizeScoringJudgeIds(contest.scoringJudgeStaffIds ?? [], savedCount),
+    );
     setDialogOpen(true);
   };
 
@@ -342,6 +423,10 @@ export default function AddEventContests({
       divisionLabel: division.label,
       skillLevelKey: skillLevel.key,
       skillLevelLabel: skillLevel.label,
+      headJudgeStaffId,
+      scoringJudgeCount,
+      scoringJudgeStaffIds:
+        scoringJudgeCount === null ? [] : resizeScoringJudgeIds(scoringJudgeIds, scoringJudgeCount),
     };
 
     const next = editingContestId
@@ -385,6 +470,31 @@ export default function AddEventContests({
   };
 
   const canSave = divisionKey !== '' && skillLevelKey !== '' && !loadingLists && !listError;
+
+  const judgeChoices = (selectedStaffId: string, excludedStaffIds: Set<string>) => {
+    const choices = judgeOptions.filter(
+      (option) => option.staffId === selectedStaffId || !excludedStaffIds.has(option.staffId),
+    );
+    if (selectedStaffId !== '' && !choices.some((option) => option.staffId === selectedStaffId)) {
+      choices.push({ staffId: selectedStaffId, label: 'Former staff member' });
+    }
+    return choices;
+  };
+
+  const handleScoringJudgeCountChange = (value: string) => {
+    if (value !== '3' && value !== '5' && value !== '7') {
+      setScoringJudgeCount(null);
+      setScoringJudgeIds([]);
+      return;
+    }
+    const count = Number(value) as ScoringJudgeCount;
+    setScoringJudgeCount(count);
+    setScoringJudgeIds((current) => resizeScoringJudgeIds(current, count));
+  };
+
+  const handleScoringJudgeChange = (index: number, staffId: string) => {
+    setScoringJudgeIds((current) => current.map((id, rowIndex) => (rowIndex === index ? staffId : id)));
+  };
   const contestIds = contests.map((contest) => contest.id);
 
   return (
@@ -432,11 +542,13 @@ export default function AddEventContests({
           </DndContext>
         ) : null}
 
-        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Button variant="outlined" onClick={handleAddContest} disabled={!hasContests}>
-            Add Contest
-          </Button>
-        </Box>
+        {hasContests ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Button variant="outlined" onClick={handleAddContest}>
+              Add Contest
+            </Button>
+          </Box>
+        ) : null}
       </Stack>
 
       <Dialog open={dialogOpen} onClose={closeDialog} fullWidth maxWidth="sm">
@@ -465,38 +577,109 @@ export default function AddEventContests({
             ) : null}
             {!loadingLists && !listError ? (
               <>
+                <Stack spacing={1.5}>
+                  <Stack direction="row" spacing={1.5}>
+                    <AppTextField
+                      select
+                      label="Swing Division"
+                      value={divisionKey}
+                      onChange={(event) => setDivisionKey(event.target.value)}
+                      fullWidth
+                      sx={{ flex: 1, minWidth: 0 }}
+                    >
+                      <MenuItem value="">
+                        <em>Select division</em>
+                      </MenuItem>
+                      {divisions.map((entry) => (
+                        <MenuItem key={entry.key} value={entry.key}>
+                          {entry.label}
+                        </MenuItem>
+                      ))}
+                    </AppTextField>
+                    <AppTextField
+                      select
+                      label="Skill Level"
+                      value={skillLevelKey}
+                      onChange={(event) => setSkillLevelKey(event.target.value)}
+                      fullWidth
+                      sx={{ flex: 1, minWidth: 0 }}
+                    >
+                      <MenuItem value="">
+                        <em>Select skill level</em>
+                      </MenuItem>
+                      {skillLevels.map((entry) => (
+                        <MenuItem key={entry.key} value={entry.key}>
+                          {entry.label}
+                        </MenuItem>
+                      ))}
+                    </AppTextField>
+                  </Stack>
+                  <Divider />
+                </Stack>
                 <AppTextField
                   select
-                  label="Swing Division"
-                  value={divisionKey}
-                  onChange={(event) => setDivisionKey(event.target.value)}
+                  label="Head Judge"
+                  value={headJudgeStaffId}
+                  onChange={(event) => setHeadJudgeStaffId(event.target.value)}
                   fullWidth
+                  slotProps={{
+                    inputLabel: { sx: fieldLabelSx },
+                  }}
                 >
                   <MenuItem value="">
-                    <em>Select division</em>
+                    <em>Select a Head Judge</em>
                   </MenuItem>
-                  {divisions.map((entry) => (
-                    <MenuItem key={entry.key} value={entry.key}>
-                      {entry.label}
+                  {judgeChoices(headJudgeStaffId, new Set()).map((option) => (
+                    <MenuItem key={option.staffId} value={option.staffId}>
+                      {option.label}
                     </MenuItem>
                   ))}
                 </AppTextField>
                 <AppTextField
                   select
-                  label="Skill Level"
-                  value={skillLevelKey}
-                  onChange={(event) => setSkillLevelKey(event.target.value)}
+                  label="Number of Scoring Judges"
+                  value={scoringJudgeCount === null ? '' : String(scoringJudgeCount)}
+                  onChange={(event) => handleScoringJudgeCountChange(event.target.value)}
                   fullWidth
+                  slotProps={{
+                    inputLabel: { sx: fieldLabelSx },
+                  }}
                 >
                   <MenuItem value="">
-                    <em>Select skill level</em>
+                    <em>Select</em>
                   </MenuItem>
-                  {skillLevels.map((entry) => (
-                    <MenuItem key={entry.key} value={entry.key}>
-                      {entry.label}
-                    </MenuItem>
-                  ))}
+                  <MenuItem value="3">3</MenuItem>
+                  <MenuItem value="5">5</MenuItem>
+                  <MenuItem value="7">7</MenuItem>
                 </AppTextField>
+                {scoringJudgeIds.map((staffId, index) => {
+                  const excluded = new Set(
+                    scoringJudgeIds.filter((id, rowIndex) => rowIndex !== index && id !== ''),
+                  );
+                  return (
+                    <AppTextField
+                      key={`scoring-judge-${index}`}
+                      select
+                      label="Select a Judge"
+                      value={staffId}
+                      onChange={(event) => handleScoringJudgeChange(index, event.target.value)}
+                      fullWidth
+                      slotProps={{
+                        inputLabel: { sx: fieldLabelSx },
+                        htmlInput: { 'aria-label': `Select a Judge ${index + 1}` },
+                      }}
+                    >
+                      <MenuItem value="">
+                        <em>Select a Judge</em>
+                      </MenuItem>
+                      {judgeChoices(staffId, excluded).map((option) => (
+                        <MenuItem key={option.staffId} value={option.staffId}>
+                          {option.label}
+                        </MenuItem>
+                      ))}
+                    </AppTextField>
+                  );
+                })}
               </>
             ) : null}
           </Stack>

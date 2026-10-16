@@ -4,7 +4,7 @@ import type { AppRole, UserSession } from '../lib/session';
 export type AuthContextValue = {
   session: UserSession | null;
   setSession: (session: UserSession) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   hasAnyRole: (roles: AppRole[]) => boolean;
 };
 

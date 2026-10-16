@@ -1,11 +1,18 @@
 import { Box, CircularProgress, MenuItem, Stack, Typography } from '@mui/material';
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useRef, useState } from 'react';
 import {
   fetchCountries,
+  fetchEventLocation,
   fetchUsStatesStaticList,
   type StaticListEntry,
 } from '../api/postgrest';
-import { EMPTY_EVENT_LOCATION } from '../lib/eventLocation';
+import { registerEventFormSyncFlush } from '../lib/eventFormFlush';
+import {
+  EMPTY_EVENT_LOCATION,
+  eventLocationToJson,
+  type EventLocationJson,
+} from '../lib/eventLocation';
+import { trimSavedText } from '../utils/trimSavedText';
 import AppTextField from './AppTextField';
 
 const fieldGroupSx = {
@@ -34,17 +41,45 @@ function FieldGroup({ title, children }: FieldGroupProps) {
   );
 }
 
+function locationSaveKey(location: EventLocationJson): string {
+  return JSON.stringify(eventLocationToJson(location));
+}
+
 type AddEventLocationProps = {
+  eventId: number | null;
+  expanded: boolean;
   onFieldEdit?: () => void;
   onVenueChange?: (venue: string) => void;
+  onSaveLocation: (location: EventLocationJson) => void;
 };
 
-export default function AddEventLocation({ onFieldEdit, onVenueChange }: AddEventLocationProps) {
+export default function AddEventLocation({
+  eventId,
+  expanded,
+  onFieldEdit,
+  onVenueChange,
+  onSaveLocation,
+}: AddEventLocationProps) {
   const [location, setLocation] = useState(EMPTY_EVENT_LOCATION);
   const [stateOptions, setStateOptions] = useState<StaticListEntry[]>([]);
   const [countryOptions, setCountryOptions] = useState<StaticListEntry[]>([]);
   const [loadingLists, setLoadingLists] = useState(true);
   const [listError, setListError] = useState<string | null>(null);
+  const locationRef = useRef(location);
+  const savedKeyRef = useRef(locationSaveKey(EMPTY_EVENT_LOCATION));
+  const readyRef = useRef(eventId === null);
+  const dirtyRef = useRef(false);
+  const saveSeqRef = useRef(0);
+  const expandedRef = useRef(expanded);
+  const onSaveLocationRef = useRef(onSaveLocation);
+
+  useEffect(() => {
+    locationRef.current = location;
+  }, [location]);
+
+  useEffect(() => {
+    onSaveLocationRef.current = onSaveLocation;
+  }, [onSaveLocation]);
 
   useEffect(() => {
     onVenueChange?.(location.venue);
@@ -83,9 +118,103 @@ export default function AddEventLocation({ onFieldEdit, onVenueChange }: AddEven
     };
   }, []);
 
+  const commitLocationSave = () => {
+    const trimmed = eventLocationToJson(locationRef.current);
+    locationRef.current = trimmed;
+    setLocation(trimmed);
+
+    if (!readyRef.current && !dirtyRef.current) {
+      return;
+    }
+
+    const nextKey = locationSaveKey(trimmed);
+    if (nextKey === savedKeyRef.current) {
+      dirtyRef.current = false;
+      return;
+    }
+
+    savedKeyRef.current = nextKey;
+    dirtyRef.current = false;
+    saveSeqRef.current += 1;
+    onSaveLocationRef.current(trimmed);
+  };
+
+  const commitLocationSaveRef = useRef(commitLocationSave);
+  commitLocationSaveRef.current = commitLocationSave;
+
+  useEffect(() => {
+    if (eventId === null) {
+      readyRef.current = true;
+      return;
+    }
+
+    let cancelled = false;
+    const startedSeq = saveSeqRef.current;
+    readyRef.current = false;
+
+    void fetchEventLocation(eventId)
+      .then((stored) => {
+        if (cancelled || saveSeqRef.current !== startedSeq) {
+          if (!cancelled) {
+            readyRef.current = true;
+          }
+          return;
+        }
+
+        if (!dirtyRef.current) {
+          locationRef.current = stored;
+          savedKeyRef.current = locationSaveKey(stored);
+          setLocation(stored);
+        }
+        readyRef.current = true;
+      })
+      .catch(() => {
+        if (!cancelled) {
+          readyRef.current = true;
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [eventId]);
+
+  useEffect(() => {
+    const wasExpanded = expandedRef.current;
+    expandedRef.current = expanded;
+    if (wasExpanded && !expanded) {
+      commitLocationSaveRef.current();
+    }
+  }, [expanded]);
+
+  useEffect(() => {
+    return () => {
+      commitLocationSaveRef.current();
+    };
+  }, []);
+
+  useEffect(() => {
+    return registerEventFormSyncFlush(() => {
+      commitLocationSaveRef.current();
+    });
+  }, []);
+
   const updateLocationField = (field: keyof typeof EMPTY_EVENT_LOCATION, value: string) => {
-    setLocation((current) => ({ ...current, [field]: value }));
+    const next = { ...locationRef.current, [field]: value };
+    locationRef.current = next;
+    setLocation(next);
+    dirtyRef.current = true;
     onFieldEdit?.();
+  };
+
+  const trimLocationField = (field: 'venue' | 'street' | 'city' | 'map_url') => {
+    setLocation((current) => {
+      const trimmed = trimSavedText(current[field]);
+      if (trimmed === current[field]) {
+        return current;
+      }
+      return { ...current, [field]: trimmed };
+    });
   };
 
   if (loadingLists) {
@@ -110,6 +239,7 @@ export default function AddEventLocation({ onFieldEdit, onVenueChange }: AddEven
         label="Venue"
         value={location.venue}
         onChange={(event) => updateLocationField('venue', event.target.value)}
+        onBlur={() => trimLocationField('venue')}
         fullWidth
         autoComplete="off"
       />
@@ -117,6 +247,7 @@ export default function AddEventLocation({ onFieldEdit, onVenueChange }: AddEven
         label="Street"
         value={location.street}
         onChange={(event) => updateLocationField('street', event.target.value)}
+        onBlur={() => trimLocationField('street')}
         fullWidth
         autoComplete="off"
       />
@@ -124,6 +255,7 @@ export default function AddEventLocation({ onFieldEdit, onVenueChange }: AddEven
         label="City"
         value={location.city}
         onChange={(event) => updateLocationField('city', event.target.value)}
+        onBlur={() => trimLocationField('city')}
         fullWidth
         autoComplete="off"
       />
@@ -163,6 +295,7 @@ export default function AddEventLocation({ onFieldEdit, onVenueChange }: AddEven
         label="Map URL"
         value={location.map_url}
         onChange={(event) => updateLocationField('map_url', event.target.value)}
+        onBlur={() => trimLocationField('map_url')}
         fullWidth
         autoComplete="url"
       />

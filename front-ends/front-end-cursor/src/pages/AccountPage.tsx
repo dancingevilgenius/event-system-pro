@@ -9,6 +9,7 @@ import {
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { logout as logoutApi } from '../api/postgrest';
+import { flushEventFormSaves } from '../lib/eventFormFlush';
 import AppTextField from '../components/AppTextField';
 import PageHeader from '../components/PageHeader';
 import ShowRolesDialog from '../components/ShowRolesDialog';
@@ -31,18 +32,19 @@ export default function AccountPage() {
   const handleLogOff = async () => {
     setBusy(true);
     try {
+      await flushEventFormSaves();
       const result = await logoutApi();
-      logout();
       if (!result.ok) {
         showProblem(result.message);
+        await logout();
         navigate('/');
         return;
       }
       setFlashSuccess(result.message);
-      logout();
+      await logout();
       navigate('/', { replace: true });
     } catch (error) {
-      logout();
+      await logout();
       showProblem(error instanceof Error ? error.message : 'Sign out failed.');
       navigate('/');
     } finally {

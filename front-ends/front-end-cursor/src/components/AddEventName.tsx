@@ -1,3 +1,4 @@
+import { trimSavedText } from '../utils/trimSavedText';
 import AppTextField from './AppTextField';
 
 export const MIN_EVENT_NAME_LENGTH = 5;
@@ -30,6 +31,7 @@ export default function AddEventName({
         onNameChange(event.target.value);
         onFieldEdit?.();
       }}
+      onBlur={() => onNameChange(trimSavedText(name))}
       fullWidth
     />
   );

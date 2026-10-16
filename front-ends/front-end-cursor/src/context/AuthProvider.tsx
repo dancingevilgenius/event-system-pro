@@ -1,5 +1,6 @@
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { ensureRealtimeService } from '../api/realtime';
+import { flushEventFormSaves } from '../lib/eventFormFlush';
 import {
   clearSession,
   loadSession,
@@ -30,7 +31,8 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     void ensureRealtimeService();
   }, [session]);
 
-  const logout = useCallback(() => {
+  const logout = useCallback(async () => {
+    await flushEventFormSaves();
     clearSession();
     setSessionState(null);
   }, []);

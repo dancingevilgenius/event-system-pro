@@ -42,8 +42,9 @@ export default function ActivityMonitor() {
     loggingOutRef.current = true;
     setFlashWarning(INACTIVITY_LOGOUT_MESSAGE);
     showWarning(INACTIVITY_LOGOUT_MESSAGE);
-    logout();
-    navigate('/', { replace: true });
+    void logout().finally(() => {
+      navigate('/', { replace: true });
+    });
   }, [inactivityDisabled, logout, navigate, session, showWarning]);
 
   const syncActivityToServer = useCallback(

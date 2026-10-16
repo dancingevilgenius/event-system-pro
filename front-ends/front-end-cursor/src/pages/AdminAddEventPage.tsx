@@ -30,6 +30,7 @@ import {
   parseStoredSectionStatuses,
   saveEventContests,
   saveEventDraft,
+  saveEventLocation,
   saveEventRoleAssignments,
   saveEventSectionStatuses,
   saveEventStaff,
@@ -38,6 +39,12 @@ import {
   type EventStaffState,
   type StoredSectionStatus,
 } from '../api/postgrest';
+import { trimSavedText } from '../utils/trimSavedText';
+import {
+  registerEventFormSaveQueue,
+  registerEventFormSyncFlush,
+} from '../lib/eventFormFlush';
+import { loadSession } from '../lib/session';
 import AddEventDates from '../components/AddEventDates';
 import AddEventName, {
   eventNameCanBeFinalized,
@@ -45,6 +52,7 @@ import AddEventName, {
   MIN_EVENT_NAME_LENGTH_TO_CONTINUE,
 } from '../components/AddEventName';
 import AddEventLocation from '../components/AddEventLocation';
+import { type EventLocationJson } from '../lib/eventLocation';
 import AddEventOnlineLinks from '../components/AddEventOnlineLinks';
 import AddEventEarlyBirdDates from '../components/AddEventEarlyBirdDates';
 import AddEventPasses, { type EventPassesSummary } from '../components/AddEventPasses';
@@ -62,9 +70,11 @@ import { useMessages } from '../hooks/useMessages';
 import { EVENT_GROUPS_PATH, eventGroupDetailPath } from '../constants/eventRoutes';
 import { parseDateTimeLocalValue } from '../lib/eventDuration';
 import {
+  applyStoredDateMode,
   EMPTY_EVENT_DATES,
   isEventDatesValid,
   eventDatesFromApiTimestamps,
+  type EventDateMode,
   type EventDatesFormState,
   formatEventStartDateLabel,
   getScheduleTimeBlockDays,
@@ -336,11 +346,18 @@ function disabledStatusesForSection(
 function draftDateFields(dates: EventDatesFormState): {
   startDate: string | null;
   endDate: string | null;
+  updateEndDate: boolean;
+  dateMode: EventDateMode;
 } | null {
   const startEmpty = dates.startDateTime.trim() === '';
   const endEmpty = dates.endDateTime.trim() === '';
   if (startEmpty && endEmpty) {
-    return { startDate: null, endDate: null };
+    return {
+      startDate: null,
+      endDate: null,
+      updateEndDate: dates.mode !== 'single_day',
+      dateMode: dates.mode,
+    };
   }
 
   if (!isEventDatesValid(dates)) {
@@ -353,7 +370,12 @@ function draftDateFields(dates: EventDatesFormState): {
   }
 
   if (dates.mode === 'single_day') {
-    return { startDate: start.toISOString(), endDate: null };
+    return {
+      startDate: start.toISOString(),
+      endDate: null,
+      updateEndDate: false,
+      dateMode: 'single_day',
+    };
   }
 
   const end = parseDateTimeLocalValue(dates.endDateTime);
@@ -361,7 +383,12 @@ function draftDateFields(dates: EventDatesFormState): {
     return null;
   }
 
-  return { startDate: start.toISOString(), endDate: end.toISOString() };
+  return {
+    startDate: start.toISOString(),
+    endDate: end.toISOString(),
+    updateEndDate: true,
+    dateMode: 'multi_day',
+  };
 }
 
 function promoteSectionToInProgress(
@@ -388,6 +415,8 @@ function renderSectionContent(
   onPassesSummaryChange: (summary: EventPassesSummary) => void,
   onNoEarlyBirdDatesChange: (noEarlyBirdDates: boolean) => void,
   onVenueChange: (venue: string) => void,
+  locationExpanded: boolean,
+  onSaveLocation: (location: EventLocationJson) => void,
   onContactVenueSummaryChange: (summary: ContactVenueSummary) => void,
   eventId: number | null,
   onSaveRoles: (roles: EventRoleAssignment[]) => void,
@@ -419,7 +448,15 @@ function renderSectionContent(
   }
 
   if (sectionId === 'location') {
-    return <AddEventLocation onFieldEdit={onFieldEdit} onVenueChange={onVenueChange} />;
+    return (
+      <AddEventLocation
+        eventId={eventId}
+        expanded={locationExpanded}
+        onFieldEdit={onFieldEdit}
+        onVenueChange={onVenueChange}
+        onSaveLocation={onSaveLocation}
+      />
+    );
   }
 
   if (sectionId === 'passes') {
@@ -540,6 +577,9 @@ export default function AdminAddEventPage() {
   const eventDatesRef = useRef(eventDates);
   const eventGroupCodeRef = useRef(eventGroupCode);
   const saveQueueRef = useRef(Promise.resolve());
+  const draftDirtyRef = useRef(false);
+  const lastDraftKeyRef = useRef<string | null>(null);
+  const queueDraftSaveRef = useRef<() => void>(() => undefined);
 
   useEffect(() => {
     savedEventIdRef.current = eventId;
@@ -610,6 +650,20 @@ export default function AdminAddEventPage() {
     [enqueueEventSave],
   );
 
+  const handleSaveLocation = useCallback(
+    (location: EventLocationJson) => {
+      enqueueEventSave((currentEventId) =>
+        saveEventLocation({
+          eventId: currentEventId,
+          eventGroupCode: eventGroupCodeRef.current,
+          eventName: eventNameRef.current,
+          location,
+        }),
+      );
+    },
+    [enqueueEventSave],
+  );
+
   const handleSaveStaff = useCallback(
     (staff: EventStaffState) => {
       enqueueEventSave((currentEventId) =>
@@ -624,37 +678,91 @@ export default function AdminAddEventPage() {
     [enqueueEventSave],
   );
 
+  const queueDraftSave = useCallback((options?: { onlyIfDirty?: boolean }) => {
+    if (options?.onlyIfDirty && !draftDirtyRef.current) {
+      return;
+    }
+
+    if (!loadSession()?.username) {
+      return;
+    }
+
+    if (!eventGroupCodeRef.current || !draftReadyRef.current) {
+      return;
+    }
+
+    const name = trimSavedText(eventNameRef.current);
+    if (name !== eventNameRef.current) {
+      eventNameRef.current = name;
+      setEventName(name);
+    }
+    const currentEventId = savedEventIdRef.current;
+    if (name.length < MIN_EVENT_NAME_LENGTH_TO_CONTINUE && currentEventId === null) {
+      return;
+    }
+
+    const dates = draftDateFields(eventDatesRef.current);
+    const key = JSON.stringify({
+      eventId: currentEventId,
+      name,
+      startDate: dates?.startDate ?? null,
+      endDate: dates?.endDate ?? null,
+      updateDates: dates !== null,
+      updateEndDate: dates?.updateEndDate ?? true,
+      dateMode: dates?.dateMode ?? null,
+    });
+    if (key === lastDraftKeyRef.current) {
+      draftDirtyRef.current = false;
+      return;
+    }
+
+    lastDraftKeyRef.current = key;
+    draftDirtyRef.current = false;
+    enqueueEventSave((eventIdToSave) =>
+      saveEventDraft({
+        eventId: eventIdToSave,
+        eventGroupCode: eventGroupCodeRef.current,
+        name,
+        startDate: dates?.startDate ?? null,
+        endDate: dates?.endDate ?? null,
+        updateDates: dates !== null,
+        updateEndDate: dates?.updateEndDate ?? true,
+        dateMode: dates?.dateMode ?? null,
+      }),
+    );
+  }, [enqueueEventSave]);
+
+  queueDraftSaveRef.current = () => {
+    queueDraftSave({ onlyIfDirty: true });
+  };
+
+  useEffect(() => {
+    return registerEventFormSyncFlush(() => {
+      queueDraftSaveRef.current();
+    });
+  }, []);
+
+  useEffect(() => {
+    return registerEventFormSaveQueue(() => saveQueueRef.current);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      queueDraftSaveRef.current();
+    };
+  }, []);
+
   useEffect(() => {
     if (!eventGroupCode) {
       return;
     }
 
     const handle = window.setTimeout(() => {
-      if (!draftReadyRef.current) {
-        return;
-      }
-
-      const name = eventNameRef.current.trim();
-      const currentEventId = savedEventIdRef.current;
-      if (name.length < MIN_EVENT_NAME_LENGTH_TO_CONTINUE && currentEventId === null) {
-        return;
-      }
-
-      const dates = draftDateFields(eventDatesRef.current);
-      enqueueEventSave((eventIdToSave) =>
-        saveEventDraft({
-          eventId: eventIdToSave,
-          eventGroupCode: eventGroupCodeRef.current,
-          name,
-          startDate: dates?.startDate ?? null,
-          endDate: dates?.endDate ?? null,
-          updateDates: dates !== null,
-        }),
-      );
+      queueDraftSave();
     }, 400);
 
     return () => window.clearTimeout(handle);
-  }, [draftReady, enqueueEventSave, eventDates, eventGroupCode, eventName]);
+  }, [draftReady, eventDates, eventGroupCode, eventName, queueDraftSave]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -747,7 +855,10 @@ export default function AdminAddEventPage() {
           return;
         }
 
-        const nextDates = eventDatesFromApiTimestamps(event.startDate, event.endDate);
+        const nextDates = applyStoredDateMode(
+          eventDatesFromApiTimestamps(event.startDate, event.endDate),
+          moreJson,
+        );
         const nextName = event.name ?? '';
         const storedStatuses = parseStoredSectionStatuses(moreJson);
         const storedStaff = parseEventStaff(moreJson);
@@ -841,7 +952,13 @@ export default function AdminAddEventPage() {
     );
   }, []);
 
+  const handleEventDatesChange = (dates: EventDatesFormState) => {
+    draftDirtyRef.current = true;
+    setEventDates(dates);
+  };
+
   const handleEventNameChange = (name: string) => {
+    draftDirtyRef.current = true;
     setEventName(name);
 
     if (eventNameCanBeFinalized(name)) {
@@ -897,7 +1014,15 @@ export default function AdminAddEventPage() {
         return;
       }
 
-      setExpandedSection(isExpanded ? sectionId : false);
+      const next = isExpanded ? sectionId : false;
+      if (
+        (expandedSection === 'event_name' || expandedSection === 'dates')
+        && next !== expandedSection
+      ) {
+        queueDraftSaveRef.current();
+      }
+
+      setExpandedSection(next);
     };
 
   const handleSectionDragEnd = (event: DragEndEvent) => {
@@ -980,13 +1105,15 @@ export default function AdminAddEventPage() {
                     eventName,
                     handleEventNameChange,
                     eventDates,
-                    setEventDates,
+                    handleEventDatesChange,
                     sectionStatuses.schedule,
                     handleSectionStatusChange('schedule'),
                     scheduleDatesSelected,
                     handlePassesSummaryChange,
                     handleNoEarlyBirdDatesChange,
                     handleVenueChange,
+                    expandedSection === 'location',
+                    handleSaveLocation,
                     handleContactVenueSummaryChange,
                     savedEventId,
                     handleSaveRoles,

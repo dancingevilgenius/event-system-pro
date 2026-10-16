@@ -1,4 +1,5 @@
 import { phoneHasNationalDigits } from '../utils/phoneNumbers';
+import { trimSavedText } from '../utils/trimSavedText';
 
 /** Shape of `event.location_json` used by demo seeds and the add-event form. */
 export type EventLocationJson = {
@@ -21,12 +22,12 @@ export const EMPTY_EVENT_LOCATION: EventLocationJson = {
 
 export function eventLocationToJson(location: EventLocationJson): EventLocationJson {
   return {
-    venue: location.venue.trim(),
-    street: location.street.trim(),
-    city: location.city.trim(),
-    state: location.state.trim(),
-    country: location.country.trim(),
-    map_url: location.map_url.trim(),
+    venue: trimSavedText(location.venue),
+    street: trimSavedText(location.street),
+    city: trimSavedText(location.city),
+    state: trimSavedText(location.state),
+    country: trimSavedText(location.country),
+    map_url: trimSavedText(location.map_url),
   };
 }
 

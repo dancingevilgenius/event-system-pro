@@ -14,6 +14,7 @@ import {
   sanitizePassCostInput,
   type EventPassFormState,
 } from '../lib/eventPasses';
+import { trimSavedText } from '../utils/trimSavedText';
 import AppTextField from './AppTextField';
 import DragHandleIcon from './DragHandleIcon';
 
@@ -108,6 +109,7 @@ export default function EventPassSortableAccordion({
               label="Name"
               value={pass.name}
               onChange={(event) => onChange(pass.id, { name: event.target.value })}
+              onBlur={() => onChange(pass.id, { name: trimSavedText(pass.name) })}
               fullWidth
             />
             <AppTextField
@@ -116,6 +118,7 @@ export default function EventPassSortableAccordion({
               onChange={(event) =>
                 onChange(pass.id, { cost: sanitizePassCostInput(event.target.value) })
               }
+              onBlur={() => onChange(pass.id, { cost: trimSavedText(pass.cost) })}
               fullWidth
               slotProps={{
                 htmlInput: {
@@ -128,6 +131,7 @@ export default function EventPassSortableAccordion({
               label="Description"
               value={pass.description}
               onChange={(event) => onChange(pass.id, { description: event.target.value })}
+              onBlur={() => onChange(pass.id, { description: trimSavedText(pass.description) })}
               placeholder="This pass comes with abc, and xyz..."
               multiline
               minRows={3}

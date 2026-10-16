@@ -2,16 +2,6 @@ const SESSION_KEY = 'esp_session';
 /** Legacy key from the removed client inactivity timer; cleared on logout. */
 const ACTIVITY_EXPIRES_AT_KEY = 'esp_activity_expires_at';
 
-/** Skip inactivity logout polling/touches on local dev hosts (localhost / 127.0.0.*). */
-export function isInactivityLogoutDisabled(): boolean {
-  if (typeof window === 'undefined') {
-    return false;
-  }
-
-  const hostname = window.location.hostname;
-  return hostname === 'localhost' || hostname.startsWith('127.0.0.');
-}
-
 export type AppRole =
   | 'ADMIN'
   | 'STAFF'

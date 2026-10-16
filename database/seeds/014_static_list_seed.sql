@@ -35,6 +35,7 @@ VALUES
       {"key": "MAS", "label": "Masters", "min-age": 50, "max-age": -1},
       {"key": "JUN", "label": "Juniors", "min-age": -1, "max-age": 18},
       {"key": "YAM", "label": "Young America", "min-age": -1, "max-age": 12},
+      {"key": "AAM", "label": "All-American", "min-age": -1, "max-age": -1},
       {"key": "CUSTOM", "label": "Custom", "min-age": -1, "max-age": -1}
     ]'::json
   ),

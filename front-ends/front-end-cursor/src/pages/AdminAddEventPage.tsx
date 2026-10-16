@@ -45,7 +45,7 @@ import AddEventPasses, { type EventPassesSummary } from '../components/AddEventP
 import AddEventScheduleDays from '../components/AddEventScheduleDays';
 import AddEventRoles from '../components/AddEventRoles';
 import AddEventImportantContacts from '../components/AddEventImportantContacts';
-import AddEventContests from '../components/AddEventContests';
+import AddEventContests, { type EventContestsSummary } from '../components/AddEventContests';
 import AddEventStaff from '../components/AddEventStaff';
 import AddEventVolunteers from '../components/AddEventVolunteers';
 import AddEventSortableSectionAccordion from '../components/AddEventSortableSectionAccordion';
@@ -200,6 +200,8 @@ function sectionDisplayTitle(
   noEarlyBirdDates: boolean,
   venueName: string,
   contactVenueSummary: ContactVenueSummary,
+  hasContests: boolean,
+  contestCount: number,
 ): string {
   if (section.id === 'event_name' && status === 'finalized') {
     return eventName.trim();
@@ -231,6 +233,14 @@ function sectionDisplayTitle(
     }
   }
 
+  if (section.id === 'contests') {
+    if (!hasContests) {
+      return `${section.title} - N/A`;
+    }
+
+    return `${section.title} - ${contestCount}`;
+  }
+
   return section.title;
 }
 
@@ -239,6 +249,7 @@ function sectionIsFinalizedNotApplicable(
   status: AddEventSectionStatus,
   passesSummary: EventPassesSummary,
   noEarlyBirdDates: boolean,
+  hasContests: boolean,
 ): boolean {
   if (status !== 'finalized') {
     return false;
@@ -252,6 +263,10 @@ function sectionIsFinalizedNotApplicable(
     return noEarlyBirdDates;
   }
 
+  if (sectionId === 'contests') {
+    return !hasContests;
+  }
+
   return false;
 }
 
@@ -260,12 +275,21 @@ function withFinalizedNotApplicableAtEnd(
   statuses: Record<AddEventSectionId, AddEventSectionStatus>,
   passesSummary: EventPassesSummary,
   noEarlyBirdDates: boolean,
+  hasContests: boolean,
 ): AddEventSectionId[] {
   const remaining: AddEventSectionId[] = [];
   const sunk: AddEventSectionId[] = [];
 
   for (const sectionId of order) {
-    if (sectionIsFinalizedNotApplicable(sectionId, statuses[sectionId], passesSummary, noEarlyBirdDates)) {
+    if (
+      sectionIsFinalizedNotApplicable(
+        sectionId,
+        statuses[sectionId],
+        passesSummary,
+        noEarlyBirdDates,
+        hasContests,
+      )
+    ) {
       sunk.push(sectionId);
     } else {
       remaining.push(sectionId);
@@ -349,6 +373,8 @@ function renderSectionContent(
   onContactVenueSummaryChange: (summary: ContactVenueSummary) => void,
   eventId: number | null,
   onSaveRoles: (roles: EventRoleAssignment[]) => void,
+  eventTypeCode: string | null,
+  onContestsSummaryChange: (summary: EventContestsSummary) => void,
 ) {
   if (sectionId === 'event_name') {
     return (
@@ -413,7 +439,13 @@ function renderSectionContent(
   }
 
   if (sectionId === 'contests') {
-    return <AddEventContests onFieldEdit={onFieldEdit} />;
+    return (
+      <AddEventContests
+        eventTypeCode={eventTypeCode}
+        onFieldEdit={onFieldEdit}
+        onSummaryChange={onContestsSummaryChange}
+      />
+    );
   }
 
   if (sectionId === 'schedule') {
@@ -451,6 +483,7 @@ export default function AdminAddEventPage() {
     typeof rawEventId === 'number' && Number.isFinite(rawEventId) ? rawEventId : null;
   const isEditingEvent = eventId !== null;
   const [eventGroupName, setEventGroupName] = useState('');
+  const [eventTypeCode, setEventTypeCode] = useState<string | null>(null);
   const [expandedSection, setExpandedSection] = useState<AddEventSectionId | false>('event_name');
   const [sectionStatuses, setSectionStatuses] = useState(createInitialSectionStatuses);
   const sectionStatusesRef = useRef(sectionStatuses);
@@ -461,6 +494,8 @@ export default function AdminAddEventPage() {
     passCount: 1,
   });
   const [noEarlyBirdDates, setNoEarlyBirdDates] = useState(true);
+  const [hasContests, setHasContests] = useState(false);
+  const [contestCount, setContestCount] = useState(0);
   const [venueName, setVenueName] = useState('');
   const [contactVenueSummary, setContactVenueSummary] = useState(EMPTY_CONTACT_VENUE_SUMMARY);
   const [eventDates, setEventDates] = useState<EventDatesFormState>(EMPTY_EVENT_DATES);
@@ -571,8 +606,9 @@ export default function AdminAddEventPage() {
       sectionStatuses,
       passesSummary,
       noEarlyBirdDates,
+      hasContests,
     ),
-    [noEarlyBirdDates, passesSummary, sectionOrder, sectionStatuses],
+    [hasContests, noEarlyBirdDates, passesSummary, sectionOrder, sectionStatuses],
   );
 
   const orderedSections = useMemo(
@@ -607,6 +643,7 @@ export default function AdminAddEventPage() {
   useEffect(() => {
     if (!eventGroupCode) {
       setEventGroupName('');
+      setEventTypeCode(null);
       return;
     }
 
@@ -616,11 +653,13 @@ export default function AdminAddEventPage() {
       .then((group) => {
         if (!cancelled) {
           setEventGroupName(group?.fullName ?? '');
+          setEventTypeCode(group?.eventTypeCode ?? null);
         }
       })
       .catch(() => {
         if (!cancelled) {
           setEventGroupName('');
+          setEventTypeCode(null);
         }
       });
 
@@ -704,6 +743,11 @@ export default function AdminAddEventPage() {
         ? current
         : summary,
     );
+  }, []);
+
+  const handleContestsSummaryChange = useCallback((summary: EventContestsSummary) => {
+    setHasContests((current) => (current === summary.hasContests ? current : summary.hasContests));
+    setContestCount((current) => (current === summary.contestCount ? current : summary.contestCount));
   }, []);
 
   const handleNoEarlyBirdDatesChange = useCallback((nextNoEarlyBirdDates: boolean) => {
@@ -799,6 +843,7 @@ export default function AdminAddEventPage() {
         sectionStatuses,
         passesSummary,
         noEarlyBirdDates,
+        hasContests,
       );
       const oldIndex = displayed.indexOf(activeId);
       const newIndex = displayed.indexOf(overId);
@@ -813,6 +858,7 @@ export default function AdminAddEventPage() {
             sectionStatuses[sectionId],
             passesSummary,
             noEarlyBirdDates,
+            hasContests,
           ),
         ),
       );
@@ -871,6 +917,8 @@ export default function AdminAddEventPage() {
                     handleContactVenueSummaryChange,
                     savedEventId,
                     handleSaveRoles,
+                    eventTypeCode,
+                    handleContestsSummaryChange,
                   );
                   const sectionStatus = sectionStatuses[section.id];
                   const sectionTitle = sectionDisplayTitle(
@@ -882,6 +930,8 @@ export default function AdminAddEventPage() {
                     noEarlyBirdDates,
                     venueName,
                     contactVenueSummary,
+                    hasContests,
+                    contestCount,
                   );
 
                   return (

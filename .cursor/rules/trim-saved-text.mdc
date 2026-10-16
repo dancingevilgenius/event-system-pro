@@ -1,0 +1,22 @@
+---
+description: Trim text field strings before they are saved
+alwaysApply: true
+---
+
+# Trim saved text fields
+
+When saving a text field, store `value.trim()` so leading and trailing whitespace is not persisted.
+
+Trim at save time. Leave the in-progress keystrokes alone so the user can type a space between words.
+
+```ts
+// ❌ BAD
+name: event.target.value
+
+// ✅ GOOD
+name: trimSavedText(event.target.value)
+```
+
+Use `trimSavedText()` from `front-ends/front-end-cursor/src/utils/trimSavedText.ts`.
+
+Create-event (`AdminAddEventPage` and its `AddEvent*` sections) already does this. Other pages still need the same treatment.

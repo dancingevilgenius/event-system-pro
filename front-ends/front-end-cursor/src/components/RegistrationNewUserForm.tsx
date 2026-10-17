@@ -1,14 +1,23 @@
-import { Box, Button, Stack, Typography } from '@mui/material';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  deleteGeneratedContestCompetitors,
+  generateContestCompetitors,
   lookupStaffRegistration,
   previewQuickRegisterUsernames,
   quickRegisterUser,
   registerContestCompetitors,
   type StaffRegistrationMatch,
+  type UpcomingRegistrationContest,
 } from '../api/postgrest';
+import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
+import { contestSkillDivisionLabel } from '../utils/duplicateContestBib';
+import {
+  createTestCompetitorsConfirmText,
+  deleteGeneratedCompetitorsConfirmText,
+} from '../utils/generatedCompetitors';
 import {
   quickRegistrationRegisteredMessage,
   quickRegistrationUsernameHint,
@@ -46,6 +55,8 @@ function personIsRegistered(nameReady: boolean, match: StaffRegistrationMatch | 
 
 export default function RegistrationNewUserForm() {
   const { showXsLayout } = useLayoutTier();
+  const { hasAnyRole } = useAuth();
+  const isAdmin = hasAnyRole(['ADMIN']);
   const { showProblem, showSuccess } = useMessages();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -57,6 +68,9 @@ export default function RegistrationNewUserForm() {
   const [picks, setPicks] = useState<RegistrationContestPick[]>([]);
   const [rosterRevision, setRosterRevision] = useState(0);
   const [registering, setRegistering] = useState(false);
+  const [generateContest, setGenerateContest] = useState<UpcomingRegistrationContest | null>(null);
+  const [contestAction, setContestAction] = useState<'create' | 'delete'>('create');
+  const [generating, setGenerating] = useState(false);
   const lookupSeqRef = useRef(0);
   const firstNameRef = useRef(firstName);
   const lastNameRef = useRef(lastName);
@@ -70,6 +84,12 @@ export default function RegistrationNewUserForm() {
   const bibReady = bibNumber(bib) > 0;
   const contestChecked = picks.length > 0;
   const canRegister = registered && bibReady && contestChecked && !registering && !busy;
+  const selectedContest = picks.length === 1 ? picks[0].contest : null;
+  const deleteMode = selectedContest?.hasGeneratedCompetitors === true;
+  const canRunContestAction = isAdmin && selectedContest !== null && !generating;
+  const contestActionLabel = deleteMode
+    ? 'Delete Generated Competitors'
+    : 'Create/Register Test Competitors';
 
   const handleSelectionChange = useCallback((next: RegistrationContestPick[]) => {
     setPicks(next);
@@ -278,6 +298,57 @@ export default function RegistrationNewUserForm() {
       });
   };
 
+  const openContestAction = () => {
+    if (!isAdmin || generating || picks.length !== 1) {
+      return;
+    }
+    const contest = picks[0].contest;
+    setContestAction(contest.hasGeneratedCompetitors ? 'delete' : 'create');
+    setGenerateContest(contest);
+  };
+
+  const confirmContestAction = () => {
+    if (!generateContest || generating) {
+      return;
+    }
+
+    const contest = generateContest;
+    const action = contestAction;
+    const label = contestSkillDivisionLabel(contest) || 'this contest';
+    setGenerating(true);
+    const request = action === 'delete'
+      ? deleteGeneratedContestCompetitors(contest).then((result) => {
+          showSuccess(
+            result.scratched === 1
+              ? `Scratched 1 generated test competitor from ${label}.`
+              : `Scratched ${result.scratched} generated test competitors from ${label}.`,
+          );
+        })
+      : generateContestCompetitors(contest).then((result) => {
+          showSuccess(
+            `Added ${result.leadersAdded} leaders and ${result.followersAdded} followers to ${label}.`,
+          );
+        });
+
+    void request
+      .then(() => {
+        setGenerateContest(null);
+        setRosterRevision((current) => current + 1);
+      })
+      .catch((error: unknown) => {
+        showProblem(
+          error instanceof Error
+            ? error.message
+            : action === 'delete'
+              ? 'Unable to delete generated competitors.'
+              : 'Unable to create test competitors.',
+        );
+      })
+      .finally(() => {
+        setGenerating(false);
+      });
+  };
+
   const columnLabelSx = {
     fontWeight: 700,
     display: { xs: 'none', md: 'block' },
@@ -362,10 +433,15 @@ export default function RegistrationNewUserForm() {
         </Stack>
       </Box>
 
-      <Stack
-        direction={{ xs: 'column', md: 'row' }}
-        spacing={2}
-        sx={{ mt: 2, alignItems: { md: 'center' } }}
+      <Box
+        sx={{
+          mt: 2,
+          display: 'flex',
+          flexDirection: { xs: 'column', md: 'row' },
+          alignItems: { md: 'center' },
+          gap: 2,
+          width: '100%',
+        }}
       >
         <AppTextField
           label="Bib Number"
@@ -393,7 +469,25 @@ export default function RegistrationNewUserForm() {
         >
           Register Competitor
         </Button>
-      </Stack>
+        {isAdmin ? (
+          <Button
+            type="button"
+            variant="contained"
+            disabled={!canRunContestAction}
+            onClick={openContestAction}
+            sx={{
+              flexShrink: 0,
+              minHeight: 56,
+              height: { md: 56 },
+              ml: { md: 'auto' },
+              textTransform: 'none',
+              whiteSpace: { xs: 'normal', md: 'nowrap' },
+            }}
+          >
+            {contestActionLabel}
+          </Button>
+        ) : null}
+      </Box>
 
       <RegistrationUpcomingContests revision={rosterRevision} onSelectionChange={handleSelectionChange} />
 
@@ -405,6 +499,48 @@ export default function RegistrationNewUserForm() {
         onClose={cancelQuickRegister}
         onConfirm={confirmQuickRegister}
       />
+
+      <Dialog
+        open={generateContest !== null}
+        onClose={() => {
+          if (!generating) {
+            setGenerateContest(null);
+          }
+        }}
+        fullWidth
+        maxWidth="xs"
+        aria-labelledby="test-competitors-title"
+      >
+        <DialogTitle id="test-competitors-title">
+          {contestAction === 'delete' ? 'Delete generated competitors' : 'Create/Register test competitors'}
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body1">
+            {generateContest
+              ? contestAction === 'delete'
+                ? deleteGeneratedCompetitorsConfirmText(generateContest)
+                : createTestCompetitorsConfirmText(generateContest)
+              : ''}
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button
+            type="button"
+            onClick={() => setGenerateContest(null)}
+            disabled={generating}
+          >
+            No
+          </Button>
+          <Button
+            type="button"
+            variant="contained"
+            onClick={confirmContestAction}
+            disabled={generating}
+          >
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

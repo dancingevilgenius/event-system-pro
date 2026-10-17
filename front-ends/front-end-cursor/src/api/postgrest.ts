@@ -12,6 +12,15 @@ import {
   rosterHasBib,
   rosterPersonById,
 } from '../utils/duplicateContestBib';
+import {
+  COMPETITORS_GENERATED_FLAG,
+  accountsToCreate,
+  assignTestCompetitorBibs,
+  generatedCompetitorRoster,
+  isGeneratedCompetitor,
+  rosterHasGeneratedCompetitors,
+  usedContestBibNumbers,
+} from '../utils/generatedCompetitors';
 import { trimSavedText } from '../utils/trimSavedText';
 import type { TrainingLesson } from '../types/pageTraining';
 import {
@@ -1573,6 +1582,7 @@ type StoredEventContest = {
   scoring_judge_staff_ids?: string[];
   leaders?: unknown[];
   followers?: unknown[];
+  competitors_generated?: boolean;
 };
 
 function parseScoringJudgeCount(value: unknown): ScoringJudgeCount | null {
@@ -1661,7 +1671,7 @@ function rowsForHiddenSection(keepExisting: boolean, nextRows: unknown[], existi
 function preservedContestRoster(
   existingItems: unknown,
   id: string,
-): { leaders?: unknown[]; followers?: unknown[] } {
+): { leaders?: unknown[]; followers?: unknown[]; competitors_generated?: boolean } {
   if (!Array.isArray(existingItems)) {
     return {};
   }
@@ -1673,12 +1683,15 @@ function preservedContestRoster(
     return {};
   }
 
-  const preserved: { leaders?: unknown[]; followers?: unknown[] } = {};
+  const preserved: { leaders?: unknown[]; followers?: unknown[]; competitors_generated?: boolean } = {};
   if (Array.isArray(match.leaders)) {
     preserved.leaders = match.leaders;
   }
   if (Array.isArray(match.followers)) {
     preserved.followers = match.followers;
+  }
+  if (match[COMPETITORS_GENERATED_FLAG] === true) {
+    preserved.competitors_generated = true;
   }
   return preserved;
 }
@@ -3589,6 +3602,10 @@ export type UpcomingRegistrationContest = {
   itemId: string;
   skillLevelKey: string;
   divisionKey: string;
+  /** True after Create/Register Test Competitors. Cleared when those people are deleted. */
+  competitorsGenerated: boolean;
+  /** True when any Leader/Follower aaa–zzz roster id is already on this contest. */
+  hasGeneratedCompetitors: boolean;
 };
 
 export type ContestRosterRole = 'leader' | 'follower';
@@ -3914,13 +3931,15 @@ export async function fetchUpcomingRegistrationContests(
         itemId: contest.id,
         skillLevelKey: contest.skillLevelKey.trim(),
         divisionKey: contest.divisionKey.trim(),
+        competitorsGenerated: jsonRecord(rawItem)?.[COMPETITORS_GENERATED_FLAG] === true,
+        hasGeneratedCompetitors: false,
       });
     }
   }
 
   const eventIds = events.map((event) => event.event_id);
   if (eventIds.length === 0) {
-    return contests;
+    return attachGeneratedCompetitorFlags(contests);
   }
 
   const eventNameById = new Map(events.map((event) => [event.event_id, event.name?.trim() ?? '']));
@@ -3968,6 +3987,8 @@ export async function fetchUpcomingRegistrationContests(
       itemId: '',
       skillLevelKey: jsonText(more, 'skill_level_key') || jsonText(more, 'skillLevelKey'),
       divisionKey: jsonText(more, 'division_key') || jsonText(more, 'divisionKey'),
+      competitorsGenerated: more[COMPETITORS_GENERATED_FLAG] === true,
+      hasGeneratedCompetitors: false,
     });
   }
 
@@ -4003,20 +4024,24 @@ export async function fetchUpcomingRegistrationContests(
   );
   applyAttendeeRoleCounts(contests, attendeeRows);
 
-  return contests.map((contest) => ({
-    id: contest.id,
-    eventId: contest.eventId,
-    eventName: contest.eventName,
-    skillLevelLabel: contest.skillLevelLabel,
-    divisionLabel: contest.divisionLabel,
-    leaderCount: contest.leaderCount,
-    followerCount: contest.followerCount,
-    source: contest.source,
-    contestId: contest.contestId,
-    itemId: contest.itemId,
-    skillLevelKey: contest.skillLevelKey,
-    divisionKey: contest.divisionKey,
-  }));
+  return attachGeneratedCompetitorFlags(
+    contests.map((contest) => ({
+      id: contest.id,
+      eventId: contest.eventId,
+      eventName: contest.eventName,
+      skillLevelLabel: contest.skillLevelLabel,
+      divisionLabel: contest.divisionLabel,
+      leaderCount: contest.leaderCount,
+      followerCount: contest.followerCount,
+      source: contest.source,
+      contestId: contest.contestId,
+      itemId: contest.itemId,
+      skillLevelKey: contest.skillLevelKey,
+      divisionKey: contest.divisionKey,
+      competitorsGenerated: contest.competitorsGenerated,
+      hasGeneratedCompetitors: contest.hasGeneratedCompetitors,
+    })),
+  );
 }
 
 const ROSTER_REMOVE = Symbol('roster-remove');
@@ -4481,6 +4506,20 @@ export async function fetchContestRoster(
   return people;
 }
 
+async function attachGeneratedCompetitorFlags(
+  contests: UpcomingRegistrationContest[],
+): Promise<UpcomingRegistrationContest[]> {
+  return Promise.all(
+    contests.map(async (contest) => {
+      const people = await fetchContestRoster(contest);
+      return {
+        ...contest,
+        hasGeneratedCompetitors: rosterHasGeneratedCompetitors(people),
+      };
+    }),
+  );
+}
+
 async function saveEventJsonRoster(
   contest: UpcomingRegistrationContest,
   people: ContestRosterPerson[],
@@ -4829,9 +4868,7 @@ async function registerTableContestCompetitor(registration: ContestCompetitorReg
     last_name: registration.lastName,
     role: registration.role,
   };
-  if (bibKey) {
-    entry[bibKey] = registration.bib;
-  }
+  entry[bibKey ?? 'bib'] = registration.bib;
 
   const competitors = appendCompetitorValue(row.competitors_json, entry, registration.role);
   const more = competitors.changed
@@ -4927,6 +4964,174 @@ export async function registerContestCompetitors(
       await registerTableContestCompetitor(registration);
     }
   }
+}
+
+async function writeContestCompetitorsGenerated(
+  contest: UpcomingRegistrationContest,
+  generated: boolean,
+): Promise<void> {
+  const username = actingUsername();
+  if (contest.source === 'json') {
+    const moreJson = await fetchEventMoreJson(contest.eventId);
+    const contestsNode = jsonRecord(moreJson.contests);
+    if (!contestsNode || !Array.isArray(contestsNode.items)) {
+      throw new Error('Unable to update test competitors.');
+    }
+    const index = contestsNode.items.findIndex((entry) => jsonRecord(entry)?.id === contest.itemId);
+    const current = jsonRecord(contestsNode.items[index]);
+    if (index < 0 || !current) {
+      throw new Error('Unable to update test competitors.');
+    }
+    if ((current[COMPETITORS_GENERATED_FLAG] === true) === generated) {
+      return;
+    }
+    const items = [...contestsNode.items];
+    items[index] = { ...current, [COMPETITORS_GENERATED_FLAG]: generated };
+    await patchTable(
+      'event',
+      `event_id=eq.${contest.eventId}`,
+      {
+        modified_by: username,
+        more_json: {
+          ...moreJson,
+          contests: {
+            ...contestsNode,
+            items,
+          },
+        },
+      },
+      'Unable to update test competitors.',
+    );
+    return;
+  }
+
+  if (contest.contestId === null) {
+    throw new Error('Unable to update test competitors.');
+  }
+
+  const params = new URLSearchParams({ select: 'more_json' });
+  params.append('contest_id', `eq.${contest.contestId}`);
+  const rows = await fetchJson<Array<{ more_json: unknown }>>(
+    `${POSTGREST_URL}/contest?${params.toString()}`,
+    'Unable to update test competitors',
+  );
+  const more = moreJsonObject(rows[0]?.more_json);
+  if ((more[COMPETITORS_GENERATED_FLAG] === true) === generated) {
+    return;
+  }
+  const today = new Date().toISOString().slice(0, 10);
+  await patchTable(
+    'contest',
+    `contest_id=eq.${contest.contestId}`,
+    {
+      more_json: { ...more, [COMPETITORS_GENERATED_FLAG]: generated },
+      modified_by: username,
+      modified_date: today,
+    },
+    'Unable to update test competitors.',
+  );
+}
+
+async function ensureGeneratedCompetitorAccounts(): Promise<void> {
+  const roster = generatedCompetitorRoster();
+  const matches = await lookupStaffRegistration(
+    roster.map((person) => ({
+      id: person.id,
+      firstName: person.firstName,
+      lastName: person.lastName,
+    })),
+  );
+  const pending = accountsToCreate(
+    roster,
+    Object.fromEntries(roster.map((person) => [person.id, matches[person.id]?.status])),
+  );
+  for (const person of pending) {
+    const result = await quickRegisterUser(person.firstName, person.lastName);
+    if (result.ok) {
+      continue;
+    }
+    const message = result.message?.trim() ?? '';
+    if (message.toLowerCase().includes('already has an account')) {
+      continue;
+    }
+    throw new Error(message || `Unable to register ${person.firstName} ${person.lastName}.`);
+  }
+}
+
+export type GenerateContestCompetitorsResult = {
+  status: 'added';
+  leadersAdded: number;
+  followersAdded: number;
+};
+
+/**
+ * Scratches everyone on the contest, then adds Leader/Follower aaa–zzz.
+ * Bibs prefer 1–26 and 27–52, skipping any number still in use.
+ * User accounts are Quick Registered only when that name does not already exist.
+ */
+export async function generateContestCompetitors(
+  contest: UpcomingRegistrationContest,
+): Promise<GenerateContestCompetitorsResult> {
+  await ensureGeneratedCompetitorAccounts();
+
+  const existing = await fetchContestRoster(contest);
+  if (existing.length > 0) {
+    await saveContestRoster(contest, []);
+  }
+  const remaining = (existing.length > 0 ? await fetchContestRoster(contest) : []).filter(
+    (person) => !isGeneratedCompetitor(person),
+  );
+  const assigned = assignTestCompetitorBibs(usedContestBibNumbers(remaining));
+
+  if (contest.source === 'json') {
+    await saveContestRoster(contest, [
+      ...remaining,
+      ...assigned.map((person) => ({
+        id: person.id,
+        firstName: person.firstName,
+        lastName: person.lastName,
+        role: person.role,
+        origin: { kind: 'event-json' as const },
+        bib: person.bib,
+      })),
+    ]);
+  } else {
+    await registerContestCompetitors(
+      assigned.map((person) => ({
+        contest,
+        role: person.role,
+        personId: person.id,
+        firstName: person.firstName,
+        lastName: person.lastName,
+        bib: person.bib,
+      })),
+    );
+  }
+
+  await writeContestCompetitorsGenerated(contest, true);
+  return {
+    status: 'added',
+    leadersAdded: assigned.filter((person) => person.role === 'leader').length,
+    followersAdded: assigned.filter((person) => person.role === 'follower').length,
+  };
+}
+
+export type DeleteGeneratedCompetitorsResult = {
+  scratched: number;
+};
+
+/** Scratches Leader/Follower aaa–zzz only, and clears competitors_generated. */
+export async function deleteGeneratedContestCompetitors(
+  contest: UpcomingRegistrationContest,
+): Promise<DeleteGeneratedCompetitorsResult> {
+  const existing = await fetchContestRoster(contest);
+  const remaining = existing.filter((person) => !isGeneratedCompetitor(person));
+  const scratched = existing.length - remaining.length;
+  if (scratched > 0) {
+    await saveContestRoster(contest, remaining);
+  }
+  await writeContestCompetitorsGenerated(contest, false);
+  return { scratched };
 }
 
 export type JudgeSearchUser = {

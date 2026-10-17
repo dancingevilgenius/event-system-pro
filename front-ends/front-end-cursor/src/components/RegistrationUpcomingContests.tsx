@@ -62,28 +62,43 @@ export default function RegistrationUpcomingContests({
   const onSelectionChangeRef = useRef(onSelectionChange);
   onSelectionChangeRef.current = onSelectionChange;
 
-  const handleCountsChange = useCallback((contestId: string, leaderCount: number, followerCount: number) => {
+  const handleCountsChange = useCallback((
+    contestId: string,
+    leaderCount: number,
+    followerCount: number,
+    hasGeneratedCompetitors: boolean,
+  ) => {
     setContests((current) => {
       const index = current.findIndex((contest) => contest.id === contestId);
       if (index < 0) {
         return current;
       }
       const existing = current[index];
-      if (existing.leaderCount === leaderCount && existing.followerCount === followerCount) {
+      if (
+        existing.leaderCount === leaderCount
+        && existing.followerCount === followerCount
+        && existing.hasGeneratedCompetitors === hasGeneratedCompetitors
+      ) {
         return current;
       }
       return current.map((contest) =>
-        contest.id === contestId ? { ...contest, leaderCount, followerCount } : contest,
+        contest.id === contestId
+          ? { ...contest, leaderCount, followerCount, hasGeneratedCompetitors }
+          : contest,
       );
     });
     setRosterContest((current) => {
       if (!current || current.id !== contestId) {
         return current;
       }
-      if (current.leaderCount === leaderCount && current.followerCount === followerCount) {
+      if (
+        current.leaderCount === leaderCount
+        && current.followerCount === followerCount
+        && current.hasGeneratedCompetitors === hasGeneratedCompetitors
+      ) {
         return current;
       }
-      return { ...current, leaderCount, followerCount };
+      return { ...current, leaderCount, followerCount, hasGeneratedCompetitors };
     });
   }, []);
 

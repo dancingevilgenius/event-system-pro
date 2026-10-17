@@ -1,3 +1,4 @@
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import {
   Box,
   Button,
@@ -30,6 +31,8 @@ import {
   type ContestRosterRole,
   type UpcomingRegistrationContest,
 } from '../api/postgrest';
+import { rosterHasGeneratedCompetitors } from '../utils/generatedCompetitors';
+import { compareRosterByBib } from '../utils/rosterBibOrder';
 
 const LEADER_DROP_ID = 'roster-drop-leader';
 const FOLLOWER_DROP_ID = 'roster-drop-follower';
@@ -47,6 +50,13 @@ function rosterFullName(person: ContestRosterPerson): string {
   return name === '' ? 'Unnamed competitor' : name;
 }
 
+function rosterBibLabel(person: ContestRosterPerson): string {
+  if (typeof person.bib === 'number' && Number.isFinite(person.bib)) {
+    return String(person.bib);
+  }
+  return '—';
+}
+
 function contestDialogTitle(contest: UpcomingRegistrationContest): string {
   return [contest.eventName, contest.skillLevelLabel, contest.divisionLabel]
     .map((part) => part.trim())
@@ -55,7 +65,20 @@ function contestDialogTitle(contest: UpcomingRegistrationContest): string {
 }
 
 function peopleInRole(people: ContestRosterPerson[], role: ContestRosterRole): ContestRosterPerson[] {
-  return people.filter((person) => person.role === role);
+  return people.filter((person) => person.role === role).sort(compareRosterByBib);
+}
+
+function notifyRosterCounts(
+  onCountsChange: RegistrationContestRosterDialogProps['onCountsChange'],
+  contestId: string,
+  people: ContestRosterPerson[],
+) {
+  onCountsChange(
+    contestId,
+    peopleInRole(people, 'leader').length,
+    peopleInRole(people, 'follower').length,
+    rosterHasGeneratedCompetitors(people),
+  );
 }
 
 type RosterColumnProps = {
@@ -66,12 +89,14 @@ type RosterColumnProps = {
   onScratch: (person: ContestRosterPerson) => void;
 };
 
-function RosterName({
+function RosterPersonRow({
   person,
   saving,
+  onScratch,
 }: {
   person: ContestRosterPerson;
   saving: boolean;
+  onScratch: (person: ContestRosterPerson) => void;
 }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: person.id,
@@ -80,21 +105,62 @@ function RosterName({
   });
 
   return (
-    <Box
+    <Stack
       ref={setNodeRef}
-      {...listeners}
-      {...attributes}
+      direction="row"
+      spacing={1}
       sx={{
-        flex: 1,
-        minWidth: 0,
+        alignItems: 'center',
+        px: 1,
         py: 0.75,
-        cursor: saving ? 'default' : 'grab',
-        touchAction: 'none',
+        border: 1,
+        borderColor: 'divider',
+        borderRadius: 1,
+        bgcolor: 'background.paper',
         opacity: isDragging ? 0.35 : 1,
       }}
     >
-      <Typography variant="body2">{rosterFullName(person)}</Typography>
-    </Box>
+      <Typography
+        variant="body2"
+        sx={{
+          minWidth: 28,
+          flexShrink: 0,
+          fontVariantNumeric: 'tabular-nums',
+          color: 'text.secondary',
+        }}
+      >
+        {rosterBibLabel(person)}
+      </Typography>
+      <Box
+        {...listeners}
+        {...attributes}
+        aria-label={`Drag ${rosterFullName(person)}`}
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          flexShrink: 0,
+          color: 'text.secondary',
+          cursor: saving ? 'default' : 'grab',
+          touchAction: 'none',
+        }}
+      >
+        <DragIndicatorIcon fontSize="small" />
+      </Box>
+      <Typography variant="body2" sx={{ flex: 1, minWidth: 0 }}>
+        {rosterFullName(person)}
+      </Typography>
+      <Button
+        type="button"
+        size="small"
+        variant="outlined"
+        disabled={saving}
+        onClick={() => onScratch(person)}
+        aria-label={`Scratch ${rosterFullName(person)}`}
+        sx={{ flexShrink: 0, textTransform: 'none' }}
+      >
+        Scratch
+      </Button>
+    </Stack>
   );
 }
 
@@ -125,25 +191,7 @@ function RosterColumn({ dropId, title, people, saving, onScratch }: RosterColumn
           </Typography>
         ) : (
           people.map((person) => (
-            <Stack
-              key={person.id}
-              direction="row"
-              spacing={1}
-              sx={{ alignItems: 'center', justifyContent: 'space-between' }}
-            >
-              <RosterName person={person} saving={saving} />
-              <Button
-                type="button"
-                size="small"
-                variant="outlined"
-                disabled={saving}
-                onClick={() => onScratch(person)}
-                aria-label={`Scratch ${rosterFullName(person)}`}
-                sx={{ flexShrink: 0, textTransform: 'none' }}
-              >
-                Scratch
-              </Button>
-            </Stack>
+            <RosterPersonRow key={person.id} person={person} saving={saving} onScratch={onScratch} />
           ))
         )}
       </Stack>
@@ -154,7 +202,12 @@ function RosterColumn({ dropId, title, people, saving, onScratch }: RosterColumn
 type RegistrationContestRosterDialogProps = {
   contest: UpcomingRegistrationContest | null;
   onClose: () => void;
-  onCountsChange: (contestId: string, leaderCount: number, followerCount: number) => void;
+  onCountsChange: (
+    contestId: string,
+    leaderCount: number,
+    followerCount: number,
+    hasGeneratedCompetitors: boolean,
+  ) => void;
 };
 
 export default function RegistrationContestRosterDialog({
@@ -199,11 +252,7 @@ export default function RegistrationContestRosterDialog({
           return;
         }
         setPeople(rows);
-        onCountsChange(
-          requested.id,
-          peopleInRole(rows, 'leader').length,
-          peopleInRole(rows, 'follower').length,
-        );
+        notifyRosterCounts(onCountsChange, requested.id, rows);
       })
       .catch((loadError: unknown) => {
         if (!cancelled) {
@@ -229,29 +278,17 @@ export default function RegistrationContestRosterDialog({
       return;
     }
     setPeople(next);
-    onCountsChange(
-      contest.id,
-      peopleInRole(next, 'leader').length,
-      peopleInRole(next, 'follower').length,
-    );
+    notifyRosterCounts(onCountsChange, contest.id, next);
     setSaving(true);
     setError(null);
     try {
       await saveContestRoster(contest, next);
       const fresh = await fetchContestRoster(contest);
       setPeople(fresh);
-      onCountsChange(
-        contest.id,
-        peopleInRole(fresh, 'leader').length,
-        peopleInRole(fresh, 'follower').length,
-      );
+      notifyRosterCounts(onCountsChange, contest.id, fresh);
     } catch (saveError: unknown) {
       setPeople(previous);
-      onCountsChange(
-        contest.id,
-        peopleInRole(previous, 'leader').length,
-        peopleInRole(previous, 'follower').length,
-      );
+      notifyRosterCounts(onCountsChange, contest.id, previous);
       setError(saveError instanceof Error ? saveError.message : 'Unable to save contest roster.');
     } finally {
       setSaving(false);
@@ -345,18 +382,27 @@ export default function RegistrationContestRosterDialog({
               </Stack>
               <DragOverlay zIndex={2000}>
                 {activePerson ? (
-                  <Typography
-                    variant="body2"
+                  <Stack
+                    direction="row"
+                    spacing={1}
                     sx={{
-                      px: 1.5,
-                      py: 1,
+                      alignItems: 'center',
+                      px: 1,
+                      py: 0.75,
+                      border: 1,
+                      borderColor: 'divider',
                       borderRadius: 1,
                       bgcolor: 'background.paper',
                       boxShadow: 3,
+                      cursor: 'grabbing',
                     }}
                   >
-                    {rosterFullName(activePerson)}
-                  </Typography>
+                    <Typography variant="body2" sx={{ minWidth: 28, color: 'text.secondary' }}>
+                      {rosterBibLabel(activePerson)}
+                    </Typography>
+                    <DragIndicatorIcon fontSize="small" sx={{ color: 'text.secondary' }} />
+                    <Typography variant="body2">{rosterFullName(activePerson)}</Typography>
+                  </Stack>
                 ) : null}
               </DragOverlay>
             </DndContext>

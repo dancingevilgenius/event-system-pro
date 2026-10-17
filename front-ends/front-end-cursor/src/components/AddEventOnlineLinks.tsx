@@ -1,5 +1,5 @@
 import { Box, Stack } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   contactVenueSummaryFromContact,
   EMPTY_EVENT_VENUE_CONTACT,
@@ -7,6 +7,7 @@ import {
   type EventVenueContactJson,
 } from '../lib/eventLocation';
 import { ACCORDION_TABLE_ROW_GAP, mobileColumnSx } from '../constants/layout';
+import { useAppliedEventImport, useReportEventFormSection } from '../context/EventFormExportContext';
 import { trimSavedText } from '../utils/trimSavedText';
 import AppPhoneNumberField from './AppPhoneNumberField';
 import AppTextField from './AppTextField';
@@ -36,10 +37,30 @@ export default function AddEventOnlineLinks({
   onSummaryChange,
 }: AddEventOnlineLinksProps) {
   const [contact, setContact] = useState(EMPTY_EVENT_VENUE_CONTACT);
+  const reportExport = useReportEventFormSection();
+  const appliedImport = useAppliedEventImport();
+  const appliedTokenRef = useRef(0);
 
   useEffect(() => {
     onSummaryChange?.(contactVenueSummaryFromContact(contact));
   }, [contact, onSummaryChange]);
+
+  useEffect(() => {
+    reportExport('contactVenue', contact);
+  }, [contact, reportExport]);
+
+  useEffect(() => {
+    if (!appliedImport || appliedImport.token === appliedTokenRef.current) {
+      return;
+    }
+
+    appliedTokenRef.current = appliedImport.token;
+    setContact(appliedImport.contactVenue);
+
+    return () => {
+      appliedTokenRef.current = 0;
+    };
+  }, [appliedImport]);
 
   const updateContactField = (field: keyof EventVenueContactJson, value: string) => {
     setContact((current) => ({ ...current, [field]: value }));

@@ -9,8 +9,9 @@ import {
   ToggleButton,
   ToggleButtonGroup,
 } from '@mui/material';
-import { type MouseEvent, useEffect, useState } from 'react';
+import { type MouseEvent, useEffect, useRef, useState } from 'react';
 import { mobileColumnSx } from '../constants/layout';
+import { useAppliedEventImport, useReportEventFormSection } from '../context/EventFormExportContext';
 import {
   createInitialEarlyBirdWindows,
   type EarlyBirdWindow,
@@ -59,10 +60,31 @@ export default function AddEventEarlyBirdDates({
 }: AddEventEarlyBirdDatesProps) {
   const [mode, setMode] = useState<EarlyBirdDatesMode>('none');
   const [windows, setWindows] = useState<EarlyBirdWindow[]>(() => createInitialEarlyBirdWindows());
+  const reportExport = useReportEventFormSection();
+  const appliedImport = useAppliedEventImport();
+  const appliedTokenRef = useRef(0);
 
   useEffect(() => {
     onNoEarlyBirdDatesChange?.(mode === 'none');
   }, [mode, onNoEarlyBirdDatesChange]);
+
+  useEffect(() => {
+    reportExport('earlyBird', { mode, windows });
+  }, [mode, reportExport, windows]);
+
+  useEffect(() => {
+    if (!appliedImport || appliedImport.token === appliedTokenRef.current) {
+      return;
+    }
+
+    appliedTokenRef.current = appliedImport.token;
+    setMode(appliedImport.earlyBird.mode);
+    setWindows(appliedImport.earlyBird.windows);
+
+    return () => {
+      appliedTokenRef.current = 0;
+    };
+  }, [appliedImport]);
 
   const updateWindow = (
     id: string,

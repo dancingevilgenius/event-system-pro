@@ -62,9 +62,12 @@ import AddEventImportantContacts from '../components/AddEventImportantContacts';
 import AddEventContests, { type EventContestsSummary } from '../components/AddEventContests';
 import AddEventStaff, { type EventStaffSummary } from '../components/AddEventStaff';
 import AddEventVolunteers from '../components/AddEventVolunteers';
+import AddEventExportImport from '../components/AddEventExportImport';
 import AddEventSortableSectionAccordion from '../components/AddEventSortableSectionAccordion';
 import { type AddEventSectionStatus } from '../components/AddEventSectionStatusToggle';
 import PageHeader from '../components/PageHeader';
+import { EventFormExportProvider, useAppliedEventImport } from '../context/EventFormExportContext';
+import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 import { EVENT_GROUPS_PATH, eventGroupDetailPath } from '../constants/eventRoutes';
@@ -86,6 +89,7 @@ import {
   type ContactVenueSummary,
 } from '../lib/eventLocation';
 import { resolveEventGroupCode } from '../lib/eventGroupSession';
+import { DEFAULT_IMPORTANT_CONTACT } from '../lib/eventFormExport';
 import { passesAccordionTitle } from '../lib/eventPasses';
 
 type AddEventLocationState = {
@@ -106,6 +110,10 @@ type AddEventSectionId =
   | 'schedule'
   | 'staff'
   | 'volunteers';
+
+type AddEventPanelId = AddEventSectionId | 'export_import';
+
+const EXPORT_IMPORT_PANEL_ID = 'export_import' as const;
 
 type AddEventSection = {
   id: AddEventSectionId;
@@ -266,14 +274,14 @@ function sectionDisplayTitle(
 }
 
 function sectionIsFinalizedNotApplicable(
-  sectionId: AddEventSectionId,
+  sectionId: AddEventPanelId,
   status: AddEventSectionStatus,
   passesSummary: EventPassesSummary,
   noEarlyBirdDates: boolean,
   hasContests: boolean,
   hasStaff: boolean,
 ): boolean {
-  if (status !== 'finalized') {
+  if (sectionId === EXPORT_IMPORT_PANEL_ID || status !== 'finalized') {
     return false;
   }
 
@@ -297,19 +305,20 @@ function sectionIsFinalizedNotApplicable(
 }
 
 function withFinalizedNotApplicableAtEnd(
-  order: AddEventSectionId[],
+  order: AddEventPanelId[],
   statuses: Record<AddEventSectionId, AddEventSectionStatus>,
   passesSummary: EventPassesSummary,
   noEarlyBirdDates: boolean,
   hasContests: boolean,
   hasStaff: boolean,
-): AddEventSectionId[] {
-  const remaining: AddEventSectionId[] = [];
-  const sunk: AddEventSectionId[] = [];
+): AddEventPanelId[] {
+  const remaining: AddEventPanelId[] = [];
+  const sunk: AddEventPanelId[] = [];
 
   for (const sectionId of order) {
     if (
-      sectionIsFinalizedNotApplicable(
+      sectionId !== EXPORT_IMPORT_PANEL_ID
+      && sectionIsFinalizedNotApplicable(
         sectionId,
         statuses[sectionId],
         passesSummary,
@@ -541,8 +550,12 @@ function renderSectionContent(
   return null;
 }
 
-export default function AdminAddEventPage() {
+function AdminAddEventForm() {
   const location = useLocation();
+  const { hasAnyRole } = useAuth();
+  const isAdmin = hasAnyRole(['ADMIN']);
+  const appliedImport = useAppliedEventImport();
+  const appliedTokenRef = useRef(0);
   const { showProblem } = useMessages();
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const locationState = (location.state as AddEventLocationState | null) ?? null;
@@ -553,10 +566,14 @@ export default function AdminAddEventPage() {
   const isEditingEvent = eventId !== null;
   const [eventGroupName, setEventGroupName] = useState('');
   const [eventTypeCode, setEventTypeCode] = useState<string | null>(null);
-  const [expandedSection, setExpandedSection] = useState<AddEventSectionId | false>('event_name');
+  const [expandedSection, setExpandedSection] = useState<AddEventPanelId | false>('event_name');
   const [sectionStatuses, setSectionStatuses] = useState(createInitialSectionStatuses);
   const sectionStatusesRef = useRef(sectionStatuses);
-  const [sectionOrder, setSectionOrder] = useState<AddEventSectionId[]>(DEFAULT_SECTION_ORDER);
+  const [sectionOrder, setSectionOrder] = useState<AddEventPanelId[]>(() =>
+    hasAnyRole(['ADMIN'])
+      ? [...DEFAULT_SECTION_ORDER, EXPORT_IMPORT_PANEL_ID]
+      : DEFAULT_SECTION_ORDER,
+  );
   const [eventName, setEventName] = useState('');
   const [passesSummary, setPassesSummary] = useState<EventPassesSummary>({
     hasPasses: false,
@@ -769,22 +786,28 @@ export default function AdminAddEventPage() {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
 
-  const displayedSectionIds = useMemo(
-    () => withFinalizedNotApplicableAtEnd(
-      sectionOrder,
+  const displayedSectionIds = useMemo(() => {
+    const panels = isAdmin && !sectionOrder.includes(EXPORT_IMPORT_PANEL_ID)
+      ? [...sectionOrder, EXPORT_IMPORT_PANEL_ID]
+      : sectionOrder;
+    const ordered = withFinalizedNotApplicableAtEnd(
+      panels,
       sectionStatuses,
       passesSummary,
       noEarlyBirdDates,
       hasContests,
       hasStaff,
-    ),
-    [hasContests, hasStaff, noEarlyBirdDates, passesSummary, sectionOrder, sectionStatuses],
-  );
-
-  const orderedSections = useMemo(
-    () => displayedSectionIds.map((sectionId) => ADD_EVENT_SECTIONS_BY_ID[sectionId]),
-    [displayedSectionIds],
-  );
+    );
+    return isAdmin ? ordered : ordered.filter((sectionId) => sectionId !== EXPORT_IMPORT_PANEL_ID);
+  }, [
+    hasContests,
+    hasStaff,
+    isAdmin,
+    noEarlyBirdDates,
+    passesSummary,
+    sectionOrder,
+    sectionStatuses,
+  ]);
 
   const scheduleDatesSelected = hasEventDatesForSchedule(eventDates);
   const eventNameReadyToFinalize = eventNameCanBeFinalized(eventName);
@@ -795,7 +818,9 @@ export default function AdminAddEventPage() {
       return;
     }
 
-    setExpandedSection((current) => (current === 'event_name' ? current : false));
+    setExpandedSection((current) =>
+      current === 'event_name' || current === EXPORT_IMPORT_PANEL_ID ? current : false,
+    );
   }, [otherSectionsEnabled]);
 
   const backPath = eventGroupCode
@@ -1008,9 +1033,9 @@ export default function AdminAddEventPage() {
   };
 
   const handleAccordionChange =
-    (sectionId: AddEventSectionId) =>
+    (sectionId: AddEventPanelId) =>
     (_event: SyntheticEvent, isExpanded: boolean) => {
-      if (sectionId !== 'event_name' && !otherSectionsEnabled) {
+      if (sectionId !== 'event_name' && sectionId !== EXPORT_IMPORT_PANEL_ID && !otherSectionsEnabled) {
         return;
       }
 
@@ -1031,8 +1056,8 @@ export default function AdminAddEventPage() {
       return;
     }
 
-    const activeId = active.id as AddEventSectionId;
-    const overId = over.id as AddEventSectionId;
+    const activeId = active.id as AddEventPanelId;
+    const overId = over.id as AddEventPanelId;
     setSectionOrder((current) => {
       const displayed = withFinalizedNotApplicableAtEnd(
         current,
@@ -1049,16 +1074,20 @@ export default function AdminAddEventPage() {
       }
 
       const sunk = new Set(
-        displayed.filter((sectionId) =>
-          sectionIsFinalizedNotApplicable(
+        displayed.filter((sectionId) => {
+          if (sectionId === EXPORT_IMPORT_PANEL_ID) {
+            return false;
+          }
+
+          return sectionIsFinalizedNotApplicable(
             sectionId,
             sectionStatuses[sectionId],
             passesSummary,
             noEarlyBirdDates,
             hasContests,
             hasStaff,
-          ),
-        ),
+          );
+        }),
       );
       const nextNonSunk = arrayMove(displayed, oldIndex, newIndex).filter(
         (sectionId) => !sunk.has(sectionId),
@@ -1075,6 +1104,63 @@ export default function AdminAddEventPage() {
       });
     });
   };
+
+  useEffect(() => {
+    if (!appliedImport || appliedImport.token === appliedTokenRef.current) {
+      return;
+    }
+
+    appliedTokenRef.current = appliedImport.token;
+    const nextName = appliedImport.eventName;
+    eventNameRef.current = nextName;
+    draftDirtyRef.current = true;
+    setEventName(nextName);
+
+    eventDatesRef.current = appliedImport.dates;
+    setEventDates(appliedImport.dates);
+
+    const allowed = new Set<string>(DEFAULT_SECTION_ORDER);
+    const nextOrder = appliedImport.sectionOrder.filter(
+      (sectionId): sectionId is AddEventSectionId => allowed.has(sectionId),
+    );
+    if (nextOrder.length === DEFAULT_SECTION_ORDER.length) {
+      setSectionOrder(
+        isAdmin ? [...nextOrder, EXPORT_IMPORT_PANEL_ID] : nextOrder,
+      );
+    }
+
+    setSectionStatuses((current) => {
+      const next = { ...current };
+      for (const sectionId of DEFAULT_SECTION_ORDER) {
+        const status = appliedImport.sectionStatuses[sectionId];
+        if (status === 'not_started' || status === 'in_progress' || status === 'finalized') {
+          next[sectionId] = status;
+        }
+      }
+      sectionStatusesRef.current = next;
+      return next;
+    });
+
+    const storedStatuses: Record<string, StoredSectionStatus> = {};
+    for (const sectionId of DEFAULT_SECTION_ORDER) {
+      const status = appliedImport.sectionStatuses[sectionId];
+      if (status === 'not_started' || status === 'in_progress' || status === 'finalized') {
+        storedStatuses[sectionId] = STATUS_TO_STORED[status];
+      }
+    }
+    enqueueEventSave((currentEventId) =>
+      saveEventSectionStatuses({
+        eventId: currentEventId,
+        eventGroupCode: eventGroupCodeRef.current,
+        eventName: nextName,
+        sectionStatuses: storedStatuses,
+      }),
+    );
+
+    return () => {
+      appliedTokenRef.current = 0;
+    };
+  }, [appliedImport, enqueueEventSave, isAdmin]);
 
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
@@ -1098,7 +1184,36 @@ export default function AdminAddEventPage() {
           >
             <SortableContext items={displayedSectionIds} strategy={verticalListSortingStrategy}>
               <Stack spacing={1.5}>
-                {orderedSections.map((section) => {
+                {displayedSectionIds.map((panelId) => {
+                  if (panelId === EXPORT_IMPORT_PANEL_ID) {
+                    return (
+                      <AddEventSortableSectionAccordion
+                        key={panelId}
+                        sectionId={panelId}
+                        sectionTitle="Export / Import"
+                        sectionDescription=""
+                        expanded={expandedSection === panelId}
+                        onAccordionChange={handleAccordionChange(panelId)}
+                        sectionContent={
+                          <AddEventExportImport
+                            eventName={eventName}
+                            eventGroupCode={eventGroupCode}
+                            dates={eventDates}
+                            sectionStatuses={sectionStatuses}
+                            sectionOrder={sectionOrder}
+                            scheduleDays={getScheduleTimeBlockDays(eventDates)}
+                            importantContact={DEFAULT_IMPORTANT_CONTACT}
+                          />
+                        }
+                        sectionStatus="not_started"
+                        onStatusChange={() => undefined}
+                        showStatusToggle={false}
+                        showStatusIcon={false}
+                      />
+                    );
+                  }
+
+                  const section = ADD_EVENT_SECTIONS_BY_ID[panelId];
                   const sectionContent = renderSectionContent(
                     section.id,
                     () => handleSectionFieldEdit(section.id),
@@ -1167,5 +1282,13 @@ export default function AdminAddEventPage() {
 
       </Paper>
     </Container>
+  );
+}
+
+export default function AdminAddEventPage() {
+  return (
+    <EventFormExportProvider>
+      <AdminAddEventForm />
+    </EventFormExportProvider>
   );
 }

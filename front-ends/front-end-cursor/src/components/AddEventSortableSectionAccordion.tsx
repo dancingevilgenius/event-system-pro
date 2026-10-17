@@ -39,6 +39,7 @@ type AddEventSortableSectionAccordionProps = {
   onStatusChange: (status: AddEventSectionStatus) => void;
   disabledStatuses?: AddEventSectionStatus[];
   showStatusToggle?: boolean;
+  showStatusIcon?: boolean;
   disabled?: boolean;
 };
 
@@ -53,6 +54,7 @@ export default function AddEventSortableSectionAccordion({
   onStatusChange,
   disabledStatuses,
   showStatusToggle = true,
+  showStatusIcon = true,
   disabled = false,
 }: AddEventSortableSectionAccordionProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
@@ -111,7 +113,9 @@ export default function AddEventSortableSectionAccordion({
           >
             {sectionTitle}
           </Typography>
-          <AddEventSectionStatusIcon status={sectionStatus} sectionTitle={sectionTitle} />
+          {showStatusIcon ? (
+            <AddEventSectionStatusIcon status={sectionStatus} sectionTitle={sectionTitle} />
+          ) : null}
         </AccordionSummary>
         <AccordionDetails
           sx={{

@@ -18,6 +18,7 @@ import {
   type EventRoleAssignment,
 } from '../api/postgrest';
 import { ACCORDION_TABLE_ROW_GAP } from '../constants/layout';
+import { useAppliedEventImport, useReportEventFormSection } from '../context/EventFormExportContext';
 
 type AddEventRolesProps = {
   eventId: number | null;
@@ -124,6 +125,9 @@ export default function AddEventRoles({
   const selectionRef = useRef(selection);
   const onSaveRolesRef = useRef(onSaveRoles);
   const loadedEventIdRef = useRef<number | null | undefined>(undefined);
+  const reportExport = useReportEventFormSection();
+  const appliedImport = useAppliedEventImport();
+  const appliedTokenRef = useRef(0);
 
   useEffect(() => {
     if (eventId !== null) {
@@ -142,6 +146,30 @@ export default function AddEventRoles({
   useEffect(() => {
     onSaveRolesRef.current = onSaveRoles;
   }, [onSaveRoles]);
+
+  useEffect(() => {
+    if (loading) {
+      return;
+    }
+
+    reportExport('roles', toAssignments(roles, selection));
+  }, [loading, reportExport, roles, selection]);
+
+  useEffect(() => {
+    if (!appliedImport || loading || roles.length === 0 || appliedImport.token === appliedTokenRef.current) {
+      return;
+    }
+
+    appliedTokenRef.current = appliedImport.token;
+    const next = selectionFromRoles(roles, appliedImport.roles, {});
+    selectionRef.current = next;
+    setSelection(next);
+    onSaveRolesRef.current(toAssignments(rolesRef.current, next));
+
+    return () => {
+      appliedTokenRef.current = 0;
+    };
+  }, [appliedImport, loading, roles]);
 
   const labelWidth = useMemo(
     () => selectWidthForOptions(roles.flatMap((role) => (role.labels.length > 0 ? role.labels : ['—']))),

@@ -32,6 +32,7 @@ import {
   type StaffRegistrationMatch,
 } from '../api/postgrest';
 import { ACCORDION_TABLE_ROW_GAP, mobileColumnSx } from '../constants/layout';
+import { useAppliedEventImport, useReportEventFormSection } from '../context/EventFormExportContext';
 import { registerEventFormSyncFlush } from '../lib/eventFormFlush';
 import { trimSavedText } from '../utils/trimSavedText';
 import { useAuth } from '../hooks/useAuth';
@@ -324,6 +325,10 @@ export default function AddEventStaff({
   const savedMembersRef = useRef<EventStaffMember[]>([]);
   const savedHasStaffRef = useRef(false);
   const textFocusValueRef = useRef('');
+  const reportExport = useReportEventFormSection();
+  const appliedImport = useAppliedEventImport();
+  const appliedTokenRef = useRef(0);
+  const hydratedImportTokenRef = useRef(0);
 
   useEffect(() => {
     if (eventId !== null) {
@@ -361,6 +366,14 @@ export default function AddEventStaff({
   }, [hasStaff, members]);
 
   useEffect(() => {
+    if (loading) {
+      return;
+    }
+
+    reportExport('staff', { hasStaff, members, registrationById });
+  }, [hasStaff, loading, members, registrationById, reportExport]);
+
+  useEffect(() => {
     if (eventId === null) {
       setLoading(false);
       return;
@@ -371,7 +384,7 @@ export default function AddEventStaff({
 
     void fetchEventMoreJson(eventId)
       .then((moreJson) => {
-        if (cancelled || dirtyRef.current) {
+        if (cancelled || dirtyRef.current || hydratedImportTokenRef.current !== 0) {
           return;
         }
 
@@ -429,6 +442,27 @@ export default function AddEventStaff({
         }
       });
   };
+
+  useEffect(() => {
+    if (!appliedImport || appliedImport.token === appliedTokenRef.current) {
+      return;
+    }
+
+    appliedTokenRef.current = appliedImport.token;
+    hydratedImportTokenRef.current = appliedImport.token;
+    hasStaffRef.current = appliedImport.staff.hasStaff;
+    membersRef.current = appliedImport.staff.members;
+    dirtyRef.current = true;
+    setLoading(false);
+    setHasStaff(appliedImport.staff.hasStaff);
+    setMembers(appliedImport.staff.members);
+    onSaveStaffRef.current(appliedImport.staff);
+    runRegistrationLookup(appliedImport.staff.members);
+
+    return () => {
+      appliedTokenRef.current = 0;
+    };
+  }, [appliedImport]);
 
   const scheduleRegistrationLookup = (staffMembers: EventStaffMember[]) => {
     cancelScheduledLookup();

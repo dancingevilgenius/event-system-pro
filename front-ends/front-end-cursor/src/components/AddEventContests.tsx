@@ -43,6 +43,7 @@ import {
   type StaticListEntry,
 } from '../api/postgrest';
 import { mobileColumnSx } from '../constants/layout';
+import { useAppliedEventImport, useReportEventFormSection } from '../context/EventFormExportContext';
 import { useMessages } from '../hooks/useMessages';
 import { buildDefaultSwingContestTitle } from '../lib/swingDanceContest';
 import {
@@ -191,6 +192,10 @@ export default function AddEventContests({
   const [loadingLists, setLoadingLists] = useState(false);
   const [listError, setListError] = useState<string | null>(null);
   const [listsLoaded, setListsLoaded] = useState(false);
+  const reportExport = useReportEventFormSection();
+  const appliedImport = useAppliedEventImport();
+  const appliedTokenRef = useRef(0);
+  const hydratedImportTokenRef = useRef(0);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -218,6 +223,35 @@ export default function AddEventContests({
   }, [contests.length, hasContests, loaded, onSummaryChange]);
 
   useEffect(() => {
+    if (!loaded) {
+      return;
+    }
+
+    reportExport('contests', { hasContests, contests });
+  }, [contests, hasContests, loaded, reportExport]);
+
+  useEffect(() => {
+    if (!appliedImport || appliedImport.token === appliedTokenRef.current) {
+      return;
+    }
+
+    appliedTokenRef.current = appliedImport.token;
+    hydratedImportTokenRef.current = appliedImport.token;
+    hasContestsRef.current = appliedImport.contests.hasContests;
+    contestsRef.current = appliedImport.contests.contests;
+    dirtyRef.current = true;
+    setHasContests(appliedImport.contests.hasContests);
+    setContests(appliedImport.contests.contests);
+    setLoaded(true);
+    setLoadingSaved(false);
+    onSaveContestsRef.current(appliedImport.contests);
+
+    return () => {
+      appliedTokenRef.current = 0;
+    };
+  }, [appliedImport]);
+
+  useEffect(() => {
     if (eventId === null) {
       setLoadingSaved(false);
       setLoaded(true);
@@ -229,7 +263,7 @@ export default function AddEventContests({
 
     void fetchEventMoreJson(eventId)
       .then((moreJson) => {
-        if (cancelled || dirtyRef.current) {
+        if (cancelled || dirtyRef.current || hydratedImportTokenRef.current !== 0) {
           return;
         }
 

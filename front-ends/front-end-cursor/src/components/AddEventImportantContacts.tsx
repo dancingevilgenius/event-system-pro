@@ -1,15 +1,10 @@
 import { Box, Stack, Typography } from '@mui/material';
 import { ACCORDION_TABLE_ROW_GAP } from '../constants/layout';
 import { useLayoutTier } from '../hooks/useLayoutTier';
+import { DEFAULT_IMPORTANT_CONTACT } from '../lib/eventFormExport';
 
 type AddEventImportantContactsProps = {
   onFieldEdit?: () => void;
-};
-
-const DEFAULT_CONTACT = {
-  name: 'Carlos Garcia',
-  email: 'swingcarlos@alum.mit.edu',
-  phone: '6302201111',
 };
 
 const CONTACT_COLUMNS = [
@@ -37,7 +32,7 @@ export default function AddEventImportantContacts(_props: AddEventImportantConta
             <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
               {column.label}
             </Typography>
-            <ContactValue value={DEFAULT_CONTACT[column.key]} />
+            <ContactValue value={DEFAULT_IMPORTANT_CONTACT[column.key]} />
           </Box>
         ))}
       </Stack>
@@ -67,9 +62,9 @@ export default function AddEventImportantContacts(_props: AddEventImportantConta
           {column.label}
         </Typography>
       ))}
-      <ContactValue value={DEFAULT_CONTACT.name} />
-      <ContactValue value={DEFAULT_CONTACT.email} />
-      <ContactValue value={DEFAULT_CONTACT.phone} />
+      <ContactValue value={DEFAULT_IMPORTANT_CONTACT.name} />
+      <ContactValue value={DEFAULT_IMPORTANT_CONTACT.email} />
+      <ContactValue value={DEFAULT_IMPORTANT_CONTACT.phone} />
     </Box>
   );
 }

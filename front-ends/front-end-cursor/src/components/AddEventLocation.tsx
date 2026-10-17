@@ -12,6 +12,7 @@ import {
   eventLocationToJson,
   type EventLocationJson,
 } from '../lib/eventLocation';
+import { useAppliedEventImport, useReportEventFormSection } from '../context/EventFormExportContext';
 import { trimSavedText } from '../utils/trimSavedText';
 import AppTextField from './AppTextField';
 
@@ -72,6 +73,10 @@ export default function AddEventLocation({
   const saveSeqRef = useRef(0);
   const expandedRef = useRef(expanded);
   const onSaveLocationRef = useRef(onSaveLocation);
+  const reportExport = useReportEventFormSection();
+  const appliedImport = useAppliedEventImport();
+  const appliedTokenRef = useRef(0);
+  const hydratedImportTokenRef = useRef(0);
 
   useEffect(() => {
     locationRef.current = location;
@@ -84,6 +89,29 @@ export default function AddEventLocation({
   useEffect(() => {
     onVenueChange?.(location.venue);
   }, [location.venue, onVenueChange]);
+
+  useEffect(() => {
+    reportExport('location', location);
+  }, [location, reportExport]);
+
+  useEffect(() => {
+    if (!appliedImport || appliedImport.token === appliedTokenRef.current) {
+      return;
+    }
+
+    appliedTokenRef.current = appliedImport.token;
+    hydratedImportTokenRef.current = appliedImport.token;
+    const next = eventLocationToJson(appliedImport.location);
+    locationRef.current = next;
+    dirtyRef.current = true;
+    savedKeyRef.current = '';
+    setLocation(next);
+    onSaveLocationRef.current(next);
+
+    return () => {
+      appliedTokenRef.current = 0;
+    };
+  }, [appliedImport]);
 
   useEffect(() => {
     let cancelled = false;
@@ -161,7 +189,7 @@ export default function AddEventLocation({
           return;
         }
 
-        if (!dirtyRef.current) {
+        if (!dirtyRef.current && hydratedImportTokenRef.current === 0) {
           locationRef.current = stored;
           savedKeyRef.current = locationSaveKey(stored);
           setLocation(stored);

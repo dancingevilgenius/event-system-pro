@@ -21,8 +21,9 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { type MouseEvent, type SyntheticEvent, useEffect, useState } from 'react';
+import { type MouseEvent, type SyntheticEvent, useEffect, useRef, useState } from 'react';
 import { mobileColumnSx } from '../constants/layout';
+import { useAppliedEventImport, useReportEventFormSection } from '../context/EventFormExportContext';
 import {
   createDefaultEventPass,
   createEmptyEventPass,
@@ -51,6 +52,9 @@ export default function AddEventPasses({
   const [hasPasses, setHasPasses] = useState(false);
   const [passes, setPasses] = useState<EventPassFormState[]>(() => [createDefaultEventPass()]);
   const [expandedPassId, setExpandedPassId] = useState<string | false>(false);
+  const reportExport = useReportEventFormSection();
+  const appliedImport = useAppliedEventImport();
+  const appliedTokenRef = useRef(0);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -62,6 +66,25 @@ export default function AddEventPasses({
   useEffect(() => {
     onSummaryChange?.({ hasPasses, passCount: passes.length });
   }, [hasPasses, onSummaryChange, passes.length]);
+
+  useEffect(() => {
+    reportExport('passes', { hasPasses, passes });
+  }, [hasPasses, passes, reportExport]);
+
+  useEffect(() => {
+    if (!appliedImport || appliedImport.token === appliedTokenRef.current) {
+      return;
+    }
+
+    appliedTokenRef.current = appliedImport.token;
+    setHasPasses(appliedImport.passes.hasPasses);
+    setPasses(appliedImport.passes.passes);
+    setExpandedPassId(false);
+
+    return () => {
+      appliedTokenRef.current = 0;
+    };
+  }, [appliedImport]);
 
   const updatePass = (
     id: string,

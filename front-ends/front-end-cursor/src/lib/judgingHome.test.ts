@@ -4,6 +4,7 @@ import {
   eventInJudgingWindow,
   formatRegisteredCounts,
   selectJudgingHomeContests,
+  showsJudgingHomeButton,
   type JudgingHomeContestRow,
   type JudgingHomeEvent,
   type JudgingUserIdentity,
@@ -82,6 +83,29 @@ const event134: JudgingHomeEvent = {
   },
 };
 
+describe('showsJudgingHomeButton', () => {
+  it('shows Judging for the Judge app role without a contest in the 6-hour window', () => {
+    expect(showsJudgingHomeButton({ appRoles: ['JUDGE'], contestsInWindow: 0 })).toBe(true);
+    expect(showsJudgingHomeButton({ appRoles: ['Judge'], contestsInWindow: 0 })).toBe(true);
+    expect(showsJudgingHomeButton({ appRoles: [' judge '], contestsInWindow: 0 })).toBe(true);
+  });
+
+  it('shows Judging for Head Judge as its own role', () => {
+    expect(showsJudgingHomeButton({ appRoles: ['HEAD_JUDGE'], contestsInWindow: 0 })).toBe(true);
+    expect(showsJudgingHomeButton({ appRoles: ['Head Judge'], contestsInWindow: 0 })).toBe(true);
+  });
+
+  it('hides Judging when the account is not a judge and no contest is in the window', () => {
+    expect(showsJudgingHomeButton({ appRoles: ['STAFF'], contestsInWindow: 0 })).toBe(false);
+    expect(showsJudgingHomeButton({ appRoles: [], contestsInWindow: 0 })).toBe(false);
+    expect(showsJudgingHomeButton({ appRoles: ['REGISTRATION'] })).toBe(false);
+  });
+
+  it('still shows Judging when a contest is already in the window', () => {
+    expect(showsJudgingHomeButton({ appRoles: ['STAFF'], contestsInWindow: 1 })).toBe(true);
+  });
+});
+
 describe('eventInJudgingWindow', () => {
   it('includes All-American Jack and Jill at 7:00 PM when it is 4:41 PM', () => {
     expect(eventInJudgingWindow(allAmericanStart, saturdayAfternoon)).toBe(true);
@@ -101,6 +125,18 @@ describe('eventInJudgingWindow', () => {
 });
 
 describe('selectJudgingHomeContests', () => {
+  it('does not list contests outside the 6-hour window for an app-role judge', () => {
+    const contests = selectJudgingHomeContests({
+      events: [{ ...event134, startDate: '2026-10-20T19:00:00-05:00' }],
+      contests: [],
+      user: { ...carlos, appRoles: ['JUDGE'] },
+      now: saturdayAfternoon,
+    });
+
+    expect(contests).toEqual([]);
+    expect(showsJudgingHomeButton({ appRoles: ['Judge'], contestsInWindow: contests.length })).toBe(true);
+  });
+
   it('lists every contest on the event for a staff judge', () => {
     const contests = selectJudgingHomeContests({
       events: [event134],

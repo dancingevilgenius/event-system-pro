@@ -7,7 +7,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchPendingMigrationCount, login } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
@@ -16,18 +16,28 @@ import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
+import { sessionFromLoginResult } from '../lib/loginSuccess';
 import { pendingMigrationsMessage } from '../lib/pendingMigrations';
-import type { AppRole } from '../lib/session';
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { setSession } = useAuth();
+  const { session, setSession } = useAuth();
   const { showProblem, showSuccess } = useMessages();
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
+  const redirectHomeAfterLogin = useRef(false);
+
+  useEffect(() => {
+    if (!redirectHomeAfterLogin.current || !session) {
+      return;
+    }
+
+    redirectHomeAfterLogin.current = false;
+    navigate('/home', { replace: true });
+  }, [navigate, session]);
 
   const passwordInputType = showPassword ? 'text' : 'password';
 
@@ -46,18 +56,18 @@ export default function LoginPage() {
         showProblem(result.message);
         return;
       }
-      if (result.user_id && result.username) {
-        setSession({
-          user_id: result.user_id,
-          username: result.username,
-          email: result.email?.trim() ?? '',
-          roles: (result.roles ?? []) as AppRole[],
-          token: result.token ?? null,
-        });
-      }
-      showSuccess(result.message);
 
-      if ((result.roles ?? []).includes('ADMIN')) {
+      const success = sessionFromLoginResult(result);
+      if (!success) {
+        showProblem(result.message || 'Login failed.');
+        return;
+      }
+
+      setSession(success.session);
+      showSuccess(result.message);
+      redirectHomeAfterLogin.current = true;
+
+      if (success.session.roles.includes('ADMIN')) {
         try {
           const pendingMessage = pendingMigrationsMessage(await fetchPendingMigrationCount());
           if (pendingMessage) {
@@ -67,8 +77,6 @@ export default function LoginPage() {
           // Login already succeeded. A failed migration check should not block home.
         }
       }
-
-      navigate('/home');
     } catch (error) {
       showProblem(error instanceof Error ? error.message : 'Login failed.');
     } finally {

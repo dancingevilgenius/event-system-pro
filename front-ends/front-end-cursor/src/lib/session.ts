@@ -79,16 +79,33 @@ const APP_ROLES: AppRole[] = [
   'COMPETITOR',
 ];
 
-function isAppRole(value: unknown): value is AppRole {
-  return typeof value === 'string' && APP_ROLES.includes(value as AppRole);
+/**
+ * Role codes are stored uppercase (`JUDGE`). Display labels are title case with
+ * spaces (`Judge`). A label maps to that same code. Head Judge stays `HEAD_JUDGE`.
+ */
+export function canonicalAppRole(value: unknown): AppRole | null {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const code = value.trim().toUpperCase().replace(/[\s-]+/g, '_');
+  return (APP_ROLES as readonly string[]).includes(code) ? (code as AppRole) : null;
 }
 
-function parseRoles(value: unknown): AppRole[] {
+export function parseRoles(value: unknown): AppRole[] {
   if (!Array.isArray(value)) {
     return [];
   }
 
-  return value.filter(isAppRole);
+  const roles: AppRole[] = [];
+  for (const entry of value) {
+    const role = canonicalAppRole(entry);
+    if (role && !roles.includes(role)) {
+      roles.push(role);
+    }
+  }
+
+  return roles;
 }
 
 export function saveSession(session: UserSession): void {

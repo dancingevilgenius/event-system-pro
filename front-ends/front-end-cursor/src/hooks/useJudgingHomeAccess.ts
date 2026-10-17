@@ -1,16 +1,20 @@
 import { useEffect, useState } from 'react';
 import { fetchJudgingHomeContests } from '../api/postgrest';
+import { useAuth } from './useAuth';
+import { showsJudgingHomeButton } from '../lib/judgingHome';
 
 export function useJudgingHomeAccess(enabled: boolean): {
   allowed: boolean;
   loading: boolean;
 } {
-  const [allowed, setAllowed] = useState(false);
-  const [loading, setLoading] = useState(enabled);
+  const { session } = useAuth();
+  const allowedByRole = showsJudgingHomeButton({ appRoles: session?.roles });
+  const [allowedByContests, setAllowedByContests] = useState(false);
+  const [loading, setLoading] = useState(enabled && !allowedByRole);
 
   useEffect(() => {
-    if (!enabled) {
-      setAllowed(false);
+    if (!enabled || allowedByRole) {
+      setAllowedByContests(false);
       setLoading(false);
       return;
     }
@@ -21,12 +25,12 @@ export function useJudgingHomeAccess(enabled: boolean): {
     void fetchJudgingHomeContests()
       .then((contests) => {
         if (!cancelled) {
-          setAllowed(contests.length > 0);
+          setAllowedByContests(showsJudgingHomeButton({ contestsInWindow: contests.length }));
         }
       })
       .catch(() => {
         if (!cancelled) {
-          setAllowed(false);
+          setAllowedByContests(false);
         }
       })
       .finally(() => {
@@ -38,7 +42,7 @@ export function useJudgingHomeAccess(enabled: boolean): {
     return () => {
       cancelled = true;
     };
-  }, [enabled]);
+  }, [allowedByRole, enabled]);
 
-  return { allowed, loading };
+  return { allowed: enabled && (allowedByRole || allowedByContests), loading };
 }

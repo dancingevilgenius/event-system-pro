@@ -13,7 +13,7 @@ import {
   ToggleButton,
   Typography,
 } from '@mui/material';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   fetchJudgingContestPairs,
@@ -45,33 +45,40 @@ export default function JudgingHomePage() {
   const [checkingScoreId, setCheckingScoreId] = useState<string | null>(null);
   const [scoreError, setScoreError] = useState<string | null>(null);
   const scoreRequestRef = useRef(0);
+  const loadRequestRef = useRef(0);
 
-  useEffect(() => {
-    let cancelled = false;
-
+  const loadContests = useCallback(() => {
+    const request = loadRequestRef.current + 1;
+    loadRequestRef.current = request;
+    setLoading(true);
+    setError(null);
     void fetchJudgingHomeContests()
       .then((rows) => {
-        if (!cancelled) {
-          setContests(rows);
-          setError(null);
+        if (loadRequestRef.current !== request) {
+          return;
         }
+        setContests(rows);
+        setError(null);
       })
       .catch((loadError: unknown) => {
-        if (!cancelled) {
-          setContests([]);
-          setError(loadError instanceof Error ? loadError.message : 'Unable to load contests.');
+        if (loadRequestRef.current !== request) {
+          return;
         }
+        setError(loadError instanceof Error ? loadError.message : 'Unable to load contests.');
       })
       .finally(() => {
-        if (!cancelled) {
+        if (loadRequestRef.current === request) {
           setLoading(false);
         }
       });
-
-    return () => {
-      cancelled = true;
-    };
   }, []);
+
+  useEffect(() => {
+    loadContests();
+    return () => {
+      loadRequestRef.current += 1;
+    };
+  }, [loadContests]);
 
   const headerSx = { fontWeight: 700, whiteSpace: 'nowrap' } as const;
   const showLockColumn = contests.some((contest) => contest.canToggleLock);
@@ -157,9 +164,31 @@ export default function JudgingHomePage() {
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 } }}>
         <PageHeader title="Judging" backTo="/home" backLabel="Back to Home" />
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          Contests whose event starts within the past or next 6 hours.
-        </Typography>
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{ alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', mb: 2 }}
+        >
+          <Typography variant="body2" color="text.secondary" sx={{ flex: '1 1 12rem', minWidth: 0 }}>
+            Contests whose event starts within the past or next 6 hours.
+          </Typography>
+          <Button
+            type="button"
+            size="small"
+            variant="outlined"
+            onClick={loadContests}
+            disabled={loading}
+            sx={{ textTransform: 'none', flexShrink: 0 }}
+          >
+            {loading ? <CircularProgress size={14} sx={{ mr: 1 }} /> : null}
+            Refresh
+          </Button>
+        </Stack>
+        {error && contests.length > 0 ? (
+          <Typography variant="body2" color="error" sx={{ mb: 2 }}>
+            {error}
+          </Typography>
+        ) : null}
         {lockError ? (
           <Typography variant="body2" color="error" sx={{ mb: 2 }}>
             {lockError}
@@ -185,7 +214,7 @@ export default function JudgingHomePage() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {loading ? (
+              {loading && contests.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={columnCount} align="center">
                     <Stack
@@ -200,7 +229,7 @@ export default function JudgingHomePage() {
                     </Stack>
                   </TableCell>
                 </TableRow>
-              ) : error ? (
+              ) : error && contests.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={columnCount} align="center">
                     <Typography variant="body2" color="error" sx={{ py: 2 }}>

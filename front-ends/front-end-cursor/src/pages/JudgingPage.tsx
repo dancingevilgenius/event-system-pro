@@ -15,7 +15,7 @@ import {
   useMediaQuery,
   type SelectChangeEvent,
 } from '@mui/material';
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   fetchJudgingContestPairs,
@@ -763,8 +763,11 @@ export default function JudgingPage() {
     useState<DuplicateScoreDialogState | null>(null);
   const [scoresSubmitted, setScoresSubmitted] = useState(false);
   const [judgeProgress, setJudgeProgress] = useState<JudgingFinalsSubmissionStatus | null>(null);
+  const [refreshingProgress, setRefreshingProgress] = useState(false);
+  const [progressError, setProgressError] = useState<string | null>(null);
   const submittedScoreKeyRef = useRef<string | null>(null);
   const submittingRef = useRef(false);
+  const progressRequestRef = useRef(0);
 
   const entryByBib = useMemo(
     () => new Map(entries.map((entry) => [entry.number, entry])),
@@ -1025,24 +1028,39 @@ export default function JudgingPage() {
     });
   };
 
-  useEffect(() => {
-    let cancelled = false;
-    setJudgeProgress(null);
+  const loadJudgeProgress = useCallback((clearFirst: boolean) => {
+    const request = progressRequestRef.current + 1;
+    progressRequestRef.current = request;
+    if (clearFirst) {
+      setJudgeProgress(null);
+    }
+    setRefreshingProgress(true);
+    setProgressError(null);
     void fetchJudgingSubmissionProgress(contest)
       .then((status) => {
-        if (!cancelled) {
+        if (progressRequestRef.current === request) {
           setJudgeProgress(status);
         }
       })
-      .catch(() => {
-        if (!cancelled) {
-          setJudgeProgress(null);
+      .catch((loadError: unknown) => {
+        if (progressRequestRef.current !== request) {
+          return;
+        }
+        setProgressError(loadError instanceof Error ? loadError.message : 'Unable to refresh judge submissions.');
+      })
+      .finally(() => {
+        if (progressRequestRef.current === request) {
+          setRefreshingProgress(false);
         }
       });
-    return () => {
-      cancelled = true;
-    };
   }, [contest]);
+
+  useEffect(() => {
+    loadJudgeProgress(true);
+    return () => {
+      progressRequestRef.current += 1;
+    };
+  }, [loadJudgeProgress]);
 
   const handleSubmit = () => {
     if (submittingRef.current) {
@@ -1139,11 +1157,33 @@ export default function JudgingPage() {
 
           <PercentCompleteBar percent={percentComplete} onSubmit={handleSubmit} />
           {judgeProgress?.showBar ? (
-            <PercentCompleteBar
-              percent={judgeProgress.percent}
-              label={judgeProgress.label}
-              ariaLabel={`${judgeProgress.submitted} of ${judgeProgress.assigned} judges submitted`}
-            />
+            <Stack spacing={0.5}>
+              <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <PercentCompleteBar
+                    percent={judgeProgress.percent}
+                    label={judgeProgress.label}
+                    ariaLabel={`${judgeProgress.submitted} of ${judgeProgress.assigned} judges submitted`}
+                  />
+                </Box>
+                <Button
+                  type="button"
+                  size="small"
+                  variant="outlined"
+                  disabled={refreshingProgress}
+                  onClick={() => loadJudgeProgress(false)}
+                  aria-label="Refresh submitted judge count"
+                  sx={{ textTransform: 'none', flexShrink: 0 }}
+                >
+                  {refreshingProgress ? 'Refreshing…' : 'Refresh'}
+                </Button>
+              </Stack>
+              {progressError ? (
+                <Typography variant="body2" color="error">
+                  {progressError}
+                </Typography>
+              ) : null}
+            </Stack>
           ) : null}
 
           <Select

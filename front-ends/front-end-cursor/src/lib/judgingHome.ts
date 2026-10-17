@@ -1,6 +1,34 @@
 /** Events whose start is within 6 hours before or after now. */
 export const JUDGING_WINDOW_MS = 6 * 60 * 60 * 1000;
 
+/** App-role code or display label (`JUDGE` / `Judge`). Head Judge stays its own code. */
+function isJudgeAppRole(role: string): boolean {
+  return role.trim().toUpperCase().replace(/[\s-]+/g, '_') === 'JUDGE';
+}
+
+/** Separate from Judge: `HEAD_JUDGE` / `Head Judge`. */
+function isHeadJudgeAppRole(role: string): boolean {
+  return role.trim().toUpperCase().replace(/[\s-]+/g, '_') === 'HEAD_JUDGE';
+}
+
+/**
+ * Home shows Judging when the signed-in user has the Judge or Head Judge app role.
+ * A contest inside the 6-hour window is not required for that button. Staff who are
+ * assigned to a contest in the window still see the button without those app roles.
+ * Judging Home's contest list stays limited to that window.
+ */
+export function showsJudgingHomeButton(input: {
+  appRoles?: readonly string[] | null;
+  contestsInWindow?: number;
+}): boolean {
+  const roles = input.appRoles ?? [];
+  if (roles.some((role) => isJudgeAppRole(role) || isHeadJudgeAppRole(role))) {
+    return true;
+  }
+
+  return (input.contestsInWindow ?? 0) > 0;
+}
+
 const JUDGE_ROLE_CODES = new Set(['JUDGE', 'HEAD_JUDGE']);
 const EVENT_LEAD_ROLE_CODES = new Set(['EVENT_DIRECTOR', 'EVENT_MANAGER']);
 const ROSTER_KEYS = [

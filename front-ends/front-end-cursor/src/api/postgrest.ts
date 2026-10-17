@@ -1,8 +1,17 @@
 import { parseTrainingLesson } from '../lib/pageTraining';
+import { eventInRegistrationWindow } from '../lib/registrationWindow';
 import { compareSchemaMigrationRowsDescending } from '../lib/schemaMigrationOrder';
 import { schedulerHeartbeatIsHealthy } from '../lib/schedulerHeartbeat';
 import { loadSession, type AppRole } from '../lib/session';
 import { eventLocationToJson, type EventLocationJson } from '../lib/eventLocation';
+import {
+  alreadyRegisteredContestMessage,
+  bibOwnerNames,
+  contestSkillDivisionLabel,
+  duplicateContestBibMessage,
+  rosterHasBib,
+  rosterPersonById,
+} from '../utils/duplicateContestBib';
 import { trimSavedText } from '../utils/trimSavedText';
 import type { TrainingLesson } from '../types/pageTraining';
 import {
@@ -1562,6 +1571,8 @@ type StoredEventContest = {
   head_judge_staff_id?: string;
   scoring_judge_count?: number | null;
   scoring_judge_staff_ids?: string[];
+  leaders?: unknown[];
+  followers?: unknown[];
 };
 
 function parseScoringJudgeCount(value: unknown): ScoringJudgeCount | null {
@@ -1647,7 +1658,35 @@ function rowsForHiddenSection(keepExisting: boolean, nextRows: unknown[], existi
   return existingJsonArray(existingRows) ?? nextRows;
 }
 
-function storedContestItems(contests: EventContestDraft[]): StoredEventContest[] {
+function preservedContestRoster(
+  existingItems: unknown,
+  id: string,
+): { leaders?: unknown[]; followers?: unknown[] } {
+  if (!Array.isArray(existingItems)) {
+    return {};
+  }
+
+  const match = existingItems
+    .map((entry) => jsonRecord(entry))
+    .find((record) => textField(record ?? {}, 'id') === id);
+  if (!match) {
+    return {};
+  }
+
+  const preserved: { leaders?: unknown[]; followers?: unknown[] } = {};
+  if (Array.isArray(match.leaders)) {
+    preserved.leaders = match.leaders;
+  }
+  if (Array.isArray(match.followers)) {
+    preserved.followers = match.followers;
+  }
+  return preserved;
+}
+
+function storedContestItems(
+  contests: EventContestDraft[],
+  existingItems: unknown,
+): StoredEventContest[] {
   return contests.flatMap((contest) => {
     const divisionKey = trimSavedText(contest.divisionKey);
     const skillLevelKey = trimSavedText(contest.skillLevelKey);
@@ -1665,6 +1704,7 @@ function storedContestItems(contests: EventContestDraft[]): StoredEventContest[]
         head_judge_staff_id: trimSavedText(contest.headJudgeStaffId ?? ''),
         scoring_judge_count: contest.scoringJudgeCount ?? null,
         scoring_judge_staff_ids: contest.scoringJudgeStaffIds ?? [],
+        ...preservedContestRoster(existingItems, contest.id),
       },
     ];
   });
@@ -1692,7 +1732,7 @@ export async function saveEventContests(input: {
       has_contests: input.contests.hasContests,
       items: rowsForHiddenSection(
         !input.contests.hasContests,
-        storedContestItems(input.contests.contests),
+        storedContestItems(input.contests.contests, existingItems),
         existingItems,
       ),
     };
@@ -1741,7 +1781,7 @@ export async function saveEventContests(input: {
       more_json: {
         contests: {
           has_contests: input.contests.hasContests,
-          items: storedContestItems(input.contests.contests),
+          items: storedContestItems(input.contests.contests, null),
         },
       },
     }),
@@ -3499,6 +3539,17 @@ export async function searchQuickRegUsers(
   };
 }
 
+type RegistrationHomeAccessResult = {
+  ok?: boolean;
+  allowed?: boolean;
+};
+
+/** True when this account may open Registration from Home. */
+export async function fetchRegistrationHomeAccess(): Promise<boolean> {
+  const result = await callRpc<RegistrationHomeAccessResult>('registration_home_access', {});
+  return result.ok !== false && result.allowed === true;
+}
+
 /** Registration desk search by first and/or last name. Demo users are omitted. */
 export async function searchRegistrationUsers(
   firstName: string,
@@ -3523,6 +3574,1359 @@ export async function searchRegistrationUsers(
       email: row.email?.trim() ?? '',
     })),
   };
+}
+
+export type UpcomingRegistrationContest = {
+  id: string;
+  eventId: number;
+  eventName: string;
+  skillLevelLabel: string;
+  divisionLabel: string;
+  leaderCount: number;
+  followerCount: number;
+  source: 'json' | 'table';
+  contestId: number | null;
+  itemId: string;
+  skillLevelKey: string;
+  divisionKey: string;
+};
+
+export type ContestRosterRole = 'leader' | 'follower';
+
+export type ContestRosterOrigin =
+  | { kind: 'event-json' }
+  | { kind: 'contest-competitors' }
+  | { kind: 'contest-more' }
+  | { kind: 'contest-entry'; contestEntryId: number }
+  | { kind: 'attendee'; attendeeId: number; entryIndex: number };
+
+export type ContestRosterPerson = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  role: ContestRosterRole;
+  origin: ContestRosterOrigin;
+  bib?: number;
+};
+
+type UpcomingEventContestRow = {
+  event_id: number;
+  name: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  more_json: unknown;
+};
+
+type UpcomingContestTableRow = {
+  contest_id: number;
+  event_id: number | null;
+  event_type_code: string | null;
+  competitors_json: unknown;
+  more_json: unknown;
+};
+
+type UpcomingContestEntryRow = {
+  contest_id: number;
+  competitors_json: unknown;
+  more_json: unknown;
+  scratched: boolean | null;
+};
+
+type UpcomingAttendeeContestRow = {
+  event_id: number;
+  contests_json: unknown;
+};
+
+type ContestRoleCounts = {
+  leaderCount: number;
+  followerCount: number;
+};
+
+type BuiltUpcomingContest = UpcomingRegistrationContest;
+
+type ContestRoleEnrollment = {
+  contestId: number | null;
+  itemId: string;
+  skillLevelKey: string;
+  divisionKey: string;
+  role: 'leader' | 'follower';
+};
+
+const CONTEST_ROLE_KEYS = ['role', 'dance_role', 'contest_role', 'competitor_role', 'primary_role', 'primary-role'];
+const CONTEST_ROSTER_KEYS = [
+  'registrants',
+  'registrations',
+  'competitors',
+  'competitors_json',
+  'entries',
+  'contest_entries',
+  'roster',
+];
+
+function emptyContestRoleCounts(): ContestRoleCounts {
+  return { leaderCount: 0, followerCount: 0 };
+}
+
+function addContestRoleCounts(left: ContestRoleCounts, right: ContestRoleCounts): ContestRoleCounts {
+  return {
+    leaderCount: left.leaderCount + right.leaderCount,
+    followerCount: left.followerCount + right.followerCount,
+  };
+}
+
+function danceRole(record: Record<string, unknown>): 'leader' | 'follower' | null {
+  for (const key of CONTEST_ROLE_KEYS) {
+    const value = record[key];
+    if (typeof value !== 'string') {
+      continue;
+    }
+    const role = value.trim().toLowerCase();
+    if (role === 'leader' || role === 'lead') {
+      return 'leader';
+    }
+    if (role === 'follower' || role === 'follow') {
+      return 'follower';
+    }
+  }
+  return null;
+}
+
+function jsonRecord(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return null;
+  }
+  return value as Record<string, unknown>;
+}
+
+/** Count persisted leader/follower registrants. People without a role are omitted. */
+function countStoredRoleRoster(value: unknown): ContestRoleCounts {
+  if (Array.isArray(value)) {
+    return value.reduce(
+      (totals, entry) => addContestRoleCounts(totals, countStoredRoleNode(entry)),
+      emptyContestRoleCounts(),
+    );
+  }
+  return countStoredRoleNode(value);
+}
+
+function countStoredRoleNode(value: unknown): ContestRoleCounts {
+  const record = jsonRecord(value);
+  if (!record) {
+    return emptyContestRoleCounts();
+  }
+
+  const leaderIsPerson = jsonRecord(record.leader) !== null;
+  const followerIsPerson = jsonRecord(record.follower) !== null;
+  if (leaderIsPerson || followerIsPerson) {
+    return {
+      leaderCount: leaderIsPerson ? 1 : 0,
+      followerCount: followerIsPerson ? 1 : 0,
+    };
+  }
+
+  if (Array.isArray(record.leaders) || Array.isArray(record.followers)) {
+    return {
+      leaderCount: Array.isArray(record.leaders) ? record.leaders.length : 0,
+      followerCount: Array.isArray(record.followers) ? record.followers.length : 0,
+    };
+  }
+
+  const role = danceRole(record);
+  if (role === 'leader') {
+    return { leaderCount: 1, followerCount: 0 };
+  }
+  if (role === 'follower') {
+    return { leaderCount: 0, followerCount: 1 };
+  }
+
+  return CONTEST_ROSTER_KEYS.reduce(
+    (totals, key) =>
+      record[key] === undefined ? totals : addContestRoleCounts(totals, countStoredRoleRoster(record[key])),
+    emptyContestRoleCounts(),
+  );
+}
+
+function countContestEntryRoles(row: UpcomingContestEntryRow): ContestRoleCounts {
+  if (row.scratched === true) {
+    return emptyContestRoleCounts();
+  }
+
+  const fromCompetitors = countStoredRoleRoster(row.competitors_json);
+  if (fromCompetitors.leaderCount + fromCompetitors.followerCount > 0) {
+    return fromCompetitors;
+  }
+
+  return countStoredRoleNode(row.more_json);
+}
+
+function textField(record: Record<string, unknown>, key: string): string {
+  const value = record[key];
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function contestIdField(record: Record<string, unknown>): number | null {
+  const value = record.contest_id;
+  const contestId = typeof value === 'number' ? value : Number(value);
+  return Number.isInteger(contestId) && contestId > 0 ? contestId : null;
+}
+
+function parseContestRoleEnrollment(entry: unknown): ContestRoleEnrollment | null {
+  const record = jsonRecord(entry);
+  if (!record) {
+    return null;
+  }
+
+  const role = danceRole(record);
+  if (!role) {
+    return null;
+  }
+
+  return {
+    contestId: contestIdField(record),
+    itemId: textField(record, 'contest_item_id') || textField(record, 'id'),
+    skillLevelKey: textField(record, 'skill_level_key') || textField(record, 'skillLevelKey'),
+    divisionKey: textField(record, 'division_key') || textField(record, 'divisionKey'),
+    role,
+  };
+}
+
+function enrollmentMatchesContest(
+  contest: BuiltUpcomingContest,
+  enrollment: ContestRoleEnrollment,
+  contests: BuiltUpcomingContest[],
+): boolean {
+  if (contest.source === 'table') {
+    return enrollment.contestId !== null && enrollment.contestId === contest.contestId;
+  }
+
+  if (enrollment.contestId !== null) {
+    return false;
+  }
+
+  if (enrollment.itemId !== '' && enrollment.itemId === contest.itemId) {
+    return true;
+  }
+
+  if (enrollment.skillLevelKey === '' || enrollment.divisionKey === '') {
+    return false;
+  }
+
+  if (enrollment.skillLevelKey !== contest.skillLevelKey || enrollment.divisionKey !== contest.divisionKey) {
+    return false;
+  }
+
+  const keyMatches = contests.filter(
+    (candidate) =>
+      candidate.source === 'json'
+      && candidate.eventId === contest.eventId
+      && candidate.skillLevelKey === enrollment.skillLevelKey
+      && candidate.divisionKey === enrollment.divisionKey,
+  );
+  return keyMatches.length === 1;
+}
+
+function applyAttendeeRoleCounts(
+  contests: BuiltUpcomingContest[],
+  attendees: UpcomingAttendeeContestRow[],
+): void {
+  for (const attendee of attendees) {
+    if (!Array.isArray(attendee.contests_json)) {
+      continue;
+    }
+
+    for (const entry of attendee.contests_json) {
+      const enrollment = parseContestRoleEnrollment(entry);
+      if (!enrollment) {
+        continue;
+      }
+
+      const contest = contests.find(
+        (candidate) =>
+          candidate.eventId === attendee.event_id
+          && enrollmentMatchesContest(candidate, enrollment, contests),
+      );
+      if (!contest) {
+        continue;
+      }
+
+      if (enrollment.role === 'leader') {
+        contest.leaderCount += 1;
+      } else {
+        contest.followerCount += 1;
+      }
+    }
+  }
+}
+
+function jsonText(record: Record<string, unknown>, key: string): string {
+  const value = record[key];
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+/** Contests for events that are current or start within the next 24 hours. */
+export async function fetchUpcomingRegistrationContests(
+  now: Date = new Date(),
+): Promise<UpcomingRegistrationContest[]> {
+  const horizon = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString();
+  const nowIso = now.toISOString();
+  const params = new URLSearchParams({
+    select: 'event_id,name,start_date,end_date,more_json',
+    order: 'start_date.asc,event_id.asc',
+  });
+  params.append('start_date', `lte.${horizon}`);
+  params.append('or', `(end_date.gte.${nowIso},end_date.is.null,start_date.gt.${nowIso})`);
+
+  const rows = await fetchJson<UpcomingEventContestRow[]>(
+    `${POSTGREST_URL}/event?${params.toString()}`,
+    'Unable to load upcoming contests',
+  );
+
+  const events = rows.filter(
+    (row) =>
+      Number.isInteger(row.event_id)
+      && eventInRegistrationWindow(row.start_date, row.end_date, now),
+  );
+
+  const contests: BuiltUpcomingContest[] = [];
+  for (const event of events) {
+    const parsed = parseEventContests(event.more_json);
+    if (!parsed.hasContests) {
+      continue;
+    }
+
+    const eventName = event.name?.trim() ?? '';
+    const contestsNode = jsonRecord(moreJsonObject(event.more_json).contests);
+    const rawItems = Array.isArray(contestsNode?.items) ? contestsNode.items : [];
+
+    for (const contest of parsed.contests) {
+      const rawItem = rawItems.find((item) => jsonRecord(item)?.id === contest.id);
+      const counts = countStoredRoleNode(rawItem);
+      contests.push({
+        id: `event-${event.event_id}-json-${contest.id}`,
+        eventId: event.event_id,
+        eventName,
+        skillLevelLabel: contest.skillLevelLabel.trim(),
+        divisionLabel: contest.divisionLabel.trim(),
+        leaderCount: counts.leaderCount,
+        followerCount: counts.followerCount,
+        source: 'json',
+        contestId: null,
+        itemId: contest.id,
+        skillLevelKey: contest.skillLevelKey.trim(),
+        divisionKey: contest.divisionKey.trim(),
+      });
+    }
+  }
+
+  const eventIds = events.map((event) => event.event_id);
+  if (eventIds.length === 0) {
+    return contests;
+  }
+
+  const eventNameById = new Map(events.map((event) => [event.event_id, event.name?.trim() ?? '']));
+  const contestParams = new URLSearchParams({
+    select: 'contest_id,event_id,event_type_code,competitors_json,more_json',
+    order: 'contest_id.asc',
+  });
+  contestParams.append('event_id', `in.(${eventIds.join(',')})`);
+
+  const tableRows = await fetchJson<UpcomingContestTableRow[]>(
+    `${POSTGREST_URL}/contest?${contestParams.toString()}`,
+    'Unable to load upcoming contests',
+  );
+
+  for (const row of tableRows) {
+    if (row.event_id === null || !eventNameById.has(row.event_id)) {
+      continue;
+    }
+
+    const more = moreJsonObject(row.more_json);
+    const skillLevelLabel = jsonText(more, 'skill_level_label') || jsonText(more, 'skillLevelLabel');
+    const divisionLabel =
+      jsonText(more, 'division_label')
+      || jsonText(more, 'divisionLabel')
+      || jsonText(more, 'name')
+      || (row.event_type_code?.trim() ?? '');
+    if (skillLevelLabel === '' && divisionLabel === '') {
+      continue;
+    }
+
+    const counts = addContestRoleCounts(
+      countStoredRoleRoster(row.competitors_json),
+      countStoredRoleNode(more),
+    );
+    contests.push({
+      id: `event-${row.event_id}-contest-${row.contest_id}`,
+      eventId: row.event_id,
+      eventName: eventNameById.get(row.event_id) ?? '',
+      skillLevelLabel,
+      divisionLabel,
+      leaderCount: counts.leaderCount,
+      followerCount: counts.followerCount,
+      source: 'table',
+      contestId: row.contest_id,
+      itemId: '',
+      skillLevelKey: jsonText(more, 'skill_level_key') || jsonText(more, 'skillLevelKey'),
+      divisionKey: jsonText(more, 'division_key') || jsonText(more, 'divisionKey'),
+    });
+  }
+
+  const contestIds = contests.flatMap((contest) => (contest.contestId === null ? [] : [contest.contestId]));
+  if (contestIds.length > 0) {
+    const entryParams = new URLSearchParams({
+      select: 'contest_id,competitors_json,more_json,scratched',
+    });
+    entryParams.append('contest_id', `in.(${contestIds.join(',')})`);
+    const entryRows = await fetchJson<UpcomingContestEntryRow[]>(
+      `${POSTGREST_URL}/contest_entry?${entryParams.toString()}`,
+      'Unable to load upcoming contests',
+    );
+    for (const entry of entryRows) {
+      const contest = contests.find((candidate) => candidate.contestId === entry.contest_id);
+      if (!contest) {
+        continue;
+      }
+      const counts = countContestEntryRoles(entry);
+      contest.leaderCount += counts.leaderCount;
+      contest.followerCount += counts.followerCount;
+    }
+  }
+
+  const attendeeParams = new URLSearchParams({
+    select: 'event_id,contests_json',
+  });
+  attendeeParams.append('event_id', `in.(${eventIds.join(',')})`);
+  attendeeParams.append('contests_json', 'not.is.null');
+  const attendeeRows = await fetchJson<UpcomingAttendeeContestRow[]>(
+    `${POSTGREST_URL}/attendee?${attendeeParams.toString()}`,
+    'Unable to load upcoming contests',
+  );
+  applyAttendeeRoleCounts(contests, attendeeRows);
+
+  return contests.map((contest) => ({
+    id: contest.id,
+    eventId: contest.eventId,
+    eventName: contest.eventName,
+    skillLevelLabel: contest.skillLevelLabel,
+    divisionLabel: contest.divisionLabel,
+    leaderCount: contest.leaderCount,
+    followerCount: contest.followerCount,
+    source: contest.source,
+    contestId: contest.contestId,
+    itemId: contest.itemId,
+    skillLevelKey: contest.skillLevelKey,
+    divisionKey: contest.divisionKey,
+  }));
+}
+
+const ROSTER_REMOVE = Symbol('roster-remove');
+
+type AttendeeRosterRow = {
+  attendee_id: number;
+  contests_json: unknown;
+  user: {
+    name_json: { first?: string | null; last?: string | null } | null;
+  } | null;
+};
+
+function actingUsername(): string {
+  const username = loadSession()?.username?.trim() ?? '';
+  if (username === '') {
+    throw new Error('Sign in to save the contest roster.');
+  }
+  return username;
+}
+
+async function patchTable(
+  table: string,
+  filter: string,
+  body: Record<string, unknown>,
+  fallback: string,
+): Promise<void> {
+  const response = await fetch(`${POSTGREST_URL}/${table}?${filter}`, {
+    method: 'PATCH',
+    headers: buildAuthHeaders({
+      'Content-Type': 'application/json',
+      Prefer: 'return=minimal',
+    }),
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    throw new Error(await readApiErrorMessage(response, fallback));
+  }
+}
+
+function rosterStorageId(record: Record<string, unknown>, fallback: string): string {
+  const id = textField(record, 'id');
+  if (id !== '') {
+    return id;
+  }
+  const userId = record.user_id;
+  if (typeof userId === 'number' && Number.isInteger(userId) && userId > 0) {
+    return `user-${userId}`;
+  }
+  if (typeof userId === 'string' && userId.trim() !== '') {
+    return `user-${userId.trim()}`;
+  }
+  return fallback;
+}
+
+function claimRosterId(used: Set<string>, base: string): string {
+  if (!used.has(base)) {
+    used.add(base);
+    return base;
+  }
+  let suffix = 2;
+  let next = `${base}-${suffix}`;
+  while (used.has(next)) {
+    suffix += 1;
+    next = `${base}-${suffix}`;
+  }
+  used.add(next);
+  return next;
+}
+
+function rosterName(record: Record<string, unknown>): { firstName: string; lastName: string } {
+  const firstName =
+    textField(record, 'first_name')
+    || textField(record, 'firstName')
+    || textField(record, 'firstname');
+  const lastName =
+    textField(record, 'last_name')
+    || textField(record, 'lastName')
+    || textField(record, 'lastname');
+  if (firstName !== '' || lastName !== '') {
+    return { firstName, lastName };
+  }
+
+  const display =
+    textField(record, 'display-name')
+    || textField(record, 'display_name')
+    || textField(record, 'name');
+  const parts = display.split(/\s+/).filter((part) => part !== '');
+  return {
+    firstName: parts[0] ?? '',
+    lastName: parts.slice(1).join(' '),
+  };
+}
+
+function pushRosterPerson(
+  people: ContestRosterPerson[],
+  used: Set<string>,
+  record: Record<string, unknown>,
+  role: ContestRosterRole,
+  origin: ContestRosterOrigin,
+  fallbackId: string,
+): void {
+  const id = claimRosterId(used, rosterStorageId(record, fallbackId));
+  const name = rosterName(record);
+  const bib = rosterBib(record);
+  people.push({
+    id,
+    firstName: name.firstName,
+    lastName: name.lastName,
+    role,
+    origin,
+    ...(bib === undefined ? {} : { bib }),
+  });
+}
+
+function collectRosterValue(
+  value: unknown,
+  origin: ContestRosterOrigin,
+  people: ContestRosterPerson[],
+  used: Set<string>,
+  path: string,
+): void {
+  if (Array.isArray(value)) {
+    value.forEach((entry, index) => {
+      collectRosterValue(entry, origin, people, used, `${path}-${index}`);
+    });
+    return;
+  }
+
+  const record = jsonRecord(value);
+  if (!record) {
+    return;
+  }
+
+  const leaderRecord = jsonRecord(record.leader);
+  const followerRecord = jsonRecord(record.follower);
+  if (leaderRecord || followerRecord) {
+    if (leaderRecord) {
+      pushRosterPerson(people, used, leaderRecord, 'leader', origin, `${path}-leader`);
+    }
+    if (followerRecord) {
+      pushRosterPerson(people, used, followerRecord, 'follower', origin, `${path}-follower`);
+    }
+    return;
+  }
+
+  if (Array.isArray(record.leaders) || Array.isArray(record.followers)) {
+    (['leader', 'follower'] as const).forEach((role) => {
+      const key = role === 'leader' ? 'leaders' : 'followers';
+      const list = record[key];
+      if (!Array.isArray(list)) {
+        return;
+      }
+      list.forEach((entry, index) => {
+        const personRecord = jsonRecord(entry);
+        if (!personRecord) {
+          return;
+        }
+        pushRosterPerson(people, used, personRecord, role, origin, `${path}-${role}-${index}`);
+      });
+    });
+    return;
+  }
+
+  const role = danceRole(record);
+  if (role) {
+    pushRosterPerson(people, used, record, role, origin, path);
+    return;
+  }
+
+  for (const key of CONTEST_ROSTER_KEYS) {
+    if (record[key] !== undefined) {
+      collectRosterValue(record[key], origin, people, used, `${path}-${key}`);
+    }
+  }
+}
+
+function jsonSiblingCount(moreJson: unknown, contest: UpcomingRegistrationContest): number {
+  return parseEventContests(moreJson).contests.filter(
+    (candidate) =>
+      candidate.skillLevelKey === contest.skillLevelKey
+      && candidate.divisionKey === contest.divisionKey,
+  ).length;
+}
+
+function enrollmentMatchesUpcoming(
+  contest: UpcomingRegistrationContest,
+  enrollment: ContestRoleEnrollment,
+  siblingJsonCount: number,
+): boolean {
+  if (contest.source === 'table') {
+    return enrollment.contestId !== null && enrollment.contestId === contest.contestId;
+  }
+
+  if (enrollment.contestId !== null) {
+    return false;
+  }
+
+  if (enrollment.itemId !== '' && enrollment.itemId === contest.itemId) {
+    return true;
+  }
+
+  if (enrollment.skillLevelKey === '' || enrollment.divisionKey === '') {
+    return false;
+  }
+
+  if (enrollment.skillLevelKey !== contest.skillLevelKey || enrollment.divisionKey !== contest.divisionKey) {
+    return false;
+  }
+
+  return siblingJsonCount === 1;
+}
+
+function rosterBib(record: Record<string, unknown>): number | undefined {
+  for (const key of ['bib', 'bib_number', 'bibNumber']) {
+    const value = record[key];
+    const parsed = typeof value === 'number' ? value : typeof value === 'string' ? Number(value) : Number.NaN;
+    if (Number.isInteger(parsed) && parsed > 0) {
+      return parsed;
+    }
+  }
+  return undefined;
+}
+
+function storedEventRosterPerson(person: ContestRosterPerson): Record<string, unknown> {
+  const stored: Record<string, unknown> = {
+    id: person.id,
+    first_name: person.firstName,
+    last_name: person.lastName,
+  };
+  if (typeof person.bib === 'number' && Number.isInteger(person.bib) && person.bib > 0) {
+    stored.bib = person.bib;
+  }
+  return stored;
+}
+
+function setDanceRole(record: Record<string, unknown>, role: ContestRosterRole): Record<string, unknown> {
+  const next = { ...record };
+  for (const key of CONTEST_ROLE_KEYS) {
+    if (typeof next[key] === 'string') {
+      next[key] = role;
+      return next;
+    }
+  }
+  next.role = role;
+  return next;
+}
+
+function applyRosterEdits(
+  value: unknown,
+  edits: Map<string, ContestRosterRole>,
+  used: Set<string>,
+  path: string,
+): unknown {
+  if (Array.isArray(value)) {
+    return value.flatMap((entry, index) => {
+      const updated = applyRosterEdits(entry, edits, used, `${path}-${index}`);
+      return updated === ROSTER_REMOVE ? [] : [updated];
+    });
+  }
+
+  const record = jsonRecord(value);
+  if (!record) {
+    return value;
+  }
+
+  const leaderRecord = jsonRecord(record.leader);
+  const followerRecord = jsonRecord(record.follower);
+  if (leaderRecord || followerRecord) {
+    const next: Record<string, unknown> = { ...record };
+    (['leader', 'follower'] as const).forEach((role) => {
+      const personRecord = role === 'leader' ? leaderRecord : followerRecord;
+      if (!personRecord) {
+        return;
+      }
+      const id = claimRosterId(used, rosterStorageId(personRecord, `${path}-${role}`));
+      if (!edits.has(id)) {
+        delete next[role];
+        return;
+      }
+      const nextRole = edits.get(id);
+      if (nextRole === role) {
+        return;
+      }
+      delete next[role];
+      next[nextRole === 'leader' ? 'leader' : 'follower'] = personRecord;
+    });
+    return next;
+  }
+
+  if (Array.isArray(record.leaders) || Array.isArray(record.followers)) {
+    const next: Record<string, unknown> = { ...record };
+    const leaders: unknown[] = [];
+    const followers: unknown[] = [];
+    (['leader', 'follower'] as const).forEach((role) => {
+      const key = role === 'leader' ? 'leaders' : 'followers';
+      const list = record[key];
+      if (!Array.isArray(list)) {
+        return;
+      }
+      list.forEach((entry, index) => {
+        const personRecord = jsonRecord(entry);
+        if (!personRecord) {
+          return;
+        }
+        const id = claimRosterId(used, rosterStorageId(personRecord, `${path}-${role}-${index}`));
+        if (!edits.has(id)) {
+          return;
+        }
+        const target = edits.get(id) === 'leader' ? leaders : followers;
+        target.push(personRecord);
+      });
+    });
+    if (leaders.length > 0) {
+      next.leaders = leaders;
+    } else {
+      delete next.leaders;
+    }
+    if (followers.length > 0) {
+      next.followers = followers;
+    } else {
+      delete next.followers;
+    }
+    return next;
+  }
+
+  const role = danceRole(record);
+  if (role) {
+    const id = claimRosterId(used, rosterStorageId(record, path));
+    if (!edits.has(id)) {
+      return ROSTER_REMOVE;
+    }
+    const nextRole = edits.get(id);
+    if (!nextRole || nextRole === role) {
+      return record;
+    }
+    return setDanceRole(record, nextRole);
+  }
+
+  let changed = false;
+  const next: Record<string, unknown> = { ...record };
+  for (const key of CONTEST_ROSTER_KEYS) {
+    if (record[key] === undefined) {
+      continue;
+    }
+    const updated = applyRosterEdits(record[key], edits, used, `${path}-${key}`);
+    if (updated !== record[key]) {
+      changed = true;
+      next[key] = updated;
+    }
+  }
+  return changed ? next : record;
+}
+
+async function fetchAttendeeRosterRows(eventId: number): Promise<AttendeeRosterRow[]> {
+  const params = new URLSearchParams({
+    select: 'attendee_id,contests_json,user(name_json)',
+  });
+  params.append('event_id', `eq.${eventId}`);
+  params.append('contests_json', 'not.is.null');
+  return fetchJson<AttendeeRosterRow[]>(
+    `${POSTGREST_URL}/attendee?${params.toString()}`,
+    'Unable to load contest roster',
+  );
+}
+
+function appendAttendeeRoster(
+  contest: UpcomingRegistrationContest,
+  rows: AttendeeRosterRow[],
+  siblingJsonCount: number,
+  people: ContestRosterPerson[],
+  used: Set<string>,
+): void {
+  for (const row of rows) {
+    if (!Array.isArray(row.contests_json)) {
+      continue;
+    }
+    const firstName = row.user?.name_json?.first?.trim() ?? '';
+    const lastName = row.user?.name_json?.last?.trim() ?? '';
+    row.contests_json.forEach((entry, index) => {
+      const enrollment = parseContestRoleEnrollment(entry);
+      if (!enrollment || !enrollmentMatchesUpcoming(contest, enrollment, siblingJsonCount)) {
+        return;
+      }
+      const id = claimRosterId(used, `attendee-${row.attendee_id}-${index}`);
+      people.push({
+        id,
+        firstName,
+        lastName,
+        role: enrollment.role,
+        origin: { kind: 'attendee', attendeeId: row.attendee_id, entryIndex: index },
+      });
+    });
+  }
+}
+
+/** Leaders and followers already stored for one upcoming contest. */
+export async function fetchContestRoster(
+  contest: UpcomingRegistrationContest,
+): Promise<ContestRosterPerson[]> {
+  const people: ContestRosterPerson[] = [];
+  const used = new Set<string>();
+
+  if (contest.source === 'json') {
+    const moreJson = await fetchEventMoreJson(contest.eventId);
+    const contestsNode = jsonRecord(moreJson.contests);
+    const items = Array.isArray(contestsNode?.items) ? contestsNode.items : [];
+    const item = items.map((entry) => jsonRecord(entry)).find((record) => record?.id === contest.itemId);
+    if (item) {
+      collectRosterValue(item, { kind: 'event-json' }, people, used, `item-${contest.itemId}`);
+    }
+    const rows = await fetchAttendeeRosterRows(contest.eventId);
+    appendAttendeeRoster(contest, rows, jsonSiblingCount(moreJson, contest), people, used);
+    return people;
+  }
+
+  if (contest.contestId === null) {
+    return people;
+  }
+
+  const contestParams = new URLSearchParams({
+    select: 'contest_id,competitors_json,more_json',
+  });
+  contestParams.append('contest_id', `eq.${contest.contestId}`);
+  const contestRows = await fetchJson<Array<{ competitors_json: unknown; more_json: unknown }>>(
+    `${POSTGREST_URL}/contest?${contestParams.toString()}`,
+    'Unable to load contest roster',
+  );
+  const contestRow = contestRows[0];
+  if (contestRow) {
+    collectRosterValue(
+      contestRow.competitors_json,
+      { kind: 'contest-competitors' },
+      people,
+      used,
+      'competitors',
+    );
+    collectRosterValue(contestRow.more_json, { kind: 'contest-more' }, people, used, 'more');
+  }
+
+  const entryParams = new URLSearchParams({
+    select: 'contest_entry_id,competitors_json,more_json,scratched',
+  });
+  entryParams.append('contest_id', `eq.${contest.contestId}`);
+  const entryRows = await fetchJson<
+    Array<{ contest_entry_id: number; competitors_json: unknown; more_json: unknown; scratched: boolean | null }>
+  >(
+    `${POSTGREST_URL}/contest_entry?${entryParams.toString()}`,
+    'Unable to load contest roster',
+  );
+  for (const entry of entryRows) {
+    if (entry.scratched === true) {
+      continue;
+    }
+    const origin: ContestRosterOrigin = { kind: 'contest-entry', contestEntryId: entry.contest_entry_id };
+    collectRosterValue(entry.competitors_json, origin, people, used, `entry-${entry.contest_entry_id}-competitors`);
+    collectRosterValue(entry.more_json, origin, people, used, `entry-${entry.contest_entry_id}-more`);
+  }
+
+  const attendeeRows = await fetchAttendeeRosterRows(contest.eventId);
+  appendAttendeeRoster(contest, attendeeRows, 0, people, used);
+  return people;
+}
+
+async function saveEventJsonRoster(
+  contest: UpcomingRegistrationContest,
+  people: ContestRosterPerson[],
+): Promise<void> {
+  const username = actingUsername();
+  const moreJson = await fetchEventMoreJson(contest.eventId);
+  const contestsNode = jsonRecord(moreJson.contests);
+  if (!contestsNode || !Array.isArray(contestsNode.items)) {
+    throw new Error('Unable to save contest roster.');
+  }
+
+  const index = contestsNode.items.findIndex((entry) => jsonRecord(entry)?.id === contest.itemId);
+  const current = jsonRecord(contestsNode.items[index]);
+  if (index < 0 || !current) {
+    throw new Error('Unable to save contest roster.');
+  }
+
+  const eventPeople = people.filter((person) => person.origin.kind === 'event-json');
+  const leaders = eventPeople
+    .filter((person) => person.role === 'leader')
+    .map(storedEventRosterPerson);
+  const followers = eventPeople
+    .filter((person) => person.role === 'follower')
+    .map(storedEventRosterPerson);
+  const nextItem: Record<string, unknown> = { ...current };
+  if (leaders.length > 0) {
+    nextItem.leaders = leaders;
+  } else {
+    delete nextItem.leaders;
+  }
+  if (followers.length > 0) {
+    nextItem.followers = followers;
+  } else {
+    delete nextItem.followers;
+  }
+
+  const items = [...contestsNode.items];
+  items[index] = nextItem;
+  await patchTable(
+    'event',
+    `event_id=eq.${contest.eventId}`,
+    {
+      modified_by: username,
+      more_json: {
+        ...moreJson,
+        contests: {
+          ...contestsNode,
+          items,
+        },
+      },
+    },
+    'Unable to save contest roster.',
+  );
+}
+
+async function saveAttendeeRoster(
+  contest: UpcomingRegistrationContest,
+  people: ContestRosterPerson[],
+): Promise<void> {
+  const rows = await fetchAttendeeRosterRows(contest.eventId);
+  const moreJson = contest.source === 'json' ? await fetchEventMoreJson(contest.eventId) : null;
+  const siblingJsonCount = moreJson ? jsonSiblingCount(moreJson, contest) : 0;
+  const username = actingUsername();
+
+  for (const row of rows) {
+    if (!Array.isArray(row.contests_json)) {
+      continue;
+    }
+
+    let changed = false;
+    const nextEntries: unknown[] = [];
+    row.contests_json.forEach((entry, index) => {
+      const enrollment = parseContestRoleEnrollment(entry);
+      if (!enrollment || !enrollmentMatchesUpcoming(contest, enrollment, siblingJsonCount)) {
+        nextEntries.push(entry);
+        return;
+      }
+
+      const person = people.find(
+        (candidate) =>
+          candidate.origin.kind === 'attendee'
+          && candidate.origin.attendeeId === row.attendee_id
+          && candidate.origin.entryIndex === index,
+      );
+      if (!person) {
+        changed = true;
+        return;
+      }
+      if (person.role === enrollment.role) {
+        nextEntries.push(entry);
+        return;
+      }
+
+      const record = jsonRecord(entry);
+      if (!record) {
+        nextEntries.push(entry);
+        return;
+      }
+      changed = true;
+      nextEntries.push(setDanceRole(record, person.role));
+    });
+
+    if (!changed) {
+      continue;
+    }
+
+    await patchTable(
+      'attendee',
+      `attendee_id=eq.${row.attendee_id}`,
+      {
+        modified_by: username,
+        contests_json: nextEntries,
+      },
+      'Unable to save contest roster.',
+    );
+  }
+}
+
+async function savePublicContestRoster(
+  contest: UpcomingRegistrationContest,
+  people: ContestRosterPerson[],
+): Promise<void> {
+  if (contest.contestId === null) {
+    return;
+  }
+
+  const username = actingUsername();
+  const edits = new Map<string, ContestRosterRole>(
+    people
+      .filter((person) => person.origin.kind === 'contest-competitors' || person.origin.kind === 'contest-more')
+      .map((person) => [person.id, person.role]),
+  );
+
+  const contestParams = new URLSearchParams({
+    select: 'competitors_json,more_json',
+  });
+  contestParams.append('contest_id', `eq.${contest.contestId}`);
+  const contestRows = await fetchJson<Array<{ competitors_json: unknown; more_json: unknown }>>(
+    `${POSTGREST_URL}/contest?${contestParams.toString()}`,
+    'Unable to save contest roster',
+  );
+  const contestRow = contestRows[0];
+  if (contestRow) {
+    const competitors = applyRosterEdits(contestRow.competitors_json, edits, new Set(), 'competitors');
+    const more = applyRosterEdits(contestRow.more_json, edits, new Set(), 'more');
+    const competitorsChanged = JSON.stringify(competitors) !== JSON.stringify(contestRow.competitors_json ?? null);
+    const moreChanged = JSON.stringify(more) !== JSON.stringify(contestRow.more_json ?? null);
+    if (competitorsChanged || moreChanged) {
+      const today = new Date().toISOString().slice(0, 10);
+      await patchTable(
+        'contest',
+        `contest_id=eq.${contest.contestId}`,
+        {
+          ...(competitorsChanged ? { competitors_json: competitors } : {}),
+          ...(moreChanged ? { more_json: more } : {}),
+          modified_by: username,
+          modified_date: today,
+        },
+        'Unable to save contest roster.',
+      );
+    }
+  }
+
+  const entryParams = new URLSearchParams({
+    select: 'contest_entry_id,competitors_json,more_json,scratched',
+  });
+  entryParams.append('contest_id', `eq.${contest.contestId}`);
+  const entryRows = await fetchJson<
+    Array<{ contest_entry_id: number; competitors_json: unknown; more_json: unknown; scratched: boolean | null }>
+  >(
+    `${POSTGREST_URL}/contest_entry?${entryParams.toString()}`,
+    'Unable to save contest roster',
+  );
+
+  for (const entry of entryRows) {
+    if (entry.scratched === true) {
+      continue;
+    }
+    const entryEdits = new Map<string, ContestRosterRole>(
+      people
+        .filter(
+          (person) =>
+            person.origin.kind === 'contest-entry'
+            && person.origin.contestEntryId === entry.contest_entry_id,
+        )
+        .map((person) => [person.id, person.role]),
+    );
+    const competitors = applyRosterEdits(
+      entry.competitors_json,
+      entryEdits,
+      new Set(),
+      `entry-${entry.contest_entry_id}-competitors`,
+    );
+    const more = applyRosterEdits(
+      entry.more_json,
+      entryEdits,
+      new Set(),
+      `entry-${entry.contest_entry_id}-more`,
+    );
+    const beforePeople: ContestRosterPerson[] = [];
+    collectRosterValue(
+      entry.competitors_json,
+      { kind: 'contest-entry', contestEntryId: entry.contest_entry_id },
+      beforePeople,
+      new Set(),
+      `entry-${entry.contest_entry_id}-competitors`,
+    );
+    collectRosterValue(
+      entry.more_json,
+      { kind: 'contest-entry', contestEntryId: entry.contest_entry_id },
+      beforePeople,
+      new Set(),
+      `entry-${entry.contest_entry_id}-more`,
+    );
+    const remaining = beforePeople.filter((person) => entryEdits.has(person.id));
+    const competitorsChanged = JSON.stringify(competitors) !== JSON.stringify(entry.competitors_json ?? null);
+    const moreChanged = JSON.stringify(more) !== JSON.stringify(entry.more_json ?? null);
+    if (!competitorsChanged && !moreChanged && remaining.length === beforePeople.length) {
+      continue;
+    }
+    await patchTable(
+      'contest_entry',
+      `contest_entry_id=eq.${entry.contest_entry_id}`,
+      {
+        ...(competitorsChanged ? { competitors_json: competitors } : {}),
+        ...(moreChanged ? { more_json: more } : {}),
+        ...(remaining.length === 0 && beforePeople.length > 0 ? { scratched: true } : {}),
+        modified_by: username,
+      },
+      'Unable to save contest roster.',
+    );
+  }
+}
+
+/** Persists scratch and leader/follower changes for one upcoming contest. */
+export async function saveContestRoster(
+  contest: UpcomingRegistrationContest,
+  people: ContestRosterPerson[],
+): Promise<void> {
+  if (contest.source === 'json') {
+    await saveEventJsonRoster(contest, people);
+  } else {
+    await savePublicContestRoster(contest, people);
+  }
+  await saveAttendeeRoster(contest, people);
+}
+
+export type ContestCompetitorRegistration = {
+  contest: UpcomingRegistrationContest;
+  role: ContestRosterRole;
+  personId: string;
+  firstName: string;
+  lastName: string;
+  bib: number;
+};
+
+const BIB_FIELD_KEYS = ['bib', 'bib_number', 'bibNumber'] as const;
+
+function findExistingBibField(value: unknown): (typeof BIB_FIELD_KEYS)[number] | null {
+  const seen = new Set<string>();
+  const visit = (node: unknown) => {
+    if (Array.isArray(node)) {
+      node.forEach(visit);
+      return;
+    }
+    const record = jsonRecord(node);
+    if (!record) {
+      return;
+    }
+    for (const key of BIB_FIELD_KEYS) {
+      if (key in record) {
+        seen.add(key);
+      }
+    }
+    for (const nested of Object.values(record)) {
+      if (nested && typeof nested === 'object') {
+        visit(nested);
+      }
+    }
+  };
+  visit(value);
+  return BIB_FIELD_KEYS.find((key) => seen.has(key)) ?? null;
+}
+
+function appendCompetitorValue(
+  value: unknown,
+  entry: Record<string, unknown>,
+  role: ContestRosterRole,
+): { value: unknown; changed: boolean } {
+  const record = jsonRecord(value);
+  if (record && (Array.isArray(record.leaders) || Array.isArray(record.followers))) {
+    const key = role === 'leader' ? 'leaders' : 'followers';
+    const list = Array.isArray(record[key]) ? [...record[key]] : [];
+    const person = { ...entry };
+    delete person.role;
+    list.push(person);
+    return { value: { ...record, [key]: list }, changed: true };
+  }
+  if (Array.isArray(value)) {
+    return { value: [...value, entry], changed: true };
+  }
+  return { value, changed: false };
+}
+
+async function registerJsonContestCompetitor(registration: ContestCompetitorRegistration): Promise<void> {
+  const people = await fetchContestRoster(registration.contest);
+  if (people.some((person) => person.id === registration.personId && person.role === registration.role)) {
+    return;
+  }
+  people.push({
+    id: registration.personId,
+    firstName: registration.firstName,
+    lastName: registration.lastName,
+    role: registration.role,
+    origin: { kind: 'event-json' },
+    bib: registration.bib,
+  });
+  await saveContestRoster(registration.contest, people);
+}
+
+async function registerTableContestCompetitor(registration: ContestCompetitorRegistration): Promise<void> {
+  if (registration.contest.contestId === null) {
+    throw new Error('Unable to register competitor.');
+  }
+
+  const people = await fetchContestRoster(registration.contest);
+  if (people.some((person) => person.id === registration.personId && person.role === registration.role)) {
+    return;
+  }
+
+  const params = new URLSearchParams({ select: 'competitors_json,more_json' });
+  params.append('contest_id', `eq.${registration.contest.contestId}`);
+  const rows = await fetchJson<Array<{ competitors_json: unknown; more_json: unknown }>>(
+    `${POSTGREST_URL}/contest?${params.toString()}`,
+    'Unable to register competitor',
+  );
+  const row = rows[0];
+  if (!row) {
+    throw new Error('Unable to register competitor.');
+  }
+
+  const bibKey = findExistingBibField(row.competitors_json) ?? findExistingBibField(row.more_json);
+  const entry: Record<string, unknown> = {
+    id: registration.personId,
+    first_name: registration.firstName,
+    last_name: registration.lastName,
+    role: registration.role,
+  };
+  if (bibKey) {
+    entry[bibKey] = registration.bib;
+  }
+
+  const competitors = appendCompetitorValue(row.competitors_json, entry, registration.role);
+  const more = competitors.changed
+    ? { value: row.more_json, changed: false }
+    : appendCompetitorValue(row.more_json, entry, registration.role);
+
+  let nextCompetitors = competitors.value;
+  let nextMore = more.value;
+  if (!competitors.changed && !more.changed) {
+    const current = jsonRecord(row.competitors_json);
+    if (row.competitors_json == null || (current && Object.keys(current).length === 0)) {
+      nextCompetitors = [entry];
+    } else if (current && danceRole(current)) {
+      nextCompetitors = [current, entry];
+    } else {
+      throw new Error('Unable to register competitor.');
+    }
+  }
+
+  const username = actingUsername();
+  const today = new Date().toISOString().slice(0, 10);
+  await patchTable(
+    'contest',
+    `contest_id=eq.${registration.contest.contestId}`,
+    {
+      ...(nextCompetitors !== row.competitors_json ? { competitors_json: nextCompetitors } : {}),
+      ...(nextMore !== row.more_json ? { more_json: nextMore } : {}),
+      modified_by: username,
+      modified_date: today,
+    },
+    'Unable to register competitor.',
+  );
+}
+
+function rosterDisplayName(person: { firstName?: string; lastName?: string }, fallback: string): string {
+  const name = [person.firstName, person.lastName]
+    .map((part) => (part ?? '').trim())
+    .filter((part) => part !== '')
+    .join(' ');
+  return name !== '' ? name : fallback;
+}
+
+/** Adds one registered person to each selected contest roster. Skips a contest and role they are already on. */
+export async function registerContestCompetitors(
+  registrations: ContestCompetitorRegistration[],
+): Promise<void> {
+  const rosters = await Promise.all(
+    registrations.map((registration) => fetchContestRoster(registration.contest)),
+  );
+  const alreadyRegistered = registrations.flatMap((registration, index) => {
+    const existing = rosterPersonById(rosters[index] ?? [], registration.personId);
+    if (!existing) {
+      return [];
+    }
+    const fallbackName = [registration.firstName, registration.lastName]
+      .map((part) => part.trim())
+      .filter((part) => part !== '')
+      .join(' ');
+    return [
+      {
+        name: rosterDisplayName(existing, fallbackName),
+        bib: typeof existing.bib === 'number' ? existing.bib : null,
+        contestLabel: contestSkillDivisionLabel(registration.contest),
+      },
+    ];
+  });
+  if (alreadyRegistered.length > 0) {
+    throw new Error(alreadyRegisteredContestMessage(alreadyRegistered));
+  }
+
+  const conflicts = registrations.flatMap((registration, index) => {
+    const roster = rosters[index] ?? [];
+    if (!rosterHasBib(roster, registration.bib)) {
+      return [];
+    }
+    const owners = bibOwnerNames(roster, registration.bib);
+    return [
+      {
+        bib: registration.bib,
+        owners,
+        contestLabel: contestSkillDivisionLabel(registration.contest),
+      },
+    ];
+  });
+  if (conflicts.length > 0) {
+    throw new Error(duplicateContestBibMessage(conflicts));
+  }
+
+  for (const registration of registrations) {
+    if (registration.contest.source === 'json') {
+      await registerJsonContestCompetitor(registration);
+    } else {
+      await registerTableContestCompetitor(registration);
+    }
+  }
 }
 
 export type JudgeSearchUser = {

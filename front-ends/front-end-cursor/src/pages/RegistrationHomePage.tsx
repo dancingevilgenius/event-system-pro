@@ -19,6 +19,7 @@ import { type FormEvent, useState } from 'react';
 import { searchRegistrationUsers, type RegistrationSearchUser } from '../api/postgrest';
 import AppTextField from '../components/AppTextField';
 import PageHeader from '../components/PageHeader';
+import RegistrationNewUserForm from '../components/RegistrationNewUserForm';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import {
   readRegistrationSelectedUser,
@@ -153,7 +154,9 @@ export default function RegistrationHomePage() {
           id="registration-panel-new"
           aria-labelledby="registration-tab-new"
           hidden={tab !== 'new'}
-        />
+        >
+          {tab === 'new' ? <RegistrationNewUserForm /> : null}
+        </div>
 
         <div
           role="tabpanel"

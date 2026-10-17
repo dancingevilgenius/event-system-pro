@@ -7,6 +7,7 @@ import MobileHeaderIconButton, {
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
+import { useRegistrationHomeAccess } from '../hooks/useRegistrationHomeAccess';
 import type { AppRole } from '../lib/session';
 
 const HOME_BUTTONS: { label: string; path: string; roles?: AppRole[] }[] = [
@@ -20,7 +21,15 @@ export default function HomePage() {
   const navigate = useNavigate();
   const { hasAnyRole } = useAuth();
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
-  const homeButtons = HOME_BUTTONS.filter((button) => !button.roles || hasAnyRole(button.roles));
+  const registrationByAppRole = hasAnyRole(['REGISTRATION']);
+  const registrationByStaff = useRegistrationHomeAccess(!registrationByAppRole);
+  const homeButtons = HOME_BUTTONS.filter((button) => {
+    if (!button.roles || hasAnyRole(button.roles)) {
+      return true;
+    }
+
+    return button.path === '/registrationHome' && registrationByStaff.allowed;
+  });
 
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>

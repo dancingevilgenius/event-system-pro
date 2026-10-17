@@ -1,7 +1,4 @@
 import CloseIcon from '@mui/icons-material/Close';
-import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
-import ThumbUpAltIcon from '@mui/icons-material/ThumbUpAlt';
-import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import {
   Box,
   Button,
@@ -15,7 +12,6 @@ import {
   Stack,
   ToggleButton,
   ToggleButtonGroup,
-  Tooltip,
   Typography,
 } from '@mui/material';
 import { type FocusEvent, type MouseEvent, useEffect, useRef, useState } from 'react';
@@ -49,6 +45,7 @@ import AppTextField from './AppTextField';
 import DeleteIcon from './DeleteIcon';
 import QuickRegisterAllDialog, { type QuickRegisterAllPerson } from './QuickRegisterAllDialog';
 import QuickRegisterDialog from './QuickRegisterDialog';
+import StaffRegistrationMark from './StaffRegistrationMark';
 
 export type EventStaffSummary = {
   hasStaff: boolean;
@@ -218,58 +215,6 @@ function staffOrderChanged(current: EventStaffMember[], saved: EventStaffMember[
     return false;
   }
   return current.some((member, index) => member.id !== saved[index]?.id);
-}
-
-function RegisteredMark({
-  match,
-  firstName,
-  onQuickRegister,
-}: {
-  match: StaffRegistrationMatch | undefined;
-  firstName: string;
-  onQuickRegister?: () => void;
-}) {
-  const name = firstName.trim();
-  if (match?.status === 'registered' && match.username) {
-    const label = `${name} is fully registered with username ${match.username}.`;
-    return (
-      <Tooltip title={label} slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
-        <ThumbUpAltIcon color="success" fontSize="small" aria-label={label} />
-      </Tooltip>
-    );
-  }
-  if (match?.quickReg) {
-    const label = match.username
-      ? `${name} was Quick Registered with username ${match.username}.`
-      : `${name} was Quick Registered.`;
-    return (
-      <Tooltip title={label} slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
-        <ThumbUpAltIcon fontSize="small" aria-label={label} sx={{ color: '#fdd835' }} />
-      </Tooltip>
-    );
-  }
-  if (match?.status === 'partial') {
-    return (
-      <ThumbUpOffAltIcon color="action" fontSize="small" aria-label="Partially registered" />
-    );
-  }
-  if (match?.status === 'none') {
-    const label = `${name} not found in the system. Quick Register ${name}.`;
-    return (
-      <Tooltip title={label} slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
-        <IconButton
-          type="button"
-          size="small"
-          aria-label={label}
-          onClick={onQuickRegister}
-          sx={{ p: 0.25 }}
-        >
-          <ThumbDownOffAltIcon color="action" fontSize="small" />
-        </IconButton>
-      </Tooltip>
-    );
-  }
-  return null;
 }
 
 function staffRoleOptions(
@@ -1046,7 +991,7 @@ export default function AddEventStaff({
   const pendingQuickRegister = members.find((member) => member.id === pendingQuickRegisterId) ?? null;
 
   const registeredMark = (member: EventStaffMember) => (
-    <RegisteredMark
+    <StaffRegistrationMark
       firstName={member.firstName}
       match={staffReadyForLookup(member) ? registrationById[member.id] : undefined}
       onQuickRegister={

@@ -199,7 +199,7 @@ export type LoginResult = {
   message: string;
   user_id?: number;
   username?: string;
-  email?: string;
+  email?: string | null;
   roles?: AppRole[];
   token?: string | null;
 };
@@ -2012,6 +2012,21 @@ export async function lookupStaffRegistration(
   return matches;
 }
 
+export type QuickRegisterUserResult = {
+  ok: boolean;
+  message: string;
+  user_id?: number;
+  username?: string;
+  password?: string;
+};
+
+export function quickRegisterUser(firstName: string, lastName: string) {
+  return callRpc<QuickRegisterUserResult>('quick_register_user', {
+    p_first_name: trimSavedText(firstName),
+    p_last_name: trimSavedText(lastName),
+  });
+}
+
 export async function saveEventRoleAssignments(input: {
   eventId: number | null;
   eventGroupCode: string;
@@ -3360,6 +3375,67 @@ type SearchRegistrationUsersResult = {
     email?: string | null;
   }>;
 };
+
+export type QuickRegUser = {
+  firstName: string;
+  lastName: string;
+  username: string;
+  password: string;
+  createdByName: string;
+  createdByUsername: string;
+  createdDate: string;
+};
+
+type SearchQuickRegUsersResult = {
+  ok: boolean;
+  message?: string;
+  truncated?: boolean;
+  users?: Array<{
+    first_name?: string | null;
+    last_name?: string | null;
+    username?: string | null;
+    quickreg_pw?: string | null;
+    created_by_first?: string | null;
+    created_by_last?: string | null;
+    created_by_name?: string | null;
+    created_by_username?: string | null;
+    created_date?: string | null;
+  }>;
+};
+
+/** Admin search of accounts created with Quick Registration. */
+export async function searchQuickRegUsers(
+  firstName: string,
+  lastName: string,
+): Promise<{ users: QuickRegUser[]; truncated: boolean }> {
+  const result = await callRpc<SearchQuickRegUsersResult>('search_quickreg_users', {
+    p_first_name: firstName,
+    p_last_name: lastName,
+  });
+
+  if (!result.ok) {
+    throw new Error(result.message ?? 'Unable to search Quick Registration accounts.');
+  }
+
+  return {
+    truncated: result.truncated === true,
+    users: (result.users ?? []).map((row) => {
+      const createdByFirst = row.created_by_first?.trim() ?? '';
+      const createdByLast = row.created_by_last?.trim() ?? '';
+      const createdByName = [createdByFirst, createdByLast].filter((part) => part !== '').join(' ');
+
+      return {
+        firstName: row.first_name?.trim() ?? '',
+        lastName: row.last_name?.trim() ?? '',
+        username: row.username?.trim() ?? '',
+        password: row.quickreg_pw?.trim() ?? '',
+        createdByName: createdByName || (row.created_by_name?.trim() ?? ''),
+        createdByUsername: row.created_by_username?.trim() ?? '',
+        createdDate: row.created_date?.trim() ?? '',
+      };
+    }),
+  };
+}
 
 /** Registration desk search by first and/or last name. Demo users are omitted. */
 export async function searchRegistrationUsers(

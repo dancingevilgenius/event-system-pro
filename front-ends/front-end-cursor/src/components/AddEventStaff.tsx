@@ -25,6 +25,7 @@ import {
   lookupStaffRegistration,
   parseEventRoleAssignments,
   parseEventStaff,
+  quickRegisterUser,
   type AppRoleRow,
   type EventRoleAssignment,
   type EventStaffMember,
@@ -37,8 +38,11 @@ import { registerEventFormSyncFlush } from '../lib/eventFormFlush';
 import { trimSavedText } from '../utils/trimSavedText';
 import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
+import { useMessages } from '../hooks/useMessages';
+import { quickRegistrationRegisteredMessage } from '../utils/quickRegistration';
 import AppTextField from './AppTextField';
 import DeleteIcon from './DeleteIcon';
+import QuickRegisterDialog from './QuickRegisterDialog';
 
 export type EventStaffSummary = {
   hasStaff: boolean;
@@ -213,15 +217,17 @@ function staffOrderChanged(current: EventStaffMember[], saved: EventStaffMember[
 function RegisteredMark({
   match,
   firstName,
+  onQuickRegister,
 }: {
   match: StaffRegistrationMatch | undefined;
   firstName: string;
+  onQuickRegister?: () => void;
 }) {
   const name = firstName.trim();
   if (match?.status === 'registered' && match.username) {
     const label = `${name} is fully registered with username ${match.username}.`;
     return (
-      <Tooltip title={label}>
+      <Tooltip title={label} slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
         <ThumbUpAltIcon color="success" fontSize="small" aria-label={label} />
       </Tooltip>
     );
@@ -232,10 +238,18 @@ function RegisteredMark({
     );
   }
   if (match?.status === 'none') {
-    const label = `${name} not found in the system.`;
+    const label = `${name} not found in the system. Quick Register ${name}.`;
     return (
-      <Tooltip title={label}>
-        <ThumbDownOffAltIcon color="action" fontSize="small" aria-label={label} />
+      <Tooltip title={label} slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
+        <IconButton
+          type="button"
+          size="small"
+          aria-label={label}
+          onClick={onQuickRegister}
+          sx={{ p: 0.25 }}
+        >
+          <ThumbDownOffAltIcon color="action" fontSize="small" />
+        </IconButton>
       </Tooltip>
     );
   }
@@ -301,6 +315,7 @@ export default function AddEventStaff({
   onSaveStaff,
 }: AddEventStaffProps) {
   const { showXsLayout } = useLayoutTier();
+  const { showProblem, showSuccess } = useMessages();
   const { hasAnyRole } = useAuth();
   const viewerIsAdmin = hasAnyRole(['ADMIN']);
   const [hasStaff, setHasStaff] = useState(false);
@@ -312,6 +327,8 @@ export default function AddEventStaff({
   const [sortBy, setSortBy] = useState<StaffSortKey | ''>('');
   const [roleFilter, setRoleFilter] = useState('');
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [pendingQuickRegisterId, setPendingQuickRegisterId] = useState<string | null>(null);
+  const [quickRegisterBusy, setQuickRegisterBusy] = useState(false);
   const [loading, setLoading] = useState(eventId !== null);
   const eventIdRef = useRef(eventId);
   const hasStaffRef = useRef(hasStaff);
@@ -700,6 +717,99 @@ export default function AddEventStaff({
     setPendingDeleteId(null);
   };
 
+  const cancelQuickRegister = () => {
+    if (quickRegisterBusy) {
+      return;
+    }
+    setPendingQuickRegisterId(null);
+  };
+
+  const confirmQuickRegister = () => {
+    const member = membersRef.current.find((row) => row.id === pendingQuickRegisterId);
+    if (!member || quickRegisterBusy) {
+      return;
+    }
+
+    const firstName = member.firstName.trim();
+    const lastName = member.lastName.trim();
+    setQuickRegisterBusy(true);
+
+    void quickRegisterUser(firstName, lastName)
+      .then(async (result) => {
+        if (!result.ok || !result.username || !result.password) {
+          showProblem(result.message || 'Unable to quick register.');
+          return;
+        }
+
+        showSuccess(quickRegistrationRegisteredMessage(firstName, lastName, result.password));
+        setRegistrationById((current) => ({
+          ...current,
+          [member.id]: {
+            status: 'registered',
+            username: result.username ?? null,
+            isAdmin: false,
+          },
+        }));
+        setPendingQuickRegisterId(null);
+        cancelScheduledLookup();
+        const seq = lookupSeqRef.current + 1;
+        lookupSeqRef.current = seq;
+        const people = membersRef.current.filter(staffNameReady).map((row) => ({
+          id: row.id,
+          firstName: row.firstName,
+          lastName: row.lastName,
+        }));
+
+        try {
+          const matches = await lookupStaffRegistration(people);
+          if (lookupSeqRef.current !== seq) {
+            return;
+          }
+          const lookedUp = matches[member.id];
+          setRegistrationById({
+            ...matches,
+            [member.id]: {
+              status: 'registered',
+              username: lookedUp?.username || result.username || null,
+              isAdmin: lookedUp?.isAdmin === true,
+            },
+          });
+        } catch {
+          if (lookupSeqRef.current !== seq) {
+            return;
+          }
+          setRegistrationById((current) => ({
+            ...current,
+            [member.id]: {
+              status: 'registered',
+              username: result.username ?? null,
+              isAdmin: false,
+            },
+          }));
+        }
+      })
+      .catch((error: unknown) => {
+        showProblem(error instanceof Error ? error.message : 'Unable to quick register.');
+      })
+      .finally(() => {
+        setQuickRegisterBusy(false);
+      });
+  };
+
+  const pendingQuickRegister = members.find((member) => member.id === pendingQuickRegisterId) ?? null;
+
+  const registeredMark = (member: EventStaffMember) => (
+    <RegisteredMark
+      firstName={member.firstName}
+      match={staffReadyForLookup(member) ? registrationById[member.id] : undefined}
+      onQuickRegister={
+        staffReadyForLookup(member) && registrationById[member.id]?.status === 'none'
+          ? () => setPendingQuickRegisterId(member.id)
+          : undefined
+      }
+    />
+  );
+
   const visibleStaff = members
     .map((member, index) => ({ member, index }))
     .filter(
@@ -961,12 +1071,7 @@ export default function AddEventStaff({
                       <Typography variant="body2" sx={{ fontWeight: 700 }}>
                         Registered
                       </Typography>
-                      <RegisteredMark
-                        firstName={member.firstName}
-                        match={
-                          staffReadyForLookup(member) ? registrationById[member.id] : undefined
-                        }
-                      />
+                      {registeredMark(member)}
                     </Stack>
                   </Stack>
                 ))
@@ -1026,12 +1131,7 @@ export default function AddEventStaff({
                   {roleMenu(member, 'primaryRoleCode', `Primary role for staff ${index + 1}`)}
                   {roleMenu(member, 'secondaryRoleCode', `Secondary role for staff ${index + 1}`)}
                   <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                    <RegisteredMark
-                      firstName={member.firstName}
-                      match={
-                        staffReadyForLookup(member) ? registrationById[member.id] : undefined
-                      }
-                    />
+                    {registeredMark(member)}
                   </Box>
                   <IconButton
                     aria-label={`Remove staff ${index + 1}`}
@@ -1086,6 +1186,14 @@ export default function AddEventStaff({
           </Button>
         </DialogActions>
       </Dialog>
+
+      <QuickRegisterDialog
+        open={pendingQuickRegister !== null}
+        firstName={pendingQuickRegister?.firstName ?? ''}
+        busy={quickRegisterBusy}
+        onClose={cancelQuickRegister}
+        onConfirm={confirmQuickRegister}
+      />
     </Box>
   );
 }

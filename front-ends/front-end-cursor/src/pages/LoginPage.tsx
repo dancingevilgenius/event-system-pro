@@ -46,11 +46,11 @@ export default function LoginPage() {
         showProblem(result.message);
         return;
       }
-      if (result.user_id && result.username && result.email) {
+      if (result.user_id && result.username) {
         setSession({
           user_id: result.user_id,
           username: result.username,
-          email: result.email,
+          email: result.email?.trim() ?? '',
           roles: (result.roles ?? []) as AppRole[],
           token: result.token ?? null,
         });

@@ -20,6 +20,7 @@ import AdminEventSectionPlaceholderPage from './pages/AdminEventSectionPlacehold
 import AdminEventsPage from './pages/AdminEventsPage';
 import AdminHomePage from './pages/AdminHomePage';
 import AdminPlaceholderPage from './pages/AdminPlaceholderPage';
+import AdminQuickRegPage from './pages/AdminQuickRegPage';
 import AdminMigrationsPage from './pages/AdminMigrationsPage';
 import AdminScheduledTasksPage from './pages/AdminScheduledTasksPage';
 import AdminSearchUsersPage from './pages/AdminSearchUsersPage';
@@ -399,6 +400,14 @@ export default function App() {
         element={
           <ProtectedRoute roles={['ADMIN']}>
             <AdminSearchUsersPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/quickreg"
+        element={
+          <ProtectedRoute roles={['ADMIN']}>
+            <AdminQuickRegPage />
           </ProtectedRoute>
         }
       />

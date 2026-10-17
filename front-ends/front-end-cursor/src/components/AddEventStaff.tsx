@@ -25,6 +25,7 @@ import {
   lookupStaffRegistration,
   parseEventRoleAssignments,
   parseEventStaff,
+  previewQuickRegisterUsernames,
   quickRegisterUser,
   type AppRoleRow,
   type EventRoleAssignment,
@@ -39,9 +40,14 @@ import { trimSavedText } from '../utils/trimSavedText';
 import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
-import { quickRegistrationRegisteredMessage } from '../utils/quickRegistration';
+import {
+  quickRegistrationBatchSummary,
+  quickRegistrationRegisteredMessage,
+  quickRegistrationUsernameHint,
+} from '../utils/quickRegistration';
 import AppTextField from './AppTextField';
 import DeleteIcon from './DeleteIcon';
+import QuickRegisterAllDialog, { type QuickRegisterAllPerson } from './QuickRegisterAllDialog';
 import QuickRegisterDialog from './QuickRegisterDialog';
 
 export type EventStaffSummary = {
@@ -232,6 +238,16 @@ function RegisteredMark({
       </Tooltip>
     );
   }
+  if (match?.quickReg) {
+    const label = match.username
+      ? `${name} was Quick Registered with username ${match.username}.`
+      : `${name} was Quick Registered.`;
+    return (
+      <Tooltip title={label} slotProps={{ popper: { sx: { pointerEvents: 'none' } } }}>
+        <ThumbUpAltIcon fontSize="small" aria-label={label} sx={{ color: '#fdd835' }} />
+      </Tooltip>
+    );
+  }
   if (match?.status === 'partial') {
     return (
       <ThumbUpOffAltIcon color="action" fontSize="small" aria-label="Partially registered" />
@@ -315,7 +331,7 @@ export default function AddEventStaff({
   onSaveStaff,
 }: AddEventStaffProps) {
   const { showXsLayout } = useLayoutTier();
-  const { showProblem, showSuccess } = useMessages();
+  const { showProblem, showSuccess, showWarning } = useMessages();
   const { hasAnyRole } = useAuth();
   const viewerIsAdmin = hasAnyRole(['ADMIN']);
   const [hasStaff, setHasStaff] = useState(false);
@@ -329,6 +345,11 @@ export default function AddEventStaff({
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [pendingQuickRegisterId, setPendingQuickRegisterId] = useState<string | null>(null);
   const [quickRegisterBusy, setQuickRegisterBusy] = useState(false);
+  const [singleQuickRegisterHint, setSingleQuickRegisterHint] = useState<string | null>(null);
+  const [quickRegisterAllOpen, setQuickRegisterAllOpen] = useState(false);
+  const [quickRegisterAllBusy, setQuickRegisterAllBusy] = useState(false);
+  const [quickRegisterAllPeople, setQuickRegisterAllPeople] = useState<QuickRegisterAllPerson[]>([]);
+  const [quickRegisterAllSkipped, setQuickRegisterAllSkipped] = useState<string[]>([]);
   const [loading, setLoading] = useState(eventId !== null);
   const eventIdRef = useRef(eventId);
   const hasStaffRef = useRef(hasStaff);
@@ -717,6 +738,51 @@ export default function AddEventStaff({
     setPendingDeleteId(null);
   };
 
+  useEffect(() => {
+    if (!pendingQuickRegisterId) {
+      setSingleQuickRegisterHint(null);
+      return;
+    }
+
+    const member = membersRef.current.find((row) => row.id === pendingQuickRegisterId);
+    if (!member) {
+      setSingleQuickRegisterHint(null);
+      return;
+    }
+
+    let cancelled = false;
+    void previewQuickRegisterUsernames([
+      { id: member.id, firstName: member.firstName, lastName: member.lastName },
+    ])
+      .then((people) => {
+        if (cancelled) {
+          return;
+        }
+        const person = people[0];
+        if (!person?.ok || !person.incremented) {
+          setSingleQuickRegisterHint(null);
+          return;
+        }
+        setSingleQuickRegisterHint(
+          quickRegistrationUsernameHint(
+            `${person.firstName} ${person.lastName}`,
+            person.baseUsername,
+            person.username,
+            'will',
+          ),
+        );
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setSingleQuickRegisterHint(null);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [pendingQuickRegisterId]);
+
   const cancelQuickRegister = () => {
     if (quickRegisterBusy) {
       return;
@@ -741,13 +807,22 @@ export default function AddEventStaff({
           return;
         }
 
-        showSuccess(quickRegistrationRegisteredMessage(firstName, lastName, result.password));
+        const hint = quickRegistrationUsernameHint(
+          `${firstName} ${lastName}`,
+          result.base_username?.trim() || result.password,
+          result.username,
+          'uses',
+        );
+        showSuccess(
+          [quickRegistrationRegisteredMessage(firstName, lastName), hint].filter(Boolean).join(' '),
+        );
         setRegistrationById((current) => ({
           ...current,
           [member.id]: {
-            status: 'registered',
+            status: 'partial',
             username: result.username ?? null,
             isAdmin: false,
+            quickReg: true,
           },
         }));
         setPendingQuickRegisterId(null);
@@ -768,11 +843,14 @@ export default function AddEventStaff({
           const lookedUp = matches[member.id];
           setRegistrationById({
             ...matches,
-            [member.id]: {
-              status: 'registered',
-              username: lookedUp?.username || result.username || null,
-              isAdmin: lookedUp?.isAdmin === true,
-            },
+            [member.id]: lookedUp && lookedUp.status !== 'none'
+              ? lookedUp
+              : {
+                  status: 'partial',
+                  username: result.username ?? null,
+                  isAdmin: false,
+                  quickReg: true,
+                },
           });
         } catch {
           if (lookupSeqRef.current !== seq) {
@@ -781,9 +859,10 @@ export default function AddEventStaff({
           setRegistrationById((current) => ({
             ...current,
             [member.id]: {
-              status: 'registered',
+              status: 'partial',
               username: result.username ?? null,
               isAdmin: false,
+              quickReg: true,
             },
           }));
         }
@@ -794,6 +873,174 @@ export default function AddEventStaff({
       .finally(() => {
         setQuickRegisterBusy(false);
       });
+  };
+
+  const reportQuickRegisterBatch = (successCount: number, failures: string[], hints: string[]) => {
+    const message = quickRegistrationBatchSummary(successCount, failures, hints);
+    if (failures.length === 0) {
+      showSuccess(message);
+      return;
+    }
+    if (successCount === 0) {
+      showProblem(message);
+      return;
+    }
+    showWarning(message);
+  };
+
+  const openQuickRegisterAll = () => {
+    if (quickRegisterAllBusy || quickRegisterBusy) {
+      return;
+    }
+
+    const candidates = membersRef.current.filter(
+      (member) => staffReadyForLookup(member) && registrationById[member.id]?.status === 'none',
+    );
+    if (candidates.length === 0) {
+      showProblem('No staff need Quick Registration.');
+      return;
+    }
+
+    setQuickRegisterAllBusy(true);
+    void previewQuickRegisterUsernames(
+      candidates.map((member) => ({
+        id: member.id,
+        firstName: member.firstName,
+        lastName: member.lastName,
+      })),
+    )
+      .then((people) => {
+        const ready: QuickRegisterAllPerson[] = [];
+        const skipped: string[] = [];
+        for (const person of people) {
+          const name = `${person.firstName} ${person.lastName}`.trim();
+          if (!person.ok) {
+            skipped.push(person.message || `${name} cannot be Quick Registered.`);
+            continue;
+          }
+          ready.push({
+            id: person.id,
+            name,
+            hint: person.incremented
+              ? quickRegistrationUsernameHint(name, person.baseUsername, person.username, 'will')
+              : null,
+          });
+        }
+
+        if (ready.length === 0) {
+          reportQuickRegisterBatch(0, skipped, []);
+          return;
+        }
+
+        setQuickRegisterAllPeople(ready);
+        setQuickRegisterAllSkipped(skipped);
+        setQuickRegisterAllOpen(true);
+      })
+      .catch((error: unknown) => {
+        showProblem(error instanceof Error ? error.message : 'Unable to preview Quick Registration.');
+      })
+      .finally(() => {
+        setQuickRegisterAllBusy(false);
+      });
+  };
+
+  const cancelQuickRegisterAll = () => {
+    if (quickRegisterAllBusy) {
+      return;
+    }
+    setQuickRegisterAllOpen(false);
+  };
+
+  const confirmQuickRegisterAll = () => {
+    if (quickRegisterAllBusy || quickRegisterAllPeople.length === 0) {
+      return;
+    }
+
+    const planned = quickRegisterAllPeople;
+    setQuickRegisterAllBusy(true);
+
+    void (async () => {
+      const failures: string[] = [];
+      const hints: string[] = [];
+      const succeeded = new Map<string, string>();
+
+      for (const person of planned) {
+        const member = membersRef.current.find((row) => row.id === person.id);
+        const name = person.name;
+        if (!member) {
+          failures.push(`${name} is no longer on the staff list.`);
+          continue;
+        }
+
+        try {
+          const result = await quickRegisterUser(member.firstName, member.lastName);
+          if (!result.ok || !result.username || !result.password) {
+            failures.push(result.message || `${name} was not registered.`);
+            continue;
+          }
+
+          succeeded.set(member.id, result.username);
+          const hint = quickRegistrationUsernameHint(
+            name,
+            result.base_username?.trim() || result.password,
+            result.username,
+            'uses',
+          );
+          if (hint) {
+            hints.push(hint);
+          }
+        } catch (error: unknown) {
+          failures.push(error instanceof Error ? error.message : `${name} was not registered.`);
+        }
+      }
+
+      setRegistrationById((current) => {
+        const next = { ...current };
+        for (const [id, username] of succeeded) {
+          next[id] = {
+            status: 'partial',
+            username,
+            isAdmin: false,
+            quickReg: true,
+          };
+        }
+        return next;
+      });
+
+      try {
+        const seq = lookupSeqRef.current + 1;
+        lookupSeqRef.current = seq;
+        const matches = await lookupStaffRegistration(
+          membersRef.current.filter(staffNameReady).map((row) => ({
+            id: row.id,
+            firstName: row.firstName,
+            lastName: row.lastName,
+          })),
+        );
+        if (lookupSeqRef.current === seq) {
+          const next = { ...matches };
+          for (const [id, username] of succeeded) {
+            const lookedUp = next[id];
+            if (!lookedUp || lookedUp.status === 'none') {
+              next[id] = {
+                status: 'partial',
+                username,
+                isAdmin: false,
+                quickReg: true,
+              };
+            }
+          }
+          setRegistrationById(next);
+        }
+      } catch {
+        // The optimistic yellow icons stay when the refresh fails.
+      }
+
+      reportQuickRegisterBatch(succeeded.size, failures, hints);
+      setQuickRegisterAllOpen(false);
+    })().finally(() => {
+      setQuickRegisterAllBusy(false);
+    });
   };
 
   const pendingQuickRegister = members.find((member) => member.id === pendingQuickRegisterId) ?? null;
@@ -1147,9 +1394,26 @@ export default function AddEventStaff({
         ) : null}
 
         {hasStaff ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Button variant="outlined" onClick={handleAddStaff}>
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: { xs: '1fr', md: '1fr auto 1fr' },
+              alignItems: 'center',
+              columnGap: 2,
+              rowGap: 1,
+            }}
+          >
+            <Box sx={{ display: { xs: 'none', md: 'block' } }} />
+            <Button variant="outlined" onClick={handleAddStaff} sx={{ justifySelf: 'center' }}>
               Add Staff
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={openQuickRegisterAll}
+              disabled={quickRegisterBusy || quickRegisterAllBusy}
+              sx={{ justifySelf: { xs: 'end', md: 'end' } }}
+            >
+              Quick Register All
             </Button>
           </Box>
         ) : null}
@@ -1190,9 +1454,18 @@ export default function AddEventStaff({
       <QuickRegisterDialog
         open={pendingQuickRegister !== null}
         firstName={pendingQuickRegister?.firstName ?? ''}
+        detail={singleQuickRegisterHint}
         busy={quickRegisterBusy}
         onClose={cancelQuickRegister}
         onConfirm={confirmQuickRegister}
+      />
+      <QuickRegisterAllDialog
+        open={quickRegisterAllOpen}
+        people={quickRegisterAllPeople}
+        skipped={quickRegisterAllSkipped}
+        busy={quickRegisterAllBusy}
+        onClose={cancelQuickRegisterAll}
+        onConfirm={confirmQuickRegisterAll}
       />
     </Box>
   );

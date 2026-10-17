@@ -12,6 +12,7 @@ import {
 type QuickRegisterDialogProps = {
   open: boolean;
   firstName: string;
+  detail?: string | null;
   busy?: boolean;
   onClose: () => void;
   onConfirm: () => void;
@@ -20,6 +21,7 @@ type QuickRegisterDialogProps = {
 export default function QuickRegisterDialog({
   open,
   firstName,
+  detail = null,
   busy = false,
   onClose,
   onConfirm,
@@ -49,6 +51,9 @@ export default function QuickRegisterDialog({
         <DialogContentText id="quick-register-title">
           Do you want to Quick Register {name}?
         </DialogContentText>
+        {detail ? (
+          <DialogContentText sx={{ mt: 2 }}>{detail}</DialogContentText>
+        ) : null}
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'space-between', px: 4, pt: 1, pb: 3 }}>
         <Button type="button" onClick={onClose} disabled={busy} sx={{ minWidth: 96 }}>

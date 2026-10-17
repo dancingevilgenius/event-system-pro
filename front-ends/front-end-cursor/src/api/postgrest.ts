@@ -1966,6 +1966,7 @@ export type StaffRegistrationMatch = {
   status: StaffRegistrationStatus;
   username: string | null;
   isAdmin: boolean;
+  quickReg: boolean;
 };
 
 export async function lookupStaffRegistration(
@@ -1982,6 +1983,7 @@ export async function lookupStaffRegistration(
       status?: string;
       username?: string | null;
       is_admin?: boolean;
+      quickreg?: boolean;
     }>;
   }>('lookup_staff_registration', {
     p_people: people.map((person) => ({
@@ -2006,6 +2008,7 @@ export async function lookupStaffRegistration(
         status: match.status,
         username: username === '' ? null : username,
         isAdmin: match.is_admin === true,
+        quickReg: match.quickreg === true,
       };
     }
   }
@@ -2018,7 +2021,66 @@ export type QuickRegisterUserResult = {
   user_id?: number;
   username?: string;
   password?: string;
+  base_username?: string;
+  username_incremented?: boolean;
 };
+
+export type QuickRegisterPreviewPerson = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  ok: boolean;
+  message: string;
+  baseUsername: string;
+  username: string;
+  incremented: boolean;
+};
+
+type PreviewQuickRegisterUsernamesResult = {
+  ok: boolean;
+  message?: string;
+  people?: Array<{
+    id?: string | null;
+    first_name?: string | null;
+    last_name?: string | null;
+    ok?: boolean;
+    message?: string | null;
+    base_username?: string | null;
+    username?: string | null;
+    incremented?: boolean;
+  }>;
+};
+
+/** Admin preview of Quick Registration usernames, including numbered suffixes. */
+export async function previewQuickRegisterUsernames(
+  people: Array<{ id: string; firstName: string; lastName: string }>,
+): Promise<QuickRegisterPreviewPerson[]> {
+  const result = await callRpc<PreviewQuickRegisterUsernamesResult>(
+    'preview_quick_register_usernames',
+    {
+      p_people: people.map((person) => ({
+        id: person.id,
+        first_name: trimSavedText(person.firstName),
+        last_name: trimSavedText(person.lastName),
+      })),
+    },
+  );
+
+  if (!result.ok) {
+    throw new Error(result.message ?? 'Unable to preview Quick Registration usernames.');
+  }
+
+  return (result.people ?? []).map((person) => ({
+    id: person.id?.trim() ?? '',
+    firstName: person.first_name?.trim() ?? '',
+    lastName: person.last_name?.trim() ?? '',
+    ok: person.ok === true,
+    message: person.message?.trim() ?? '',
+    baseUsername: person.base_username?.trim() ?? '',
+    username: person.username?.trim() ?? '',
+    incremented: person.incremented === true,
+  }));
+}
 
 export function quickRegisterUser(firstName: string, lastName: string) {
   return callRpc<QuickRegisterUserResult>('quick_register_user', {

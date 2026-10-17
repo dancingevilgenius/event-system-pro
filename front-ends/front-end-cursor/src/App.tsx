@@ -3,6 +3,7 @@ import { useClearRegistrationSelectionOutsideDesk } from './hooks/useClearRegist
 import ActivityMonitor from './components/ActivityMonitor';
 import LoginFlashHandler from './components/LoginFlashHandler';
 import ProtectedRoute from './components/ProtectedRoute';
+import JudgingHomeRoute from './components/JudgingHomeRoute';
 import RegistrationHomeRoute from './components/RegistrationHomeRoute';
 import AccountPage from './pages/AccountPage';
 import AdminAuditLogPage from './pages/AdminAuditLogPage';
@@ -432,10 +433,11 @@ export default function App() {
         }
       />
       <Route path="/registrationHome" element={<RegistrationHomeRoute />} />
+      <Route path="/judgingHome" element={<JudgingHomeRoute />} />
       <Route
         path="/judge-finals"
         element={
-          <ProtectedRoute roles={['ADMIN', 'STAFF']}>
+          <ProtectedRoute roles={['ADMIN', 'STAFF', 'JUDGE', 'HEAD_JUDGE']}>
             <JudgingPage />
           </ProtectedRoute>
         }

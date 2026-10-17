@@ -1,4 +1,10 @@
 import { parseTrainingLesson } from '../lib/pageTraining';
+import {
+  eventInJudgingWindow,
+  JUDGING_WINDOW_MS,
+  selectJudgingHomeContests,
+  type JudgingHomeContest,
+} from '../lib/judgingHome';
 import { eventInRegistrationWindow } from '../lib/registrationWindow';
 import { compareSchemaMigrationRowsDescending } from '../lib/schemaMigrationOrder';
 import { schedulerHeartbeatIsHealthy } from '../lib/schedulerHeartbeat';
@@ -3561,6 +3567,101 @@ type RegistrationHomeAccessResult = {
 export async function fetchRegistrationHomeAccess(): Promise<boolean> {
   const result = await callRpc<RegistrationHomeAccessResult>('registration_home_access', {});
   return result.ok !== false && result.allowed === true;
+}
+
+type JudgingHomeEventRow = {
+  event_id: number;
+  name: string | null;
+  start_date: string | null;
+  more_json: unknown;
+};
+
+type JudgingHomeContestTableRow = {
+  contest_id: number;
+  event_id: number | null;
+  event_type_code: string | null;
+  more_json: unknown;
+  staff_json: unknown;
+};
+
+/** Contests this signed-in user judges in the 6-hour start window. */
+export async function fetchJudgingHomeContests(
+  now: Date = new Date(),
+): Promise<JudgingHomeContest[]> {
+  const session = loadSession();
+  if (!session) {
+    return [];
+  }
+
+  const name = await fetchUserPersonName(session.user_id);
+  const windowStart = new Date(now.getTime() - JUDGING_WINDOW_MS).toISOString();
+  const windowEnd = new Date(now.getTime() + JUDGING_WINDOW_MS).toISOString();
+  const params = new URLSearchParams({
+    select: 'event_id,name,start_date,more_json',
+    order: 'start_date.asc,event_id.asc',
+  });
+  params.append('start_date', `gte.${windowStart}`);
+  params.append('start_date', `lte.${windowEnd}`);
+
+  const rows = await fetchJson<JudgingHomeEventRow[]>(
+    `${POSTGREST_URL}/event?${params.toString()}`,
+    'Unable to load judging contests',
+  );
+  const events = rows.flatMap((row) => {
+    if (!Number.isInteger(row.event_id) || !eventInJudgingWindow(row.start_date, now)) {
+      return [];
+    }
+
+    return [
+      {
+        eventId: row.event_id,
+        name: row.name?.trim() ?? '',
+        startDate: row.start_date,
+        moreJson: row.more_json,
+      },
+    ];
+  });
+
+  if (events.length === 0) {
+    return [];
+  }
+
+  const contestParams = new URLSearchParams({
+    select: 'contest_id,event_id,event_type_code,more_json,staff_json',
+    order: 'contest_id.asc',
+  });
+  contestParams.append('event_id', `in.(${events.map((event) => event.eventId).join(',')})`);
+
+  const tableRows = await fetchJson<JudgingHomeContestTableRow[]>(
+    `${POSTGREST_URL}/contest?${contestParams.toString()}`,
+    'Unable to load judging contests',
+  );
+
+  return selectJudgingHomeContests({
+    events,
+    contests: tableRows.flatMap((row) => {
+      if (row.event_id === null || !Number.isInteger(row.contest_id)) {
+        return [];
+      }
+
+      return [
+        {
+          contestId: row.contest_id,
+          eventId: row.event_id,
+          eventTypeCode: row.event_type_code,
+          moreJson: row.more_json,
+          staffJson: row.staff_json,
+        },
+      ];
+    }),
+    user: {
+      userId: session.user_id,
+      username: session.username,
+      firstName: name.firstName,
+      lastName: name.lastName,
+    },
+    now,
+  });
 }
 
 /** Registration desk search by first and/or last name. Demo users are omitted. */

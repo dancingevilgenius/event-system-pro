@@ -1,4 +1,3 @@
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import { Box, Tooltip, Typography, type SxProps, type Theme } from '@mui/material';
 import type { ReactNode } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -6,8 +5,9 @@ import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { formatBackTooltip } from '../utils/backTooltip';
+import AccountSettingsButton from './AccountSettingsButton';
 import MobileBackIconButton from './MobileBackIconButton';
-import MobileHeaderIconButton, { MOBILE_HEADER_ICON_SLOT } from './MobileHeaderIconButton';
+import { MOBILE_HEADER_ICON_SLOT } from './MobileHeaderIconButton';
 
 type PageHeaderProps = {
   title: ReactNode;
@@ -58,13 +58,7 @@ export default function PageHeader({ title, backTo, backLabel, titleSx }: PageHe
         {title}
       </Typography>
       {showAccountIcon ? (
-        <Tooltip title="Account settings">
-          <span>
-            <MobileHeaderIconButton label="Account settings" onClick={() => navigate('/account')}>
-              <ManageAccountsIcon />
-            </MobileHeaderIconButton>
-          </span>
-        </Tooltip>
+        <AccountSettingsButton />
       ) : (
         <Box sx={{ width: MOBILE_HEADER_ICON_SLOT, flexShrink: 0 }} aria-hidden />
       )}

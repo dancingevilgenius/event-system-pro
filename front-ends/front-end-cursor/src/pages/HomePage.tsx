@@ -1,12 +1,11 @@
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import { Box, Button, Container, Grid, Paper, Stack, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Container, Grid, Paper, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import MobileHeaderIconButton, {
-  MOBILE_HEADER_ICON_SLOT,
-} from '../components/MobileHeaderIconButton';
+import AccountSettingsButton from '../components/AccountSettingsButton';
+import { MOBILE_HEADER_ICON_SLOT } from '../components/MobileHeaderIconButton';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
+import { useJudgingHomeAccess } from '../hooks/useJudgingHomeAccess';
 import { useRegistrationHomeAccess } from '../hooks/useRegistrationHomeAccess';
 import type { AppRole } from '../lib/session';
 
@@ -23,13 +22,22 @@ export default function HomePage() {
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const registrationByAppRole = hasAnyRole(['REGISTRATION']);
   const registrationByStaff = useRegistrationHomeAccess(!registrationByAppRole);
-  const homeButtons = HOME_BUTTONS.filter((button) => {
+  const judgingAccess = useJudgingHomeAccess(true);
+  const visibleButtons = HOME_BUTTONS.filter((button) => {
     if (!button.roles || hasAnyRole(button.roles)) {
       return true;
     }
 
     return button.path === '/registrationHome' && registrationByStaff.allowed;
   });
+  const adminIndex = visibleButtons.findIndex((button) => button.path === '/adminhome');
+  const homeButtons = judgingAccess.allowed
+    ? [
+        ...visibleButtons.slice(0, adminIndex === -1 ? visibleButtons.length : adminIndex),
+        { label: 'Judging', path: '/judgingHome' },
+        ...(adminIndex === -1 ? [] : visibleButtons.slice(adminIndex)),
+      ]
+    : visibleButtons;
 
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
@@ -52,13 +60,7 @@ export default function HomePage() {
           >
             Home
           </Typography>
-          <Tooltip title="Account settings">
-            <span>
-              <MobileHeaderIconButton label="Account settings" onClick={() => navigate('/account')}>
-                <ManageAccountsIcon />
-              </MobileHeaderIconButton>
-            </span>
-          </Tooltip>
+          <AccountSettingsButton />
         </Box>
 
         {showXsLayout ? (

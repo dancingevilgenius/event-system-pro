@@ -3340,6 +3340,53 @@ export async function fetchEventPosContextByCode(
   };
 }
 
+export type RegistrationSearchUser = {
+  username: string;
+  firstName: string;
+  lastName: string;
+  state: string;
+  email: string;
+};
+
+type SearchRegistrationUsersResult = {
+  ok: boolean;
+  message?: string;
+  truncated?: boolean;
+  users?: Array<{
+    username?: string | null;
+    first_name?: string | null;
+    last_name?: string | null;
+    state?: string | null;
+    email?: string | null;
+  }>;
+};
+
+/** Registration desk search by first and/or last name. Demo users are omitted. */
+export async function searchRegistrationUsers(
+  firstName: string,
+  lastName: string,
+): Promise<{ users: RegistrationSearchUser[]; truncated: boolean }> {
+  const result = await callRpc<SearchRegistrationUsersResult>('search_registration_users', {
+    p_first_name: firstName,
+    p_last_name: lastName,
+  });
+
+  if (!result.ok) {
+    throw new Error(result.message ?? 'Unable to search users.');
+  }
+
+  return {
+    truncated: result.truncated === true,
+    users: (result.users ?? []).map((row) => ({
+      username: row.username?.trim() ?? '',
+      firstName: row.first_name?.trim() ?? '',
+      lastName: row.last_name?.trim() ?? '',
+      state: row.state?.trim() ?? '',
+      email: row.email?.trim() ?? '',
+    })),
+  };
+}
+
 export type JudgeSearchUser = {
   userId: number;
   firstName: string;

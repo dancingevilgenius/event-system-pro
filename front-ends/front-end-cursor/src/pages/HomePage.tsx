@@ -7,12 +7,20 @@ import MobileHeaderIconButton, {
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
+import type { AppRole } from '../lib/session';
+
+const HOME_BUTTONS: { label: string; path: string; roles?: AppRole[] }[] = [
+  { label: 'Staff', path: '/staff' },
+  { label: 'Competitor', path: '/competitor-home' },
+  { label: 'Registration', path: '/registrationHome', roles: ['REGISTRATION'] },
+  { label: 'Admin', path: '/adminhome', roles: ['ADMIN'] },
+];
 
 export default function HomePage() {
   const navigate = useNavigate();
   const { hasAnyRole } = useAuth();
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
-  const isAdmin = hasAnyRole(['ADMIN']);
+  const homeButtons = HOME_BUTTONS.filter((button) => !button.roles || hasAnyRole(button.roles));
 
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
@@ -46,37 +54,32 @@ export default function HomePage() {
 
         {showXsLayout ? (
           <Stack spacing={2} sx={{ my: 3, ...centeredContentStackSx }}>
-            <Button variant="contained" size="large" fullWidth onClick={() => navigate('/staff')}>
-              Staff
-            </Button>
-            <Button variant="contained" size="large" fullWidth onClick={() => navigate('/competitor-home')}>
-              Competitor
-            </Button>
-            {isAdmin && (
-              <Button variant="contained" size="large" fullWidth onClick={() => navigate('/adminhome')}>
-                Admin
+            {homeButtons.map((button) => (
+              <Button
+                key={button.label}
+                variant="contained"
+                size="large"
+                fullWidth
+                onClick={() => navigate(button.path)}
+              >
+                {button.label}
               </Button>
-            )}
+            ))}
           </Stack>
         ) : (
           <Grid container spacing={2} sx={{ my: 3 }}>
-            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-              <Button variant="contained" size="large" fullWidth onClick={() => navigate('/staff')}>
-                Staff
-              </Button>
-            </Grid>
-            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-              <Button variant="contained" size="large" fullWidth onClick={() => navigate('/competitor-home')}>
-                Competitor
-              </Button>
-            </Grid>
-            {isAdmin && (
-              <Grid size={{ xs: 12, md: 6, lg: 4 }}>
-                <Button variant="contained" size="large" fullWidth onClick={() => navigate('/adminhome')}>
-                  Admin
+            {homeButtons.map((button) => (
+              <Grid key={button.label} size={{ xs: 12, md: 6, lg: 4 }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  onClick={() => navigate(button.path)}
+                >
+                  {button.label}
                 </Button>
               </Grid>
-            )}
+            ))}
           </Grid>
         )}
       </Paper>

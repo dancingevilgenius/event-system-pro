@@ -1,4 +1,5 @@
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { useClearRegistrationSelectionOutsideDesk } from './hooks/useClearRegistrationSelectionOutsideDesk';
 import ActivityMonitor from './components/ActivityMonitor';
 import LoginFlashHandler from './components/LoginFlashHandler';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -39,6 +40,7 @@ import GoverningBodyPage from './pages/GoverningBodyPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import RegistrationHomePage from './pages/RegistrationHomePage';
 import RolesPage from './pages/RolesPage';
 import JudgeDemosPage from './pages/JudgeDemosPage';
 import JudgingPage from './pages/JudgingPage';
@@ -59,6 +61,8 @@ function RedirectKeepingSearch({ to }: { to: string }) {
 }
 
 export default function App() {
+  useClearRegistrationSelectionOutsideDesk();
+
   return (
     <>
       <ActivityMonitor />
@@ -415,6 +419,14 @@ export default function App() {
         element={
           <ProtectedRoute roles={['STAFF']}>
             <StaffPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/registrationHome"
+        element={
+          <ProtectedRoute roles={['REGISTRATION']}>
+            <RegistrationHomePage />
           </ProtectedRoute>
         }
       />

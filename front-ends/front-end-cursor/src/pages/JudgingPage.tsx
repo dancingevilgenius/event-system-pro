@@ -16,7 +16,14 @@ import {
   type SelectChangeEvent,
 } from '@mui/material';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import {
+  fetchJudgingContestPairs,
+  fetchJudgingContestRoster,
+  fetchJudgingSubmissionProgress,
+  saveJudgingFinalsSubmission,
+  type JudgingFinalsSubmissionStatus,
+} from '../api/postgrest';
 import CompetitorColorDialog from '../components/CompetitorColorDialog';
 import DuplicateScoreDialog from '../components/DuplicateScoreDialog';
 import CompetitorColorSwatch from '../components/CompetitorColorSwatch';
@@ -42,10 +49,15 @@ import {
   type ContestTitleFontSize,
 } from '../hooks/useContestTitleFontSize';
 import { useLayoutTier } from '../hooks/useLayoutTier';
+import type { JudgingHomeContest } from '../lib/judgingHome';
 import {
-  createMockContestEntries,
-  type MockContestEntry,
-} from '../data/mockContestEntries';
+  buildJudgingFinalsEntries,
+  canLeaveJudgingFinals,
+  judgingFinalsTitle,
+  readJudgingFinalsContest,
+  type JudgingFinalsContestRef,
+  type JudgingFinalsEntry,
+} from '../lib/judgingFinalsEntries';
 import {
   formatFullFirstLast,
   formatInitialLast,
@@ -77,7 +89,6 @@ import {
 } from '../types/judgingScore';
 
 const JUDGING_PAGE_SIZE = 10;
-const JUDGING_COUPLE_COUNT = 7;
 const NUMBER_COLUMN_WIDTH = '2.75rem';
 const LARGE_SCREEN_NUMBER_COLUMN_WIDTH = '3.25rem';
 const SCORE_DISPLAY_WIDTH = '5ch';
@@ -162,7 +173,45 @@ function reservedSwatchSlotSx() {
   } as const;
 }
 
-type JudgingEntry = MockContestEntry;
+type JudgingEntry = JudgingFinalsEntry;
+
+function rosterContest(contest: JudgingFinalsContestRef): JudgingHomeContest {
+  return {
+    id: `finals-${contest.eventId ?? 0}-${contest.contestId ?? 0}-${contest.contestItemId}`,
+    eventId: contest.eventId ?? 0,
+    eventName: contest.eventName,
+    skillLevelLabel: contest.skillLevel,
+    divisionLabel: contest.contestType,
+    contestId: contest.contestId,
+    contestItemId: contest.eventId !== null ? contest.contestItemId : '',
+    skillLevelKey: '',
+    divisionKey: '',
+    leaderCount: 0,
+    followerCount: 0,
+    locked: false,
+    canToggleLock: false,
+  };
+}
+
+async function loadContestEntries(contest: JudgingFinalsContestRef): Promise<JudgingEntry[]> {
+  const canLoadRoster = contest.contestId !== null || (contest.eventId !== null && contest.contestItemId !== '');
+  let pairs = contest.pairs;
+  if (pairs === null) {
+    if (!canLoadRoster) {
+      return [];
+    }
+    pairs = await fetchJudgingContestPairs({
+      eventId: contest.eventId ?? 0,
+      contestId: contest.contestId,
+      contestItemId: contest.eventId !== null ? contest.contestItemId : '',
+    });
+  }
+  if (pairs.length === 0 || !canLoadRoster) {
+    return buildJudgingFinalsEntries(pairs, []);
+  }
+  const people = await fetchJudgingContestRoster(rosterContest(contest));
+  return buildJudgingFinalsEntries(pairs, people);
+}
 
 function entryHasNonZeroScore(
   bibNumber: number,
@@ -257,9 +306,17 @@ function sortJudgingEntries(
   return sorted;
 }
 
+function rosterBibText(bib: number | null): string {
+  return bib === null ? '—' : String(bib);
+}
+
+/** About twice a normal word space, so the bib and name read as separate items. */
+const ROSTER_BIB_NAME_GAP_PX = 8;
+
 type CompetitorNamesTextProps = {
   leader: LegionMember;
   follower: LegionMember;
+  followerBib: number | null;
   leaderColors: CompetitorColorRecord;
   followerColors: CompetitorColorRecord;
   fontSize: ContestTitleFontSize;
@@ -268,6 +325,7 @@ type CompetitorNamesTextProps = {
 function CompetitorNamesText({
   leader,
   follower,
+  followerBib,
   leaderColors,
   followerColors,
   fontSize,
@@ -295,8 +353,10 @@ function CompetitorNamesText({
       for (const mode of SUMMARY_NAME_MODES) {
         measure.textContent = formatSummaryLeaderName(leader, mode);
         const leaderFits = measure.scrollWidth <= nameColumnWidth;
+        measure.textContent = rosterBibText(followerBib);
+        const followerBibWidth = measure.scrollWidth;
         measure.textContent = formatSummaryFollowerName(follower, mode);
-        const followerFits = measure.scrollWidth <= nameColumnWidth;
+        const followerFits = followerBibWidth + ROSTER_BIB_NAME_GAP_PX + measure.scrollWidth <= nameColumnWidth;
 
         if (leaderFits && followerFits) {
           setNameMode(mode);
@@ -313,7 +373,7 @@ function CompetitorNamesText({
     observer.observe(container);
 
     return () => observer.disconnect();
-  }, [leader, follower, fontSize]);
+  }, [followerBib, leader, follower, fontSize]);
 
   return (
     <Box
@@ -373,6 +433,12 @@ function CompetitorNamesText({
         variant="body1"
         sx={summaryNameColumnSx('left', fontSize)}
       >
+        <Box
+          component="span"
+          sx={{ fontVariantNumeric: 'tabular-nums', fontWeight: 600, mr: `${ROSTER_BIB_NAME_GAP_PX}px` }}
+        >
+          {rosterBibText(followerBib)}
+        </Box>
         {formatSummaryFollowerName(follower, nameMode)}
       </Typography>
 
@@ -403,6 +469,7 @@ type PaletteTarget = {
 type CompetitorNameDetailProps = {
   member: LegionMember;
   bibNumber: number;
+  rosterBib: number | null;
   role: CompetitorRole;
   colorRecord: CompetitorColorRecord;
   onPaletteClick: (target: PaletteTarget) => void;
@@ -411,6 +478,7 @@ type CompetitorNameDetailProps = {
 function CompetitorNameDetail({
   member,
   bibNumber,
+  rosterBib,
   role,
   colorRecord,
   onPaletteClick,
@@ -455,6 +523,12 @@ function CompetitorNameDetail({
           whiteSpace: 'nowrap',
         }}
       >
+        <Box
+          component="span"
+          sx={{ fontVariantNumeric: 'tabular-nums', fontWeight: 600, mr: `${ROSTER_BIB_NAME_GAP_PX}px` }}
+        >
+          {rosterBibText(rosterBib)}
+        </Box>
         {fullName}
       </Typography>
     </Stack>
@@ -552,6 +626,7 @@ function JudgingEntryAccordion({
             <CompetitorNamesText
               leader={entry.leader}
               follower={entry.follower}
+              followerBib={entry.followerBib}
               leaderColors={leaderColors}
               followerColors={followerColors}
               fontSize={titleFontSize}
@@ -590,6 +665,7 @@ function JudgingEntryAccordion({
           <CompetitorNameDetail
             member={entry.leader}
             bibNumber={entry.number}
+            rosterBib={entry.leaderBib}
             role="leader"
             colorRecord={leaderColors}
             onPaletteClick={onPaletteClick}
@@ -597,6 +673,7 @@ function JudgingEntryAccordion({
           <CompetitorNameDetail
             member={entry.follower}
             bibNumber={entry.number}
+            rosterBib={entry.followerBib}
             role="follower"
             colorRecord={followerColors}
             onPaletteClick={onPaletteClick}
@@ -607,12 +684,52 @@ function JudgingEntryAccordion({
   );
 }
 
+function submittedScoreKey(entries: JudgingEntry[], scoreByBib: Record<number, EntryScoreState>): string {
+  return entries
+    .map((entry) => {
+      const score = scoreByBib[entry.number];
+      return `${entry.number}:${score?.touched ? score.digits.join(',') : ''}`;
+    })
+    .join('|');
+}
+
 export default function JudgingPage() {
-  const navigate = useNavigate();
-  const { showSuccess, showInfo } = useMessages();
-  // Mock roster. When this page loads contest_entry for a contestId, call
-  // useContestRosterRealtime and silently replace entries only. Keep scoreByBib.
-  const entries = useMemo(() => createMockContestEntries(JUDGING_COUPLE_COUNT), []);
+  const location = useLocation();
+  const contest = useMemo(
+    () => readJudgingFinalsContest(location.state, new URLSearchParams(location.search)),
+    [location.search, location.state],
+  );
+  const { showSuccess, showInfo, showProblem } = useMessages();
+  const [entries, setEntries] = useState<JudgingEntry[]>([]);
+  const [entriesLoading, setEntriesLoading] = useState(true);
+  const [entriesError, setEntriesError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setEntries([]);
+    setEntriesLoading(true);
+    setEntriesError(null);
+    void loadContestEntries(contest)
+      .then((rows) => {
+        if (!cancelled) {
+          setEntries(rows);
+        }
+      })
+      .catch((loadError: unknown) => {
+        if (!cancelled) {
+          setEntries([]);
+          setEntriesError(loadError instanceof Error ? loadError.message : 'Unable to load contest couples.');
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setEntriesLoading(false);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [contest]);
   const largeScreen = useIpad97OrLargerScreen();
   const titleFontSize = largeScreen
     ? LARGE_SCREEN_CONTEST_TITLE_FONT_SIZE
@@ -644,6 +761,10 @@ export default function JudgingPage() {
   );
   const [duplicateScoreDialog, setDuplicateScoreDialog] =
     useState<DuplicateScoreDialogState | null>(null);
+  const [scoresSubmitted, setScoresSubmitted] = useState(false);
+  const [judgeProgress, setJudgeProgress] = useState<JudgingFinalsSubmissionStatus | null>(null);
+  const submittedScoreKeyRef = useRef<string | null>(null);
+  const submittingRef = useRef(false);
 
   const entryByBib = useMemo(
     () => new Map(entries.map((entry) => [entry.number, entry])),
@@ -696,6 +817,22 @@ export default function JudgingPage() {
   );
 
   const previousPercentCompleteRef = useRef(percentComplete);
+
+  useEffect(() => {
+    if (!scoresSubmitted) {
+      return;
+    }
+    if (submittedScoreKey(entries, scoreByBib) !== submittedScoreKeyRef.current) {
+      setScoresSubmitted(false);
+    }
+  }, [entries, scoreByBib, scoresSubmitted]);
+
+  const backEnabled = canLeaveJudgingFinals({
+    loading: entriesLoading,
+    entryCount: entries.length,
+    percentComplete,
+    submitted: scoresSubmitted,
+  });
 
   useEffect(() => {
     const previousPercent = previousPercentCompleteRef.current;
@@ -888,17 +1025,52 @@ export default function JudgingPage() {
     });
   };
 
+  useEffect(() => {
+    let cancelled = false;
+    setJudgeProgress(null);
+    void fetchJudgingSubmissionProgress(contest)
+      .then((status) => {
+        if (!cancelled) {
+          setJudgeProgress(status);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setJudgeProgress(null);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [contest]);
+
   const handleSubmit = () => {
+    if (submittingRef.current) {
+      return;
+    }
+    submittingRef.current = true;
     const submission = buildJudgeSubmission(
       scoreByBib,
       entries.map((entry) => entry.number),
+      judgeProgress?.judgeId || 'local-judge',
     );
 
     saveJudgeSubmission(submission);
-    showSuccess(
-      `Scores submitted with ${submission.placements.length} placements derived (1st = highest score).`,
-    );
-    navigate('/judge-demos');
+    void saveJudgingFinalsSubmission(contest, submission)
+      .then((status) => {
+        submittedScoreKeyRef.current = submittedScoreKey(entries, scoreByBib);
+        setScoresSubmitted(true);
+        setJudgeProgress(status);
+        showSuccess(
+          `Scores submitted with ${submission.placements.length} placements derived (1st = highest score).`,
+        );
+      })
+      .catch((error: unknown) => {
+        showProblem(error instanceof Error ? error.message : 'Unable to save judge scores.');
+      })
+      .finally(() => {
+        submittingRef.current = false;
+      });
   };
 
   const duplicateDialogCurrentEntry = duplicateScoreDialog
@@ -958,14 +1130,21 @@ export default function JudgingPage() {
           boxSizing: 'border-box',
         }}
       >
-        <PageBackButton to="/judge-demos" label="Back to Judge Demos" />
+        <PageBackButton to="/judgingHome" label="Back to Judging" disabled={!backEnabled} />
 
         <Stack spacing={1} sx={{ ...judgingContentSx, flexShrink: 0 }}>
           <Typography variant="h6" component="h1" sx={{ textAlign: 'center' }}>
-            All-American Finals
+            {judgingFinalsTitle(contest)}
           </Typography>
 
           <PercentCompleteBar percent={percentComplete} onSubmit={handleSubmit} />
+          {judgeProgress?.showBar ? (
+            <PercentCompleteBar
+              percent={judgeProgress.percent}
+              label={judgeProgress.label}
+              ariaLabel={`${judgeProgress.submitted} of ${judgeProgress.assigned} judges submitted`}
+            />
+          ) : null}
 
           <Select
             size="small"
@@ -1058,6 +1237,19 @@ export default function JudgingPage() {
           }}
         >
           <Stack spacing={1} sx={judgingContentSx}>
+            {entriesLoading ? (
+              <Typography variant="body2" color="text.secondary" sx={{ py: 2, textAlign: 'center' }}>
+                Loading couples…
+              </Typography>
+            ) : entriesError ? (
+              <Typography variant="body2" color="error" sx={{ py: 2, textAlign: 'center' }}>
+                {entriesError}
+              </Typography>
+            ) : entries.length === 0 ? (
+              <Typography variant="body2" color="text.secondary" sx={{ py: 2, textAlign: 'center' }}>
+                No saved couples for this contest.
+              </Typography>
+            ) : null}
             {visibleEntries.map((entry) => (
               <JudgingEntryAccordion
                 key={entry.number}

@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
+  contestLockedFlag,
   eventInJudgingWindow,
+  formatRegisteredCounts,
   selectJudgingHomeContests,
   type JudgingHomeContestRow,
   type JudgingHomeEvent,
@@ -116,6 +118,12 @@ describe('selectJudgingHomeContests', () => {
         divisionLabel: 'Jack and Jill',
         contestId: null,
         contestItemId: 'jnj-item',
+        skillLevelKey: 'AAM',
+        divisionKey: 'JNJ',
+        leaderCount: 0,
+        followerCount: 0,
+        locked: true,
+        canToggleLock: false,
       },
       {
         id: 'event-134-json-strictly-item',
@@ -125,6 +133,12 @@ describe('selectJudgingHomeContests', () => {
         divisionLabel: 'Strictly',
         contestId: null,
         contestItemId: 'strictly-item',
+        skillLevelKey: 'AAM',
+        divisionKey: 'STR',
+        leaderCount: 0,
+        followerCount: 0,
+        locked: true,
+        canToggleLock: false,
       },
     ]);
   });
@@ -241,6 +255,277 @@ describe('selectJudgingHomeContests', () => {
       eventName: 'All-American Jack and Jill',
       skillLevelLabel: 'Champion',
       divisionLabel: 'Showcase',
+      leaderCount: 0,
+      followerCount: 0,
+      locked: true,
+      canToggleLock: false,
     });
+  });
+
+  it('lets an admin see every contest in the window, including events they are not on', () => {
+    const outsider: JudgingUserIdentity = {
+      userId: 9,
+      username: 'admin-only',
+      firstName: 'Ada',
+      lastName: 'Min',
+      appRoles: ['ADMIN'],
+    };
+
+    const contests = selectJudgingHomeContests({
+      events: [event134],
+      contests: [],
+      user: outsider,
+      now: saturdayAfternoon,
+    });
+
+    expect(contests.map((contest) => contest.contestItemId)).toEqual(['jnj-item', 'strictly-item']);
+    expect(contests.every((contest) => contest.canToggleLock && contest.locked)).toBe(true);
+  });
+
+  it('lets an event director see contests on their event without the lock control', () => {
+    const directorEvent: JudgingHomeEvent = {
+      ...event134,
+      moreJson: {
+        staff: {
+          people: [
+            {
+              id: 'dana-staff',
+              first_name: 'Dana',
+              last_name: 'Director',
+              primary_role_code: 'DJ',
+              secondary_role_code: 'EVENT_DIRECTOR',
+            },
+          ],
+        },
+        contests: (event134.moreJson as { contests: unknown }).contests,
+      },
+    };
+    const dana: JudgingUserIdentity = {
+      userId: 20,
+      username: 'dana',
+      firstName: 'Dana',
+      lastName: 'Director',
+      appRoles: [],
+    };
+
+    const contests = selectJudgingHomeContests({
+      events: [directorEvent],
+      contests: [],
+      user: dana,
+      now: saturdayAfternoon,
+    });
+
+    expect(contests.map((contest) => contest.contestItemId)).toEqual(['jnj-item', 'strictly-item']);
+    expect(contests.every((contest) => contest.canToggleLock)).toBe(false);
+  });
+
+  it('lets an event manager app role see contests only when they are on that event staff', () => {
+    const attached = selectJudgingHomeContests({
+      events: [event134],
+      contests: [],
+      user: { ...liz, appRoles: ['EVENT_MANAGER'] },
+      now: saturdayAfternoon,
+    });
+    const unattached: JudgingUserIdentity = {
+      userId: 21,
+      username: 'manager-away',
+      firstName: 'Morgan',
+      lastName: 'Away',
+      appRoles: ['EVENT_MANAGER'],
+    };
+
+    expect(attached.map((contest) => contest.contestItemId)).toEqual(['jnj-item', 'strictly-item']);
+    expect(attached.every((contest) => contest.canToggleLock)).toBe(false);
+    expect(
+      selectJudgingHomeContests({
+        events: [event134],
+        contests: [],
+        user: unattached,
+        now: saturdayAfternoon,
+      }),
+    ).toEqual([]);
+  });
+
+  it('shows the lock control to a contest head judge and an app head judge', () => {
+    const headJudge: JudgingUserIdentity = {
+      userId: 30,
+      username: 'yvonne',
+      firstName: 'Yvonne',
+      lastName: 'Antonacci',
+    };
+    const scoringHead: JudgingUserIdentity = {
+      ...carlos,
+      appRoles: ['HEAD_JUDGE'],
+    };
+
+    const asHead = selectJudgingHomeContests({
+      events: [event134],
+      contests: [],
+      user: headJudge,
+      now: saturdayAfternoon,
+    });
+    const asAppHead = selectJudgingHomeContests({
+      events: [event134],
+      contests: [],
+      user: scoringHead,
+      now: saturdayAfternoon,
+    });
+
+    expect(asHead.every((contest) => contest.canToggleLock)).toBe(true);
+    expect(asAppHead.every((contest) => contest.canToggleLock)).toBe(true);
+  });
+
+  it('lets a contest head judge lock only the contest they lead', () => {
+    const ledEvent: JudgingHomeEvent = {
+      eventId: 141,
+      name: 'Novice Spotlight',
+      startDate: allAmericanStart,
+      moreJson: {
+        staff: {
+          people: [
+            {
+              id: 'pat-staff',
+              first_name: 'Pat',
+              last_name: 'Head',
+              primary_role_code: 'DJ',
+              secondary_role_code: '',
+            },
+          ],
+        },
+        contests: {
+          has_contests: true,
+          items: [
+            {
+              id: 'led-item',
+              division_label: 'Jack and Jill',
+              skill_level_label: 'Novice',
+              head_judge_staff_id: 'pat-staff',
+            },
+            {
+              id: 'other-item',
+              division_label: 'Strictly',
+              skill_level_label: 'Novice',
+              head_judge_staff_id: 'someone-else',
+              scoring_judge_staff_ids: ['pat-staff'],
+            },
+          ],
+        },
+      },
+    };
+    const pat: JudgingUserIdentity = {
+      userId: 31,
+      username: 'pat',
+      firstName: 'Pat',
+      lastName: 'Head',
+    };
+
+    const contests = selectJudgingHomeContests({
+      events: [ledEvent],
+      contests: [],
+      user: pat,
+      now: saturdayAfternoon,
+    });
+
+    expect(contests.map((contest) => [contest.contestItemId, contest.canToggleLock])).toEqual([
+      ['led-item', true],
+      ['other-item', false],
+    ]);
+  });
+
+  it('counts stored leaders and followers and treats a missing lock as locked', () => {
+    const counted: JudgingHomeEvent = {
+      ...event134,
+      moreJson: {
+        ...(event134.moreJson as Record<string, unknown>),
+        contests: {
+          has_contests: true,
+          items: [
+            {
+              id: 'jnj-item',
+              division_key: 'JNJ',
+              division_label: 'Jack and Jill',
+              skill_level_key: 'AAM',
+              skill_level_label: 'All-American',
+              head_judge_staff_id: 'head-staff',
+              scoring_judge_staff_ids: ['carlos-staff'],
+              leaders: [{ id: 'a' }, { id: 'b' }, { id: 'c' }],
+              followers: [{ id: 'd' }, { id: 'e' }, { id: 'f' }, { id: 'g' }, { id: 'h' }],
+            },
+            {
+              id: 'strictly-item',
+              division_label: 'Strictly',
+              skill_level_label: 'All-American',
+              Locked: false,
+            },
+          ],
+        },
+      },
+    };
+
+    const contests = selectJudgingHomeContests({
+      events: [counted],
+      contests: [],
+      user: carlos,
+      now: saturdayAfternoon,
+    });
+
+    expect(formatRegisteredCounts(0, 0)).toBe('L:0 F:0');
+    expect(contests.find((contest) => contest.contestItemId === 'jnj-item')).toMatchObject({
+      leaderCount: 3,
+      followerCount: 5,
+      locked: true,
+    });
+    expect(formatRegisteredCounts(3, 5)).toBe('L:3 F:5');
+    expect(contests.find((contest) => contest.contestItemId === 'strictly-item')?.locked).toBe(false);
+    expect(contestLockedFlag({})).toBe(true);
+    expect(contestLockedFlag({ Locked: false })).toBe(false);
+    expect(contestLockedFlag({ Locked: true })).toBe(true);
+  });
+
+  it('uses public contest competitors when the event item has no roster arrays', () => {
+    const tableRow: JudgingHomeContestRow = {
+      contestId: 90,
+      eventId: 134,
+      eventTypeCode: 'JNJ',
+      moreJson: {
+        id: 'open-item',
+        skill_level_label: 'Novice',
+        division_label: 'Jack and Jill',
+      },
+      staffJson: null,
+      competitorsJson: {
+        leaders: [{ id: 'l1' }, { id: 'l2' }],
+        followers: [{ id: 'f1' }],
+      },
+    };
+    const event: JudgingHomeEvent = {
+      eventId: 134,
+      name: 'All-American Jack and Jill',
+      startDate: allAmericanStart,
+      moreJson: {
+        staff: {
+          people: [
+            {
+              id: 'carlos-staff',
+              first_name: 'Carlos',
+              last_name: 'Garcia',
+              primary_role_code: 'JUDGE',
+            },
+          ],
+        },
+        contests: { has_contests: true, items: [] },
+      },
+    };
+
+    const contests = selectJudgingHomeContests({
+      events: [event],
+      contests: [tableRow],
+      user: carlos,
+      now: saturdayAfternoon,
+    });
+
+    expect(contests).toMatchObject([
+      { contestId: 90, leaderCount: 2, followerCount: 1, locked: true },
+    ]);
   });
 });

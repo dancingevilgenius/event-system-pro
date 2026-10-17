@@ -1,0 +1,310 @@
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  Typography,
+} from '@mui/material';
+import { useEffect, useState } from 'react';
+import {
+  fetchJudgingContestRoster,
+  saveJudgingContestPairs,
+  type ContestRosterPerson,
+  type ContestRosterRole,
+} from '../api/postgrest';
+import InfoMessageBox from './InfoMessageBox';
+import type { JudgingHomeContest } from '../lib/judgingHome';
+import {
+  randomizeContestPairs,
+  storedContestPairs,
+  type ContestPair,
+  type StoredContestPair,
+} from '../lib/judgingPairs';
+import { compareRosterByBib } from '../utils/rosterBibOrder';
+
+function rosterFullName(person: ContestRosterPerson): string {
+  const name = [person.firstName, person.lastName].filter((part) => part.trim() !== '').join(' ');
+  return name === '' ? 'Unnamed competitor' : name;
+}
+
+function rosterBibLabel(person: ContestRosterPerson): string {
+  if (typeof person.bib === 'number' && Number.isFinite(person.bib)) {
+    return String(person.bib);
+  }
+  return '—';
+}
+
+function contestDialogTitle(contest: JudgingHomeContest): string {
+  return [contest.eventName, contest.skillLevelLabel, contest.divisionLabel]
+    .map((part) => part.trim())
+    .filter((part) => part !== '')
+    .join(' · ');
+}
+
+function peopleInRole(people: ContestRosterPerson[], role: ContestRosterRole): ContestRosterPerson[] {
+  return people.filter((person) => person.role === role).sort(compareRosterByBib);
+}
+
+function peopleInOrder(people: ContestRosterPerson[], ids: string[]): ContestRosterPerson[] {
+  const byId = new Map(people.map((person) => [person.id, person]));
+  return ids.flatMap((id) => {
+    const person = byId.get(id);
+    return person ? [person] : [];
+  });
+}
+
+function RosterPersonRow({ person }: { person: ContestRosterPerson }) {
+  return (
+    <Stack
+      direction="row"
+      spacing={1}
+      sx={{
+        alignItems: 'center',
+        minHeight: 40,
+        px: 1,
+        py: 0.75,
+        border: 1,
+        borderColor: 'divider',
+        borderRadius: 1,
+        bgcolor: 'background.paper',
+      }}
+    >
+      <Typography
+        variant="body2"
+        sx={{
+          minWidth: 28,
+          flexShrink: 0,
+          fontVariantNumeric: 'tabular-nums',
+          color: 'text.secondary',
+        }}
+      >
+        {rosterBibLabel(person)}
+      </Typography>
+      <Typography variant="body2" noWrap sx={{ flex: 1, minWidth: 0 }}>
+        {rosterFullName(person)}
+      </Typography>
+    </Stack>
+  );
+}
+
+function RosterColumn({ title, people }: { title: string; people: ContestRosterPerson[] }) {
+  return (
+    <Box
+      sx={{
+        flex: 1,
+        minWidth: 0,
+        minHeight: { xs: 180, md: 240 },
+        p: { xs: 1.5, md: 2 },
+        borderRadius: 1,
+        border: 1,
+        borderColor: 'divider',
+        bgcolor: 'background.paper',
+      }}
+    >
+      <Typography variant="subtitle2" component="h3" sx={{ fontWeight: 700, mb: 1 }}>
+        {title}
+      </Typography>
+      <Stack spacing={1}>
+        {people.length === 0 ? (
+          <Typography variant="body2" color="text.secondary">
+            None registered
+          </Typography>
+        ) : (
+          people.map((person) => <RosterPersonRow key={person.id} person={person} />)
+        )}
+      </Stack>
+    </Box>
+  );
+}
+
+type JudgingContestPairsDialogProps = {
+  contest: JudgingHomeContest | null;
+  /** Score opened this dialog because couples are not saved yet. */
+  continueToScore?: boolean;
+  onClose: () => void;
+  onSaved?: (pairs: StoredContestPair[]) => void;
+};
+
+export default function JudgingContestPairsDialog({
+  contest,
+  continueToScore = false,
+  onClose,
+  onSaved,
+}: JudgingContestPairsDialogProps) {
+  const [people, setPeople] = useState<ContestRosterPerson[]>([]);
+  const [followerOrder, setFollowerOrder] = useState<string[] | null>(null);
+  const [pairs, setPairs] = useState<ContestPair[]>([]);
+  const [randomized, setRandomized] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [savedMessage, setSavedMessage] = useState<string | null>(null);
+  const contestId = contest?.id ?? null;
+
+  useEffect(() => {
+    if (!contest || contestId === null) {
+      setPeople([]);
+      setFollowerOrder(null);
+      setPairs([]);
+      setRandomized(false);
+      setError(null);
+      setSavedMessage(null);
+      return;
+    }
+
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    setSavedMessage(null);
+    setPeople([]);
+    setFollowerOrder(null);
+    setPairs([]);
+    setRandomized(false);
+
+    void fetchJudgingContestRoster(contest)
+      .then((rows) => {
+        if (!cancelled) {
+          setPeople(rows);
+        }
+      })
+      .catch((loadError: unknown) => {
+        if (!cancelled) {
+          setPeople([]);
+          setError(loadError instanceof Error ? loadError.message : 'Unable to load contest roster.');
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [contest, contestId]);
+
+  const leaders = peopleInRole(people, 'leader');
+  const followersByBib = peopleInRole(people, 'follower');
+  const followers = followerOrder === null ? followersByBib : peopleInOrder(followersByBib, followerOrder);
+
+  function randomize() {
+    const next = randomizeContestPairs(leaders, followersByBib);
+    setFollowerOrder(next.followers.map((person) => person.id));
+    setPairs(next.pairs);
+    setRandomized(true);
+    setSavedMessage(null);
+    setError(null);
+  }
+
+  function savePairs() {
+    if (!contest || !randomized || saving) {
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    setSavedMessage(null);
+    const stored = storedContestPairs(pairs);
+    void saveJudgingContestPairs(contest, pairs)
+      .then(() => {
+        setSavedMessage(stored.length === 1 ? 'Saved 1 pair.' : `Saved ${stored.length} pairs.`);
+        if (continueToScore) {
+          onSaved?.(stored);
+        }
+      })
+      .catch((saveError: unknown) => {
+        setError(saveError instanceof Error ? saveError.message : 'Unable to save contest pairs.');
+      })
+      .finally(() => {
+        setSaving(false);
+      });
+  }
+
+  return (
+    <Dialog
+      open={contest !== null}
+      onClose={() => {
+        if (!saving) {
+          onClose();
+        }
+      }}
+      fullWidth
+      maxWidth="md"
+      aria-labelledby="judging-pairs-title"
+    >
+      <DialogTitle id="judging-pairs-title">
+        {contest ? contestDialogTitle(contest) : 'Registered competitors'}
+      </DialogTitle>
+      <DialogContent>
+        {continueToScore ? (
+          <Box sx={{ mb: 2 }}>
+            <InfoMessageBox>
+              Click Randomize at least once, then click Save Pairs.
+            </InfoMessageBox>
+          </Box>
+        ) : null}
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
+        >
+          <Button
+            type="button"
+            variant="outlined"
+            disabled={loading || saving}
+            onClick={randomize}
+            sx={{ textTransform: 'none' }}
+          >
+            Randomize
+          </Button>
+          <Button
+            type="button"
+            variant="contained"
+            disabled={!randomized || loading || saving}
+            onClick={savePairs}
+            sx={{ textTransform: 'none' }}
+          >
+            Save Pairs
+          </Button>
+        </Stack>
+        {loading ? (
+          <Stack direction="row" spacing={1} sx={{ py: 3, alignItems: 'center', justifyContent: 'center' }}>
+            <CircularProgress size={18} />
+            <Typography variant="body2" color="text.secondary">
+              Loading roster…
+            </Typography>
+          </Stack>
+        ) : (
+          <Stack direction="row" spacing={2}>
+            <RosterColumn title="Leaders" people={leaders} />
+            <RosterColumn title="Followers" people={followers} />
+          </Stack>
+        )}
+        {error ? (
+          <Typography variant="body2" color="error" sx={{ mt: 2 }}>
+            {error}
+          </Typography>
+        ) : null}
+        {savedMessage ? (
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+            {savedMessage}
+          </Typography>
+        ) : null}
+        {saving ? (
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+            Saving pairs…
+          </Typography>
+        ) : null}
+      </DialogContent>
+      <DialogActions sx={{ px: 3, pb: 2 }}>
+        <Button type="button" onClick={onClose} disabled={saving}>
+          Close
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}

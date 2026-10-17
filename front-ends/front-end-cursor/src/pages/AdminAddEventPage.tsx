@@ -67,7 +67,6 @@ import AddEventSortableSectionAccordion from '../components/AddEventSortableSect
 import { type AddEventSectionStatus } from '../components/AddEventSectionStatusToggle';
 import PageHeader from '../components/PageHeader';
 import { EventFormExportProvider, useAppliedEventImport } from '../context/EventFormExportContext';
-import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 import { EVENT_GROUPS_PATH, eventGroupDetailPath } from '../constants/eventRoutes';
@@ -552,8 +551,6 @@ function renderSectionContent(
 
 function AdminAddEventForm() {
   const location = useLocation();
-  const { hasAnyRole } = useAuth();
-  const isAdmin = hasAnyRole(['ADMIN']);
   const appliedImport = useAppliedEventImport();
   const appliedTokenRef = useRef(0);
   const { showProblem } = useMessages();
@@ -569,11 +566,10 @@ function AdminAddEventForm() {
   const [expandedSection, setExpandedSection] = useState<AddEventPanelId | false>('event_name');
   const [sectionStatuses, setSectionStatuses] = useState(createInitialSectionStatuses);
   const sectionStatusesRef = useRef(sectionStatuses);
-  const [sectionOrder, setSectionOrder] = useState<AddEventPanelId[]>(() =>
-    hasAnyRole(['ADMIN'])
-      ? [...DEFAULT_SECTION_ORDER, EXPORT_IMPORT_PANEL_ID]
-      : DEFAULT_SECTION_ORDER,
-  );
+  const [sectionOrder, setSectionOrder] = useState<AddEventPanelId[]>(() => [
+    ...DEFAULT_SECTION_ORDER,
+    EXPORT_IMPORT_PANEL_ID,
+  ]);
   const [eventName, setEventName] = useState('');
   const [passesSummary, setPassesSummary] = useState<EventPassesSummary>({
     hasPasses: false,
@@ -787,10 +783,10 @@ function AdminAddEventForm() {
   );
 
   const displayedSectionIds = useMemo(() => {
-    const panels = isAdmin && !sectionOrder.includes(EXPORT_IMPORT_PANEL_ID)
-      ? [...sectionOrder, EXPORT_IMPORT_PANEL_ID]
-      : sectionOrder;
-    const ordered = withFinalizedNotApplicableAtEnd(
+    const panels = sectionOrder.includes(EXPORT_IMPORT_PANEL_ID)
+      ? sectionOrder
+      : [...sectionOrder, EXPORT_IMPORT_PANEL_ID];
+    return withFinalizedNotApplicableAtEnd(
       panels,
       sectionStatuses,
       passesSummary,
@@ -798,11 +794,9 @@ function AdminAddEventForm() {
       hasContests,
       hasStaff,
     );
-    return isAdmin ? ordered : ordered.filter((sectionId) => sectionId !== EXPORT_IMPORT_PANEL_ID);
   }, [
     hasContests,
     hasStaff,
-    isAdmin,
     noEarlyBirdDates,
     passesSummary,
     sectionOrder,
@@ -1124,9 +1118,7 @@ function AdminAddEventForm() {
       (sectionId): sectionId is AddEventSectionId => allowed.has(sectionId),
     );
     if (nextOrder.length === DEFAULT_SECTION_ORDER.length) {
-      setSectionOrder(
-        isAdmin ? [...nextOrder, EXPORT_IMPORT_PANEL_ID] : nextOrder,
-      );
+      setSectionOrder([...nextOrder, EXPORT_IMPORT_PANEL_ID]);
     }
 
     setSectionStatuses((current) => {
@@ -1160,7 +1152,7 @@ function AdminAddEventForm() {
     return () => {
       appliedTokenRef.current = 0;
     };
-  }, [appliedImport, enqueueEventSave, isAdmin]);
+  }, [appliedImport, enqueueEventSave]);
 
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>

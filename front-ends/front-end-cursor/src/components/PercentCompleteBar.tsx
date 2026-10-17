@@ -3,6 +3,8 @@ import { Box, Button, Typography } from '@mui/material';
 type PercentCompleteBarProps = {
   percent: number;
   label?: string;
+  /** Screen-reader name when the visible label is only a fraction such as 4/5. */
+  ariaLabel?: string;
   onSubmit?: () => void;
   /** Smaller wrapping label so several bars can share one phone row. */
   dense?: boolean;
@@ -13,6 +15,7 @@ type PercentCompleteBarProps = {
 export default function PercentCompleteBar({
   percent,
   label,
+  ariaLabel,
   onSubmit,
   dense = false,
   completeColor,
@@ -36,7 +39,7 @@ export default function PercentCompleteBar({
   return (
     <Box
       role="progressbar"
-      aria-label={displayLabel}
+      aria-label={ariaLabel ?? displayLabel}
       aria-valuenow={displayPercent}
       aria-valuemin={0}
       aria-valuemax={100}

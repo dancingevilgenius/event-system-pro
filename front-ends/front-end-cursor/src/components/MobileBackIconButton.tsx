@@ -9,15 +9,16 @@ export { MOBILE_BACK_ICON_SLOT, MOBILE_HEADER_ICON_SLOT };
 type MobileBackIconButtonProps = {
   label: string;
   onClick: () => void;
+  disabled?: boolean;
 };
 
 /**
  * Back control: left arrow on a rectangular outlined background.
  * Sized to match `size="large"` action buttons on all screen sizes.
  */
-export default function MobileBackIconButton({ label, onClick }: MobileBackIconButtonProps) {
+export default function MobileBackIconButton({ label, onClick, disabled = false }: MobileBackIconButtonProps) {
   return (
-    <MobileHeaderIconButton label={label} onClick={onClick}>
+    <MobileHeaderIconButton label={label} onClick={onClick} disabled={disabled}>
       <ArrowBackIcon />
     </MobileHeaderIconButton>
   );

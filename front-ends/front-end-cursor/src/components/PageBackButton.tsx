@@ -8,6 +8,7 @@ import MobileBackIconButton from './MobileBackIconButton';
 type PageBackButtonProps = {
   to: string;
   label: string;
+  disabled?: boolean;
   /** Extra sx applied to the wrapping Stack (e.g. mt overrides). */
   stackSx?: SxProps<Theme>;
 };
@@ -16,7 +17,7 @@ type PageBackButtonProps = {
  * Standalone back control (e.g. Judging, which has no page title).
  * Icon-only left arrow on all screen sizes; tooltip uses "Back to X page".
  */
-export default function PageBackButton({ to, label, stackSx }: PageBackButtonProps) {
+export default function PageBackButton({ to, label, disabled = false, stackSx }: PageBackButtonProps) {
   const navigate = useNavigate();
   const { showXsLayout } = useLayoutTier();
   const backTooltip = formatBackTooltip(label);
@@ -35,7 +36,15 @@ export default function PageBackButton({ to, label, stackSx }: PageBackButtonPro
     >
       <Tooltip title={backTooltip}>
         <span>
-          <MobileBackIconButton label={backTooltip} onClick={() => navigate(to)} />
+          <MobileBackIconButton
+            label={backTooltip}
+            disabled={disabled}
+            onClick={() => {
+              if (!disabled) {
+                navigate(to);
+              }
+            }}
+          />
         </span>
       </Tooltip>
     </Stack>

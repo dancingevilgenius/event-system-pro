@@ -3,8 +3,20 @@ import {
   eventInJudgingWindow,
   JUDGING_WINDOW_MS,
   selectJudgingHomeContests,
+  staffPersonMatchesUser,
   type JudgingHomeContest,
+  type JudgingUserIdentity,
 } from '../lib/judgingHome';
+import {
+  assignedContestJudgeIds,
+  judgeSubmissionProgress,
+  readStoredJudgeIds,
+  seesJudgeSubmissionBar,
+  type JudgeSubmissionProgress,
+} from '../lib/judgingFinalsEntries';
+import { formatReadableDateTime } from '../utils/auditTimestamps';
+import type { JudgeSubmission } from '../services/tabulation/types';
+import { readStoredContestPairs, storedContestPairs, type ContestPair, type StoredContestPair } from '../lib/judgingPairs';
 import { eventInRegistrationWindow } from '../lib/registrationWindow';
 import { compareSchemaMigrationRowsDescending } from '../lib/schemaMigrationOrder';
 import { schedulerHeartbeatIsHealthy } from '../lib/schedulerHeartbeat';
@@ -1589,6 +1601,7 @@ type StoredEventContest = {
   leaders?: unknown[];
   followers?: unknown[];
   competitors_generated?: boolean;
+  Locked?: boolean;
 };
 
 function parseScoringJudgeCount(value: unknown): ScoringJudgeCount | null {
@@ -1677,7 +1690,7 @@ function rowsForHiddenSection(keepExisting: boolean, nextRows: unknown[], existi
 function preservedContestRoster(
   existingItems: unknown,
   id: string,
-): { leaders?: unknown[]; followers?: unknown[]; competitors_generated?: boolean } {
+): { leaders?: unknown[]; followers?: unknown[]; competitors_generated?: boolean; Locked?: boolean } {
   if (!Array.isArray(existingItems)) {
     return {};
   }
@@ -1689,7 +1702,12 @@ function preservedContestRoster(
     return {};
   }
 
-  const preserved: { leaders?: unknown[]; followers?: unknown[]; competitors_generated?: boolean } = {};
+  const preserved: {
+    leaders?: unknown[];
+    followers?: unknown[];
+    competitors_generated?: boolean;
+    Locked?: boolean;
+  } = {};
   if (Array.isArray(match.leaders)) {
     preserved.leaders = match.leaders;
   }
@@ -1698,6 +1716,9 @@ function preservedContestRoster(
   }
   if (match[COMPETITORS_GENERATED_FLAG] === true) {
     preserved.competitors_generated = true;
+  }
+  if (typeof match.Locked === 'boolean') {
+    preserved.Locked = match.Locked;
   }
   return preserved;
 }
@@ -3582,9 +3603,10 @@ type JudgingHomeContestTableRow = {
   event_type_code: string | null;
   more_json: unknown;
   staff_json: unknown;
+  competitors_json: unknown;
 };
 
-/** Contests this signed-in user judges in the 6-hour start window. */
+/** Contests this signed-in user can open from Judging Home in the 6-hour start window. */
 export async function fetchJudgingHomeContests(
   now: Date = new Date(),
 ): Promise<JudgingHomeContest[]> {
@@ -3627,7 +3649,7 @@ export async function fetchJudgingHomeContests(
   }
 
   const contestParams = new URLSearchParams({
-    select: 'contest_id,event_id,event_type_code,more_json,staff_json',
+    select: 'contest_id,event_id,event_type_code,more_json,staff_json,competitors_json',
     order: 'contest_id.asc',
   });
   contestParams.append('event_id', `in.(${events.map((event) => event.eventId).join(',')})`);
@@ -3651,6 +3673,7 @@ export async function fetchJudgingHomeContests(
           eventTypeCode: row.event_type_code,
           moreJson: row.more_json,
           staffJson: row.staff_json,
+          competitorsJson: row.competitors_json,
         },
       ];
     }),
@@ -3659,9 +3682,468 @@ export async function fetchJudgingHomeContests(
       username: session.username,
       firstName: name.firstName,
       lastName: name.lastName,
+      appRoles: session.roles,
     },
     now,
   });
+}
+
+/** Writes `Locked` on the contest JSON item and, when present, contest.more_json. */
+export async function setJudgingContestLocked(
+  contest: Pick<JudgingHomeContest, 'eventId' | 'contestId' | 'contestItemId'>,
+  locked: boolean,
+): Promise<void> {
+  const username = loadSession()?.username?.trim() ?? '';
+  if (username === '') {
+    throw new Error('Sign in to update the contest lock.');
+  }
+
+  let updated = false;
+  const contestItemId = contest.contestItemId.trim();
+  if (contestItemId !== '') {
+    const moreJson = await fetchEventMoreJson(contest.eventId);
+    const contestsNode = jsonRecord(moreJson.contests);
+    const items = Array.isArray(contestsNode?.items) ? contestsNode.items : null;
+    if (contestsNode && items) {
+      const index = items.findIndex((entry) => jsonRecord(entry)?.id === contestItemId);
+      const current = jsonRecord(items[index]);
+      if (index >= 0 && current) {
+        const nextItems = [...items];
+        nextItems[index] = { ...current, Locked: locked };
+        await patchTable(
+          'event',
+          `event_id=eq.${contest.eventId}`,
+          {
+            modified_by: username,
+            more_json: {
+              ...moreJson,
+              contests: {
+                ...contestsNode,
+                items: nextItems,
+              },
+            },
+          },
+          'Unable to update the contest lock.',
+        );
+        updated = true;
+      }
+    }
+  }
+
+  if (contest.contestId !== null) {
+    const params = new URLSearchParams({ select: 'more_json' });
+    params.append('contest_id', `eq.${contest.contestId}`);
+    const rows = await fetchJson<Array<{ more_json: unknown }>>(
+      `${POSTGREST_URL}/contest?${params.toString()}`,
+      'Unable to update the contest lock',
+    );
+    if (rows[0]) {
+      const today = new Date().toISOString().slice(0, 10);
+      await patchTable(
+        'contest',
+        `contest_id=eq.${contest.contestId}`,
+        {
+          more_json: { ...moreJsonObject(rows[0].more_json), Locked: locked },
+          modified_by: username,
+          modified_date: today,
+        },
+        'Unable to update the contest lock.',
+      );
+      updated = true;
+    }
+  }
+
+  if (!updated) {
+    throw new Error('Unable to update the contest lock.');
+  }
+}
+
+function withStoredPairs(moreJson: Record<string, unknown>, pairs: ContestPair[]): Record<string, unknown> {
+  const next = { ...moreJson };
+  const stored = storedContestPairs(pairs);
+  if (stored.length === 0) {
+    delete next.pairs;
+  } else {
+    next.pairs = stored;
+  }
+  return next;
+}
+
+/** Writes randomized leader/follower couples on the contest row, or the event contest item when no row exists. */
+export async function saveJudgingContestPairs(
+  contest: Pick<JudgingHomeContest, 'eventId' | 'contestId' | 'contestItemId'>,
+  pairs: ContestPair[],
+): Promise<void> {
+  const username = loadSession()?.username?.trim() ?? '';
+  if (username === '') {
+    throw new Error('Sign in to save contest pairs.');
+  }
+
+  let updated = false;
+  const contestItemId = contest.contestItemId.trim();
+  if (contestItemId !== '') {
+    const moreJson = await fetchEventMoreJson(contest.eventId);
+    const contestsNode = jsonRecord(moreJson.contests);
+    const items = Array.isArray(contestsNode?.items) ? contestsNode.items : null;
+    if (contestsNode && items) {
+      const index = items.findIndex((entry) => jsonRecord(entry)?.id === contestItemId);
+      const current = jsonRecord(items[index]);
+      if (index >= 0 && current) {
+        const nextItems = [...items];
+        nextItems[index] = withStoredPairs(current, pairs);
+        await patchTable(
+          'event',
+          `event_id=eq.${contest.eventId}`,
+          {
+            modified_by: username,
+            more_json: {
+              ...moreJson,
+              contests: {
+                ...contestsNode,
+                items: nextItems,
+              },
+            },
+          },
+          'Unable to save contest pairs.',
+        );
+        updated = true;
+      }
+    }
+  }
+
+  if (contest.contestId !== null) {
+    const params = new URLSearchParams({ select: 'more_json' });
+    params.append('contest_id', `eq.${contest.contestId}`);
+    const rows = await fetchJson<Array<{ more_json: unknown }>>(
+      `${POSTGREST_URL}/contest?${params.toString()}`,
+      'Unable to save contest pairs',
+    );
+    if (rows[0]) {
+      const today = new Date().toISOString().slice(0, 10);
+      await patchTable(
+        'contest',
+        `contest_id=eq.${contest.contestId}`,
+        {
+          more_json: withStoredPairs(moreJsonObject(rows[0].more_json), pairs),
+          modified_by: username,
+          modified_date: today,
+        },
+        'Unable to save contest pairs.',
+      );
+      updated = true;
+    }
+  }
+
+  if (!updated) {
+    throw new Error('Unable to save contest pairs.');
+  }
+}
+
+function storedPairsOnRecord(record: Record<string, unknown> | null | undefined): StoredContestPair[] {
+  return readStoredContestPairs(record?.pairs);
+}
+
+/** Non-empty couples already stored on the contest row, or on the event contest item. */
+export async function fetchJudgingContestPairs(
+  contest: Pick<JudgingHomeContest, 'eventId' | 'contestId' | 'contestItemId'>,
+): Promise<StoredContestPair[]> {
+  if (contest.contestId !== null) {
+    const params = new URLSearchParams({ select: 'more_json' });
+    params.append('contest_id', `eq.${contest.contestId}`);
+    const rows = await fetchJson<Array<{ more_json: unknown }>>(
+      `${POSTGREST_URL}/contest?${params.toString()}`,
+      'Unable to load contest pairs',
+    );
+    const stored = storedPairsOnRecord(jsonRecord(rows[0]?.more_json));
+    if (stored.length > 0) {
+      return stored;
+    }
+  }
+
+  const contestItemId = contest.contestItemId.trim();
+  if (contestItemId !== '') {
+    const moreJson = await fetchEventMoreJson(contest.eventId);
+    const contestsNode = jsonRecord(moreJson.contests);
+    const items = Array.isArray(contestsNode?.items) ? contestsNode.items : [];
+    const item = items.map((entry) => jsonRecord(entry)).find((record) => record?.id === contestItemId);
+    return storedPairsOnRecord(item);
+  }
+
+  return [];
+}
+
+export type JudgingFinalsSubmissionStatus = JudgeSubmissionProgress & {
+  showBar: boolean;
+  judgeId: string;
+};
+
+type JudgeScoreContest = {
+  eventId: number | null;
+  contestId: number | null;
+  contestItemId: string;
+};
+
+type JudgeContestDocs = {
+  eventMore: Record<string, unknown> | null;
+  contestsNode: Record<string, unknown> | null;
+  item: Record<string, unknown> | null;
+  itemIndex: number;
+  contestMore: Record<string, unknown> | null;
+  results: Record<string, unknown> | null;
+  staffJson: unknown;
+  panelJudges: unknown;
+  contestRow: boolean;
+};
+
+function eventStaffPeople(moreJson: Record<string, unknown> | null): Record<string, unknown>[] {
+  const staff = jsonRecord(moreJson?.staff);
+  const people = staff?.people;
+  if (!Array.isArray(people)) {
+    return [];
+  }
+  return people.flatMap((entry) => {
+    const person = jsonRecord(entry);
+    return person ? [person] : [];
+  });
+}
+
+function personIsHeadJudge(person: Record<string, unknown>): boolean {
+  return ['primary_role_code', 'secondary_role_code', 'role', 'role_code'].some((key) => {
+    const value = person[key];
+    return typeof value === 'string' && value.trim().toUpperCase() === 'HEAD_JUDGE';
+  });
+}
+
+function staffJsonMatchesHeadJudge(staffJson: unknown, user: JudgingUserIdentity): boolean {
+  if (!Array.isArray(staffJson)) {
+    return false;
+  }
+  return staffJson.some((entry) => {
+    const row = jsonRecord(entry);
+    return row !== null && staffPersonMatchesUser(row, user) && personIsHeadJudge(row);
+  });
+}
+
+async function fetchPanelJudges(contestId: number | null): Promise<unknown[]> {
+  if (contestId === null) {
+    return [];
+  }
+  try {
+    const params = new URLSearchParams({ select: 'judges_json' });
+    params.append('contest_id', `eq.${contestId}`);
+    const rows = await fetchJson<Array<{ judges_json: unknown }>>(
+      `${POSTGREST_URL}/judging_panel?${params.toString()}`,
+      'Unable to load judging panel',
+    );
+    return rows.flatMap((row) => (Array.isArray(row.judges_json) ? row.judges_json : []));
+  } catch {
+    return [];
+  }
+}
+
+async function loadJudgeContestDocs(contest: JudgeScoreContest): Promise<JudgeContestDocs> {
+  let eventMore: Record<string, unknown> | null = null;
+  let contestsNode: Record<string, unknown> | null = null;
+  let item: Record<string, unknown> | null = null;
+  let itemIndex = -1;
+  const contestItemId = contest.contestItemId.trim();
+  if (contest.eventId !== null && contest.eventId > 0 && contestItemId !== '') {
+    eventMore = await fetchEventMoreJson(contest.eventId);
+    contestsNode = jsonRecord(eventMore.contests);
+    const items = Array.isArray(contestsNode?.items) ? contestsNode.items : [];
+    itemIndex = items.findIndex((entry) => jsonRecord(entry)?.id === contestItemId);
+    item = jsonRecord(items[itemIndex]);
+  } else if (contest.eventId !== null && contest.eventId > 0) {
+    eventMore = await fetchEventMoreJson(contest.eventId);
+  }
+
+  let contestMore: Record<string, unknown> | null = null;
+  let results: Record<string, unknown> | null = null;
+  let staffJson: unknown = null;
+  let contestRow = false;
+  if (contest.contestId !== null) {
+    const params = new URLSearchParams({ select: 'more_json,results_json,staff_json' });
+    params.append('contest_id', `eq.${contest.contestId}`);
+    const rows = await fetchJson<Array<{ more_json: unknown; results_json: unknown; staff_json: unknown }>>(
+      `${POSTGREST_URL}/contest?${params.toString()}`,
+      'Unable to load contest scores',
+    );
+    contestRow = Boolean(rows[0]);
+    contestMore = jsonRecord(rows[0]?.more_json);
+    results = jsonRecord(rows[0]?.results_json);
+    staffJson = rows[0]?.staff_json ?? null;
+  }
+
+  return {
+    eventMore,
+    contestsNode,
+    item,
+    itemIndex,
+    contestMore,
+    results,
+    staffJson,
+    panelJudges: await fetchPanelJudges(contest.contestId),
+    contestRow,
+  };
+}
+
+async function currentJudgingUser(): Promise<JudgingUserIdentity | null> {
+  const session = loadSession();
+  if (!session) {
+    return null;
+  }
+  const name = await fetchUserPersonName(session.user_id);
+  return {
+    userId: session.user_id,
+    username: session.username,
+    firstName: name.firstName,
+    lastName: name.lastName,
+    appRoles: session.roles,
+  };
+}
+
+function submissionStatus(docs: JudgeContestDocs, user: JudgingUserIdentity | null): JudgingFinalsSubmissionStatus {
+  const records = [docs.item, docs.contestMore].filter((row): row is Record<string, unknown> => row !== null);
+  const assigned = assignedContestJudgeIds({
+    records,
+    panelJudges: docs.panelJudges,
+    staffJson: docs.staffJson,
+  });
+  const submitted = [
+    ...readStoredJudgeIds(docs.results?.judge_submissions),
+    ...readStoredJudgeIds(docs.item?.judge_submissions),
+  ];
+  const progress = judgeSubmissionProgress(assigned, submitted);
+  const matches = user ? eventStaffPeople(docs.eventMore).filter((person) => staffPersonMatchesUser(person, user)) : [];
+  const staffIds = matches.flatMap((person) => {
+    const id = typeof person.id === 'string' ? person.id.trim() : '';
+    return id === '' ? [] : [id];
+  });
+  const headIds = records.flatMap((row) => {
+    const id = typeof row.head_judge_staff_id === 'string' ? row.head_judge_staff_id.trim() : '';
+    return id === '' ? [] : [id];
+  });
+  return {
+    ...progress,
+    judgeId: staffIds[0] || user?.username.trim() || '',
+    showBar: user
+      ? seesJudgeSubmissionBar({
+          appRoles: user.appRoles,
+          eventHeadJudge: matches.some((person) => personIsHeadJudge(person)),
+          contestHeadJudge:
+            staffIds.some((id) => headIds.includes(id)) || staffJsonMatchesHeadJudge(docs.staffJson, user),
+        })
+      : false,
+  };
+}
+
+/** Assigned judges and ballots stored on the contest, for the head-judge progress bar. */
+export async function fetchJudgingSubmissionProgress(
+  contest: JudgeScoreContest,
+): Promise<JudgingFinalsSubmissionStatus> {
+  const [docs, user] = await Promise.all([loadJudgeContestDocs(contest), currentJudgingUser()]);
+  return submissionStatus(docs, user);
+}
+
+function storedBallot(submission: JudgeSubmission, judgeId: string): Record<string, unknown> {
+  return {
+    judge_id: judgeId,
+    submitted_at: formatReadableDateTime(new Date()),
+    scores: submission.scores.map((score) => ({
+      competitor_id: score.competitorId,
+      score: score.score,
+    })),
+    placements: submission.placements.map((placement) => ({
+      competitor_id: placement.competitorId,
+      placement: placement.placement,
+      score: placement.score,
+    })),
+  };
+}
+
+function upsertBallot(existing: unknown, ballot: Record<string, unknown>): unknown[] {
+  const judgeId = ballot.judge_id;
+  const kept = Array.isArray(existing)
+    ? existing.filter((entry) => {
+        const row = jsonRecord(entry);
+        const id = typeof row?.judge_id === 'string' ? row.judge_id : typeof row?.judgeId === 'string' ? row.judgeId : '';
+        return id !== judgeId;
+      })
+    : [];
+  return [...kept, ballot];
+}
+
+/** Saves this judge's finals ballot on contest.results_json and, when present, the event contest item. */
+export async function saveJudgingFinalsSubmission(
+  contest: JudgeScoreContest,
+  submission: JudgeSubmission,
+): Promise<JudgingFinalsSubmissionStatus> {
+  const user = await currentJudgingUser();
+  if (!user) {
+    throw new Error('Sign in to submit scores.');
+  }
+  const username = user.username.trim();
+  const docs = await loadJudgeContestDocs(contest);
+  const judgeId = submissionStatus(docs, user).judgeId || username;
+  const ballot = storedBallot(submission, judgeId);
+  let updated = false;
+
+  if (
+    contest.eventId !== null
+    && docs.item
+    && docs.contestsNode
+    && docs.eventMore
+    && docs.itemIndex >= 0
+    && Array.isArray(docs.contestsNode.items)
+  ) {
+    const nextItems = [...docs.contestsNode.items];
+    nextItems[docs.itemIndex] = {
+      ...docs.item,
+      judge_submissions: upsertBallot(docs.item.judge_submissions, ballot),
+    };
+    await patchTable(
+      'event',
+      `event_id=eq.${contest.eventId}`,
+      {
+        modified_by: username,
+        more_json: {
+          ...docs.eventMore,
+          contests: {
+            ...docs.contestsNode,
+            items: nextItems,
+          },
+        },
+      },
+      'Unable to save judge scores.',
+    );
+    docs.item = jsonRecord(nextItems[docs.itemIndex]);
+    updated = true;
+  }
+
+  if (contest.contestId !== null && docs.contestRow) {
+    const today = new Date().toISOString().slice(0, 10);
+    const results = {
+      ...(docs.results ?? {}),
+      judge_submissions: upsertBallot(docs.results?.judge_submissions, ballot),
+    };
+    await patchTable(
+      'contest',
+      `contest_id=eq.${contest.contestId}`,
+      {
+        results_json: results,
+        modified_by: username,
+        modified_date: today,
+      },
+      'Unable to save judge scores.',
+    );
+    docs.results = results;
+    updated = true;
+  }
+
+  if (!updated) {
+    throw new Error('Unable to save judge scores.');
+  }
+  return submissionStatus(docs, user);
 }
 
 /** Registration desk search by first and/or last name. Demo users are omitted. */
@@ -4605,6 +5087,65 @@ export async function fetchContestRoster(
   const attendeeRows = await fetchAttendeeRosterRows(contest.eventId);
   appendAttendeeRoster(contest, attendeeRows, 0, people, used);
   return people;
+}
+
+function judgingRosterContest(
+  contest: JudgingHomeContest,
+  source: 'json' | 'table',
+): UpcomingRegistrationContest {
+  return {
+    id: contest.id,
+    eventId: contest.eventId,
+    eventName: contest.eventName,
+    skillLevelLabel: contest.skillLevelLabel,
+    divisionLabel: contest.divisionLabel,
+    leaderCount: contest.leaderCount,
+    followerCount: contest.followerCount,
+    source,
+    contestId: source === 'table' ? contest.contestId : null,
+    itemId: contest.contestItemId,
+    skillLevelKey: contest.skillLevelKey,
+    divisionKey: contest.divisionKey,
+    competitorsGenerated: false,
+    hasGeneratedCompetitors: false,
+  };
+}
+
+function mergeRosterPeople(groups: ContestRosterPerson[][]): ContestRosterPerson[] {
+  const people: ContestRosterPerson[] = [];
+  const seen = new Set<string>();
+  for (const group of groups) {
+    for (const person of group) {
+      const bibKey =
+        typeof person.bib === 'number' && Number.isInteger(person.bib) && person.bib > 0
+          ? `${person.role}:bib:${person.bib}`
+          : '';
+      const idKey = `${person.role}:id:${person.id}`;
+      if (seen.has(idKey) || (bibKey !== '' && seen.has(bibKey))) {
+        continue;
+      }
+      seen.add(idKey);
+      if (bibKey !== '') {
+        seen.add(bibKey);
+      }
+      people.push(person);
+    }
+  }
+  return people;
+}
+
+/** Leaders and followers for a Judging Home contest, from the event item and the contest row. */
+export async function fetchJudgingContestRoster(
+  contest: JudgingHomeContest,
+): Promise<ContestRosterPerson[]> {
+  const groups: ContestRosterPerson[][] = [];
+  if (contest.contestItemId.trim() !== '') {
+    groups.push(await fetchContestRoster(judgingRosterContest(contest, 'json')));
+  }
+  if (contest.contestId !== null) {
+    groups.push(await fetchContestRoster(judgingRosterContest(contest, 'table')));
+  }
+  return mergeRosterPeople(groups);
 }
 
 async function attachGeneratedCompetitorFlags(

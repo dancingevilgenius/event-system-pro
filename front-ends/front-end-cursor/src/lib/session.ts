@@ -2,8 +2,36 @@ const SESSION_KEY = 'esp_session';
 /** Legacy key from the removed client inactivity timer; cleared on logout. */
 const ACTIVITY_EXPIRES_AT_KEY = 'esp_activity_expires_at';
 
-/** Skip inactivity logout polling/touches on local dev hosts (localhost / 127.0.0.*). */
-export function isInactivityLogoutDisabled(): boolean {
+/**
+ * TEMPORARY — delete this constant and `isInactivityLogoutPausedForDate` after 2026-10-17.
+ * Inactivity logout is off for this US Central (America/Chicago) calendar day only.
+ */
+export const INACTIVITY_LOGOUT_DISABLED_CENTRAL_DATE = '2026-10-17';
+
+const INACTIVITY_LOGOUT_PAUSE_TIME_ZONE = 'America/Chicago';
+
+/** True only on the temporary pause day. Easy to remove with the constant above. */
+export function isInactivityLogoutPausedForDate(now: Date = new Date()): boolean {
+  const centralDate = new Intl.DateTimeFormat('en-CA', {
+    timeZone: INACTIVITY_LOGOUT_PAUSE_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(now);
+
+  return centralDate === INACTIVITY_LOGOUT_DISABLED_CENTRAL_DATE;
+}
+
+/**
+ * Skip inactivity logout polling/touches.
+ * Always on for the 2026-10-17 Central pause day; otherwise on local dev hosts
+ * (localhost / 127.0.0.*).
+ */
+export function isInactivityLogoutDisabled(now: Date = new Date()): boolean {
+  if (isInactivityLogoutPausedForDate(now)) {
+    return true;
+  }
+
   if (typeof window === 'undefined') {
     return false;
   }

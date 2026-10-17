@@ -10,6 +10,7 @@ export const MOBILE_BACK_ICON_SLOT = MOBILE_HEADER_ICON_SLOT;
 type MobileHeaderIconButtonProps = {
   label: string;
   onClick: () => void;
+  disabled?: boolean;
   children: ReactNode;
 };
 
@@ -20,6 +21,7 @@ type MobileHeaderIconButtonProps = {
 export default function MobileHeaderIconButton({
   label,
   onClick,
+  disabled = false,
   children,
 }: MobileHeaderIconButtonProps) {
   return (
@@ -27,7 +29,12 @@ export default function MobileHeaderIconButton({
       variant="outlined"
       size="large"
       aria-label={label}
-      onClick={onClick}
+      disabled={disabled}
+      onClick={() => {
+        if (!disabled) {
+          onClick();
+        }
+      }}
       sx={{
         flexShrink: 0,
         minWidth: MOBILE_HEADER_ICON_SLOT,

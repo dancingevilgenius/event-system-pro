@@ -2,12 +2,37 @@
 export const JUDGING_WINDOW_MS = 6 * 60 * 60 * 1000;
 
 const JUDGE_ROLE_CODES = new Set(['JUDGE', 'HEAD_JUDGE']);
+const EVENT_LEAD_ROLE_CODES = new Set(['EVENT_DIRECTOR', 'EVENT_MANAGER']);
+const ROSTER_KEYS = [
+  'registrants',
+  'registrations',
+  'competitors',
+  'competitors_json',
+  'entries',
+  'contest_entries',
+  'roster',
+];
+const DANCE_ROLE_KEYS = [
+  'role',
+  'dance_role',
+  'contest_role',
+  'competitor_role',
+  'primary_role',
+  'primary-role',
+];
 
 export type JudgingUserIdentity = {
   userId: number;
   username: string;
   firstName: string;
   lastName: string;
+  /** Signed-in app roles. Event-staff roles are read from the event, not this list. */
+  appRoles?: readonly string[];
+};
+
+export type RegisteredDancerCounts = {
+  leaderCount: number;
+  followerCount: number;
 };
 
 export type JudgingHomeContest = {
@@ -18,6 +43,14 @@ export type JudgingHomeContest = {
   divisionLabel: string;
   contestId: number | null;
   contestItemId: string;
+  skillLevelKey: string;
+  divisionKey: string;
+  leaderCount: number;
+  followerCount: number;
+  /** Missing `Locked` is locked. Only boolean false is unlocked. */
+  locked: boolean;
+  /** Head Judge or Admin may change `Locked` on this contest. */
+  canToggleLock: boolean;
 };
 
 export type JudgingHomeEvent = {
@@ -33,11 +66,21 @@ export type JudgingHomeContestRow = {
   eventTypeCode: string | null;
   moreJson: unknown;
   staffJson: unknown;
+  competitorsJson?: unknown;
 };
 
 type BuiltContest = JudgingHomeContest & {
   skillLevelKey: string;
   divisionKey: string;
+  hasRosterArrays: boolean;
+};
+
+type EventAttachment = {
+  staffIds: string[];
+  eventJudge: boolean;
+  eventHeadJudge: boolean;
+  eventLead: boolean;
+  attached: boolean;
 };
 
 export function eventInJudgingWindow(
@@ -152,10 +195,118 @@ export function staffPersonMatchesUser(
   );
 }
 
+function appRoleSet(user: JudgingUserIdentity): Set<string> {
+  return new Set((user.appRoles ?? []).map((role) => role.trim().toUpperCase()).filter((role) => role !== ''));
+}
+
+function hasAppRole(user: JudgingUserIdentity, role: string): boolean {
+  return appRoleSet(user).has(role);
+}
+
+function roleCodes(person: Record<string, unknown>): string[] {
+  return [text(person, 'primary_role_code', 'primaryRoleCode'), text(person, 'secondary_role_code', 'secondaryRoleCode')]
+    .map((role) => role.toUpperCase())
+    .filter((role) => role !== '');
+}
+
+function hasRoleCode(person: Record<string, unknown>, roles: ReadonlySet<string>): boolean {
+  return roleCodes(person).some((role) => roles.has(role));
+}
+
 function hasJudgeRole(person: Record<string, unknown>): boolean {
-  const primary = text(person, 'primary_role_code', 'primaryRoleCode').toUpperCase();
-  const secondary = text(person, 'secondary_role_code', 'secondaryRoleCode').toUpperCase();
-  return JUDGE_ROLE_CODES.has(primary) || JUDGE_ROLE_CODES.has(secondary);
+  return hasRoleCode(person, JUDGE_ROLE_CODES);
+}
+
+function zeroCounts(): RegisteredDancerCounts {
+  return { leaderCount: 0, followerCount: 0 };
+}
+
+function addCounts(left: RegisteredDancerCounts, right: RegisteredDancerCounts): RegisteredDancerCounts {
+  return {
+    leaderCount: left.leaderCount + right.leaderCount,
+    followerCount: left.followerCount + right.followerCount,
+  };
+}
+
+function danceRole(record: Record<string, unknown>): 'leader' | 'follower' | null {
+  for (const key of DANCE_ROLE_KEYS) {
+    const value = record[key];
+    if (typeof value !== 'string') {
+      continue;
+    }
+    const role = value.trim().toLowerCase();
+    if (role === 'leader' || role === 'lead') {
+      return 'leader';
+    }
+    if (role === 'follower' || role === 'follow') {
+      return 'follower';
+    }
+  }
+  return null;
+}
+
+function countRosterNode(value: unknown): RegisteredDancerCounts {
+  const record = asRecord(value);
+  if (!record) {
+    return zeroCounts();
+  }
+
+  const leaderIsPerson = asRecord(record.leader) !== null;
+  const followerIsPerson = asRecord(record.follower) !== null;
+  if (leaderIsPerson || followerIsPerson) {
+    return {
+      leaderCount: leaderIsPerson ? 1 : 0,
+      followerCount: followerIsPerson ? 1 : 0,
+    };
+  }
+
+  if (Array.isArray(record.leaders) || Array.isArray(record.followers)) {
+    return {
+      leaderCount: Array.isArray(record.leaders) ? record.leaders.length : 0,
+      followerCount: Array.isArray(record.followers) ? record.followers.length : 0,
+    };
+  }
+
+  const role = danceRole(record);
+  if (role === 'leader') {
+    return { leaderCount: 1, followerCount: 0 };
+  }
+  if (role === 'follower') {
+    return { leaderCount: 0, followerCount: 1 };
+  }
+
+  return ROSTER_KEYS.reduce(
+    (totals, key) =>
+      record[key] === undefined ? totals : addCounts(totals, registeredDancerCounts(record[key])),
+    zeroCounts(),
+  );
+}
+
+/** Leader and follower totals stored on a contest item or public.contest competitors. */
+export function registeredDancerCounts(value: unknown): RegisteredDancerCounts {
+  const parsed = parseJsonValue(value);
+  if (Array.isArray(parsed)) {
+    return parsed.reduce(
+      (totals, entry) => addCounts(totals, countRosterNode(entry)),
+      zeroCounts(),
+    );
+  }
+
+  return countRosterNode(parsed);
+}
+
+export function formatRegisteredCounts(leaderCount: number, followerCount: number): string {
+  return `L:${leaderCount} F:${followerCount}`;
+}
+
+/** Missing `Locked` stays locked. Only a boolean false unlocks scoring. */
+export function contestLockedFlag(value: unknown): boolean {
+  const record = asRecord(parseJsonValue(value));
+  return record?.Locked !== false;
+}
+
+function hasRosterArrays(record: Record<string, unknown>): boolean {
+  return Array.isArray(record.leaders) || Array.isArray(record.followers);
 }
 
 function stringIds(value: unknown): string[] {
@@ -206,10 +357,7 @@ function staffJsonAttachesUser(staffJson: unknown, user: JudgingUserIdentity): b
   });
 }
 
-function userOnEvent(
-  moreJson: unknown,
-  user: JudgingUserIdentity,
-): { staffIds: string[]; eventJudge: boolean } {
+function userOnEvent(moreJson: unknown, user: JudgingUserIdentity): EventAttachment {
   const matches = staffPeople(moreJson).filter((person) => staffPersonMatchesUser(person, user));
   return {
     staffIds: matches.flatMap((person) => {
@@ -217,7 +365,80 @@ function userOnEvent(
       return id === '' ? [] : [id];
     }),
     eventJudge: matches.some((person) => hasJudgeRole(person)),
+    eventHeadJudge: matches.some((person) => hasRoleCode(person, new Set(['HEAD_JUDGE']))),
+    eventLead: matches.some((person) => hasRoleCode(person, EVENT_LEAD_ROLE_CODES)),
+    attached: matches.length > 0,
   };
+}
+
+function seesEveryContest(user: JudgingUserIdentity, attachment: EventAttachment): boolean {
+  if (hasAppRole(user, 'ADMIN')) {
+    return true;
+  }
+  if (attachment.eventLead) {
+    return true;
+  }
+  if (
+    attachment.attached
+    && (hasAppRole(user, 'EVENT_DIRECTOR') || hasAppRole(user, 'EVENT_MANAGER'))
+  ) {
+    return true;
+  }
+  return attachment.eventJudge;
+}
+
+function isContestHeadJudge(record: Record<string, unknown>, staffIds: string[]): boolean {
+  const headId = text(record, 'head_judge_staff_id', 'headJudgeStaffId');
+  return headId !== '' && staffIds.includes(headId);
+}
+
+function staffJsonIsHeadJudge(staffJson: unknown, user: JudgingUserIdentity): boolean {
+  const parsed = parseJsonValue(staffJson);
+  if (!Array.isArray(parsed)) {
+    return false;
+  }
+
+  return parsed.some((entry) => {
+    const record = asRecord(entry);
+    if (!record || !staffPersonMatchesUser(record, user)) {
+      return false;
+    }
+
+    if (roleCodes(record).includes('HEAD_JUDGE')) {
+      return true;
+    }
+
+    return text(record, 'role', 'role_code', 'roleCode').toUpperCase() === 'HEAD_JUDGE';
+  });
+}
+
+function canToggleContestLock(
+  user: JudgingUserIdentity,
+  attachment: EventAttachment,
+  record: Record<string, unknown>,
+  staffJson: unknown,
+): boolean {
+  if (hasAppRole(user, 'ADMIN') || hasAppRole(user, 'HEAD_JUDGE')) {
+    return true;
+  }
+  if (attachment.eventHeadJudge || isContestHeadJudge(record, attachment.staffIds)) {
+    return true;
+  }
+  return staffJsonIsHeadJudge(staffJson, user);
+}
+
+function tableRosterCounts(contest: JudgingHomeContestRow): RegisteredDancerCounts {
+  const more = asRecord(parseJsonValue(contest.moreJson));
+  if (more && hasRosterArrays(more)) {
+    return registeredDancerCounts(more);
+  }
+
+  const competitors = registeredDancerCounts(contest.competitorsJson);
+  if (competitors.leaderCount + competitors.followerCount > 0) {
+    return competitors;
+  }
+
+  return registeredDancerCounts(contest.moreJson);
 }
 
 function intersects(left: string[], right: string[]): boolean {
@@ -272,9 +493,11 @@ function findTwin(
 }
 
 /**
- * Contests in the 6-hour window that this user judges.
- * Attachment is a scoring-judge or head-judge assignment, or a JUDGE / HEAD_JUDGE
- * staff role on the event. An app role alone does not add contests.
+ * Contests in the 6-hour window this user may open from Judging Home.
+ * Judges see contests they are attached to (scoring or head judge assignment, or a
+ * JUDGE / HEAD_JUDGE staff role). Admins see every contest in the window. Event
+ * Directors and Event Managers see contests on events where they hold that staff
+ * role, or where an app role of that kind is paired with any staff attachment.
  */
 export function selectJudgingHomeContests(input: {
   events: JudgingHomeEvent[];
@@ -289,12 +512,13 @@ export function selectJudgingHomeContests(input: {
   );
 
   for (const event of events) {
-    const { staffIds, eventJudge } = userOnEvent(event.moreJson, input.user);
+    const attachment = userOnEvent(event.moreJson, input.user);
+    const includeAll = seesEveryContest(input.user, attachment);
     const eventName = event.name.trim();
 
     for (const item of contestItems(event.moreJson)) {
       const assigned = assignedStaffIds(item);
-      if (!eventJudge && !intersects(staffIds, assigned)) {
+      if (!includeAll && !intersects(attachment.staffIds, assigned)) {
         continue;
       }
 
@@ -305,6 +529,7 @@ export function selectJudgingHomeContests(input: {
         continue;
       }
 
+      const counts = registeredDancerCounts(item);
       rows.push({
         id: `event-${event.eventId}-json-${contestItemId || rows.length}`,
         eventId: event.eventId,
@@ -313,8 +538,13 @@ export function selectJudgingHomeContests(input: {
         divisionLabel,
         contestId: null,
         contestItemId,
+        leaderCount: counts.leaderCount,
+        followerCount: counts.followerCount,
+        locked: contestLockedFlag(item),
+        canToggleLock: canToggleContestLock(input.user, attachment, item, null),
         skillLevelKey: text(item, 'skill_level_key', 'skillLevelKey'),
         divisionKey: text(item, 'division_key', 'divisionKey'),
+        hasRosterArrays: hasRosterArrays(item),
       });
     }
 
@@ -329,8 +559,8 @@ export function selectJudgingHomeContests(input: {
         ...stringIds(contest.staffJson),
       ];
       const attached =
-        eventJudge
-        || intersects(staffIds, assigned)
+        includeAll
+        || intersects(attachment.staffIds, assigned)
         || staffJsonAttachesUser(contest.staffJson, input.user);
       if (!attached) {
         continue;
@@ -340,6 +570,16 @@ export function selectJudgingHomeContests(input: {
       if (twin) {
         if (twin.contestId === null) {
           twin.contestId = contest.contestId;
+        }
+        if (!twin.hasRosterArrays) {
+          const tableCounts = tableRosterCounts(contest);
+          if (tableCounts.leaderCount + tableCounts.followerCount > twin.leaderCount + twin.followerCount) {
+            twin.leaderCount = tableCounts.leaderCount;
+            twin.followerCount = tableCounts.followerCount;
+          }
+        }
+        if (!twin.canToggleLock) {
+          twin.canToggleLock = canToggleContestLock(input.user, attachment, more, contest.staffJson);
         }
         continue;
       }
@@ -353,6 +593,7 @@ export function selectJudgingHomeContests(input: {
         continue;
       }
 
+      const counts = tableRosterCounts(contest);
       rows.push({
         id: `event-${event.eventId}-contest-${contest.contestId}`,
         eventId: event.eventId,
@@ -361,11 +602,16 @@ export function selectJudgingHomeContests(input: {
         divisionLabel,
         contestId: contest.contestId,
         contestItemId: text(more, 'id', 'contest_item_id', 'contestItemId'),
+        leaderCount: counts.leaderCount,
+        followerCount: counts.followerCount,
+        locked: contestLockedFlag(more),
+        canToggleLock: canToggleContestLock(input.user, attachment, more, contest.staffJson),
         skillLevelKey: text(more, 'skill_level_key', 'skillLevelKey'),
         divisionKey: text(more, 'division_key', 'divisionKey'),
+        hasRosterArrays: hasRosterArrays(more) || hasRosterArrays(asRecord(parseJsonValue(contest.competitorsJson)) ?? {}),
       });
     }
   }
 
-  return rows.map(({ skillLevelKey: _skillLevelKey, divisionKey: _divisionKey, ...contest }) => contest);
+  return rows.map(({ hasRosterArrays: _hasRosterArrays, ...contest }) => contest);
 }

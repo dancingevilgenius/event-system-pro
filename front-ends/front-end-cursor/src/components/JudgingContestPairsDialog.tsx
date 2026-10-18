@@ -24,10 +24,12 @@ import {
   canManageContestPairs,
   orderSavedContestPairs,
   randomizeContestPairs,
+  readStoredContestPairs,
   storedContestPairs,
   type ContestPair,
   type StoredContestPair,
 } from '../lib/judgingPairs';
+import { generatedCompetitorsForPairIds } from '../utils/generatedCompetitors';
 import { compareRosterByBib } from '../utils/rosterBibOrder';
 
 function rosterFullName(person: ContestRosterPerson): string {
@@ -51,6 +53,30 @@ function contestDialogTitle(contest: JudgingHomeContest): string {
 
 function peopleInRole(people: ContestRosterPerson[], role: ContestRosterRole): ContestRosterPerson[] {
   return people.filter((person) => person.role === role).sort(compareRosterByBib);
+}
+
+/** Pair ids that are no longer on the roster still name the generated Leader and Follower rows. */
+function withSavedGeneratedPairs(
+  people: ContestRosterPerson[],
+  stored: readonly StoredContestPair[],
+): ContestRosterPerson[] {
+  const known = new Set(people.map((person) => person.id));
+  const missing = stored.flatMap((pair) => [pair.leader_id, pair.follower_id]).filter((id) => !known.has(id));
+  const extras = generatedCompetitorsForPairIds(missing).filter((person) => !known.has(person.id));
+  if (extras.length === 0) {
+    return people;
+  }
+  return [
+    ...people,
+    ...extras.map((person) => ({
+      id: person.id,
+      firstName: person.firstName,
+      lastName: person.lastName,
+      role: person.role,
+      origin: { kind: 'event-json' as const },
+      bib: person.bib,
+    })),
+  ];
 }
 
 function peopleInOrder(people: ContestRosterPerson[], ids: string[]): ContestRosterPerson[] {
@@ -206,8 +232,9 @@ export default function JudgingContestPairsDialog({
     };
   }, [contest, contestId]);
 
-  const leadersByBib = peopleInRole(people, 'leader');
-  const followersByBib = peopleInRole(people, 'follower');
+  const rosterPeople = withSavedGeneratedPairs(people, readStoredContestPairs(loadedPairs));
+  const leadersByBib = peopleInRole(rosterPeople, 'leader');
+  const followersByBib = peopleInRole(rosterPeople, 'follower');
   const savedLayout = orderSavedContestPairs(leadersByBib, followersByBib, loadedPairs);
   const showingSavedPairs = savedLayout !== null && followerOrder === null;
   const leaders = showingSavedPairs ? savedLayout.leaders : leadersByBib;

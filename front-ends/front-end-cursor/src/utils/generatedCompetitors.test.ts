@@ -6,6 +6,7 @@ import {
   deleteGeneratedCompetitorsConfirmText,
   generatedCompetitorLastNames,
   generatedCompetitorRoster,
+  generatedCompetitorsForPairIds,
   isGeneratedCompetitor,
   isGeneratedCompetitorId,
   rosterHasGeneratedCompetitors,
@@ -87,6 +88,20 @@ describe('assignTestCompetitorBibs', () => {
       bib: 27,
     });
     expect(isGeneratedCompetitor({ firstName: 'Leader', lastName: 'aaa1' })).toBe(true);
+  });
+});
+
+describe('generatedCompetitorsForPairIds', () => {
+  it('rebuilds a four-person generated set from stored pair ids', () => {
+    const people = generatedCompetitorsForPairIds([
+      'leader-aaa',
+      'follower-ddd',
+      'not-a-competitor',
+      'leader-aaa',
+    ]);
+    expect(people.map((person) => person.id)).toEqual(['leader-aaa', 'follower-ddd']);
+    expect(people[0]).toMatchObject({ firstName: 'Leader', lastName: 'aaa', bib: 1, role: 'leader' });
+    expect(people[1]).toMatchObject({ firstName: 'Follower', lastName: 'ddd', bib: 8, role: 'follower' });
   });
 });
 

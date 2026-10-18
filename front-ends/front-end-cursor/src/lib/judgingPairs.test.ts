@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { generatedCompetitorsForPairIds } from '../utils/generatedCompetitors';
 import {
   canManageContestPairs,
   orderSavedContestPairs,
@@ -130,6 +131,36 @@ describe('orderSavedContestPairs', () => {
 
     expect(ordered?.leaders.map((person) => person.id)).toEqual(['l-low', 'l-high', 'l-none', 'l-extra']);
     expect(ordered?.followers.map((person) => person.id)).toEqual(['f-later', 'f-a', 'f-b', 'f-extra']);
+  });
+
+  it('keeps All-Clone generated couples together after the roster lists are cleared', () => {
+    const stored = [
+      { leader_id: 'leader-aaa', follower_id: 'follower-ddd' },
+      { leader_id: 'leader-bbb', follower_id: 'follower-ccc' },
+      { leader_id: 'leader-ccc', follower_id: 'follower-aaa' },
+      { leader_id: 'leader-ddd', follower_id: 'follower-bbb' },
+    ];
+    const people = generatedCompetitorsForPairIds(stored.flatMap((pair) => [pair.leader_id, pair.follower_id]));
+    const ordered = orderSavedContestPairs(
+      people.filter((person) => person.role === 'leader'),
+      people.filter((person) => person.role === 'follower'),
+      stored,
+    );
+
+    expect(ordered?.leaders.map((person) => person.id)).toEqual([
+      'leader-aaa',
+      'leader-bbb',
+      'leader-ccc',
+      'leader-ddd',
+    ]);
+    expect(ordered?.followers.map((person) => person.id)).toEqual([
+      'follower-ddd',
+      'follower-ccc',
+      'follower-aaa',
+      'follower-bbb',
+    ]);
+    expect(ordered?.leaders.map((person) => person.bib)).toEqual([1, 2, 3, 4]);
+    expect(ordered?.followers.map((person) => person.bib)).toEqual([8, 7, 5, 6]);
   });
 
   it('returns null when no saved pair matches the roster', () => {

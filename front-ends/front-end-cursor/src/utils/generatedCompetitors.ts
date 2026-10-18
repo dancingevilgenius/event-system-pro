@@ -103,6 +103,41 @@ export function generatedCompetitorRoster(count = 26): GeneratedCompetitor[] {
 
 let generatedById: Map<string, GeneratedCompetitor> | null = null;
 
+/**
+ * People named by stored pair ids, using the smallest generated roster that contains every id.
+ * A four-person set keeps Leader aaa at bib 1 and Follower ddd at bib 8.
+ * Ids that are not generated competitors are omitted.
+ */
+const generatedPairId = /^(leader|follower)-[a-z]{3}\d*$/;
+
+export function generatedCompetitorsForPairIds(ids: readonly string[]): GeneratedCompetitor[] {
+  const wanted = [
+    ...new Set(
+      ids
+        .map((id) => id.trim())
+        .filter((id) => generatedPairId.test(id)),
+    ),
+  ];
+  if (wanted.length === 0) {
+    return [];
+  }
+  for (let count = 1; count <= MAX_TEST_COMPETITOR_COUNT; count += 1) {
+    const roster = assignTestCompetitorBibs(new Set(), count);
+    const byId = new Map(roster.map((person) => [person.id, person]));
+    if (!wanted.every((id) => byId.has(id))) {
+      continue;
+    }
+    return wanted.flatMap((id) => {
+      const person = byId.get(id);
+      return person ? [person] : [];
+    });
+  }
+  return wanted.flatMap((id) => {
+    const person = generatedCompetitorById(id);
+    return person ? [person] : [];
+  });
+}
+
 /** Leader aaa / Follower ddd and the rest of the generated roster, looked up by stored id. */
 export function generatedCompetitorById(id: string): GeneratedCompetitor | null {
   const key = id.trim();

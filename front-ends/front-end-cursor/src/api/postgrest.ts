@@ -1,4 +1,4 @@
-import { withoutContestScores } from '../lib/clearContestScores';
+import { assertClearedScoresKeepRoster, withoutContestScores } from '../lib/clearContestScores';
 import { parseTrainingLesson } from '../lib/pageTraining';
 import {
   eventInJudgingWindow,
@@ -4337,7 +4337,9 @@ export async function clearJudgingContestScores(contest: JudgeScoreContest): Pro
     && Array.isArray(docs.contestsNode.items)
   ) {
     const nextItems = [...docs.contestsNode.items];
-    nextItems[docs.itemIndex] = withoutContestScores(docs.item);
+    const clearedItem = withoutContestScores(docs.item);
+    assertClearedScoresKeepRoster(docs.item, clearedItem);
+    nextItems[docs.itemIndex] = clearedItem;
     await patchTable(
       'event',
       `event_id=eq.${contest.eventId}`,
@@ -4357,11 +4359,13 @@ export async function clearJudgingContestScores(contest: JudgeScoreContest): Pro
   }
 
   if (contest.contestId !== null && docs.contestRow) {
+    const clearedResults = withoutContestScores(docs.results);
+    assertClearedScoresKeepRoster(docs.results ?? {}, clearedResults);
     await patchTable(
       'contest',
       `contest_id=eq.${contest.contestId}`,
       {
-        results_json: withoutContestScores(docs.results),
+        results_json: clearedResults,
         modified_by: username,
         modified_date: new Date().toISOString().slice(0, 10),
       },

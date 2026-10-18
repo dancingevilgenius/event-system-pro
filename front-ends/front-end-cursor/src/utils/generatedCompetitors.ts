@@ -101,6 +101,22 @@ export function generatedCompetitorRoster(count = 26): GeneratedCompetitor[] {
   return assignTestCompetitorBibs(new Set(), count);
 }
 
+let generatedById: Map<string, GeneratedCompetitor> | null = null;
+
+/** Leader aaa / Follower ddd and the rest of the generated roster, looked up by stored id. */
+export function generatedCompetitorById(id: string): GeneratedCompetitor | null {
+  const key = id.trim();
+  if (key === '') {
+    return null;
+  }
+  if (generatedById === null) {
+    generatedById = new Map(
+      generatedCompetitorRoster(MAX_TEST_COMPETITOR_COUNT).map((person) => [person.id, person]),
+    );
+  }
+  return generatedById.get(key) ?? null;
+}
+
 export function isGeneratedCompetitorId(id: string): boolean {
   if (generatedIds.size === 0) {
     generatedCompetitorRoster();

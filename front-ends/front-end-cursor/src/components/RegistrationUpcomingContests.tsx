@@ -18,6 +18,7 @@ import {
   fetchUpcomingRegistrationContests,
   type UpcomingRegistrationContest,
 } from '../api/postgrest';
+import { checkedIdsForContestLoad } from '../utils/registrationContestSelection';
 import RegistrationContestRosterDialog from './RegistrationContestRosterDialog';
 
 type ContestRole = 'leader' | 'follower';
@@ -117,12 +118,14 @@ export default function RegistrationUpcomingContests({
       .then((rows) => {
         if (!cancelled) {
           setContests(rows);
+          setCheckedIds(checkedIdsForContestLoad(rows.map((row) => row.id)));
           setError(null);
         }
       })
       .catch((loadError: unknown) => {
         if (!cancelled) {
           setContests([]);
+          setCheckedIds(checkedIdsForContestLoad([]));
           setError(loadError instanceof Error ? loadError.message : 'Unable to load upcoming contests.');
         }
       })

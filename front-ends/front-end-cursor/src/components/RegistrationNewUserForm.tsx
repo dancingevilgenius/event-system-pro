@@ -13,6 +13,7 @@ import {
 import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
+import { autoQuickRegisterAction } from '../utils/autoQuickRegister';
 import { contestSkillDivisionLabel } from '../utils/duplicateContestBib';
 import {
   createTestCompetitorsConfirmText,
@@ -76,6 +77,9 @@ export default function RegistrationNewUserForm() {
   const lookupSeqRef = useRef(0);
   const firstNameRef = useRef(firstName);
   const lastNameRef = useRef(lastName);
+  const confirmQuickRegisterRef = useRef<() => void>(() => {});
+  const quickRegisterInFlightRef = useRef(false);
+  const attemptedAutoQuickRegisterRef = useRef(new Set<string>());
   firstNameRef.current = firstName;
   lastNameRef.current = lastName;
 
@@ -84,6 +88,7 @@ export default function RegistrationNewUserForm() {
   const nameReady = trimmedFirst !== '' && trimmedLast !== '';
   const registered = personIsRegistered(nameReady, match);
   const bibReady = bibNumber(bib) > 0;
+  const assignedRole = picks.find((pick) => pick.role === 'leader' || pick.role === 'follower')?.role ?? null;
   const contestChecked = picks.length > 0;
   const canRegister = registered && bibReady && contestChecked && !registering && !busy;
   const selectedContest = picks.length === 1 ? picks[0].contest : null;
@@ -131,6 +136,46 @@ export default function RegistrationNewUserForm() {
       window.clearTimeout(timer);
     };
   }, [nameReady, trimmedFirst, trimmedLast]);
+
+  useEffect(() => {
+    const action = autoQuickRegisterAction({
+      firstName: trimmedFirst,
+      lastName: trimmedLast,
+      bib,
+      role: assignedRole,
+      eligible: nameReady && match?.status === 'none' && !registered,
+      attemptedKeys: [...attemptedAutoQuickRegisterRef.current],
+    });
+    if (!action.run || action.attemptKey === null || busy || quickRegisterInFlightRef.current) {
+      return;
+    }
+
+    const attemptKey = action.attemptKey;
+    const timer = window.setTimeout(() => {
+      const latest = autoQuickRegisterAction({
+        firstName: firstNameRef.current.trim(),
+        lastName: lastNameRef.current.trim(),
+        bib,
+        role: assignedRole,
+        eligible: nameReady && match?.status === 'none' && !registered,
+        attemptedKeys: [...attemptedAutoQuickRegisterRef.current],
+      });
+      if (
+        !latest.run
+        || latest.attemptKey !== attemptKey
+        || busy
+        || quickRegisterInFlightRef.current
+      ) {
+        return;
+      }
+      attemptedAutoQuickRegisterRef.current.add(attemptKey);
+      confirmQuickRegisterRef.current();
+    }, 400);
+
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [assignedRole, bib, busy, match, nameReady, trimmedFirst, trimmedLast]);
 
   useEffect(() => {
     if (!dialogOpen) {
@@ -194,10 +239,11 @@ export default function RegistrationNewUserForm() {
   };
 
   const confirmQuickRegister = () => {
-    if (!nameReady || busy) {
+    if (!nameReady || busy || quickRegisterInFlightRef.current) {
       return;
     }
 
+    quickRegisterInFlightRef.current = true;
     const registeredFirst = trimmedFirst;
     const registeredLast = trimmedLast;
     setBusy(true);
@@ -251,9 +297,11 @@ export default function RegistrationNewUserForm() {
         showProblem(error instanceof Error ? error.message : 'Unable to quick register.');
       })
       .finally(() => {
+        quickRegisterInFlightRef.current = false;
         setBusy(false);
       });
   };
+  confirmQuickRegisterRef.current = confirmQuickRegister;
 
   const registerCompetitor = () => {
     if (!canRegister || !match) {

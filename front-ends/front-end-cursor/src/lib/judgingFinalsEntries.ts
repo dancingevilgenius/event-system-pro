@@ -1,4 +1,5 @@
 import type { LegionMember } from '../data/legionNames';
+import { generatedCompetitorById } from '../utils/generatedCompetitors';
 import { readStoredContestPairs, type StoredContestPair } from './judgingPairs';
 import { parseRoles } from './session';
 
@@ -7,6 +8,7 @@ export type JudgingFinalsRosterPerson = {
   firstName: string;
   lastName: string;
   bib?: unknown;
+  role?: 'leader' | 'follower';
 };
 
 /** One scored couple. `number` is the bib the judging list sorts and scores by. */
@@ -337,13 +339,26 @@ function positiveBib(bib: unknown): number | null {
   return typeof bib === 'number' && Number.isInteger(bib) && bib > 0 ? bib : null;
 }
 
-function personName(person: JudgingFinalsRosterPerson | undefined): { first: string; last: string } {
+type ResolvedDancer = {
+  first: string;
+  last: string;
+  bib: number | null;
+};
+
+function resolvedDancer(person: { firstName: string; lastName: string; bib?: unknown } | null | undefined): ResolvedDancer | null {
   const first = person?.firstName.trim() ?? '';
   const last = person?.lastName.trim() ?? '';
   if (first === '' && last === '') {
-    return { first: 'Unknown', last: 'competitor' };
+    return null;
   }
-  return { first, last };
+  return { first, last, bib: positiveBib(person?.bib) };
+}
+
+function dancerForId(
+  id: string,
+  byId: ReadonlyMap<string, JudgingFinalsRosterPerson>,
+): ResolvedDancer | null {
+  return resolvedDancer(byId.get(id)) ?? resolvedDancer(generatedCompetitorById(id));
 }
 
 /**
@@ -368,35 +383,49 @@ function displayBib(preferred: Array<number | null>, used: Set<number>, highestK
   return next;
 }
 
+function couplesFromPeople(people: readonly JudgingFinalsRosterPerson[]): Array<{ leader: ResolvedDancer; follower: ResolvedDancer }> {
+  const leaders = people.flatMap((person) => {
+    if (person.role !== 'leader') {
+      return [];
+    }
+    const dancer = resolvedDancer(person);
+    return dancer ? [dancer] : [];
+  });
+  const followers = people.flatMap((person) => {
+    if (person.role !== 'follower') {
+      return [];
+    }
+    const dancer = resolvedDancer(person);
+    return dancer ? [dancer] : [];
+  });
+  const count = Math.min(leaders.length, followers.length);
+  return Array.from({ length: count }, (_, index) => ({
+    leader: leaders[index],
+    follower: followers[index],
+  }));
+}
+
 export function buildJudgingFinalsEntries(
   pairs: unknown,
   people: readonly JudgingFinalsRosterPerson[],
 ): JudgingFinalsEntry[] {
   const stored = readStoredContestPairs(pairs);
   const byId = new Map(people.map((person) => [person.id, person]));
-  const resolved = stored.map((pair) => {
-    const leader = byId.get(pair.leader_id);
-    const follower = byId.get(pair.follower_id);
-    return {
-      leader,
-      follower,
-      leaderBib: positiveBib(leader?.bib),
-      followerBib: positiveBib(follower?.bib),
-    };
+  const fromPairs = stored.flatMap((pair) => {
+    const leader = dancerForId(pair.leader_id, byId);
+    const follower = dancerForId(pair.follower_id, byId);
+    return leader && follower ? [{ leader, follower }] : [];
   });
-  const knownBibs = resolved.flatMap((pair) => [pair.leaderBib, pair.followerBib]).filter((bib) => bib !== null);
+  const resolved = fromPairs.length > 0 || stored.length === 0 ? fromPairs : couplesFromPeople(people);
+  const knownBibs = resolved.flatMap((pair) => [pair.leader.bib, pair.follower.bib]).filter((bib) => bib !== null);
   const highestKnownBib = knownBibs.length === 0 ? 0 : Math.max(...knownBibs);
   const used = new Set<number>();
 
-  return resolved.map((pair) => {
-    const leaderName = personName(pair.leader);
-    const followerName = personName(pair.follower);
-    return {
-      number: displayBib([pair.leaderBib, pair.followerBib], used, highestKnownBib),
-      leaderBib: pair.leaderBib,
-      followerBib: pair.followerBib,
-      leader: { ...leaderName, sex: 'male' },
-      follower: { ...followerName, sex: 'female' },
-    };
-  });
+  return resolved.map((pair) => ({
+    number: displayBib([pair.leader.bib, pair.follower.bib], used, highestKnownBib),
+    leaderBib: pair.leader.bib,
+    followerBib: pair.follower.bib,
+    leader: { first: pair.leader.first, last: pair.leader.last, sex: 'male' },
+    follower: { first: pair.follower.first, last: pair.follower.last, sex: 'female' },
+  }));
 }

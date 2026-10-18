@@ -60,12 +60,43 @@ describe('buildJudgingFinalsEntries', () => {
       people,
     );
 
-    expect(entries.map((entry) => entry.number)).toEqual([2, 21, 8]);
-    expect(entries.map((entry) => entry.followerBib)).toEqual([20, null, 8]);
-    expect(entries.map((entry) => entry.leaderBib)).toEqual([2, null, null]);
+    expect(entries.map((entry) => entry.number)).toEqual([2, 21]);
+    expect(entries.map((entry) => entry.followerBib)).toEqual([20, null]);
+    expect(entries.map((entry) => entry.leaderBib)).toEqual([2, null]);
     expect(entries[1]?.leader).toEqual({ first: 'Edsger', last: 'Dijkstra', sex: 'male' });
     expect(entries[1]?.follower).toEqual({ first: 'Margaret', last: 'Hamilton', sex: 'female' });
-    expect(entries[2]?.leader).toEqual({ first: 'Unknown', last: 'competitor', sex: 'male' });
+    expect(entries.some((entry) => entry.leader.last === 'competitor' || entry.follower.last === 'competitor')).toBe(false);
+  });
+
+  it('uses roster couples when saved pair ids do not match anyone', () => {
+    const entries = buildJudgingFinalsEntries(
+      [{ leader_id: 'score-shell', follower_id: 'score-shell-2' }],
+      [
+        { id: 'l1', firstName: 'Ada', lastName: 'Lovelace', bib: 2, role: 'leader' },
+        { id: 'f1', firstName: 'Grace', lastName: 'Hopper', bib: 20, role: 'follower' },
+      ],
+    );
+
+    expect(entries).toEqual([
+      {
+        number: 2,
+        leaderBib: 2,
+        followerBib: 20,
+        leader: { first: 'Ada', last: 'Lovelace', sex: 'male' },
+        follower: { first: 'Grace', last: 'Hopper', sex: 'female' },
+      },
+    ]);
+  });
+
+  it('names generated competitors when their roster rows are missing', () => {
+    const entries = buildJudgingFinalsEntries(
+      [{ leader_id: 'leader-aaa', follower_id: 'follower-ddd' }],
+      [],
+    );
+
+    expect(entries[0]?.leader).toEqual({ first: 'Leader', last: 'aaa', sex: 'male' });
+    expect(entries[0]?.follower).toEqual({ first: 'Follower', last: 'ddd', sex: 'female' });
+    expect(entries[0]?.leader.last).not.toBe('competitor');
   });
 
   it('returns no entries when pairs are missing', () => {

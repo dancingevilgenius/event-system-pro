@@ -4042,7 +4042,13 @@ function submissionStatus(docs: JudgeContestDocs, user: JudgingUserIdentity | nu
     ...readStoredJudgeIds(docs.results?.judge_submissions),
     ...readStoredJudgeIds(docs.item?.judge_submissions),
   ];
-  const progress = judgeSubmissionProgress(assigned, submitted);
+  const ballots = storedJudgeBallots(docs);
+  const headJudgeId = findHeadJudgeId({
+    assignedIds: assigned,
+    records: [docs.item, docs.contestMore, ...judgeNameSources(docs)],
+    ballots,
+  });
+  const progress = judgeSubmissionProgress(assigned, submitted, headJudgeId);
   const matches = user ? eventStaffPeople(docs.eventMore).filter((person) => staffPersonMatchesUser(person, user)) : [];
   const staffIds = matches.flatMap((person) => {
     const id = typeof person.id === 'string' ? person.id.trim() : '';

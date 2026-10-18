@@ -301,12 +301,19 @@ export function readStoredJudgeIds(value: unknown): string[] {
   });
 }
 
-/** Counts assigned judges who have a stored ballot. Other ids are ignored. */
+/**
+ * Counts regular judges who have a stored ballot.
+ * The contest head judge is left out of both numbers. Other ids are ignored.
+ */
 export function judgeSubmissionProgress(
   assignedIds: readonly string[],
   submittedIds: readonly string[],
+  headJudgeId?: string | null,
 ): JudgeSubmissionProgress {
-  const assigned = assignedContestJudgeIds({ records: [], panelJudges: assignedIds });
+  const head = headJudgeId?.trim() ?? '';
+  const assigned = assignedContestJudgeIds({ records: [], panelJudges: assignedIds }).filter(
+    (id) => head === '' || id !== head,
+  );
   const assignedSet = new Set(assigned);
   const submitted = new Set<string>();
   for (const id of submittedIds) {

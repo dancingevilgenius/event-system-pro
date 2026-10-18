@@ -92,6 +92,35 @@ describe('judgeSubmissionProgress', () => {
   it('counts each assigned judge once and ignores ballots from outside the panel', () => {
     expect(judgeSubmissionProgress(['a', 'a', 'b'], ['a', 'a', 'stranger']).label).toBe('1/2');
   });
+
+  it('counts only the regular judges when a head judge is on the panel', () => {
+    const regulars = ['j1', 'j2', 'j3', 'j4', 'j5'];
+    const head = 'head-staff';
+    const assigned = [head, ...regulars];
+
+    expect(judgeSubmissionProgress(assigned, regulars, head)).toMatchObject({
+      label: '5/5',
+      percent: 100,
+      submitted: 5,
+      assigned: 5,
+    });
+    expect(judgeSubmissionProgress(assigned, [...regulars, head], head)).toMatchObject({
+      label: '5/5',
+      percent: 100,
+      submitted: 5,
+      assigned: 5,
+    });
+    expect(judgeSubmissionProgress(assigned, ['j1', 'j2', head], head)).toMatchObject({
+      label: '2/5',
+      percent: 40,
+      submitted: 2,
+      assigned: 5,
+    });
+    expect(judgeSubmissionProgress(regulars, regulars, 'not-on-panel')).toMatchObject({
+      label: '5/5',
+      assigned: 5,
+    });
+  });
 });
 
 describe('assignedContestJudgeIds', () => {

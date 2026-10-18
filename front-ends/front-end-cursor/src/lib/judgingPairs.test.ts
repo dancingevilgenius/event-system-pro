@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { randomizeContestPairs, readStoredContestPairs, storedContestPairs } from './judgingPairs';
+import {
+  canManageContestPairs,
+  orderSavedContestPairs,
+  savedPairsOpenFinals,
+  randomizeContestPairs,
+  readStoredContestPairs,
+  storedContestPairs,
+} from './judgingPairs';
 
 const leaders = [
   { id: 'l2', bib: 2 },
@@ -11,6 +18,50 @@ const followers = [
   { id: 'f2', bib: 20 },
   { id: 'f3', bib: 30 },
 ];
+
+describe('canManageContestPairs', () => {
+  it('allows Admin and Head Judge, including display labels', () => {
+    expect(canManageContestPairs(['ADMIN'])).toBe(true);
+    expect(canManageContestPairs(['Admin'])).toBe(true);
+    expect(canManageContestPairs(['HEAD_JUDGE'])).toBe(true);
+    expect(canManageContestPairs(['Head Judge'])).toBe(true);
+    expect(canManageContestPairs(['JUDGE', 'Head Judge'])).toBe(true);
+  });
+
+  it('hides pair actions from a scoring Judge and from anyone else', () => {
+    expect(canManageContestPairs(['JUDGE'])).toBe(false);
+    expect(canManageContestPairs(['Judge'])).toBe(false);
+    expect(canManageContestPairs(['STAFF'])).toBe(false);
+    expect(canManageContestPairs([])).toBe(false);
+    expect(canManageContestPairs(null)).toBe(false);
+    expect(canManageContestPairs(undefined)).toBe(false);
+    expect(canManageContestPairs({
+      appRoles: ['JUDGE'],
+      primary_role_code: 'JUDGE',
+      contestHeadJudge: false,
+    })).toBe(false);
+  });
+
+  it('allows a head judge stored only as event staff primary_role_code HEAD_JUDGE', () => {
+    expect(canManageContestPairs({
+      appRoles: [],
+      primary_role_code: 'HEAD_JUDGE',
+      secondary_role_code: '',
+    })).toBe(true);
+    expect(canManageContestPairs({
+      appRoles: [],
+      primary_role_code: 'Head Judge',
+    })).toBe(true);
+    expect(canManageContestPairs({
+      appRoles: [],
+      primary_role_code: 'HEAD JUDGE',
+    })).toBe(true);
+    expect(canManageContestPairs({
+      appRoles: [],
+      contestHeadJudge: true,
+    })).toBe(true);
+  });
+});
 
 describe('randomizeContestPairs', () => {
   it('keeps leaders in bib order and pairs them with a shuffled follower', () => {
@@ -53,6 +104,55 @@ describe('storedContestPairs', () => {
         { leaderId: ' ', followerId: 'f2' },
       ]),
     ).toEqual([{ leader_id: 'l1', follower_id: 'f1' }]);
+  });
+});
+
+describe('orderSavedContestPairs', () => {
+  const rosterLeaders = [
+    { id: 'l-high', bib: 30 },
+    { id: 'l-low', bib: 4 },
+    { id: 'l-none' },
+    { id: 'l-extra', bib: 2 },
+  ];
+  const rosterFollowers = [
+    { id: 'f-a', bib: 11 },
+    { id: 'f-b', bib: 40 },
+    { id: 'f-extra', bib: 8 },
+    { id: 'f-later', bib: 3 },
+  ];
+
+  it('orders saved couples by leader bib and keeps each follower on that row', () => {
+    const ordered = orderSavedContestPairs(rosterLeaders, rosterFollowers, [
+      { leader_id: 'l-high', follower_id: 'f-a' },
+      { leader_id: 'l-none', follower_id: 'f-b' },
+      { leader_id: 'l-low', follower_id: 'f-later' },
+    ]);
+
+    expect(ordered?.leaders.map((person) => person.id)).toEqual(['l-low', 'l-high', 'l-none', 'l-extra']);
+    expect(ordered?.followers.map((person) => person.id)).toEqual(['f-later', 'f-a', 'f-b', 'f-extra']);
+  });
+
+  it('returns null when no saved pair matches the roster', () => {
+    expect(orderSavedContestPairs(rosterLeaders, rosterFollowers, [])).toBeNull();
+    expect(
+      orderSavedContestPairs(rosterLeaders, rosterFollowers, [
+        { leader_id: 'missing', follower_id: 'f-a' },
+      ]),
+    ).toBeNull();
+  });
+});
+
+describe('savedPairsOpenFinals', () => {
+  it('sends Score to finals when saved couples exist', () => {
+    expect(savedPairsOpenFinals([
+      { leader_id: 'leader-aaa', follower_id: 'follower-ddd' },
+      { leader_id: 'leader-bbb', follower_id: 'follower-ccc' },
+    ])).toBe(true);
+  });
+
+  it('keeps Score on the pairs dialog when nothing is saved', () => {
+    expect(savedPairsOpenFinals([])).toBe(false);
+    expect(savedPairsOpenFinals(undefined)).toBe(false);
   });
 });
 

@@ -17,6 +17,7 @@ import { contestSkillDivisionLabel } from '../utils/duplicateContestBib';
 import {
   createTestCompetitorsConfirmText,
   deleteGeneratedCompetitorsConfirmText,
+  testCompetitorCount,
 } from '../utils/generatedCompetitors';
 import {
   quickRegistrationRegisteredMessage,
@@ -71,6 +72,7 @@ export default function RegistrationNewUserForm() {
   const [generateContest, setGenerateContest] = useState<UpcomingRegistrationContest | null>(null);
   const [contestAction, setContestAction] = useState<'create' | 'delete'>('create');
   const [generating, setGenerating] = useState(false);
+  const [competitorCountText, setCompetitorCountText] = useState('');
   const lookupSeqRef = useRef(0);
   const firstNameRef = useRef(firstName);
   const lastNameRef = useRef(lastName);
@@ -87,6 +89,7 @@ export default function RegistrationNewUserForm() {
   const selectedContest = picks.length === 1 ? picks[0].contest : null;
   const deleteMode = selectedContest?.hasGeneratedCompetitors === true;
   const canRunContestAction = isAdmin && selectedContest !== null && !generating;
+  const competitorCount = testCompetitorCount(competitorCountText);
   const contestActionLabel = deleteMode
     ? 'Delete Generated Competitors'
     : 'Create/Register Test Competitors';
@@ -304,11 +307,24 @@ export default function RegistrationNewUserForm() {
     }
     const contest = picks[0].contest;
     setContestAction(contest.hasGeneratedCompetitors ? 'delete' : 'create');
+    setCompetitorCountText('');
     setGenerateContest(contest);
+  };
+
+  const closeContestAction = () => {
+    if (generating) {
+      return;
+    }
+    setGenerateContest(null);
+    setCompetitorCountText('');
   };
 
   const confirmContestAction = () => {
     if (!generateContest || generating) {
+      return;
+    }
+    const count = competitorCount;
+    if (contestAction === 'create' && count === null) {
       return;
     }
 
@@ -316,23 +332,30 @@ export default function RegistrationNewUserForm() {
     const action = contestAction;
     const label = contestSkillDivisionLabel(contest) || 'this contest';
     setGenerating(true);
-    const request = action === 'delete'
-      ? deleteGeneratedContestCompetitors(contest).then((result) => {
-          showSuccess(
-            result.scratched === 1
-              ? `Scratched 1 generated test competitor from ${label}.`
-              : `Scratched ${result.scratched} generated test competitors from ${label}.`,
-          );
-        })
-      : generateContestCompetitors(contest).then((result) => {
-          showSuccess(
-            `Added ${result.leadersAdded} leaders and ${result.followersAdded} followers to ${label}.`,
-          );
-        });
+    let request: Promise<void>;
+    if (action === 'delete') {
+      request = deleteGeneratedContestCompetitors(contest).then((result) => {
+        showSuccess(
+          result.scratched === 1
+            ? `Scratched 1 generated test competitor from ${label}.`
+            : `Scratched ${result.scratched} generated test competitors from ${label}.`,
+        );
+      });
+    } else if (count !== null) {
+      request = generateContestCompetitors(contest, count).then((result) => {
+        showSuccess(
+          `Added ${result.leadersAdded} leaders and ${result.followersAdded} followers to ${label}.`,
+        );
+      });
+    } else {
+      setGenerating(false);
+      return;
+    }
 
     void request
       .then(() => {
         setGenerateContest(null);
+        setCompetitorCountText('');
         setRosterRevision((current) => current + 1);
       })
       .catch((error: unknown) => {
@@ -469,25 +492,26 @@ export default function RegistrationNewUserForm() {
         >
           Register Competitor
         </Button>
-        {isAdmin ? (
-          <Button
-            type="button"
-            variant="contained"
-            disabled={!canRunContestAction}
-            onClick={openContestAction}
-            sx={{
-              flexShrink: 0,
-              minHeight: 56,
-              height: { md: 56 },
-              ml: { md: 'auto' },
-              textTransform: 'none',
-              whiteSpace: { xs: 'normal', md: 'nowrap' },
-            }}
-          >
-            {contestActionLabel}
-          </Button>
-        ) : null}
       </Box>
+      {isAdmin ? (
+        <Button
+          type="button"
+          variant="contained"
+          disabled={!canRunContestAction}
+          onClick={openContestAction}
+          sx={{
+            mt: 2,
+            width: '100%',
+            maxWidth: 'min(760px, 100%)',
+            minHeight: 56,
+            height: { md: 56 },
+            textTransform: 'none',
+            whiteSpace: 'normal',
+          }}
+        >
+          {contestActionLabel}
+        </Button>
+      ) : null}
 
       <RegistrationUpcomingContests revision={rosterRevision} onSelectionChange={handleSelectionChange} />
 
@@ -502,43 +526,90 @@ export default function RegistrationNewUserForm() {
 
       <Dialog
         open={generateContest !== null}
-        onClose={() => {
-          if (!generating) {
-            setGenerateContest(null);
-          }
-        }}
+        onClose={closeContestAction}
         fullWidth
-        maxWidth="xs"
+        maxWidth={false}
         aria-labelledby="test-competitors-title"
+        slotProps={{
+          paper: {
+            sx: {
+              maxWidth: 760,
+            },
+          },
+        }}
       >
         <DialogTitle id="test-competitors-title">
           {contestAction === 'delete' ? 'Delete generated competitors' : 'Create/Register test competitors'}
         </DialogTitle>
         <DialogContent>
-          <Typography variant="body1">
-            {generateContest
-              ? contestAction === 'delete'
-                ? deleteGeneratedCompetitorsConfirmText(generateContest)
-                : createTestCompetitorsConfirmText(generateContest)
-              : ''}
-          </Typography>
+          {contestAction === 'delete' ? (
+            <Typography variant="body1">
+              {generateContest ? deleteGeneratedCompetitorsConfirmText(generateContest) : ''}
+            </Typography>
+          ) : (
+            <Stack spacing={2} sx={{ pt: 1 }}>
+              <Typography variant="body1">
+                {generateContest && competitorCount !== null
+                  ? createTestCompetitorsConfirmText(generateContest, competitorCount)
+                  : 'This will scratch the current competitors, then add the leaders and followers you enter.'}
+              </Typography>
+              <AppTextField
+                label="Count of both leaders and followers to create"
+                value={competitorCountText}
+                onChange={(event) => setCompetitorCountText(event.target.value.replace(/\D/g, '').slice(0, 3))}
+                fullWidth
+                autoComplete="off"
+                error={competitorCountText !== '' && competitorCount === null}
+                helperText={
+                  competitorCountText !== '' && competitorCount === null
+                    ? 'Enter a whole number from 1 to 199.'
+                    : ' '
+                }
+                name="registration-test-competitor-count"
+                slotProps={{
+                  inputLabel: { sx: { fontWeight: 700 } },
+                  htmlInput: {
+                    'aria-label': 'Count of both leaders and followers to create',
+                    inputMode: 'numeric',
+                    pattern: '[0-9]*',
+                  },
+                }}
+              />
+            </Stack>
+          )}
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button
-            type="button"
-            onClick={() => setGenerateContest(null)}
-            disabled={generating}
-          >
-            No
-          </Button>
-          <Button
-            type="button"
-            variant="contained"
-            onClick={confirmContestAction}
-            disabled={generating}
-          >
-            Yes
-          </Button>
+          {contestAction === 'delete' ? (
+            <>
+              <Button type="button" onClick={closeContestAction} disabled={generating} sx={{ textTransform: 'none' }}>
+                No
+              </Button>
+              <Button
+                type="button"
+                variant="contained"
+                onClick={confirmContestAction}
+                disabled={generating}
+                sx={{ textTransform: 'none' }}
+              >
+                Yes
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button type="button" onClick={closeContestAction} disabled={generating} sx={{ textTransform: 'none' }}>
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                variant="contained"
+                onClick={confirmContestAction}
+                disabled={generating || competitorCount === null}
+                sx={{ textTransform: 'none' }}
+              >
+                Generate
+              </Button>
+            </>
+          )}
         </DialogActions>
       </Dialog>
     </Box>

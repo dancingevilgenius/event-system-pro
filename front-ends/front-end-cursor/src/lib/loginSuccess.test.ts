@@ -28,7 +28,6 @@ describe('sessionFromLoginResult', () => {
 
     const success = sessionFromLoginResult({
       ok: true,
-      message: 'Signed in successfully.',
       user_id: 1014,
       username: 'rludwick',
       email: null,

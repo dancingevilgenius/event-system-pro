@@ -160,6 +160,7 @@ describe('selectJudgingHomeContests', () => {
         followerCount: 0,
         locked: true,
         canToggleLock: false,
+        viewerSubmitted: false,
       },
       {
         id: 'event-134-json-strictly-item',
@@ -175,6 +176,7 @@ describe('selectJudgingHomeContests', () => {
         followerCount: 0,
         locked: true,
         canToggleLock: false,
+        viewerSubmitted: false,
       },
     ]);
   });
@@ -563,5 +565,45 @@ describe('selectJudgingHomeContests', () => {
     expect(contests).toMatchObject([
       { contestId: 90, leaderCount: 2, followerCount: 1, locked: true },
     ]);
+  });
+
+  it('drops a cancelled event and its contests', () => {
+    const cancelledEvent: JudgingHomeEvent = {
+      ...event134,
+      moreJson: {
+        ...(event134.moreJson as Record<string, unknown>),
+        cancelled: true,
+      },
+    };
+    const tableRow: JudgingHomeContestRow = {
+      contestId: 91,
+      eventId: 134,
+      eventTypeCode: 'JNJ',
+      moreJson: {
+        skill_level_label: 'Champion',
+        division_label: 'Showcase',
+      },
+      staffJson: null,
+    };
+    const stillOn: JudgingHomeEvent = {
+      ...event134,
+      eventId: 135,
+      name: 'Still On',
+      moreJson: {
+        ...(event134.moreJson as Record<string, unknown>),
+        cancelled: false,
+      },
+    };
+
+    const contests = selectJudgingHomeContests({
+      events: [cancelledEvent, stillOn],
+      contests: [tableRow],
+      user: carlos,
+      now: saturdayAfternoon,
+    });
+
+    expect(contests.some((contest) => contest.eventId === 134)).toBe(false);
+    expect(contests.every((contest) => contest.eventId === 135)).toBe(true);
+    expect(contests.length).toBeGreaterThan(0);
   });
 });

@@ -2,6 +2,7 @@ import {
   Container,
   Paper,
   Stack,
+  ToggleButton,
   Typography,
 } from '@mui/material';
 import {
@@ -70,6 +71,7 @@ import { EventFormExportProvider, useAppliedEventImport } from '../context/Event
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useMessages } from '../hooks/useMessages';
 import { EVENT_GROUPS_PATH, eventGroupDetailPath } from '../constants/eventRoutes';
+import { eventIsCancelled } from '../lib/eventCancelled';
 import { parseDateTimeLocalValue } from '../lib/eventDuration';
 import {
   applyStoredDateMode,
@@ -582,12 +584,14 @@ function AdminAddEventForm() {
   const [venueName, setVenueName] = useState('');
   const [contactVenueSummary, setContactVenueSummary] = useState(EMPTY_CONTACT_VENUE_SUMMARY);
   const [eventDates, setEventDates] = useState<EventDatesFormState>(EMPTY_EVENT_DATES);
+  const [eventCancelled, setEventCancelled] = useState(false);
   const [savedEventId, setSavedEventId] = useState<number | null>(eventId);
   const [draftReady, setDraftReady] = useState(eventId === null);
   const savedEventIdRef = useRef<number | null>(eventId);
   const draftReadyRef = useRef(eventId === null);
   const eventNameRef = useRef(eventName);
   const eventDatesRef = useRef(eventDates);
+  const eventCancelledRef = useRef(false);
   const eventGroupCodeRef = useRef(eventGroupCode);
   const saveQueueRef = useRef(Promise.resolve());
   const draftDirtyRef = useRef(false);
@@ -715,6 +719,7 @@ function AdminAddEventForm() {
     }
 
     const dates = draftDateFields(eventDatesRef.current);
+    const cancelled = eventCancelledRef.current;
     const key = JSON.stringify({
       eventId: currentEventId,
       name,
@@ -723,6 +728,7 @@ function AdminAddEventForm() {
       updateDates: dates !== null,
       updateEndDate: dates?.updateEndDate ?? true,
       dateMode: dates?.dateMode ?? null,
+      cancelled,
     });
     if (key === lastDraftKeyRef.current) {
       draftDirtyRef.current = false;
@@ -741,6 +747,7 @@ function AdminAddEventForm() {
         updateDates: dates !== null,
         updateEndDate: dates?.updateEndDate ?? true,
         dateMode: dates?.dateMode ?? null,
+        cancelled,
       }),
     );
   }, [enqueueEventSave]);
@@ -775,7 +782,7 @@ function AdminAddEventForm() {
     }, 400);
 
     return () => window.clearTimeout(handle);
-  }, [draftReady, eventDates, eventGroupCode, eventName, queueDraftSave]);
+  }, [draftReady, eventCancelled, eventDates, eventGroupCode, eventName, queueDraftSave]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -879,6 +886,9 @@ function AdminAddEventForm() {
           moreJson,
         );
         const nextName = event.name ?? '';
+        const nextCancelled = eventIsCancelled(moreJson);
+        eventCancelledRef.current = nextCancelled;
+        setEventCancelled(nextCancelled);
         const storedStatuses = parseStoredSectionStatuses(moreJson);
         const storedStaff = parseEventStaff(moreJson);
         const storedContests = parseEventContests(moreJson);
@@ -1167,6 +1177,34 @@ function AdminAddEventForm() {
             {eventGroupName}
           </Typography>
         )}
+
+        <Stack
+          spacing={1}
+          sx={{
+            alignItems: 'center',
+            mb: 3,
+            width: '100%',
+          }}
+        >
+          <Typography variant="body2" component="div" sx={{ fontWeight: 700 }}>
+            {eventCancelled ? 'Cancelled' : 'Not cancelled'}
+          </Typography>
+          <ToggleButton
+            value="cancelled"
+            selected={eventCancelled}
+            aria-pressed={eventCancelled}
+            aria-label={eventCancelled ? 'Uncancel event' : 'Cancel event'}
+            onChange={() => {
+              const next = !eventCancelledRef.current;
+              eventCancelledRef.current = next;
+              draftDirtyRef.current = true;
+              setEventCancelled(next);
+            }}
+            sx={{ textTransform: 'none' }}
+          >
+            {eventCancelled ? 'Uncancel' : 'Cancel'}
+          </ToggleButton>
+        </Stack>
 
         <Stack spacing={1.5} sx={{ mb: 3, width: '100%', ...(showXsLayout ? {} : { maxWidth: 960, mx: 'auto' }) }}>
           <DndContext

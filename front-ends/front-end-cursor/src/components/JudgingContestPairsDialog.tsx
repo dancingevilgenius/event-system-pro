@@ -11,14 +11,18 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import {
+  fetchJudgingContestPairs,
   fetchJudgingContestRoster,
   saveJudgingContestPairs,
   type ContestRosterPerson,
   type ContestRosterRole,
 } from '../api/postgrest';
+import { useAuth } from '../hooks/useAuth';
 import InfoMessageBox from './InfoMessageBox';
 import type { JudgingHomeContest } from '../lib/judgingHome';
 import {
+  canManageContestPairs,
+  orderSavedContestPairs,
   randomizeContestPairs,
   storedContestPairs,
   type ContestPair,
@@ -135,7 +139,13 @@ export default function JudgingContestPairsDialog({
   onClose,
   onSaved,
 }: JudgingContestPairsDialogProps) {
+  const { session } = useAuth();
+  const canManagePairs = canManageContestPairs({
+    appRoles: session?.roles,
+    contestHeadJudge: contest?.canToggleLock === true,
+  });
   const [people, setPeople] = useState<ContestRosterPerson[]>([]);
+  const [loadedPairs, setLoadedPairs] = useState<StoredContestPair[]>([]);
   const [followerOrder, setFollowerOrder] = useState<string[] | null>(null);
   const [pairs, setPairs] = useState<ContestPair[]>([]);
   const [randomized, setRandomized] = useState(false);
@@ -148,6 +158,7 @@ export default function JudgingContestPairsDialog({
   useEffect(() => {
     if (!contest || contestId === null) {
       setPeople([]);
+      setLoadedPairs([]);
       setFollowerOrder(null);
       setPairs([]);
       setRandomized(false);
@@ -161,39 +172,54 @@ export default function JudgingContestPairsDialog({
     setError(null);
     setSavedMessage(null);
     setPeople([]);
+    setLoadedPairs([]);
     setFollowerOrder(null);
     setPairs([]);
     setRandomized(false);
 
-    void fetchJudgingContestRoster(contest)
-      .then((rows) => {
-        if (!cancelled) {
-          setPeople(rows);
-        }
-      })
-      .catch((loadError: unknown) => {
-        if (!cancelled) {
-          setPeople([]);
-          setError(loadError instanceof Error ? loadError.message : 'Unable to load contest roster.');
-        }
-      })
-      .finally(() => {
-        if (!cancelled) {
-          setLoading(false);
-        }
-      });
+    void Promise.allSettled([
+      fetchJudgingContestRoster(contest),
+      fetchJudgingContestPairs(contest),
+    ]).then(([rosterResult, pairsResult]) => {
+      if (cancelled) {
+        return;
+      }
+      if (rosterResult.status === 'fulfilled') {
+        setPeople(rosterResult.value);
+      } else {
+        setPeople([]);
+        const reason = rosterResult.reason;
+        setError(reason instanceof Error ? reason.message : 'Unable to load contest roster.');
+      }
+      if (pairsResult.status === 'fulfilled') {
+        setLoadedPairs(pairsResult.value);
+      } else if (rosterResult.status === 'fulfilled') {
+        setLoadedPairs([]);
+        const reason = pairsResult.reason;
+        setError(reason instanceof Error ? reason.message : 'Unable to load contest pairs.');
+      }
+      setLoading(false);
+    });
 
     return () => {
       cancelled = true;
     };
   }, [contest, contestId]);
 
-  const leaders = peopleInRole(people, 'leader');
+  const leadersByBib = peopleInRole(people, 'leader');
   const followersByBib = peopleInRole(people, 'follower');
-  const followers = followerOrder === null ? followersByBib : peopleInOrder(followersByBib, followerOrder);
+  const savedLayout = orderSavedContestPairs(leadersByBib, followersByBib, loadedPairs);
+  const showingSavedPairs = savedLayout !== null && followerOrder === null;
+  const leaders = showingSavedPairs ? savedLayout.leaders : leadersByBib;
+  const followers = followerOrder === null
+    ? (showingSavedPairs ? savedLayout.followers : followersByBib)
+    : peopleInOrder(followersByBib, followerOrder);
 
   function randomize() {
-    const next = randomizeContestPairs(leaders, followersByBib);
+    if (!canManagePairs) {
+      return;
+    }
+    const next = randomizeContestPairs(leadersByBib, followersByBib);
     setFollowerOrder(next.followers.map((person) => person.id));
     setPairs(next.pairs);
     setRandomized(true);
@@ -202,7 +228,7 @@ export default function JudgingContestPairsDialog({
   }
 
   function savePairs() {
-    if (!contest || !randomized || saving) {
+    if (!canManagePairs || !contest || !randomized || saving) {
       return;
     }
     setSaving(true);
@@ -240,37 +266,46 @@ export default function JudgingContestPairsDialog({
         {contest ? contestDialogTitle(contest) : 'Registered competitors'}
       </DialogTitle>
       <DialogContent>
-        {continueToScore ? (
+        {continueToScore && canManagePairs ? (
           <Box sx={{ mb: 2 }}>
             <InfoMessageBox>
               Click Randomize at least once, then click Save Pairs.
             </InfoMessageBox>
           </Box>
         ) : null}
-        <Stack
-          direction="row"
-          spacing={1}
-          sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
-        >
-          <Button
-            type="button"
-            variant="outlined"
-            disabled={loading || saving}
-            onClick={randomize}
-            sx={{ textTransform: 'none' }}
+        {!loading && showingSavedPairs ? (
+          <Box sx={{ mb: 2 }}>
+            <InfoMessageBox>
+              These couples have previously been randomized.
+            </InfoMessageBox>
+          </Box>
+        ) : null}
+        {canManagePairs ? (
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{ justifyContent: 'space-between', alignItems: 'center', mb: 2 }}
           >
-            Randomize
-          </Button>
-          <Button
-            type="button"
-            variant="contained"
-            disabled={!randomized || loading || saving}
-            onClick={savePairs}
-            sx={{ textTransform: 'none' }}
-          >
-            Save Pairs
-          </Button>
-        </Stack>
+            <Button
+              type="button"
+              variant="outlined"
+              disabled={loading || saving}
+              onClick={randomize}
+              sx={{ textTransform: 'none' }}
+            >
+              Randomize
+            </Button>
+            <Button
+              type="button"
+              variant="contained"
+              disabled={!randomized || loading || saving}
+              onClick={savePairs}
+              sx={{ textTransform: 'none' }}
+            >
+              Save Pairs
+            </Button>
+          </Stack>
+        ) : null}
         {loading ? (
           <Stack direction="row" spacing={1} sx={{ py: 3, alignItems: 'center', justifyContent: 'center' }}>
             <CircularProgress size={18} />

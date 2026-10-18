@@ -6,9 +6,32 @@ import {
   deleteGeneratedCompetitorsConfirmText,
   generatedCompetitorLastNames,
   generatedCompetitorRoster,
+  isGeneratedCompetitor,
   isGeneratedCompetitorId,
   rosterHasGeneratedCompetitors,
+  testCompetitorCount,
 } from './generatedCompetitors';
+
+describe('testCompetitorCount', () => {
+  it('accepts integers from 1 through 199', () => {
+    expect(testCompetitorCount('1')).toBe(1);
+    expect(testCompetitorCount('26')).toBe(26);
+    expect(testCompetitorCount('199')).toBe(199);
+  });
+
+  it('rejects empty, zero, decimals, negatives, and 200 or more', () => {
+    expect(testCompetitorCount('')).toBeNull();
+    expect(testCompetitorCount('0')).toBeNull();
+    expect(testCompetitorCount('00')).toBeNull();
+    expect(testCompetitorCount('1.5')).toBeNull();
+    expect(testCompetitorCount('-1')).toBeNull();
+    expect(testCompetitorCount('200')).toBeNull();
+    expect(testCompetitorCount('201')).toBeNull();
+    expect(testCompetitorCount('abc')).toBeNull();
+    expect(testCompetitorCount('12a')).toBeNull();
+    expect(testCompetitorCount(' 12')).toBeNull();
+  });
+});
 
 describe('generatedCompetitorLastNames', () => {
   it('repeats each letter three times from aaa through zzz', () => {
@@ -45,6 +68,25 @@ describe('assignTestCompetitorBibs', () => {
     expect(followers[0].bib).toBeGreaterThan(27);
     expect(new Set(roster.map((person) => person.bib)).size).toBe(52);
     expect(roster.some((person) => person.bib === 1 || person.bib === 2 || person.bib === 27)).toBe(false);
+  });
+
+  it('creates the requested count of each role and keeps aaa–zzz first', () => {
+    const roster = assignTestCompetitorBibs(new Set(), 3);
+    const leaders = roster.filter((person) => person.role === 'leader');
+    const followers = roster.filter((person) => person.role === 'follower');
+
+    expect(leaders.map((person) => person.lastName)).toEqual(['aaa', 'bbb', 'ccc']);
+    expect(followers.map((person) => person.bib)).toEqual([4, 5, 6]);
+    expect(leaders).toHaveLength(3);
+    expect(followers).toHaveLength(3);
+
+    const extended = assignTestCompetitorBibs(new Set(), 27);
+    expect(extended.filter((person) => person.role === 'leader')[26]).toMatchObject({
+      id: 'leader-aaa1',
+      lastName: 'aaa1',
+      bib: 27,
+    });
+    expect(isGeneratedCompetitor({ firstName: 'Leader', lastName: 'aaa1' })).toBe(true);
   });
 });
 
@@ -100,13 +142,16 @@ describe('test competitor messages', () => {
       skillLevelLabel: 'All-American',
       divisionLabel: 'Jack and Jill',
     };
-    expect(createTestCompetitorsConfirmText({ skillLevelLabel: 'Novice', divisionLabel: 'Jack and Jill' })).toBe(
+    expect(createTestCompetitorsConfirmText({ skillLevelLabel: 'Novice', divisionLabel: 'Jack and Jill' }, 26)).toBe(
       'This will scratch the current competitors, then add 26 leaders and 26 followers to Novice Jack and Jill.',
     );
     expect(deleteGeneratedCompetitorsConfirmText(contest)).toBe(
       'This will scratch the generated test competitors on All-Clone Jack and Jill, All-American Jack and Jill. Other competitors will stay registered.',
     );
-    expect(createTestCompetitorsConfirmText(contest)).not.toContain('Generate Competitors');
+    expect(createTestCompetitorsConfirmText(contest, 4)).toBe(
+      'This will scratch the current competitors, then add 4 leaders and 4 followers to All-Clone Jack and Jill, All-American Jack and Jill.',
+    );
+    expect(createTestCompetitorsConfirmText(contest, 26)).not.toContain('Generate Competitors');
     expect(deleteGeneratedCompetitorsConfirmText(contest)).not.toContain('Generate Competitors');
   });
 });

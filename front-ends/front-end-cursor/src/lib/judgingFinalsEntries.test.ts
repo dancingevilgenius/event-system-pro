@@ -3,6 +3,9 @@ import {
   assignedContestJudgeIds,
   buildJudgingFinalsEntries,
   canLeaveJudgingFinals,
+  canOpenJudgeFinals,
+  judgeHasSubmittedBallot,
+  judgeSubmitSuccessNavigation,
   judgeSubmissionProgress,
   readJudgingFinalsContest,
   seesJudgeSubmissionBar,
@@ -126,6 +129,68 @@ describe('seesJudgeSubmissionBar', () => {
     expect(seesJudgeSubmissionBar({ appRoles: ['JUDGE'], eventHeadJudge: false, contestHeadJudge: true })).toBe(true);
     expect(seesJudgeSubmissionBar({ appRoles: ['JUDGE'], eventHeadJudge: true, contestHeadJudge: false })).toBe(true);
     expect(seesJudgeSubmissionBar({ appRoles: ['JUDGE'], eventHeadJudge: false, contestHeadJudge: false })).toBe(false);
+  });
+});
+
+describe('canOpenJudgeFinals', () => {
+  it('lets Judge and Head Judge app roles open finals', () => {
+    expect(canOpenJudgeFinals({ appRoles: ['JUDGE'] })).toBe(true);
+    expect(canOpenJudgeFinals({ appRoles: ['Judge'] })).toBe(true);
+    expect(canOpenJudgeFinals({ appRoles: ['HEAD_JUDGE'] })).toBe(true);
+    expect(canOpenJudgeFinals({ appRoles: ['Head Judge'] })).toBe(true);
+    expect(canOpenJudgeFinals({ appRoles: ['ADMIN'] })).toBe(true);
+  });
+
+  it('lets a scoring judge whose Judge role is only on event staff open finals', () => {
+    expect(canOpenJudgeFinals({
+      appRoles: [],
+      staffRoleCodes: ['JUDGE'],
+    })).toBe(true);
+    expect(canOpenJudgeFinals({
+      appRoles: [],
+      judgingHomeAllowed: true,
+    })).toBe(true);
+  });
+
+  it('keeps finals closed for someone who is not a judge and cannot open Judging Home', () => {
+    expect(canOpenJudgeFinals({ appRoles: [], judgingHomeAllowed: false })).toBe(false);
+    expect(canOpenJudgeFinals({ appRoles: ['COMPETITOR'] })).toBe(false);
+  });
+});
+
+describe('judgeHasSubmittedBallot', () => {
+  const dylan = { userId: 1014, username: 'dbushe', staffIds: ['dylan-staff'] };
+  const yvonne = { userId: 1013, username: 'yantonacci', staffIds: ['yvonne-staff'] };
+
+  it('disables Score for the judge whose ballot is stored', () => {
+    const submissions = [{ judge_id: 'dylan-staff', scores: [{ competitor_id: 1, score: 80 }] }];
+    expect(judgeHasSubmittedBallot({ submissions: [submissions], ...dylan })).toBe(true);
+    expect(judgeHasSubmittedBallot({
+      submissions: [[{ judge_id: 'dbushe' }]],
+      userId: dylan.userId,
+      username: dylan.username,
+      staffIds: [],
+    })).toBe(true);
+  });
+
+  it('leaves Score enabled when the stored ballot belongs to someone else', () => {
+    const submissions = [{ judge_id: 'dylan-staff', username: 'dbushe', user_id: 1014 }];
+    expect(judgeHasSubmittedBallot({ submissions: [submissions], ...yvonne })).toBe(false);
+    expect(judgeHasSubmittedBallot({
+      submissions: [submissions],
+      userId: 1004,
+      username: 'dancingevilgenius',
+      staffIds: ['carlos-staff'],
+    })).toBe(false);
+  });
+});
+
+describe('judgeSubmitSuccessNavigation', () => {
+  it('sends Submit to Home with the existing success wording', () => {
+    expect(judgeSubmitSuccessNavigation(4)).toEqual({
+      path: '/home',
+      flashSuccess: 'Scores submitted with 4 placements derived (1st = highest score).',
+    });
   });
 });
 

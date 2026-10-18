@@ -2,6 +2,11 @@ import {
   Button,
   CircularProgress,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Box,
   Paper,
   Stack,
   Table,
@@ -16,22 +21,34 @@ import {
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
+  clearJudgingContestScores,
+  ensureContestRelativePlacement,
   fetchJudgingContestPairs,
   fetchJudgingHomeContests,
   setJudgingContestLocked,
 } from '../api/postgrest';
 import JudgingContestPairsDialog from '../components/JudgingContestPairsDialog';
 import PageHeader from '../components/PageHeader';
+import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { formatRegisteredCounts, type JudgingHomeContest } from '../lib/judgingHome';
-import type { StoredContestPair } from '../lib/judgingPairs';
+import { savedPairsOpenFinals, type StoredContestPair } from '../lib/judgingPairs';
 
 function displayValue(value: string): string {
   return value.trim() === '' ? '—' : value;
 }
 
+function contestClearLabel(contest: JudgingHomeContest): string {
+  return [contest.eventName, contest.skillLevelLabel, contest.divisionLabel]
+    .map((part) => part.trim())
+    .filter((part) => part !== '')
+    .join(' · ');
+}
+
 export default function JudgingHomePage() {
   const navigate = useNavigate();
+  const { hasAnyRole } = useAuth();
+  const isAdmin = hasAnyRole(['ADMIN']);
   const { containerMaxWidth } = useLayoutTier();
   const [contests, setContests] = useState<JudgingHomeContest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,6 +61,10 @@ export default function JudgingHomePage() {
   } | null>(null);
   const [checkingScoreId, setCheckingScoreId] = useState<string | null>(null);
   const [scoreError, setScoreError] = useState<string | null>(null);
+  const [placementError, setPlacementError] = useState<string | null>(null);
+  const [clearTarget, setClearTarget] = useState<JudgingHomeContest | null>(null);
+  const [clearing, setClearing] = useState(false);
+  const [clearError, setClearError] = useState<string | null>(null);
   const scoreRequestRef = useRef(0);
   const loadRequestRef = useRef(0);
 
@@ -59,6 +80,28 @@ export default function JudgingHomePage() {
         }
         setContests(rows);
         setError(null);
+        void Promise.all(
+          rows.map((contest) =>
+            ensureContestRelativePlacement({
+              eventId: contest.eventId,
+              contestId: contest.contestId,
+              contestItemId: contest.contestItemId,
+              eventName: contest.eventName,
+              skillLevel: contest.skillLevelLabel,
+              division: contest.divisionLabel,
+            }),
+          ),
+        )
+          .then(() => {
+            if (loadRequestRef.current === request) {
+              setPlacementError(null);
+            }
+          })
+          .catch(() => {
+            if (loadRequestRef.current === request) {
+              setPlacementError('Unable to save relative placement for a finished contest.');
+            }
+          });
       })
       .catch((loadError: unknown) => {
         if (loadRequestRef.current !== request) {
@@ -114,6 +157,9 @@ export default function JudgingHomePage() {
   };
 
   const openScore = (contest: JudgingHomeContest) => {
+    if (contest.locked || contest.viewerSubmitted) {
+      return;
+    }
     const request = scoreRequestRef.current + 1;
     scoreRequestRef.current = request;
     setCheckingScoreId(contest.id);
@@ -123,7 +169,7 @@ export default function JudgingHomePage() {
         if (scoreRequestRef.current !== request) {
           return;
         }
-        if (pairs.length > 0) {
+        if (savedPairsOpenFinals(pairs)) {
           goToFinals(contest, pairs);
           return;
         }
@@ -139,6 +185,34 @@ export default function JudgingHomePage() {
         if (scoreRequestRef.current === request) {
           setCheckingScoreId(null);
         }
+      });
+  };
+
+  const closeClearDialog = () => {
+    if (clearing) {
+      return;
+    }
+    setClearTarget(null);
+    setClearError(null);
+  };
+
+  const confirmClearScores = () => {
+    const contest = clearTarget;
+    if (!contest || clearing) {
+      return;
+    }
+    setClearing(true);
+    setClearError(null);
+    void clearJudgingContestScores(contest)
+      .then(() => {
+        setClearTarget(null);
+        loadContests();
+      })
+      .catch((saveError: unknown) => {
+        setClearError(saveError instanceof Error ? saveError.message : 'Unable to clear contest scores.');
+      })
+      .finally(() => {
+        setClearing(false);
       });
   };
 
@@ -197,6 +271,11 @@ export default function JudgingHomePage() {
         {scoreError ? (
           <Typography variant="body2" color="error" sx={{ mb: 2 }}>
             {scoreError}
+          </Typography>
+        ) : null}
+        {placementError ? (
+          <Typography variant="body2" color="error" sx={{ mb: 2 }}>
+            {placementError}
           </Typography>
         ) : null}
         <TableContainer sx={{ overflowX: 'auto' }}>
@@ -285,17 +364,49 @@ export default function JudgingHomePage() {
                       </TableCell>
                     ) : null}
                     <TableCell align="right">
-                      <Button
-                        type="button"
-                        variant="contained"
-                        size="small"
-                        disabled={contest.locked || checkingScoreId === contest.id}
-                        onClick={() => openScore(contest)}
-                        aria-label={`Score ${contest.eventName}`.trim()}
-                        sx={{ minWidth: { xs: 72, md: 88 }, textTransform: 'none' }}
+                      <Stack
+                        direction="row"
+                        spacing={1}
+                        sx={{ justifyContent: 'flex-end', flexWrap: 'wrap' }}
                       >
-                        Score
-                      </Button>
+                        {isAdmin ? (
+                          <Button
+                            type="button"
+                            variant="outlined"
+                            size="small"
+                            disabled={clearing}
+                            onClick={() => {
+                              setClearError(null);
+                              setClearTarget(contest);
+                            }}
+                            aria-label={`Clear scores for ${contestClearLabel(contest)}`}
+                            sx={{ textTransform: 'none', whiteSpace: 'nowrap' }}
+                          >
+                            Clear Scores
+                          </Button>
+                        ) : null}
+                        <Box
+                          component="span"
+                          title={contest.viewerSubmitted ? 'Scores already submitted' : undefined}
+                          sx={{ display: 'inline-flex' }}
+                        >
+                          <Button
+                            type="button"
+                            variant="contained"
+                            size="small"
+                            disabled={contest.locked || contest.viewerSubmitted || checkingScoreId === contest.id}
+                            onClick={() => openScore(contest)}
+                            aria-label={
+                              contest.viewerSubmitted
+                                ? `Scores already submitted for ${contest.eventName}`.trim()
+                                : `Score ${contest.eventName}`.trim()
+                            }
+                            sx={{ minWidth: { xs: 72, md: 88 }, textTransform: 'none' }}
+                          >
+                            Score
+                          </Button>
+                        </Box>
+                      </Stack>
                     </TableCell>
                   </TableRow>
                 ))
@@ -303,6 +414,42 @@ export default function JudgingHomePage() {
             </TableBody>
           </Table>
         </TableContainer>
+        <Dialog open={clearTarget !== null} onClose={closeClearDialog} fullWidth maxWidth="sm">
+          <DialogTitle sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>Clear scores?</DialogTitle>
+          <DialogContent>
+            <Typography variant="body1">
+              {clearTarget
+                ? `Clear all judge scores and the relative placement result for ${contestClearLabel(clearTarget)}?`
+                : ''}
+            </Typography>
+            {clearError ? (
+              <Typography variant="body2" color="error" sx={{ mt: 2 }}>
+                {clearError}
+              </Typography>
+            ) : null}
+          </DialogContent>
+          <DialogActions sx={{ px: 3, pb: 2, flexWrap: 'wrap', gap: 1 }}>
+            <Button
+              type="button"
+              onClick={closeClearDialog}
+              disabled={clearing}
+              sx={{ textTransform: 'none' }}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="contained"
+              color="error"
+              onClick={confirmClearScores}
+              disabled={clearing || clearTarget === null}
+              sx={{ textTransform: 'none' }}
+            >
+              {clearing ? <CircularProgress size={14} sx={{ mr: 1 }} /> : null}
+              Clear Scores
+            </Button>
+          </DialogActions>
+        </Dialog>
         <JudgingContestPairsDialog
           contest={pairsRequest?.contest ?? null}
           continueToScore={pairsRequest?.continueToScore ?? false}

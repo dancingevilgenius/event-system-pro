@@ -3,6 +3,29 @@ import { contestSkillDivisionLabel } from './duplicateContestBib';
 /** Stored on the contest item. Cleared when the generated test competitors are deleted. */
 export const COMPETITORS_GENERATED_FLAG = 'competitors_generated';
 
+/** Each role can be created from this many people through this many. */
+export const MIN_TEST_COMPETITOR_COUNT = 1;
+export const MAX_TEST_COMPETITOR_COUNT = 199;
+
+/**
+ * Whole number of leaders and of followers to create.
+ * Returns null for empty text, zero, decimals, negatives, and 200 or more.
+ */
+export function testCompetitorCount(value: string): number | null {
+  if (!/^\d+$/.test(value)) {
+    return null;
+  }
+  const count = Number(value);
+  if (
+    !Number.isInteger(count) ||
+    count < MIN_TEST_COMPETITOR_COUNT ||
+    count > MAX_TEST_COMPETITOR_COUNT
+  ) {
+    return null;
+  }
+  return count;
+}
+
 export type GeneratedCompetitorRole = 'leader' | 'follower';
 
 export type GeneratedCompetitor = {
@@ -17,9 +40,16 @@ export type AccountMatchStatus = 'registered' | 'partial' | 'none';
 
 const generatedIds = new Set<string>();
 
-/** aaa, bbb, … zzz. */
-export function generatedCompetitorLastNames(): string[] {
-  return Array.from({ length: 26 }, (_, index) => String.fromCharCode(97 + index).repeat(3));
+/** aaa, bbb, … zzz, then aaa1, bbb1, … so a count above 26 stays unique. */
+function generatedLastNameAt(index: number): string {
+  const letter = String.fromCharCode(97 + (index % 26));
+  const cycle = Math.floor(index / 26);
+  return cycle === 0 ? letter.repeat(3) : `${letter.repeat(3)}${cycle}`;
+}
+
+/** First `count` generated last names. Defaults to the original aaa–zzz list. */
+export function generatedCompetitorLastNames(count = 26): string[] {
+  return Array.from({ length: count }, (_, index) => generatedLastNameAt(index));
 }
 
 function takeUnusedBib(used: Set<number>, preferred: number): number {
@@ -32,13 +62,20 @@ function takeUnusedBib(used: Set<number>, preferred: number): number {
 }
 
 /**
- * 26 leaders then 26 followers.
- * Leaders prefer bibs 1–26 and followers 27–52. A number already in `used` is skipped.
- * Each assigned bib is recorded before the next person is chosen.
+ * `count` leaders then `count` followers (default 26).
+ * Leaders prefer bibs 1–count and followers the next count numbers.
+ * A number already in `used` is skipped. Each assigned bib is recorded before the next person is chosen.
  */
-export function assignTestCompetitorBibs(usedBibs: ReadonlySet<number>): GeneratedCompetitor[] {
+export function assignTestCompetitorBibs(
+  usedBibs: ReadonlySet<number>,
+  count = 26,
+): GeneratedCompetitor[] {
+  const size = testCompetitorCount(String(count));
+  if (size === null) {
+    throw new Error('Enter a whole number from 1 to 199.');
+  }
   const used = new Set(usedBibs);
-  const lastNames = generatedCompetitorLastNames();
+  const lastNames = generatedCompetitorLastNames(size);
   const leaders: GeneratedCompetitor[] = lastNames.map((lastName, index) => ({
     id: `leader-${lastName}`,
     role: 'leader',
@@ -51,7 +88,7 @@ export function assignTestCompetitorBibs(usedBibs: ReadonlySet<number>): Generat
     role: 'follower',
     firstName: 'Follower',
     lastName,
-    bib: takeUnusedBib(used, index + 27),
+    bib: takeUnusedBib(used, size + index + 1),
   }));
   for (const person of [...leaders, ...followers]) {
     generatedIds.add(person.id);
@@ -59,9 +96,9 @@ export function assignTestCompetitorBibs(usedBibs: ReadonlySet<number>): Generat
   return [...leaders, ...followers];
 }
 
-/** Default bibs 1–26 and 27–52. Ids stay stable across contests. */
-export function generatedCompetitorRoster(): GeneratedCompetitor[] {
-  return assignTestCompetitorBibs(new Set());
+/** Default bibs 1–count and the following count numbers. Ids stay stable across contests. */
+export function generatedCompetitorRoster(count = 26): GeneratedCompetitor[] {
+  return assignTestCompetitorBibs(new Set(), count);
 }
 
 export function isGeneratedCompetitorId(id: string): boolean {
@@ -71,7 +108,7 @@ export function isGeneratedCompetitorId(id: string): boolean {
   return generatedIds.has(id);
 }
 
-const generatedLastNames = new Set(generatedCompetitorLastNames());
+const generatedLastNames = new Set(generatedCompetitorLastNames(MAX_TEST_COMPETITOR_COUNT));
 
 export function isGeneratedCompetitor(person: {
   id?: string;
@@ -136,12 +173,15 @@ function contestActionTarget(contest: {
   return 'this contest';
 }
 
-export function createTestCompetitorsConfirmText(contest: {
-  eventName?: string;
-  skillLevelLabel: string;
-  divisionLabel: string;
-}): string {
-  return `This will scratch the current competitors, then add 26 leaders and 26 followers to ${contestActionTarget(contest)}.`;
+export function createTestCompetitorsConfirmText(
+  contest: {
+    eventName?: string;
+    skillLevelLabel: string;
+    divisionLabel: string;
+  },
+  count: number,
+): string {
+  return `This will scratch the current competitors, then add ${count} leaders and ${count} followers to ${contestActionTarget(contest)}.`;
 }
 
 export function deleteGeneratedCompetitorsConfirmText(contest: {

@@ -1,3 +1,6 @@
+import { eventIsCancelled } from './eventCancelled';
+import { judgeHasSubmittedBallot } from './judgingFinalsEntries';
+
 /** Events whose start is within 6 hours before or after now. */
 export const JUDGING_WINDOW_MS = 6 * 60 * 60 * 1000;
 
@@ -79,6 +82,8 @@ export type JudgingHomeContest = {
   locked: boolean;
   /** Head Judge or Admin may change `Locked` on this contest. */
   canToggleLock: boolean;
+  /** This signed-in judge already stored a ballot for the contest. */
+  viewerSubmitted?: boolean;
 };
 
 export type JudgingHomeEvent = {
@@ -95,6 +100,7 @@ export type JudgingHomeContestRow = {
   moreJson: unknown;
   staffJson: unknown;
   competitorsJson?: unknown;
+  resultsJson?: unknown;
 };
 
 type BuiltContest = JudgingHomeContest & {
@@ -399,6 +405,19 @@ function userOnEvent(moreJson: unknown, user: JudgingUserIdentity): EventAttachm
   };
 }
 
+function viewerSubmittedScores(
+  user: JudgingUserIdentity,
+  staffIds: readonly string[],
+  submissions: readonly unknown[],
+): boolean {
+  return judgeHasSubmittedBallot({
+    submissions,
+    userId: user.userId,
+    username: user.username,
+    staffIds,
+  });
+}
+
 function seesEveryContest(user: JudgingUserIdentity, attachment: EventAttachment): boolean {
   if (hasAppRole(user, 'ADMIN')) {
     return true;
@@ -536,7 +555,10 @@ export function selectJudgingHomeContests(input: {
   const now = input.now ?? new Date();
   const rows: BuiltContest[] = [];
   const events = input.events.filter(
-    (event) => Number.isInteger(event.eventId) && eventInJudgingWindow(event.startDate, now),
+    (event) =>
+      Number.isInteger(event.eventId)
+      && eventInJudgingWindow(event.startDate, now)
+      && !eventIsCancelled(event.moreJson),
   );
 
   for (const event of events) {
@@ -570,6 +592,7 @@ export function selectJudgingHomeContests(input: {
         followerCount: counts.followerCount,
         locked: contestLockedFlag(item),
         canToggleLock: canToggleContestLock(input.user, attachment, item, null),
+        viewerSubmitted: viewerSubmittedScores(input.user, attachment.staffIds, [item.judge_submissions]),
         skillLevelKey: text(item, 'skill_level_key', 'skillLevelKey'),
         divisionKey: text(item, 'division_key', 'divisionKey'),
         hasRosterArrays: hasRosterArrays(item),
@@ -609,6 +632,13 @@ export function selectJudgingHomeContests(input: {
         if (!twin.canToggleLock) {
           twin.canToggleLock = canToggleContestLock(input.user, attachment, more, contest.staffJson);
         }
+        if (!twin.viewerSubmitted) {
+          const results = asRecord(parseJsonValue(contest.resultsJson));
+          twin.viewerSubmitted = viewerSubmittedScores(input.user, attachment.staffIds, [
+            more.judge_submissions,
+            results?.judge_submissions,
+          ]);
+        }
         continue;
       }
 
@@ -622,6 +652,7 @@ export function selectJudgingHomeContests(input: {
       }
 
       const counts = tableRosterCounts(contest);
+      const results = asRecord(parseJsonValue(contest.resultsJson));
       rows.push({
         id: `event-${event.eventId}-contest-${contest.contestId}`,
         eventId: event.eventId,
@@ -634,6 +665,10 @@ export function selectJudgingHomeContests(input: {
         followerCount: counts.followerCount,
         locked: contestLockedFlag(more),
         canToggleLock: canToggleContestLock(input.user, attachment, more, contest.staffJson),
+        viewerSubmitted: viewerSubmittedScores(input.user, attachment.staffIds, [
+          more.judge_submissions,
+          results?.judge_submissions,
+        ]),
         skillLevelKey: text(more, 'skill_level_key', 'skillLevelKey'),
         divisionKey: text(more, 'division_key', 'divisionKey'),
         hasRosterArrays: hasRosterArrays(more) || hasRosterArrays(asRecord(parseJsonValue(contest.competitorsJson)) ?? {}),

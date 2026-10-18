@@ -3,6 +3,7 @@ import { useClearRegistrationSelectionOutsideDesk } from './hooks/useClearRegist
 import ActivityMonitor from './components/ActivityMonitor';
 import LoginFlashHandler from './components/LoginFlashHandler';
 import ProtectedRoute from './components/ProtectedRoute';
+import JudgeFinalsRoute from './components/JudgeFinalsRoute';
 import JudgingHomeRoute from './components/JudgingHomeRoute';
 import RegistrationHomeRoute from './components/RegistrationHomeRoute';
 import AccountPage from './pages/AccountPage';
@@ -40,12 +41,12 @@ import EventMerchandisePosDemoPage from './pages/EventMerchandisePosDemoPage';
 import FloorCoordinatorDemosPage from './pages/FloorCoordinatorDemosPage';
 import ThirdPartyLibraryDemosPage from './pages/ThirdPartyLibraryDemosPage';
 import GoverningBodyPage from './pages/GoverningBodyPage';
+import ContestResultsListPage from './pages/ContestResultsListPage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import RolesPage from './pages/RolesPage';
 import JudgeDemosPage from './pages/JudgeDemosPage';
-import JudgingPage from './pages/JudgingPage';
 import PrelimsPage from './pages/PrelimsPage';
 import ScheduleDemoPage from './pages/ScheduleDemoPage';
 import SecretQuestionsPage from './pages/SecretQuestionsPage';
@@ -160,6 +161,22 @@ export default function App() {
         element={
           <ProtectedRoute>
             <HomePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/results"
+        element={
+          <ProtectedRoute>
+            <ContestResultsListPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/results/:contestId"
+        element={
+          <ProtectedRoute>
+            <AdminContestResultsPage />
           </ProtectedRoute>
         }
       />
@@ -436,11 +453,7 @@ export default function App() {
       <Route path="/judgingHome" element={<JudgingHomeRoute />} />
       <Route
         path="/judge-finals"
-        element={
-          <ProtectedRoute roles={['ADMIN', 'STAFF', 'JUDGE', 'HEAD_JUDGE']}>
-            <JudgingPage />
-          </ProtectedRoute>
-        }
+        element={<JudgeFinalsRoute />}
       />
       <Route path="/judging" element={<RedirectKeepingSearch to="/judge-finals" />} />
       <Route

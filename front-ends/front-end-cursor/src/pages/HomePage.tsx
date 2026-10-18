@@ -31,13 +31,14 @@ export default function HomePage() {
     return button.path === '/registrationHome' && registrationByStaff.allowed;
   });
   const adminIndex = visibleButtons.findIndex((button) => button.path === '/adminhome');
-  const homeButtons = judgingAccess.allowed
+  const roleButtons = judgingAccess.allowed
     ? [
         ...visibleButtons.slice(0, adminIndex === -1 ? visibleButtons.length : adminIndex),
         { label: 'Judging', path: '/judgingHome' },
         ...(adminIndex === -1 ? [] : visibleButtons.slice(adminIndex)),
       ]
     : visibleButtons;
+  const homeButtons = [...roleButtons, { label: 'Results', path: '/results' }];
 
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>

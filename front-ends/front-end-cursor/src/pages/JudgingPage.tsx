@@ -16,11 +16,12 @@ import {
   type SelectChangeEvent,
 } from '@mui/material';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   fetchJudgingContestPairs,
   fetchJudgingContestRoster,
   fetchJudgingSubmissionProgress,
+  fillAllJudgingFinalsScores,
   saveJudgingFinalsSubmission,
   type JudgingFinalsSubmissionStatus,
 } from '../api/postgrest';
@@ -53,6 +54,7 @@ import type { JudgingHomeContest } from '../lib/judgingHome';
 import {
   buildJudgingFinalsEntries,
   canLeaveJudgingFinals,
+  judgeSubmitSuccessNavigation,
   judgingFinalsTitle,
   readJudgingFinalsContest,
   type JudgingFinalsContestRef,
@@ -74,7 +76,9 @@ import {
   buildJudgeSubmission,
   saveJudgeSubmission,
 } from '../services/tabulation';
+import { useAuth } from '../hooks/useAuth';
 import { useMessages } from '../hooks/useMessages';
+import { setFlashSuccess } from '../lib/authMessages';
 import {
   digitsToScore,
   emptyEntryScoreState,
@@ -695,6 +699,9 @@ function submittedScoreKey(entries: JudgingEntry[], scoreByBib: Record<number, E
 
 export default function JudgingPage() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { hasAnyRole } = useAuth();
+  const isAdmin = hasAnyRole(['ADMIN']);
   const contest = useMemo(
     () => readJudgingFinalsContest(location.state, new URLSearchParams(location.search)),
     [location.search, location.state],
@@ -764,9 +771,11 @@ export default function JudgingPage() {
   const [scoresSubmitted, setScoresSubmitted] = useState(false);
   const [judgeProgress, setJudgeProgress] = useState<JudgingFinalsSubmissionStatus | null>(null);
   const [refreshingProgress, setRefreshingProgress] = useState(false);
+  const [fillingAllScores, setFillingAllScores] = useState(false);
   const [progressError, setProgressError] = useState<string | null>(null);
   const submittedScoreKeyRef = useRef<string | null>(null);
   const submittingRef = useRef(false);
+  const fillingRef = useRef(false);
   const progressRequestRef = useRef(0);
 
   const entryByBib = useMemo(
@@ -1079,15 +1088,46 @@ export default function JudgingPage() {
         submittedScoreKeyRef.current = submittedScoreKey(entries, scoreByBib);
         setScoresSubmitted(true);
         setJudgeProgress(status);
-        showSuccess(
-          `Scores submitted with ${submission.placements.length} placements derived (1st = highest score).`,
-        );
+        const next = judgeSubmitSuccessNavigation(submission.placements.length);
+        setFlashSuccess(next.flashSuccess);
+        navigate(next.path);
       })
       .catch((error: unknown) => {
         showProblem(error instanceof Error ? error.message : 'Unable to save judge scores.');
       })
       .finally(() => {
         submittingRef.current = false;
+      });
+  };
+
+  const handleFillAllScores = () => {
+    if (!isAdmin || fillingRef.current) {
+      return;
+    }
+    if (entries.length === 0) {
+      showProblem('This contest has no couples to score.');
+      return;
+    }
+    fillingRef.current = true;
+    setFillingAllScores(true);
+    void fillAllJudgingFinalsScores(
+      {
+        eventId: contest.eventId,
+        contestId: contest.contestId,
+        contestItemId: contest.contestItemId,
+        eventName: contest.eventName,
+        skillLevel: contest.skillLevel,
+        division: contest.contestType,
+      },
+      entries.map((entry) => entry.number),
+    )
+      .then(() => {
+        navigate('/home');
+      })
+      .catch((error: unknown) => {
+        fillingRef.current = false;
+        setFillingAllScores(false);
+        showProblem(error instanceof Error ? error.message : 'Unable to fill judge scores.');
       });
   };
 
@@ -1158,7 +1198,11 @@ export default function JudgingPage() {
           <PercentCompleteBar percent={percentComplete} onSubmit={handleSubmit} />
           {judgeProgress?.showBar ? (
             <Stack spacing={0.5}>
-              <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{ alignItems: 'center', flexWrap: 'wrap' }}
+              >
                 <Box sx={{ flex: 1, minWidth: 0 }}>
                   <PercentCompleteBar
                     percent={judgeProgress.percent}
@@ -1177,6 +1221,18 @@ export default function JudgingPage() {
                 >
                   {refreshingProgress ? 'Refreshing…' : 'Refresh'}
                 </Button>
+                {isAdmin ? (
+                  <Button
+                    type="button"
+                    size="small"
+                    variant="outlined"
+                    disabled={fillingAllScores || entriesLoading || entries.length === 0}
+                    onClick={handleFillAllScores}
+                    sx={{ textTransform: 'none', flexShrink: 0 }}
+                  >
+                    {fillingAllScores ? 'Filling…' : 'Fill all scores'}
+                  </Button>
+                ) : null}
               </Stack>
               {progressError ? (
                 <Typography variant="body2" color="error">

@@ -1,5 +1,6 @@
 import type { LegionMember } from '../data/legionNames';
 import { readStoredContestPairs, type StoredContestPair } from './judgingPairs';
+import { parseRoles } from './session';
 
 export type JudgingFinalsRosterPerson = {
   id: string;
@@ -44,6 +45,47 @@ function record(value: unknown): Record<string, unknown> | null {
     return null;
   }
   return value as Record<string, unknown>;
+}
+
+const FINALS_APP_ROLES = new Set(['ADMIN', 'STAFF', 'JUDGE', 'HEAD_JUDGE']);
+
+/**
+ * Who may open /judge-finals.
+ * App roles Admin, Staff, Judge, and Head Judge are enough.
+ * A scoring judge whose only Judge role is event staff can open finals when they can already open Judging Home.
+ */
+export function canOpenJudgeFinals(input: {
+  appRoles?: readonly string[] | null;
+  staffRoleCodes?: readonly string[] | null;
+  judgingHomeAllowed?: boolean;
+}): boolean {
+  const roles = [
+    ...parseRoles(input.appRoles ?? []),
+    ...parseRoles(input.staffRoleCodes ?? []),
+  ];
+  if (roles.some((role) => FINALS_APP_ROLES.has(role))) {
+    return true;
+  }
+  return input.judgingHomeAllowed === true;
+}
+
+export const JUDGE_SUBMIT_HOME_PATH = '/home';
+
+/** Success copy shown on Home after Submit saves a ballot. */
+export function judgeSubmitSuccessMessage(placementCount: number): string {
+  const count = Number.isFinite(placementCount) && placementCount > 0 ? Math.floor(placementCount) : 0;
+  return `Scores submitted with ${count} placements derived (1st = highest score).`;
+}
+
+/** Where Submit goes after a successful save, and the flash Home should show. */
+export function judgeSubmitSuccessNavigation(placementCount: number): {
+  path: typeof JUDGE_SUBMIT_HOME_PATH;
+  flashSuccess: string;
+} {
+  return {
+    path: JUDGE_SUBMIT_HOME_PATH,
+    flashSuccess: judgeSubmitSuccessMessage(placementCount),
+  };
 }
 
 /** Contest identity from route state, with the query string used when a refresh drops state. */
@@ -199,6 +241,50 @@ export function assignedContestJudgeIds(input: {
     pushUnique(roleIds, textField(row, 'id', 'staff_id', 'staffId', 'judge_id', 'judgeId'));
   }
   return sawRole ? roleIds : ids;
+}
+
+/**
+ * True when one of the stored ballots belongs to this judge.
+ * Ballots record `judge_id` as the event staff id, or the username when no staff id matches.
+ * `user_id` / `username` on the ballot count too.
+ */
+export function judgeHasSubmittedBallot(input: {
+  submissions: readonly unknown[];
+  userId?: number | null;
+  username?: string | null;
+  staffIds?: readonly string[] | null;
+}): boolean {
+  const staffIds = new Set(
+    (input.staffIds ?? []).map((id) => id.trim()).filter((id) => id !== ''),
+  );
+  const username = (input.username ?? '').trim().toLowerCase();
+  const userId = input.userId != null && Number.isFinite(input.userId) ? String(input.userId) : '';
+  const ballots = input.submissions.flatMap((value) => (Array.isArray(value) ? value : []));
+
+  return ballots.some((entry) => {
+    const row = asRecord(entry);
+    if (!row) {
+      return false;
+    }
+    const judgeId = textField(row, 'judge_id', 'judgeId', 'staff_id', 'staffId');
+    const ballotUsername = textField(row, 'username');
+    const ballotUserId = textField(row, 'user_id', 'userId');
+    if (judgeId !== '') {
+      if (staffIds.has(judgeId)) {
+        return true;
+      }
+      if (username !== '' && judgeId.toLowerCase() === username) {
+        return true;
+      }
+      if (userId !== '' && judgeId === userId) {
+        return true;
+      }
+    }
+    if (ballotUsername !== '' && username !== '' && ballotUsername.toLowerCase() === username) {
+      return true;
+    }
+    return ballotUserId !== '' && userId !== '' && ballotUserId === userId;
+  });
 }
 
 export function readStoredJudgeIds(value: unknown): string[] {

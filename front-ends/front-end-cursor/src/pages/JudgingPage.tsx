@@ -706,7 +706,7 @@ export default function JudgingPage() {
     () => readJudgingFinalsContest(location.state, new URLSearchParams(location.search)),
     [location.search, location.state],
   );
-  const { showSuccess, showInfo, showProblem } = useMessages();
+  const { showInfo, showProblem } = useMessages();
   const [entries, setEntries] = useState<JudgingEntry[]>([]);
   const [entriesLoading, setEntriesLoading] = useState(true);
   const [entriesError, setEntriesError] = useState<string | null>(null);

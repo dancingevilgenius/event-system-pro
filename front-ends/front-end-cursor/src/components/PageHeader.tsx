@@ -18,7 +18,8 @@ type PageHeaderProps = {
 };
 
 /**
- * Page title with back + account icons on all screen sizes.
+ * Page title with back, signed-in identity, and account icon.
+ * iPad-size and smaller show initials. Full desktop shows "Logged in user: C Garcia".
  * Phone: icons align to the centered action-button column.
  * Larger: icons align to the full content width (same edges as action grids).
  */
@@ -28,7 +29,7 @@ export default function PageHeader({ title, backTo, backLabel, titleSx }: PageHe
   const { session } = useAuth();
   const { showXsLayout } = useLayoutTier();
 
-  const showAccountIcon = Boolean(session) && location.pathname !== '/account';
+  const showAccountLink = Boolean(session) && location.pathname !== '/account';
   const backTooltip = formatBackTooltip(backLabel);
 
   return (
@@ -57,8 +58,8 @@ export default function PageHeader({ title, backTo, backLabel, titleSx }: PageHe
       >
         {title}
       </Typography>
-      {showAccountIcon ? (
-        <AccountSettingsButton />
+      {session ? (
+        <AccountSettingsButton showAccountLink={showAccountLink} />
       ) : (
         <Box sx={{ width: MOBILE_HEADER_ICON_SLOT, flexShrink: 0 }} aria-hidden />
       )}

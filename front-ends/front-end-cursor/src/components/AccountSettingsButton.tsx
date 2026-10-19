@@ -1,48 +1,52 @@
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import { Box, Tooltip, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { fetchUserPersonName } from '../api/postgrest';
-import { useAuth } from '../hooks/useAuth';
-import { userInitials } from '../utils/userInitials';
+import { useSignedInUserIdentity } from '../hooks/useSignedInUserIdentity';
+import { useLayoutTier } from '../hooks/useLayoutTier';
 import MobileHeaderIconButton from './MobileHeaderIconButton';
 
+type AccountSettingsButtonProps = {
+  /** Hide the account gear when the page is already Account. The identity still shows. */
+  showAccountLink?: boolean;
+};
+
 /**
- * Account settings icon with the signed-in user's initials to its left.
- * Initials stay hidden until a first and last name (or a two-word display name) is known.
+ * Signed-in identity plus the account settings icon.
+ * iPad-size and smaller: initials. Full desktop (1280px+): "Logged in user: C Garcia".
  */
-export default function AccountSettingsButton() {
+export default function AccountSettingsButton({ showAccountLink = true }: AccountSettingsButtonProps) {
   const navigate = useNavigate();
-  const { session } = useAuth();
-  const [initials, setInitials] = useState('');
-
-  useEffect(() => {
-    if (!session) {
-      setInitials('');
-      return;
-    }
-
-    let cancelled = false;
-    void fetchUserPersonName(session.user_id)
-      .then((name) => {
-        if (!cancelled) {
-          setInitials(userInitials(name));
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setInitials('');
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [session]);
+  const { showXlLayout } = useLayoutTier();
+  const { initials, desktopLabel } = useSignedInUserIdentity();
+  const showDesktopLabel = showXlLayout && desktopLabel !== '';
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexShrink: 0 }}>
-      {initials ? (
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        gap: 0.75,
+        flexShrink: 0,
+        minWidth: 0,
+        maxWidth: showDesktopLabel ? '18rem' : 'none',
+      }}
+    >
+      {showDesktopLabel ? (
+        <Typography
+          component="span"
+          aria-label={desktopLabel}
+          sx={{
+            fontWeight: 700,
+            fontSize: '0.875rem',
+            lineHeight: 1.25,
+            textAlign: 'right',
+            color: 'text.primary',
+          }}
+        >
+          {desktopLabel}
+        </Typography>
+      ) : initials ? (
         <Typography
           component="span"
           aria-label={`Signed in, initials ${initials}`}
@@ -58,13 +62,15 @@ export default function AccountSettingsButton() {
           {initials}
         </Typography>
       ) : null}
-      <Tooltip title="Account settings">
-        <span>
-          <MobileHeaderIconButton label="Account settings" onClick={() => navigate('/account')}>
-            <ManageAccountsIcon />
-          </MobileHeaderIconButton>
-        </span>
-      </Tooltip>
+      {showAccountLink ? (
+        <Tooltip title="Account settings">
+          <span>
+            <MobileHeaderIconButton label="Account settings" onClick={() => navigate('/account')}>
+              <ManageAccountsIcon />
+            </MobileHeaderIconButton>
+          </span>
+        </Tooltip>
+      ) : null}
     </Box>
   );
 }

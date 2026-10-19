@@ -1,15 +1,23 @@
-import { Button, Container, Paper, Stack, Typography } from '@mui/material';
+import { Box, Button, Container, Paper, Stack, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import AccountSettingsButton from '../components/AccountSettingsButton';
 import { centeredContentStackSx } from '../constants/layout';
+import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 
 export default function PublicHomePage() {
   const navigate = useNavigate();
+  const { session } = useAuth();
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
 
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
       <Paper elevation={3} sx={{ p: { xs: 2, md: 3, lg: 4 }, textAlign: 'center' }}>
+        {session ? (
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+            <AccountSettingsButton />
+          </Box>
+        ) : null}
         <Typography variant="h4" component="h1" gutterBottom>
           Event System Pro
         </Typography>

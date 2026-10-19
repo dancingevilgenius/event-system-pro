@@ -1,9 +1,8 @@
 import { Box, Typography, type SxProps, type Theme } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { fetchUserPersonName } from '../api/postgrest';
 import { useAuth } from '../hooks/useAuth';
+import { useSignedInUserIdentity } from '../hooks/useSignedInUserIdentity';
+import { useLayoutTier, XL_LAYOUT_QUERY } from '../hooks/useLayoutTier';
 import { judgeHeaderRoleLabel } from '../lib/judgeHeaderRole';
-import { signedInUserInitials } from '../utils/userInitials';
 
 /** Side columns match so the page title stays centered between back and initials. */
 export const judgeHeaderRowSx: SxProps<Theme> = {
@@ -12,7 +11,9 @@ export const judgeHeaderRowSx: SxProps<Theme> = {
     xs: '4.75rem minmax(0, 1fr) 4.75rem',
     md: '5.5rem minmax(0, 1fr) 5.5rem',
     lg: '6rem minmax(0, 1fr) 6rem',
-    xl: '6rem minmax(0, 1fr) 6rem',
+  },
+  [`@media ${XL_LAYOUT_QUERY}`]: {
+    gridTemplateColumns: 'minmax(6rem, 14rem) minmax(0, 1fr) minmax(6rem, 14rem)',
   },
   alignItems: 'center',
   width: '100%',
@@ -26,43 +27,20 @@ type JudgeHeaderInitialsProps = {
 };
 
 /**
- * Current-judge initials for the judging page header.
- * Reads the signed-in user's name, then falls back to the session username.
+ * Signed-in judge in the judging header.
+ * iPad-size and smaller: role plus initials. Full desktop: role plus
+ * "Logged in user: <first initial> <last name>".
  */
 export default function JudgeHeaderInitials({ contestHeadJudge = false }: JudgeHeaderInitialsProps) {
   const { session } = useAuth();
-  const [initials, setInitials] = useState('');
+  const { showXlLayout } = useLayoutTier();
+  const { initials, desktopLabel } = useSignedInUserIdentity();
   const roleLabel = judgeHeaderRoleLabel({
     appRoles: session?.roles,
     contestHeadJudge,
   });
-
-  useEffect(() => {
-    if (!session) {
-      setInitials('');
-      return;
-    }
-
-    const username = session.username;
-    setInitials(signedInUserInitials({ username }));
-
-    let cancelled = false;
-    void fetchUserPersonName(session.user_id)
-      .then((name) => {
-        if (!cancelled) {
-          setInitials(signedInUserInitials({ ...name, username }));
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setInitials(signedInUserInitials({ username }));
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [session]);
+  const showDesktopLabel = showXlLayout && desktopLabel !== '';
+  const identityText = showDesktopLabel ? desktopLabel : initials;
 
   return (
     <Box
@@ -75,10 +53,10 @@ export default function JudgeHeaderInitials({ contestHeadJudge = false }: JudgeH
         lineHeight: 1,
       }}
     >
-      {initials ? (
+      {identityText ? (
         <Box
           component="p"
-          aria-label={`Current ${roleLabel} ${initials}`}
+          aria-label={showDesktopLabel ? desktopLabel : `Current ${roleLabel} ${initials}`}
           sx={{ m: 0, textAlign: 'center', maxWidth: '100%' }}
         >
           <Typography
@@ -99,14 +77,16 @@ export default function JudgeHeaderInitials({ contestHeadJudge = false }: JudgeH
             sx={{
               display: 'block',
               fontWeight: 700,
-              fontSize: { xs: '1rem', md: '1.25rem', lg: '1.5rem' },
-              letterSpacing: '0.04em',
-              lineHeight: 1.1,
+              fontSize: showDesktopLabel
+                ? '0.8125rem'
+                : { xs: '1rem', md: '1.25rem', lg: '1.5rem' },
+              letterSpacing: showDesktopLabel ? 'normal' : '0.04em',
+              lineHeight: showDesktopLabel ? 1.25 : 1.1,
               color: 'text.primary',
-              whiteSpace: 'nowrap',
+              whiteSpace: showDesktopLabel ? 'normal' : 'nowrap',
             }}
           >
-            {initials}
+            {identityText}
           </Typography>
         </Box>
       ) : null}

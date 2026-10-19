@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { signedInUserInitials, userInitials } from './userInitials';
+import { signedInUserDesktopLabel, signedInUserInitials, userInitials } from './userInitials';
 
 describe('userInitials', () => {
   it('uses the first letter of the first and last name', () => {
@@ -37,5 +37,30 @@ describe('signedInUserInitials', () => {
     expect(signedInUserInitials({ username: 'c.garcia' })).toBe('CG');
     expect(signedInUserInitials({ username: 'a' })).toBe('A');
     expect(signedInUserInitials({ username: '123' })).toBe('');
+  });
+});
+
+describe('signedInUserDesktopLabel', () => {
+  it('uses the first initial and full last name', () => {
+    expect(signedInUserDesktopLabel({ firstName: 'Carlos', lastName: 'Garcia' })).toBe(
+      'Logged in user: C Garcia',
+    );
+    expect(
+      signedInUserDesktopLabel({
+        firstName: '  elizabeth ',
+        lastName: ' Gutzwiler-Daigle ',
+        username: 'liz',
+      }),
+    ).toBe('Logged in user: E Gutzwiler-Daigle');
+  });
+
+  it('falls back to the username when first and last are not both known', () => {
+    expect(signedInUserDesktopLabel({ username: 'dancingevilgenius' })).toBe(
+      'Logged in user: dancingevilgenius',
+    );
+    expect(signedInUserDesktopLabel({ firstName: 'Carlos', username: 'carlos' })).toBe(
+      'Logged in user: carlos',
+    );
+    expect(signedInUserDesktopLabel({})).toBe('');
   });
 });

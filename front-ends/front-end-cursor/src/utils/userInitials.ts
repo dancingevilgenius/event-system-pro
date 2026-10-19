@@ -60,3 +60,44 @@ export function signedInUserInitials(name: {
 
   return usernameInitials(name.username);
 }
+
+/**
+ * Desktop header name: first initial and full last name (`C Garcia`).
+ * Falls back to the username when a first and last name are not both known.
+ */
+export function signedInUserShortName(name: {
+  firstName?: string | null;
+  lastName?: string | null;
+  username?: string | null;
+}): string {
+  const initial = firstLetter(name.firstName ?? '');
+  const last = (name.lastName ?? '').trim();
+  if (initial && last) {
+    return `${initial} ${last}`;
+  }
+
+  const username = (name.username ?? '').trim();
+  if (username) {
+    return username;
+  }
+
+  if (last) {
+    return last;
+  }
+
+  return initial;
+}
+
+/** Full desktop header line, e.g. `Logged in user: C Garcia`. */
+export function signedInUserDesktopLabel(name: {
+  firstName?: string | null;
+  lastName?: string | null;
+  username?: string | null;
+}): string {
+  const shortName = signedInUserShortName(name);
+  if (!shortName) {
+    return '';
+  }
+
+  return `Logged in user: ${shortName}`;
+}

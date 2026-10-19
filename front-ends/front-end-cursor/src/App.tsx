@@ -42,6 +42,8 @@ import FloorCoordinatorDemosPage from './pages/FloorCoordinatorDemosPage';
 import ThirdPartyLibraryDemosPage from './pages/ThirdPartyLibraryDemosPage';
 import GoverningBodyPage from './pages/GoverningBodyPage';
 import ContestResultsListPage from './pages/ContestResultsListPage';
+import FloorParentCheckinPage from './pages/FloorParentCheckinPage';
+import FloorParentHomePage from './pages/FloorParentHomePage';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -161,6 +163,22 @@ export default function App() {
         element={
           <ProtectedRoute>
             <HomePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/floor-parent-home"
+        element={
+          <ProtectedRoute>
+            <FloorParentHomePage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/floor-parent-checkin-single"
+        element={
+          <ProtectedRoute>
+            <FloorParentCheckinPage />
           </ProtectedRoute>
         }
       />

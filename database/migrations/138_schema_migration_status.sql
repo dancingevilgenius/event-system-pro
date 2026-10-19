@@ -6231,6 +6231,423 @@ WHERE instruction_code = 'PRELIMS_MARKS';$sqlbody$,
 INSERT INTO maintenance.schema_migration_catalog (
   filename, script_number, details, probe, sql_body, sort_key, created_by
 ) VALUES (
+  $fn$145_judge_prelims_page_path.sql$fn$,
+  $num$145$num$,
+  $details$Point the prelims coaching lesson at /judge-prelims.$details$,
+  $probe$true$probe$,
+  NULL,
+  $sort$145_judge_prelims_page_path.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$146_app_role.sql$fn$,
+  $num$146$num$,
+  $details$app_role: catalog of assignable role codes. user_app_role.role_code references it.$details$,
+  $probe$true$probe$,
+  NULL,
+  $sort$146_app_role.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$147_update_app_role_labels.sql$fn$,
+  $num$147$num$,
+  $details$Admin RPC to replace app_role.more_json.Labels.$details$,
+  $probe$true$probe$,
+  NULL,
+  $sort$147_update_app_role_labels.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$148_event_assign_event_code_definer.sql$fn$,
+  $num$148$num$,
+  $details$Signed-in users cannot insert an event because the event-code trigger cannot read the event table.$details$,
+  $probe$EXISTS (SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace WHERE n.nspname = 'public' AND p.proname = 'event_assign_event_code' AND p.prosecdef)$probe$,
+  $sqlbody$-- Let signed-in users insert events. The event-code trigger reads public.event,
+-- which authenticated cannot select, so inserts failed with permission denied.
+-- Run: psql -U postgres -d event_system_pro -f database/migrations/148_event_assign_event_code_definer.sql
+
+
+CREATE OR REPLACE FUNCTION public.event_assign_event_code()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, pg_catalog
+AS $$
+DECLARE
+  v_base_code varchar(64);
+BEGIN
+  IF NEW.event_code IS NOT NULL AND btrim(NEW.event_code) <> '' THEN
+    NEW.event_code := left(upper(btrim(NEW.event_code)), 64);
+    RETURN NEW;
+  END IF;
+
+  v_base_code := public.derive_event_code(NEW.event_group_code, NEW.start_date);
+
+  IF NEW.event_id IS NOT NULL THEN
+    NEW.event_code := left(v_base_code, 64);
+    IF EXISTS (
+      SELECT 1
+      FROM public."event" AS e
+      WHERE e.event_code = NEW.event_code
+        AND e.event_id IS DISTINCT FROM NEW.event_id
+    ) THEN
+      NEW.event_code := left(v_base_code || '_' || NEW.event_id::text, 64);
+    END IF;
+  ELSE
+    NEW.event_code := v_base_code;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+REVOKE ALL ON FUNCTION public.event_assign_event_code() FROM PUBLIC;
+
+NOTIFY pgrst, 'reload schema';$sqlbody$,
+  $sort$148_event_assign_event_code_definer.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$148_registration_user_search.sql$fn$,
+  $num$148$num$,
+  $details$Registration desk search: non-demo users by first and/or last name.$details$,
+  $probe$true$probe$,
+  NULL,
+  $sort$148_registration_user_search.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$149_lookup_staff_registration.sql$fn$,
+  $num$149$num$,
+  $details$Staff rows on create-event look up an existing user by first and last name.$details$,
+  $probe$true$probe$,
+  NULL,
+  $sort$149_lookup_staff_registration.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$150_add_instructor_setup_teardown_roles.sql$fn$,
+  $num$150$num$,
+  $details$Add Instructor, Setup, and Teardown to the assignable role catalog.$details$,
+  $probe$true$probe$,
+  NULL,
+  $sort$150_add_instructor_setup_teardown_roles.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$151_staff_lookup_admin_role.sql$fn$,
+  $num$151$num$,
+  $details$Staff name lookup also reports whether the matched user has the ADMIN role.$details$,
+  $probe$true$probe$,
+  NULL,
+  $sort$151_staff_lookup_admin_role.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$152_contest_roster_notify.sql$fn$,
+  $num$152$num$,
+  $details$Push contest roster changes to the realtime service via LISTEN/NOTIFY.$details$,
+  $probe$true$probe$,
+  NULL,
+  $sort$152_contest_roster_notify.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$153_list_schema_migrations_desc.sql$fn$,
+  $num$153$num$,
+  $details$List /migrations rows with the largest script number first.$details$,
+  $probe$true$probe$,
+  NULL,
+  $sort$153_list_schema_migrations_desc.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$154_scheduler_heartbeat.sql$fn$,
+  $num$154$num$,
+  $details$Scheduler process heartbeat. The Migrations page treats a stamp older than 60 seconds as down.$details$,
+  $probe$true$probe$,
+  NULL,
+  $sort$154_scheduler_heartbeat.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$155_exec_sql_skip_psql_meta.sql$fn$,
+  $num$155$num$,
+  $details$Skip psql meta-commands such as \connect when Apply runs a stored migration script.$details$,
+  $probe$true$probe$,
+  NULL,
+  $sort$155_exec_sql_skip_psql_meta.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$156_schema_migrations_applied_by.sql$fn$,
+  $num$156$num$,
+  $details$The migration ledger on older databases has filename and applied_at only.$details$,
+  $probe$true$probe$,
+  NULL,
+  $sort$156_schema_migrations_applied_by.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$157_schema_migrations_writer_columns.sql$fn$,
+  $num$157$num$,
+  $details$Replace the migration-ledger functions that still insert the old applied_by column.$details$,
+  $probe$true$probe$,
+  NULL,
+  $sort$157_schema_migrations_writer_columns.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$158_wsdc_swing_static_lists.sql$fn$,
+  $num$158$num$,
+  $details$Insert WSDC swing division and skill-level static lists when they are missing.$details$,
+  $probe$true$probe$,
+  NULL,
+  $sort$158_wsdc_swing_static_lists.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$159_quick_register_user.sql$fn$,
+  $num$159$num$,
+  $details$Admin Quick Registration: create a user from first and last name.$details$,
+  $probe$true$probe$,
+  NULL,
+  $sort$159_quick_register_user.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$160_user_more_json_quickreg.sql$fn$,
+  $num$160$num$,
+  $details$Store Quick Registration details on public."user".more_json.$details$,
+  $probe$true$probe$,
+  NULL,
+  $sort$160_user_more_json_quickreg.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$161_quickreg_fields_in_additional_info.sql$fn$,
+  $num$161$num$,
+  $details$Move Quick Registration fields from user.more_json into additional_info_json, then drop more_json.$details$,
+  $probe$true$probe$,
+  NULL,
+  $sort$161_quickreg_fields_in_additional_info.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$162_search_quickreg_users.sql$fn$,
+  $num$162$num$,
+  $details$Admin search of Quick Registration accounts by first and/or last name.$details$,
+  $probe$true$probe$,
+  NULL,
+  $sort$162_search_quickreg_users.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$163_staff_registered_email_or_phone.sql$fn$,
+  $num$163$num$,
+  $details$A staff name is fully registered only when the user row has an email or a phone number.$details$,
+  $probe$true$probe$,
+  NULL,
+  $sort$163_staff_registered_email_or_phone.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$164_staff_lookup_quickreg_flag.sql$fn$,
+  $num$164$num$,
+  $details$Tell staff lookup which matches were created with Quick Registration.$details$,
+  $probe$true$probe$,
+  NULL,
+  $sort$164_staff_lookup_quickreg_flag.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$165_quickreg_username_suffix.sql$fn$,
+  $num$165$num$,
+  $details$Quick Registration usernames start as the generated password.$details$,
+  $probe$true$probe$,
+  NULL,
+  $sort$165_quickreg_username_suffix.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$166_registration_home_staff_access.sql$fn$,
+  $num$166$num$,
+  $details$Home Registration button for event staff, not only the REGISTRATION app role.$details$,
+  $probe$true$probe$,
+  NULL,
+  $sort$166_registration_home_staff_access.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$167_registration_quick_register_access.sql$fn$,
+  $num$167$num$,
+  $details$Let Registration desk staff Quick Register and look up registration status.$details$,
+  $probe$true$probe$,
+  NULL,
+  $sort$167_registration_quick_register_access.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
+  $fn$168_floor_parent_title.sql$fn$,
+  $num$168$num$,
+  $details$api.set_floor_parent_title() is missing.$details$,
+  $probe$to_regprocedure('api.set_floor_parent_title(text)') IS NOT NULL$probe$,
+  $sqlbody$-- Store the Floor Parent home-button title on user.additional_info_json.
+-- Run: psql -U postgres -d event_system_pro -f database/migrations/168_floor_parent_title.sql
+
+
+CREATE OR REPLACE FUNCTION api.set_floor_parent_title(p_title text)
+RETURNS json
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, api
+AS $$
+DECLARE
+  v_actor_id bigint;
+  v_actor_username text;
+  v_title text;
+  v_info jsonb;
+BEGIN
+  v_actor_id := api.current_user_id();
+
+  IF v_actor_id IS NULL THEN
+    RETURN json_build_object('ok', false, 'message', 'Sign in to save your floor title.');
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1
+    FROM public."user" u
+    WHERE u.user_id = v_actor_id
+      AND u.active IS NOT FALSE
+  ) THEN
+    RETURN json_build_object('ok', false, 'message', 'User not found.');
+  END IF;
+
+  v_title := btrim(COALESCE(p_title, ''));
+  IF v_title NOT IN ('Floor Parent', 'Floor Mom', 'Floor Dad') THEN
+    RETURN json_build_object(
+      'ok', false,
+      'message', 'Choose Floor Parent, Floor Mom, or Floor Dad.'
+    );
+  END IF;
+
+  v_actor_username := api.resolve_audit_actor(NULL);
+
+  IF v_actor_username IS NULL THEN
+    SELECT u.username
+    INTO v_actor_username
+    FROM public."user" u
+    WHERE u.user_id = v_actor_id;
+  END IF;
+
+  PERFORM api.set_audit_actor(v_actor_username);
+
+  SELECT COALESCE(u.additional_info_json, '{}'::json)::jsonb
+  INTO v_info
+  FROM public."user" u
+  WHERE u.user_id = v_actor_id;
+
+  v_info := v_info || jsonb_build_object('floor_parent_title', v_title);
+
+  UPDATE public."user" u
+  SET
+    additional_info_json = v_info::json,
+    modified_by = v_actor_username,
+    modified_date = CURRENT_TIMESTAMP
+  WHERE u.user_id = v_actor_id;
+
+  RETURN json_build_object(
+    'ok', true,
+    'message', 'Floor title saved.',
+    'user_id', v_actor_id,
+    'floor_parent_title', v_title
+  );
+END;
+$$;
+
+REVOKE ALL ON FUNCTION api.set_floor_parent_title(text) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION api.set_floor_parent_title(text) TO authenticated;
+
+NOTIFY pgrst, 'reload schema';$sqlbody$,
+  $sort$168_floor_parent_title.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
   '138_schema_migration_status.sql',
   '138',
   'Nightly check that compares migration scripts with the database.',

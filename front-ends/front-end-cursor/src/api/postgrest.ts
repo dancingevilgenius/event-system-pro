@@ -33,6 +33,13 @@ import { formatReadableDateTime } from '../utils/auditTimestamps';
 import type { JudgeSubmission } from '../services/tabulation/types';
 import { readStoredContestPairs, storedContestPairs, type ContestPair, type StoredContestPair } from '../lib/judgingPairs';
 import { eventIsCancelled } from '../lib/eventCancelled';
+import {
+  FLOOR_PARENT_WINDOW_MS,
+  floorParentTitleFromAdditionalInfo,
+  selectFloorParentContests,
+  type FloorParentContest,
+  type FloorParentTitle,
+} from '../lib/floorParent';
 import { eventInRegistrationWindow } from '../lib/registrationWindow';
 import { compareSchemaMigrationRowsDescending } from '../lib/schemaMigrationOrder';
 import { schedulerHeartbeatIsHealthy } from '../lib/schedulerHeartbeat';
@@ -3401,6 +3408,106 @@ export type SetUserCursorRulesStarredResult = {
 export function setUserCursorRulesStarred(starred: string[]) {
   return callRpc<SetUserCursorRulesStarredResult>('set_user_cursor_rules_starred', {
     p_starred: starred,
+  });
+}
+
+export async function fetchFloorParentTitle(userId: number): Promise<FloorParentTitle> {
+  const params = new URLSearchParams({
+    select: 'additional_info_json',
+  });
+  params.append('user_id', `eq.${userId}`);
+
+  const rows = await fetchJson<Array<{ additional_info_json: Record<string, unknown> | null }>>(
+    `${POSTGREST_URL}/user?${params.toString()}`,
+    'Unable to load floor title',
+  );
+
+  return floorParentTitleFromAdditionalInfo(rows[0]?.additional_info_json);
+}
+
+export type SetFloorParentTitleResult = {
+  ok: boolean;
+  message?: string;
+  user_id?: number;
+  floor_parent_title?: string;
+};
+
+export function setFloorParentTitle(title: FloorParentTitle) {
+  return callRpc<SetFloorParentTitleResult>('set_floor_parent_title', {
+    p_title: title,
+  });
+}
+
+/** Contests whose event starts within the next 6 hours, earliest first. */
+export async function fetchFloorParentContests(
+  now: Date = new Date(),
+): Promise<FloorParentContest[]> {
+  const windowEnd = new Date(now.getTime() + FLOOR_PARENT_WINDOW_MS).toISOString();
+  const nowIso = now.toISOString();
+  const params = new URLSearchParams({
+    select: 'event_id,name,start_date,more_json',
+    order: 'start_date.asc,event_id.asc',
+  });
+  params.append('start_date', `gte.${nowIso}`);
+  params.append('start_date', `lte.${windowEnd}`);
+
+  const rows = await fetchJson<JudgingHomeEventRow[]>(
+    `${POSTGREST_URL}/event?${params.toString()}`,
+    'Unable to load floor contests',
+  );
+  const events = rows.flatMap((row) => {
+    if (!Number.isInteger(row.event_id) || eventIsCancelled(row.more_json)) {
+      return [];
+    }
+
+    return [
+      {
+        eventId: row.event_id,
+        name: row.name?.trim() ?? '',
+        startDate: row.start_date,
+        moreJson: row.more_json,
+      },
+    ];
+  });
+
+  if (events.length === 0) {
+    return [];
+  }
+
+  const contestParams = new URLSearchParams({
+    select: 'contest_id,event_id,event_type_code,more_json',
+    order: 'contest_id.asc',
+  });
+  contestParams.append('event_id', `in.(${events.map((event) => event.eventId).join(',')})`);
+
+  const tableRows = await fetchJson<
+    Array<{
+      contest_id: number;
+      event_id: number | null;
+      event_type_code: string | null;
+      more_json: unknown;
+    }>
+  >(
+    `${POSTGREST_URL}/contest?${contestParams.toString()}`,
+    'Unable to load floor contests',
+  );
+
+  return selectFloorParentContests({
+    events,
+    contests: tableRows.flatMap((row) => {
+      if (row.event_id === null || !Number.isInteger(row.contest_id)) {
+        return [];
+      }
+      return [
+        {
+          contestId: row.contest_id,
+          eventId: row.event_id,
+          eventTypeCode: row.event_type_code,
+          moreJson: row.more_json,
+        },
+      ];
+    }),
+    now,
   });
 }
 

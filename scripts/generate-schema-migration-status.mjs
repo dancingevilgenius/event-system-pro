@@ -32,6 +32,7 @@ const detailsOverride = {
     'session_status still uses activity_expires_at.',
   '133_inactivity_idle_timeout_config.sql': 'Idle-timeout helpers are missing.',
   '134_user_cursor_rules_starred.sql': 'api.set_user_cursor_rules_starred() is missing.',
+  '168_floor_parent_title.sql': 'api.set_floor_parent_title() is missing.',
   '139_training_instructions.sql': 'training_instructions table is missing.',
   '140_prelims_alternate_label.sql': 'Prelims coaching copy still says Maybe.',
   '141_training_move_panel_step.sql': 'Training lessons do not start by moving the training box.',
@@ -76,6 +77,8 @@ const probes = {
     "to_regprocedure('api.inactivity_idle_timeout_seconds()') IS NOT NULL",
   '134_user_cursor_rules_starred.sql':
     "to_regprocedure('api.set_user_cursor_rules_starred(text[])') IS NOT NULL",
+  '168_floor_parent_title.sql':
+    "to_regprocedure('api.set_floor_parent_title(text)') IS NOT NULL",
   '139_training_instructions.sql': "to_regclass('public.training_instructions') IS NOT NULL",
   '140_prelims_alternate_label.sql':
     "EXISTS (SELECT 1 FROM public.training_instructions WHERE instruction_code = 'PRELIMS_MARKS' AND position('Maybe' in steps_json::text) = 0 AND position('Alternate' in steps_json::text) > 0)",

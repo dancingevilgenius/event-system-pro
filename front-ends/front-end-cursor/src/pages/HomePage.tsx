@@ -1,5 +1,7 @@
 import { Box, Button, Container, Grid, Paper, Stack, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { fetchFloorParentTitle } from '../api/postgrest';
 import AccountSettingsButton from '../components/AccountSettingsButton';
 import { MOBILE_HEADER_ICON_SLOT } from '../components/MobileHeaderIconButton';
 import { centeredContentStackSx } from '../constants/layout';
@@ -7,6 +9,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { useJudgingHomeAccess } from '../hooks/useJudgingHomeAccess';
 import { useRegistrationHomeAccess } from '../hooks/useRegistrationHomeAccess';
+import { DEFAULT_FLOOR_PARENT_TITLE, type FloorParentTitle } from '../lib/floorParent';
 import type { AppRole } from '../lib/session';
 
 const HOME_BUTTONS: { label: string; path: string; roles?: AppRole[] }[] = [
@@ -18,7 +21,8 @@ const HOME_BUTTONS: { label: string; path: string; roles?: AppRole[] }[] = [
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const { hasAnyRole } = useAuth();
+  const { session, hasAnyRole } = useAuth();
+  const [floorParentTitle, setFloorParentTitle] = useState<FloorParentTitle>(DEFAULT_FLOOR_PARENT_TITLE);
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const registrationByAppRole = hasAnyRole(['REGISTRATION']);
   const registrationByStaff = useRegistrationHomeAccess(!registrationByAppRole);
@@ -38,7 +42,34 @@ export default function HomePage() {
         ...(adminIndex === -1 ? [] : visibleButtons.slice(adminIndex)),
       ]
     : visibleButtons;
-  const homeButtons = [...roleButtons, { label: 'Results', path: '/results' }];
+  const homeButtons = [
+    ...roleButtons,
+    { label: floorParentTitle, path: '/floor-parent-home' },
+    { label: 'Results', path: '/results' },
+  ];
+
+  useEffect(() => {
+    if (!session) {
+      return;
+    }
+
+    let cancelled = false;
+    void fetchFloorParentTitle(session.user_id)
+      .then((saved) => {
+        if (!cancelled) {
+          setFloorParentTitle(saved);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setFloorParentTitle(DEFAULT_FLOOR_PARENT_TITLE);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session]);
 
   return (
     <Container maxWidth={containerMaxWidth} sx={{ py: { xs: 4, md: 6 } }}>
@@ -68,7 +99,7 @@ export default function HomePage() {
           <Stack spacing={2} sx={{ my: 3, ...centeredContentStackSx }}>
             {homeButtons.map((button) => (
               <Button
-                key={button.label}
+                key={button.path}
                 variant="contained"
                 size="large"
                 fullWidth
@@ -81,7 +112,7 @@ export default function HomePage() {
         ) : (
           <Grid container spacing={2} sx={{ my: 3 }}>
             {homeButtons.map((button) => (
-              <Grid key={button.label} size={{ xs: 12, md: 6, lg: 4 }}>
+              <Grid key={button.path} size={{ xs: 12, md: 6, lg: 4 }}>
                 <Button
                   variant="contained"
                   size="large"

@@ -66,6 +66,13 @@ export type RegisteredDancerCounts = {
   followerCount: number;
 };
 
+export type RosterRoleCounts = RegisteredDancerCounts & {
+  leadersCheckedIn: number;
+  followersCheckedIn: number;
+};
+
+export type CheckinIconTone = 'none' | 'partial' | 'complete';
+
 export type JudgingHomeContest = {
   id: string;
   eventId: number;
@@ -78,6 +85,8 @@ export type JudgingHomeContest = {
   divisionKey: string;
   leaderCount: number;
   followerCount: number;
+  leadersCheckedIn: number;
+  followersCheckedIn: number;
   /** Missing `Locked` is locked. Only boolean false is unlocked. */
   locked: boolean;
   /** Head Judge or Admin may change `Locked` on this contest. */
@@ -251,15 +260,25 @@ function hasJudgeRole(person: Record<string, unknown>): boolean {
   return hasRoleCode(person, JUDGE_ROLE_CODES);
 }
 
-function zeroCounts(): RegisteredDancerCounts {
-  return { leaderCount: 0, followerCount: 0 };
+function zeroCounts(): RosterRoleCounts {
+  return { leaderCount: 0, followerCount: 0, leadersCheckedIn: 0, followersCheckedIn: 0 };
 }
 
-function addCounts(left: RegisteredDancerCounts, right: RegisteredDancerCounts): RegisteredDancerCounts {
+function addCounts(left: RosterRoleCounts, right: RosterRoleCounts): RosterRoleCounts {
   return {
     leaderCount: left.leaderCount + right.leaderCount,
     followerCount: left.followerCount + right.followerCount,
+    leadersCheckedIn: left.leadersCheckedIn + right.leadersCheckedIn,
+    followersCheckedIn: left.followersCheckedIn + right.followersCheckedIn,
   };
+}
+
+function personCheckedIn(record: Record<string, unknown> | null): boolean {
+  return record?.checked_in === true || record?.checkedIn === true;
+}
+
+function checkedInList(list: unknown[]): number {
+  return list.reduce<number>((total, entry) => total + (personCheckedIn(asRecord(entry)) ? 1 : 0), 0);
 }
 
 function danceRole(record: Record<string, unknown>): 'leader' | 'follower' | null {
@@ -279,34 +298,50 @@ function danceRole(record: Record<string, unknown>): 'leader' | 'follower' | nul
   return null;
 }
 
-function countRosterNode(value: unknown): RegisteredDancerCounts {
+function countRosterNode(value: unknown): RosterRoleCounts {
   const record = asRecord(value);
   if (!record) {
     return zeroCounts();
   }
 
-  const leaderIsPerson = asRecord(record.leader) !== null;
-  const followerIsPerson = asRecord(record.follower) !== null;
-  if (leaderIsPerson || followerIsPerson) {
+  const leaderRecord = asRecord(record.leader);
+  const followerRecord = asRecord(record.follower);
+  if (leaderRecord || followerRecord) {
     return {
-      leaderCount: leaderIsPerson ? 1 : 0,
-      followerCount: followerIsPerson ? 1 : 0,
+      leaderCount: leaderRecord ? 1 : 0,
+      followerCount: followerRecord ? 1 : 0,
+      leadersCheckedIn: personCheckedIn(leaderRecord) ? 1 : 0,
+      followersCheckedIn: personCheckedIn(followerRecord) ? 1 : 0,
     };
   }
 
   if (Array.isArray(record.leaders) || Array.isArray(record.followers)) {
+    const leaders = Array.isArray(record.leaders) ? record.leaders : [];
+    const followers = Array.isArray(record.followers) ? record.followers : [];
     return {
-      leaderCount: Array.isArray(record.leaders) ? record.leaders.length : 0,
-      followerCount: Array.isArray(record.followers) ? record.followers.length : 0,
+      leaderCount: leaders.length,
+      followerCount: followers.length,
+      leadersCheckedIn: checkedInList(leaders),
+      followersCheckedIn: checkedInList(followers),
     };
   }
 
   const role = danceRole(record);
   if (role === 'leader') {
-    return { leaderCount: 1, followerCount: 0 };
+    return {
+      leaderCount: 1,
+      followerCount: 0,
+      leadersCheckedIn: personCheckedIn(record) ? 1 : 0,
+      followersCheckedIn: 0,
+    };
   }
   if (role === 'follower') {
-    return { leaderCount: 0, followerCount: 1 };
+    return {
+      leaderCount: 0,
+      followerCount: 1,
+      leadersCheckedIn: 0,
+      followersCheckedIn: personCheckedIn(record) ? 1 : 0,
+    };
   }
 
   return ROSTER_KEYS.reduce(
@@ -317,7 +352,7 @@ function countRosterNode(value: unknown): RegisteredDancerCounts {
 }
 
 /** Leader and follower totals stored on a contest item or public.contest competitors. */
-export function registeredDancerCounts(value: unknown): RegisteredDancerCounts {
+export function registeredDancerCounts(value: unknown): RosterRoleCounts {
   const parsed = parseJsonValue(value);
   if (Array.isArray(parsed)) {
     return parsed.reduce(
@@ -331,6 +366,24 @@ export function registeredDancerCounts(value: unknown): RegisteredDancerCounts {
 
 export function formatRegisteredCounts(leaderCount: number, followerCount: number): string {
   return `L:${leaderCount} F:${followerCount}`;
+}
+
+/** Gray until someone is checked in, yellow after the first, green when every competitor is checked in. */
+export function checkinIconTone(contest: {
+  leaderCount: number;
+  followerCount: number;
+  leadersCheckedIn: number;
+  followersCheckedIn: number;
+}): CheckinIconTone {
+  const registered = contest.leaderCount + contest.followerCount;
+  const checkedIn = contest.leadersCheckedIn + contest.followersCheckedIn;
+  if (registered > 0 && checkedIn >= registered) {
+    return 'complete';
+  }
+  if (checkedIn > 0) {
+    return 'partial';
+  }
+  return 'none';
 }
 
 /** Missing `Locked` stays locked. Only a boolean false unlocks scoring. */
@@ -474,7 +527,7 @@ function canToggleContestLock(
   return staffJsonIsHeadJudge(staffJson, user);
 }
 
-function tableRosterCounts(contest: JudgingHomeContestRow): RegisteredDancerCounts {
+function tableRosterCounts(contest: JudgingHomeContestRow): RosterRoleCounts {
   const more = asRecord(parseJsonValue(contest.moreJson));
   if (more && hasRosterArrays(more)) {
     return registeredDancerCounts(more);
@@ -590,6 +643,8 @@ export function selectJudgingHomeContests(input: {
         contestItemId,
         leaderCount: counts.leaderCount,
         followerCount: counts.followerCount,
+        leadersCheckedIn: counts.leadersCheckedIn,
+        followersCheckedIn: counts.followersCheckedIn,
         locked: contestLockedFlag(item),
         canToggleLock: canToggleContestLock(input.user, attachment, item, null),
         viewerSubmitted: viewerSubmittedScores(input.user, attachment.staffIds, [item.judge_submissions]),
@@ -627,6 +682,8 @@ export function selectJudgingHomeContests(input: {
           if (tableCounts.leaderCount + tableCounts.followerCount > twin.leaderCount + twin.followerCount) {
             twin.leaderCount = tableCounts.leaderCount;
             twin.followerCount = tableCounts.followerCount;
+            twin.leadersCheckedIn = tableCounts.leadersCheckedIn;
+            twin.followersCheckedIn = tableCounts.followersCheckedIn;
           }
         }
         if (!twin.canToggleLock) {
@@ -663,6 +720,8 @@ export function selectJudgingHomeContests(input: {
         contestItemId: text(more, 'id', 'contest_item_id', 'contestItemId'),
         leaderCount: counts.leaderCount,
         followerCount: counts.followerCount,
+        leadersCheckedIn: counts.leadersCheckedIn,
+        followersCheckedIn: counts.followersCheckedIn,
         locked: contestLockedFlag(more),
         canToggleLock: canToggleContestLock(input.user, attachment, more, contest.staffJson),
         viewerSubmitted: viewerSubmittedScores(input.user, attachment.staffIds, [

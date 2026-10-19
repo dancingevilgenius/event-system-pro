@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  checkinIconTone,
   contestLockedFlag,
   eventInJudgingWindow,
   formatRegisteredCounts,
@@ -161,6 +162,8 @@ describe('selectJudgingHomeContests', () => {
         locked: true,
         canToggleLock: false,
         viewerSubmitted: false,
+        leadersCheckedIn: 0,
+        followersCheckedIn: 0,
       },
       {
         id: 'event-134-json-strictly-item',
@@ -177,6 +180,8 @@ describe('selectJudgingHomeContests', () => {
         locked: true,
         canToggleLock: false,
         viewerSubmitted: false,
+        leadersCheckedIn: 0,
+        followersCheckedIn: 0,
       },
     ]);
   });
@@ -486,8 +491,18 @@ describe('selectJudgingHomeContests', () => {
               skill_level_label: 'All-American',
               head_judge_staff_id: 'head-staff',
               scoring_judge_staff_ids: ['carlos-staff'],
-              leaders: [{ id: 'a' }, { id: 'b' }, { id: 'c' }],
-              followers: [{ id: 'd' }, { id: 'e' }, { id: 'f' }, { id: 'g' }, { id: 'h' }],
+              leaders: [
+                { id: 'a', checked_in: true },
+                { id: 'b' },
+                { id: 'c', checked_in: true },
+              ],
+              followers: [
+                { id: 'd', checked_in: true },
+                { id: 'e' },
+                { id: 'f' },
+                { id: 'g' },
+                { id: 'h' },
+              ],
             },
             {
               id: 'strictly-item',
@@ -511,8 +526,21 @@ describe('selectJudgingHomeContests', () => {
     expect(contests.find((contest) => contest.contestItemId === 'jnj-item')).toMatchObject({
       leaderCount: 3,
       followerCount: 5,
+      leadersCheckedIn: 2,
+      followersCheckedIn: 1,
       locked: true,
     });
+    const countedContest = contests.find((contest) => contest.contestItemId === 'jnj-item');
+    expect(countedContest ? checkinIconTone(countedContest) : null).toBe('partial');
+    expect(checkinIconTone({ leaderCount: 2, followerCount: 2, leadersCheckedIn: 2, followersCheckedIn: 2 })).toBe(
+      'complete',
+    );
+    expect(checkinIconTone({ leaderCount: 2, followerCount: 2, leadersCheckedIn: 0, followersCheckedIn: 0 })).toBe(
+      'none',
+    );
+    expect(checkinIconTone({ leaderCount: 0, followerCount: 0, leadersCheckedIn: 0, followersCheckedIn: 0 })).toBe(
+      'none',
+    );
     expect(formatRegisteredCounts(3, 5)).toBe('L:3 F:5');
     expect(contests.find((contest) => contest.contestItemId === 'strictly-item')?.locked).toBe(false);
     expect(contestLockedFlag({})).toBe(true);

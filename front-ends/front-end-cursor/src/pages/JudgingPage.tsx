@@ -236,6 +236,8 @@ function rosterContest(contest: JudgingFinalsContestRef): JudgingHomeContest {
     divisionKey: '',
     leaderCount: 0,
     followerCount: 0,
+    leadersCheckedIn: 0,
+    followersCheckedIn: 0,
     locked: false,
     canToggleLock: false,
   };

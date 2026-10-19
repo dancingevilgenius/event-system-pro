@@ -4624,6 +4624,8 @@ async function loadPlacementCouples(contest: JudgeScoreContest): Promise<Map<num
     divisionKey: '',
     leaderCount: 0,
     followerCount: 0,
+    leadersCheckedIn: 0,
+    followersCheckedIn: 0,
     locked: false,
     canToggleLock: false,
   };
@@ -4996,6 +4998,7 @@ export type ContestRosterPerson = {
   role: ContestRosterRole;
   origin: ContestRosterOrigin;
   bib?: number;
+  checkedIn?: boolean;
 };
 
 type UpcomingEventContestRow = {
@@ -5527,6 +5530,7 @@ function pushRosterPerson(
     role,
     origin,
     ...(bib === undefined ? {} : { bib }),
+    ...(record.checked_in === true || record.checkedIn === true ? { checkedIn: true } : {}),
   });
 }
 
@@ -5647,6 +5651,9 @@ function storedEventRosterPerson(person: ContestRosterPerson): Record<string, un
   };
   if (typeof person.bib === 'number' && Number.isInteger(person.bib) && person.bib > 0) {
     stored.bib = person.bib;
+  }
+  if (person.checkedIn) {
+    stored.checked_in = true;
   }
   return stored;
 }
@@ -5800,12 +5807,14 @@ function appendAttendeeRoster(
         return;
       }
       const id = claimRosterId(used, `attendee-${row.attendee_id}-${index}`);
+      const entryRecord = jsonRecord(entry);
       people.push({
         id,
         firstName,
         lastName,
         role: enrollment.role,
         origin: { kind: 'attendee', attendeeId: row.attendee_id, entryIndex: index },
+        ...(entryRecord?.checked_in === true || entryRecord?.checkedIn === true ? { checkedIn: true } : {}),
       });
     });
   }
@@ -5936,6 +5945,232 @@ export async function fetchJudgingContestRoster(
     groups.push(await fetchContestRoster(judgingRosterContest(contest, 'table')));
   }
   return mergeRosterPeople(groups);
+}
+
+const CHECKIN_CHILD_KEYS = ['leader', 'follower', 'leaders', 'followers', ...CONTEST_ROSTER_KEYS];
+
+function stampCheckedIn(value: unknown, personId: string, checked: boolean): unknown {
+  if (Array.isArray(value)) {
+    let changed = false;
+    const next = value.map((entry) => {
+      const updated = stampCheckedIn(entry, personId, checked);
+      if (updated !== entry) {
+        changed = true;
+      }
+      return updated;
+    });
+    return changed ? next : value;
+  }
+
+  const record = jsonRecord(value);
+  if (!record) {
+    return value;
+  }
+
+  let next: Record<string, unknown> | null = null;
+  const copy = (): Record<string, unknown> => {
+    if (!next) {
+      next = { ...record };
+    }
+    return next;
+  };
+
+  if (personId !== '' && textField(record, 'id') === personId && (record.checked_in === true) !== checked) {
+    const updated = copy();
+    if (checked) {
+      updated.checked_in = true;
+    } else {
+      delete updated.checked_in;
+    }
+  }
+
+  for (const key of CHECKIN_CHILD_KEYS) {
+    if (record[key] === undefined) {
+      continue;
+    }
+    const updated = stampCheckedIn(record[key], personId, checked);
+    if (updated !== record[key]) {
+      copy()[key] = updated;
+    }
+  }
+
+  return next ?? value;
+}
+
+async function stampEventItemCheckedIn(
+  contest: JudgingHomeContest,
+  personId: string,
+  checked: boolean,
+): Promise<void> {
+  const moreJson = await fetchEventMoreJson(contest.eventId);
+  const contestsNode = jsonRecord(moreJson.contests);
+  if (!contestsNode || !Array.isArray(contestsNode.items)) {
+    throw new Error('Unable to save check-in.');
+  }
+  const index = contestsNode.items.findIndex((entry) => jsonRecord(entry)?.id === contest.contestItemId);
+  const current = contestsNode.items[index];
+  if (index < 0 || current === undefined) {
+    throw new Error('Unable to save check-in.');
+  }
+  const nextItem = stampCheckedIn(current, personId, checked);
+  if (nextItem === current) {
+    return;
+  }
+  const items = [...contestsNode.items];
+  items[index] = nextItem;
+  await patchTable(
+    'event',
+    `event_id=eq.${contest.eventId}`,
+    {
+      modified_by: actingUsername(),
+      more_json: {
+        ...moreJson,
+        contests: {
+          ...contestsNode,
+          items,
+        },
+      },
+    },
+    'Unable to save check-in.',
+  );
+}
+
+async function stampContestDocumentCheckedIn(
+  contest: JudgingHomeContest,
+  field: 'competitors_json' | 'more_json',
+  personId: string,
+  checked: boolean,
+): Promise<void> {
+  if (contest.contestId === null) {
+    throw new Error('Unable to save check-in.');
+  }
+  const params = new URLSearchParams({ select: 'competitors_json,more_json' });
+  params.append('contest_id', `eq.${contest.contestId}`);
+  const rows = await fetchJson<Array<{ competitors_json: unknown; more_json: unknown }>>(
+    `${POSTGREST_URL}/contest?${params.toString()}`,
+    'Unable to save check-in',
+  );
+  const row = rows[0];
+  if (!row) {
+    throw new Error('Unable to save check-in.');
+  }
+  const current = row[field];
+  const next = stampCheckedIn(current, personId, checked);
+  if (next === current) {
+    return;
+  }
+  const today = new Date().toISOString().slice(0, 10);
+  await patchTable(
+    'contest',
+    `contest_id=eq.${contest.contestId}`,
+    {
+      [field]: next,
+      modified_by: actingUsername(),
+      modified_date: today,
+    },
+    'Unable to save check-in.',
+  );
+}
+
+async function stampContestEntryCheckedIn(
+  contestEntryId: number,
+  personId: string,
+  checked: boolean,
+): Promise<void> {
+  const params = new URLSearchParams({ select: 'competitors_json,more_json' });
+  params.append('contest_entry_id', `eq.${contestEntryId}`);
+  const rows = await fetchJson<Array<{ competitors_json: unknown; more_json: unknown }>>(
+    `${POSTGREST_URL}/contest_entry?${params.toString()}`,
+    'Unable to save check-in',
+  );
+  const row = rows[0];
+  if (!row) {
+    throw new Error('Unable to save check-in.');
+  }
+  const competitors = stampCheckedIn(row.competitors_json, personId, checked);
+  const more = stampCheckedIn(row.more_json, personId, checked);
+  if (competitors === row.competitors_json && more === row.more_json) {
+    return;
+  }
+  await patchTable(
+    'contest_entry',
+    `contest_entry_id=eq.${contestEntryId}`,
+    {
+      ...(competitors === row.competitors_json ? {} : { competitors_json: competitors }),
+      ...(more === row.more_json ? {} : { more_json: more }),
+      modified_by: actingUsername(),
+    },
+    'Unable to save check-in.',
+  );
+}
+
+async function stampAttendeeCheckedIn(
+  attendeeId: number,
+  entryIndex: number,
+  checked: boolean,
+): Promise<void> {
+  const params = new URLSearchParams({ select: 'contests_json' });
+  params.append('attendee_id', `eq.${attendeeId}`);
+  const rows = await fetchJson<Array<{ contests_json: unknown }>>(
+    `${POSTGREST_URL}/attendee?${params.toString()}`,
+    'Unable to save check-in',
+  );
+  const contestsJson = rows[0]?.contests_json;
+  if (!Array.isArray(contestsJson) || entryIndex < 0 || entryIndex >= contestsJson.length) {
+    throw new Error('Unable to save check-in.');
+  }
+  const current = jsonRecord(contestsJson[entryIndex]);
+  if (!current) {
+    throw new Error('Unable to save check-in.');
+  }
+  if ((current.checked_in === true) === checked) {
+    return;
+  }
+  const nextEntry = { ...current };
+  if (checked) {
+    nextEntry.checked_in = true;
+  } else {
+    delete nextEntry.checked_in;
+  }
+  const entries = [...contestsJson];
+  entries[entryIndex] = nextEntry;
+  await patchTable(
+    'attendee',
+    `attendee_id=eq.${attendeeId}`,
+    {
+      modified_by: actingUsername(),
+      contests_json: entries,
+    },
+    'Unable to save check-in.',
+  );
+}
+
+/** Stores `checked_in` on the roster record this person was loaded from. */
+export async function setContestRosterCheckedIn(
+  contest: JudgingHomeContest,
+  person: ContestRosterPerson,
+  checked: boolean,
+): Promise<void> {
+  const personId = person.id.trim();
+  switch (person.origin.kind) {
+    case 'event-json':
+      await stampEventItemCheckedIn(contest, personId, checked);
+      return;
+    case 'contest-competitors':
+      await stampContestDocumentCheckedIn(contest, 'competitors_json', personId, checked);
+      return;
+    case 'contest-more':
+      await stampContestDocumentCheckedIn(contest, 'more_json', personId, checked);
+      return;
+    case 'contest-entry':
+      await stampContestEntryCheckedIn(person.origin.contestEntryId, personId, checked);
+      return;
+    case 'attendee':
+      await stampAttendeeCheckedIn(person.origin.attendeeId, person.origin.entryIndex, checked);
+      return;
+    default:
+      return;
+  }
 }
 
 async function attachGeneratedCompetitorFlags(

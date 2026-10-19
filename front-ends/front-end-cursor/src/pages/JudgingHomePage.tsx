@@ -1,3 +1,4 @@
+import ChecklistIcon from '@mui/icons-material/Checklist';
 import {
   Button,
   CircularProgress,
@@ -16,6 +17,7 @@ import {
   TableHead,
   TableRow,
   ToggleButton,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -31,7 +33,7 @@ import JudgingContestPairsDialog from '../components/JudgingContestPairsDialog';
 import PageHeader from '../components/PageHeader';
 import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
-import { formatRegisteredCounts, type JudgingHomeContest } from '../lib/judgingHome';
+import { checkinIconTone, formatRegisteredCounts, type JudgingHomeContest } from '../lib/judgingHome';
 import { savedPairsOpenFinals, type StoredContestPair } from '../lib/judgingPairs';
 
 function displayValue(value: string): string {
@@ -43,6 +45,57 @@ function contestClearLabel(contest: JudgingHomeContest): string {
     .map((part) => part.trim())
     .filter((part) => part !== '')
     .join(' · ');
+}
+
+type EventContestGroup = {
+  eventId: number;
+  eventName: string;
+  contests: JudgingHomeContest[];
+};
+
+function groupContestsByEvent(contests: JudgingHomeContest[]): EventContestGroup[] {
+  const groups: EventContestGroup[] = [];
+  for (const contest of contests) {
+    const last = groups[groups.length - 1];
+    if (last && last.eventId === contest.eventId) {
+      last.contests.push(contest);
+      continue;
+    }
+    groups.push({
+      eventId: contest.eventId,
+      eventName: contest.eventName,
+      contests: [contest],
+    });
+  }
+  return groups;
+}
+
+function checkinIconColor(contest: JudgingHomeContest): string {
+  const tone = checkinIconTone(contest);
+  if (tone === 'complete') {
+    return 'success.main';
+  }
+  if (tone === 'partial') {
+    return '#FDD835';
+  }
+  return 'grey.400';
+}
+
+function CheckinStatusIcon({ contest }: { contest: JudgingHomeContest }) {
+  const leaders = `Leaders:${contest.leadersCheckedIn}/${contest.leaderCount}`;
+  const followers = `Followers:${contest.followersCheckedIn}/${contest.followerCount}`;
+  return (
+    <Tooltip
+      title={
+        <Stack>
+          <span>{leaders}</span>
+          <span>{followers}</span>
+        </Stack>
+      }
+    >
+      <ChecklistIcon aria-label={`${leaders}. ${followers}.`} sx={{ color: checkinIconColor(contest), display: 'block' }} />
+    </Tooltip>
+  );
 }
 
 export default function JudgingHomePage() {
@@ -278,14 +331,15 @@ export default function JudgingHomePage() {
             {placementError}
           </Typography>
         ) : null}
+        {contests.length === 0 ? (
         <TableContainer sx={{ overflowX: 'auto' }}>
           <Table size="small" aria-label="Contests to score">
             <TableHead>
               <TableRow>
-                <TableCell sx={headerSx}>Event name</TableCell>
                 <TableCell sx={headerSx}>Swing level</TableCell>
                 <TableCell sx={headerSx}>Contest type</TableCell>
                 <TableCell sx={headerSx}>Registered</TableCell>
+                <TableCell sx={headerSx}>Checked-in</TableCell>
                 {showLockColumn ? <TableCell sx={headerSx}>Lock</TableCell> : null}
                 <TableCell align="right" sx={headerSx}>
                   Score
@@ -293,7 +347,7 @@ export default function JudgingHomePage() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {loading && contests.length === 0 ? (
+              {loading ? (
                 <TableRow>
                   <TableCell colSpan={columnCount} align="center">
                     <Stack
@@ -308,7 +362,7 @@ export default function JudgingHomePage() {
                     </Stack>
                   </TableCell>
                 </TableRow>
-              ) : error && contests.length === 0 ? (
+              ) : error ? (
                 <TableRow>
                   <TableCell colSpan={columnCount} align="center">
                     <Typography variant="body2" color="error" sx={{ py: 2 }}>
@@ -316,7 +370,7 @@ export default function JudgingHomePage() {
                     </Typography>
                   </TableCell>
                 </TableRow>
-              ) : contests.length === 0 ? (
+              ) : (
                 <TableRow>
                   <TableCell colSpan={columnCount} align="center">
                     <Typography variant="body2" color="text.secondary" sx={{ py: 2 }}>
@@ -324,10 +378,45 @@ export default function JudgingHomePage() {
                     </Typography>
                   </TableCell>
                 </TableRow>
-              ) : (
-                contests.map((contest) => (
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        ) : (
+        <Stack spacing={2}>
+          {groupContestsByEvent(contests).map((group, index) => (
+            <Box
+              key={`${group.eventId}-${index}`}
+              component="fieldset"
+              sx={{
+                m: 0,
+                minWidth: 0,
+                p: { xs: 1.5, md: 2 },
+                border: 1,
+                borderColor: 'divider',
+                borderRadius: 1,
+              }}
+            >
+              <Typography component="legend" sx={{ px: 0.5, fontWeight: 700 }}>
+                {displayValue(group.eventName)}
+              </Typography>
+              <TableContainer sx={{ overflowX: 'auto' }}>
+          <Table size="small" aria-label={`Contests for ${displayValue(group.eventName)}`}>
+            <TableHead>
+              <TableRow>
+                <TableCell sx={headerSx}>Swing level</TableCell>
+                <TableCell sx={headerSx}>Contest type</TableCell>
+                <TableCell sx={headerSx}>Registered</TableCell>
+                <TableCell sx={headerSx}>Checked-in</TableCell>
+                {showLockColumn ? <TableCell sx={headerSx}>Lock</TableCell> : null}
+                <TableCell align="right" sx={headerSx}>
+                  Score
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {group.contests.map((contest) => (
                   <TableRow key={contest.id} hover>
-                    <TableCell>{displayValue(contest.eventName)}</TableCell>
                     <TableCell>{displayValue(contest.skillLevelLabel)}</TableCell>
                     <TableCell>{displayValue(contest.divisionLabel)}</TableCell>
                     <TableCell sx={{ whiteSpace: 'nowrap' }}>
@@ -341,6 +430,9 @@ export default function JudgingHomePage() {
                       >
                         {formatRegisteredCounts(contest.leaderCount, contest.followerCount)}
                       </Button>
+                    </TableCell>
+                    <TableCell>
+                      <CheckinStatusIcon contest={contest} />
                     </TableCell>
                     {showLockColumn ? (
                       <TableCell>
@@ -409,11 +501,14 @@ export default function JudgingHomePage() {
                       </Stack>
                     </TableCell>
                   </TableRow>
-                ))
-              )}
+                ))}
             </TableBody>
           </Table>
-        </TableContainer>
+              </TableContainer>
+            </Box>
+          ))}
+        </Stack>
+        )}
         <Dialog open={clearTarget !== null} onClose={closeClearDialog} fullWidth maxWidth="sm">
           <DialogTitle sx={{ fontSize: { xs: '1.1rem', md: '1.25rem' } }}>Clear scores?</DialogTitle>
           <DialogContent>

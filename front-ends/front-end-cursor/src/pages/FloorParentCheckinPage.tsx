@@ -1,12 +1,20 @@
-import { Box, CircularProgress, Container, Paper, Stack, Typography } from '@mui/material';
+import { Box, Checkbox, CircularProgress, Container, Paper, Stack, Typography } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { fetchJudgingContestRoster, type ContestRosterPerson, type ContestRosterRole } from '../api/postgrest';
+import { fetchJudgingContestRoster, setContestRosterCheckedIn, type ContestRosterPerson, type ContestRosterRole } from '../api/postgrest';
 import PageHeader from '../components/PageHeader';
+import PercentCompleteBar from '../components/PercentCompleteBar';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import type { JudgingHomeContest } from '../lib/judgingHome';
-import { floorParentContestLabel } from '../lib/floorParent';
 import { compareRosterByBib } from '../utils/rosterBibOrder';
+
+function checkinTitle(contest: Pick<JudgingHomeContest, 'skillLevelLabel' | 'divisionLabel'>): string {
+  const label = [contest.skillLevelLabel, contest.divisionLabel]
+    .map((part) => part.trim())
+    .filter((part) => part !== '')
+    .join(' · ');
+  return label === '' ? 'Check-in' : label;
+}
 
 function rosterFullName(person: ContestRosterPerson): string {
   const name = [person.firstName, person.lastName].filter((part) => part.trim() !== '').join(' ');
@@ -24,7 +32,16 @@ function peopleInRole(people: ContestRosterPerson[], role: ContestRosterRole): C
   return people.filter((person) => person.role === role).sort(compareRosterByBib);
 }
 
-function RosterPersonRow({ person }: { person: ContestRosterPerson }) {
+function RosterPersonRow({
+  person,
+  checked,
+  onToggle,
+}: {
+  person: ContestRosterPerson;
+  checked: boolean;
+  onToggle: (checked: boolean) => void;
+}) {
+  const name = rosterFullName(person);
   return (
     <Stack
       direction="row"
@@ -52,13 +69,32 @@ function RosterPersonRow({ person }: { person: ContestRosterPerson }) {
         {rosterBibLabel(person)}
       </Typography>
       <Typography variant="body2" noWrap sx={{ flex: 1, minWidth: 0 }}>
-        {rosterFullName(person)}
+        {name}
       </Typography>
+      <Checkbox
+        checked={checked}
+        onChange={(_event, next) => onToggle(next)}
+        slotProps={{ input: { 'aria-label': `Checked in ${name}` } }}
+        sx={{ flexShrink: 0, p: 0.5, ml: 'auto' }}
+      />
     </Stack>
   );
 }
 
-function RosterColumn({ title, people }: { title: string; people: ContestRosterPerson[] }) {
+function RosterColumn({
+  title,
+  people,
+  checkedIds,
+  onToggle,
+}: {
+  title: string;
+  people: ContestRosterPerson[];
+  checkedIds: Record<string, boolean>;
+  onToggle: (personId: string, checked: boolean) => void;
+}) {
+  const checkedCount = people.filter((person) => checkedIds[person.id] === true).length;
+  const percent = people.length === 0 ? 0 : (checkedCount / people.length) * 100;
+
   return (
     <Box
       sx={{
@@ -72,6 +108,14 @@ function RosterColumn({ title, people }: { title: string; people: ContestRosterP
         bgcolor: 'action.hover',
       }}
     >
+      <Box sx={{ mb: 1.5 }}>
+        <PercentCompleteBar
+          percent={percent}
+          label={`Percent Checked-in: ${Math.round(percent)}%`}
+          ariaLabel={`${title} percent checked in`}
+          completeColor="success"
+        />
+      </Box>
       <Typography variant="subtitle2" component="h2" sx={{ fontWeight: 700, mb: 1 }}>
         {title}
       </Typography>
@@ -81,7 +125,14 @@ function RosterColumn({ title, people }: { title: string; people: ContestRosterP
             None registered
           </Typography>
         ) : (
-          people.map((person) => <RosterPersonRow key={person.id} person={person} />)
+          people.map((person) => (
+            <RosterPersonRow
+              key={person.id}
+              person={person}
+              checked={checkedIds[person.id] === true}
+              onToggle={(next) => onToggle(person.id, next)}
+            />
+          ))
         )}
       </Stack>
     </Box>
@@ -113,6 +164,8 @@ function contestFromSearch(params: URLSearchParams): JudgingHomeContest | null {
     divisionKey: '',
     leaderCount: 0,
     followerCount: 0,
+    leadersCheckedIn: 0,
+    followersCheckedIn: 0,
     locked: false,
     canToggleLock: false,
   };
@@ -123,9 +176,22 @@ export default function FloorParentCheckinPage() {
   const { containerMaxWidth } = useLayoutTier();
   const contest = useMemo(() => contestFromSearch(searchParams), [searchParams]);
   const [people, setPeople] = useState<ContestRosterPerson[]>([]);
+  const [checkedIds, setCheckedIds] = useState<Record<string, boolean>>({});
   const [loading, setLoading] = useState(contest !== null);
   const [error, setError] = useState<string | null>(null);
-  const title = contest ? floorParentContestLabel(contest) || 'Check-in' : 'Check-in';
+  const title = contest ? checkinTitle(contest) : 'Check-in';
+
+  const toggleChecked = (person: ContestRosterPerson, checked: boolean) => {
+    if (!contest) {
+      return;
+    }
+    setCheckedIds((current) => ({ ...current, [person.id]: checked }));
+    setError(null);
+    void setContestRosterCheckedIn(contest, person, checked).catch((saveError: unknown) => {
+      setCheckedIds((current) => ({ ...current, [person.id]: !checked }));
+      setError(saveError instanceof Error ? saveError.message : 'Unable to save check-in.');
+    });
+  };
 
   useEffect(() => {
     if (!contest) {
@@ -135,10 +201,14 @@ export default function FloorParentCheckinPage() {
     let cancelled = false;
     setLoading(true);
     setError(null);
+    setCheckedIds({});
     void fetchJudgingContestRoster(contest)
       .then((rows) => {
         if (!cancelled) {
           setPeople(rows);
+          setCheckedIds(
+            Object.fromEntries(rows.filter((person) => person.checkedIn).map((person) => [person.id, true])),
+          );
         }
       })
       .catch((loadError: unknown) => {
@@ -175,8 +245,28 @@ export default function FloorParentCheckinPage() {
           </Stack>
         ) : (
           <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
-            <RosterColumn title="Leaders" people={peopleInRole(people, 'leader')} />
-            <RosterColumn title="Followers" people={peopleInRole(people, 'follower')} />
+            <RosterColumn
+              title="Leaders"
+              people={peopleInRole(people, 'leader')}
+              checkedIds={checkedIds}
+              onToggle={(_personId, checked) => {
+                const person = people.find((entry) => entry.id === _personId);
+                if (person) {
+                  toggleChecked(person, checked);
+                }
+              }}
+            />
+            <RosterColumn
+              title="Followers"
+              people={peopleInRole(people, 'follower')}
+              checkedIds={checkedIds}
+              onToggle={(_personId, checked) => {
+                const person = people.find((entry) => entry.id === _personId);
+                if (person) {
+                  toggleChecked(person, checked);
+                }
+              }}
+            />
           </Stack>
         )}
         {error ? (

@@ -254,7 +254,7 @@ def build_pdf() -> None:
     for item in [
         "Audit log (/admin/audit-log): When/Action/Actor/Table/Record + View button in grid.",
         "Scheduled tasks frequencies include Once every 30 seconds, 10 minutes, and 30 minutes.",
-        "Timestamps display with formatReadableDateTime (Jul 11, 2026, 5:42:28 AM CDT style).",
+        "Timestamps display with formatReadableDateTime (Jul 11, 2026, 5:42 AM CDT style, no seconds).",
     ]:
         pdf.bullet(item)
 
@@ -598,7 +598,7 @@ def build_pdf() -> None:
 
     pdf.section_title("Readable datetime strings")
     for item in [
-        "String datetimes use readable form: Jul 11, 2026, 5:42:28 AM CDT (no ms, no ISO).",
+        "String datetimes use readable form: Jul 11, 2026, 5:42 AM CDT (no seconds, no ms, no ISO).",
         "PostgreSQL: api.format_activity_timestamp / api.parse_activity_timestamp.",
         "Frontend: formatReadableDateTime() in utils/auditTimestamps.ts.",
         "TIMESTAMPTZ audit columns stay as real timestamps.",

@@ -47,6 +47,6 @@ export function formatBuildTimestamp(value: string | null): string {
 
   return new Intl.DateTimeFormat(undefined, {
     dateStyle: 'medium',
-    timeStyle: 'medium',
+    timeStyle: 'short',
   }).format(new Date(parsed));
 }

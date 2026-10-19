@@ -367,14 +367,14 @@ export default function RegistrationContestRosterDialog({
               <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ pt: 0.5 }}>
                 <RosterColumn
                   dropId={LEADER_DROP_ID}
-                  title="Leaders"
+                  title={`Leaders: ${leaders.length}`}
                   people={leaders}
                   saving={saving}
                   onScratch={setScratchTarget}
                 />
                 <RosterColumn
                   dropId={FOLLOWER_DROP_ID}
-                  title="Followers"
+                  title={`Followers: ${followers.length}`}
                   people={followers}
                   saving={saving}
                   onScratch={setScratchTarget}

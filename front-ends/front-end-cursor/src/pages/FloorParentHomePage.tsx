@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   CircularProgress,
   Container,
@@ -23,23 +24,64 @@ import { useLayoutTier } from '../hooks/useLayoutTier';
 import {
   FLOOR_PARENT_TITLES,
   floorParentCheckinPath,
-  floorParentContestLabel,
   type FloorParentContest,
   type FloorParentTitle,
 } from '../lib/floorParent';
 import { formatReadableDateTime } from '../utils/auditTimestamps';
 
-function contestStartLabel(contest: FloorParentContest): string {
-  if (contest.startsAt.trim() === '') {
+type EventContestGroup = {
+  eventId: number;
+  eventName: string;
+  startsAt: string;
+  contests: FloorParentContest[];
+};
+
+function contestButtonLabel(contest: FloorParentContest): string {
+  const label = [contest.skillLevelLabel, contest.divisionLabel]
+    .map((part) => part.trim())
+    .filter((part) => part !== '')
+    .join(' · ');
+  return label === '' ? 'Contest' : label;
+}
+
+function contestStartLabel(startsAt: string): string {
+  if (startsAt.trim() === '') {
     return '';
   }
-  return formatReadableDateTime(contest.startsAt);
+  return formatReadableDateTime(startsAt);
+}
+
+function groupContestsByEvent(contests: FloorParentContest[]): EventContestGroup[] {
+  const byEvent = new Map<number, EventContestGroup>();
+  for (const contest of contests) {
+    const existing = byEvent.get(contest.eventId);
+    if (existing) {
+      existing.contests.push(contest);
+      continue;
+    }
+    const eventName = contest.eventName.trim();
+    byEvent.set(contest.eventId, {
+      eventId: contest.eventId,
+      eventName: eventName === '' ? 'Event' : eventName,
+      startsAt: contest.startsAt,
+      contests: [contest],
+    });
+  }
+
+  return [...byEvent.values()].sort((left, right) => {
+    const leftStart = new Date(left.startsAt).getTime();
+    const rightStart = new Date(right.startsAt).getTime();
+    if (leftStart !== rightStart) {
+      return leftStart - rightStart;
+    }
+    return left.eventId - right.eventId;
+  });
 }
 
 export default function FloorParentHomePage() {
   const navigate = useNavigate();
   const { session } = useAuth();
-  const { showXsLayout, containerMaxWidth } = useLayoutTier();
+  const { containerMaxWidth } = useLayoutTier();
   const [title, setTitle] = useState<FloorParentTitle>('Floor Parent');
   const [titleError, setTitleError] = useState<string | null>(null);
   const [savingTitle, setSavingTitle] = useState(false);
@@ -169,16 +211,14 @@ export default function FloorParentHomePage() {
             <Typography variant="body2" color="text.secondary">
               No contests start in the next 6 hours.
             </Typography>
-          ) : showXsLayout ? (
-            <Stack spacing={2} sx={{ width: '100%' }}>
-              {contests.map((contest) => (
-                <ContestButton key={contest.id} contest={contest} onOpen={() => navigate(floorParentCheckinPath(contest))} />
-              ))}
-            </Stack>
           ) : (
-            <Stack spacing={2} sx={{ width: '100%', maxWidth: 720 }}>
-              {contests.map((contest) => (
-                <ContestButton key={contest.id} contest={contest} onOpen={() => navigate(floorParentCheckinPath(contest))} />
+            <Stack spacing={2} sx={{ width: '100%', alignItems: 'stretch' }}>
+              {groupContestsByEvent(contests).map((group) => (
+                <EventContestGroupBox
+                  key={group.eventId}
+                  group={group}
+                  onOpen={(contest) => navigate(floorParentCheckinPath(contest))}
+                />
               ))}
             </Stack>
           )}
@@ -188,29 +228,69 @@ export default function FloorParentHomePage() {
   );
 }
 
-function ContestButton({ contest, onOpen }: { contest: FloorParentContest; onOpen: () => void }) {
-  const start = contestStartLabel(contest);
-  const label = floorParentContestLabel(contest);
+function EventContestGroupBox({
+  group,
+  onOpen,
+}: {
+  group: EventContestGroup;
+  onOpen: (contest: FloorParentContest) => void;
+}) {
+  const start = contestStartLabel(group.startsAt);
   return (
-    <Button
-      type="button"
-      variant="contained"
-      size="large"
-      fullWidth
-      onClick={onOpen}
-      aria-label={start === '' ? label : `${label}, starts ${start}`}
-      sx={{ textTransform: 'none', py: 1.25 }}
+    <Box
+      component="fieldset"
+      sx={{
+        m: 0,
+        width: '100%',
+        minWidth: 0,
+        p: { xs: 1.5, md: 2 },
+        border: 1,
+        borderColor: 'divider',
+        borderRadius: 1,
+      }}
     >
-      <Stack spacing={0.25} sx={{ alignItems: 'center', minWidth: 0 }}>
-        <Typography component="span" sx={{ fontWeight: 700 }}>
-          {label}
+      <Typography component="legend" sx={{ px: 0.5, fontWeight: 700 }}>
+        {group.eventName}
+      </Typography>
+      <Stack
+        direction={{ xs: 'column', md: 'row' }}
+        spacing={2}
+        sx={{ alignItems: { md: 'center' } }}
+      >
+        <Typography
+          variant="body2"
+          sx={{
+            flexShrink: 0,
+            width: { md: '16rem' },
+            color: start === '' ? 'text.secondary' : 'text.primary',
+          }}
+        >
+          {start === '' ? 'Start time unavailable' : start}
         </Typography>
-        {start === '' ? null : (
-          <Typography component="span" variant="body2">
-            {start}
-          </Typography>
-        )}
+        <Stack spacing={1} sx={{ flex: 1, minWidth: 0, width: '100%' }}>
+          {group.contests.map((contest) => {
+            const label = contestButtonLabel(contest);
+            return (
+              <Button
+                key={contest.id}
+                type="button"
+                variant="contained"
+                size="large"
+                fullWidth
+                onClick={() => onOpen(contest)}
+                aria-label={
+                  start === ''
+                    ? `${group.eventName}, ${label}`
+                    : `${group.eventName}, ${label}, starts ${start}`
+                }
+                sx={{ textTransform: 'none' }}
+              >
+                {label}
+              </Button>
+            );
+          })}
+        </Stack>
       </Stack>
-    </Button>
+    </Box>
   );
 }

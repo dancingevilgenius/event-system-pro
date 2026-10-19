@@ -890,19 +890,20 @@ The app is designed to be **usable on phones** as well as desktop — narrow, ce
 
 ## Readable datetime strings
 
-When saving a **datetime as a string** (JSON text fields, `additional_info_json`, activity strings, audit-style payloads), use:
+When saving or displaying a **datetime as a string** (JSON text fields, `additional_info_json`, activity strings, audit-style payloads, labels, tables), use:
 
-**Example:** `Jul 11, 2026, 5:42:28 AM CDT`
+**Example:** `Jul 11, 2026, 5:42 AM CDT`
 
-- Abbreviated month (`Jul`), day, year, comma, 12-hour time **with seconds**, `AM`/`PM`, timezone abbreviation
-- **No milliseconds**
+- Abbreviated month (`Jul`), day, year, comma, 12-hour time **without seconds**, `AM`/`PM`, timezone abbreviation
+- **No seconds** and **no milliseconds** on any date or time shown to a user
 - **No ISO-8601** for these string fields (e.g. not `2026-07-11T05:42:28-05:00`)
+- Older stored values may still contain `:ss`. Strip those seconds when displaying them.
 
 Applies to keys such as `last_login_at`, `last_logout_at`, `last-activity`, and any new string datetime fields (unless a field documents its own format, e.g. WSDC `last_update_datetime`).
 
 | Layer | Helper |
 |-------|--------|
-| PostgreSQL | `api.format_activity_timestamp(date_trunc('second', p_ts))` / `api.parse_activity_timestamp(text)` |
+| PostgreSQL | `api.format_activity_timestamp(date_trunc('minute', p_ts))` / `api.parse_activity_timestamp(text)` |
 | Frontend | `formatReadableDateTime()` / `formatAuditJsonForDisplay()` in `utils/auditTimestamps.ts` |
 
 `TIMESTAMPTZ` columns (`created_date`, `modified_date`, …) stay as real timestamps — do not stringify those.

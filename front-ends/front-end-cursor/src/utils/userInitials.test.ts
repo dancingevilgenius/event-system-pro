@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { userInitials } from './userInitials';
+import { signedInUserInitials, userInitials } from './userInitials';
 
 describe('userInitials', () => {
   it('uses the first letter of the first and last name', () => {
@@ -18,5 +18,24 @@ describe('userInitials', () => {
     expect(userInitials({})).toBe('');
     expect(userInitials({ displayName: 'dancingevilgenius' })).toBe('');
     expect(userInitials({ firstName: '   ', lastName: '  ' })).toBe('');
+  });
+});
+
+describe('signedInUserInitials', () => {
+  it('prefers first and last name over the username', () => {
+    expect(
+      signedInUserInitials({
+        firstName: 'Carlos',
+        lastName: 'Garcia',
+        username: 'dancingevilgenius',
+      }),
+    ).toBe('CG');
+  });
+
+  it('uses up to two letters of the username when no name is available', () => {
+    expect(signedInUserInitials({ username: 'dancingevilgenius' })).toBe('DA');
+    expect(signedInUserInitials({ username: 'c.garcia' })).toBe('CG');
+    expect(signedInUserInitials({ username: 'a' })).toBe('A');
+    expect(signedInUserInitials({ username: '123' })).toBe('');
   });
 });

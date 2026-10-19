@@ -36,3 +36,27 @@ export function userInitials(name: {
 
   return `${firstLetter(parts[0])}${firstLetter(parts[parts.length - 1])}`;
 }
+
+/** Up to two letters from a username when no first and last name is available. */
+export function usernameInitials(username: string | null | undefined): string {
+  const letters = (username ?? '').match(/\p{L}/gu) ?? [];
+  return letters.slice(0, 2).join('').toLocaleUpperCase();
+}
+
+/**
+ * Judge/header initials: first and last name when present, otherwise up to two
+ * letters of the signed-in username.
+ */
+export function signedInUserInitials(name: {
+  firstName?: string | null;
+  lastName?: string | null;
+  displayName?: string | null;
+  username?: string | null;
+}): string {
+  const fromName = userInitials(name);
+  if (fromName) {
+    return fromName;
+  }
+
+  return usernameInitials(name.username);
+}

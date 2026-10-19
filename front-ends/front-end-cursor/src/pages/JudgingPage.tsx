@@ -34,6 +34,7 @@ import CompetitorColorSwatchBox, {
 import JudgingScoreInput, {
   type JudgingScoreInputMode,
 } from '../components/JudgingScoreInput';
+import JudgeHeaderInitials, { judgeHeaderRowSx } from '../components/JudgeHeaderInitials';
 import PageBackButton from '../components/PageBackButton';
 import PaletteOutlinedIcon from '../components/PaletteOutlinedIcon';
 import PercentCompleteBar from '../components/PercentCompleteBar';
@@ -1188,12 +1189,23 @@ export default function JudgingPage() {
           boxSizing: 'border-box',
         }}
       >
-        <PageBackButton to="/judgingHome" label="Back to Judging" disabled={!backEnabled} />
-
         <Stack spacing={1} sx={{ ...judgingContentSx, flexShrink: 0 }}>
-          <Typography variant="h6" component="h1" sx={{ textAlign: 'center' }}>
-            {judgingFinalsTitle(contest)}
-          </Typography>
+          <Box sx={judgeHeaderRowSx}>
+            <PageBackButton
+              to="/judgingHome"
+              label="Back to Judging"
+              disabled={!backEnabled}
+              stackSx={{ mb: 0, width: 'auto', maxWidth: 'none', mx: 0, alignItems: 'flex-start' }}
+            />
+            <Typography
+              variant="h6"
+              component="h1"
+              sx={{ textAlign: 'center', minWidth: 0, overflowWrap: 'break-word', lineHeight: 1.2 }}
+            >
+              {judgingFinalsTitle(contest)}
+            </Typography>
+            <JudgeHeaderInitials contestHeadJudge={judgeProgress?.contestHeadJudge === true} />
+          </Box>
 
           <PercentCompleteBar percent={percentComplete} onSubmit={handleSubmit} />
           {judgeProgress?.showBar ? (

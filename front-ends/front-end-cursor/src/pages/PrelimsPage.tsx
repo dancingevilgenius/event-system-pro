@@ -26,9 +26,8 @@ import {
 } from '@mui/material';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import MobileBackIconButton, {
-  MOBILE_HEADER_ICON_SLOT,
-} from '../components/MobileBackIconButton';
+import JudgeHeaderInitials, { judgeHeaderRowSx } from '../components/JudgeHeaderInitials';
+import MobileBackIconButton from '../components/MobileBackIconButton';
 import PercentCompleteBar from '../components/PercentCompleteBar';
 import {
   CONTENT_MAX_WIDTH,
@@ -803,14 +802,7 @@ export default function PrelimsPage() {
         }}
       >
         <Stack spacing={1} sx={{ ...contentSx, flexShrink: 0 }}>
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              width: '100%',
-            }}
-          >
+          <Box sx={judgeHeaderRowSx}>
             <Tooltip title={backTooltip}>
               <span>
                 <MobileBackIconButton label={backTooltip} onClick={() => navigate('/judge-demos')} />
@@ -819,11 +811,11 @@ export default function PrelimsPage() {
             <Typography
               variant="h6"
               component="h1"
-              sx={{ flex: 1, textAlign: 'center', minWidth: 0 }}
+              sx={{ textAlign: 'center', minWidth: 0, overflowWrap: 'break-word', lineHeight: 1.2 }}
             >
               All-American Prelims
             </Typography>
-            <Box sx={{ width: MOBILE_HEADER_ICON_SLOT, flexShrink: 0 }} aria-hidden />
+            <JudgeHeaderInitials />
           </Box>
 
           <Box

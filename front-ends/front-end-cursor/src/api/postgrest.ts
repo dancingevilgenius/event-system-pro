@@ -3904,6 +3904,8 @@ export async function fetchJudgingContestPairs(
 export type JudgingFinalsSubmissionStatus = JudgeSubmissionProgress & {
   showBar: boolean;
   judgeId: string;
+  /** Signed-in user is this contest's head judge (assignment or contest staff role). */
+  contestHeadJudge: boolean;
 };
 
 type JudgeScoreContest = {
@@ -4058,15 +4060,18 @@ function submissionStatus(docs: JudgeContestDocs, user: JudgingUserIdentity | nu
     const id = typeof row.head_judge_staff_id === 'string' ? row.head_judge_staff_id.trim() : '';
     return id === '' ? [] : [id];
   });
+  const contestHeadJudge = user
+    ? staffIds.some((id) => headIds.includes(id)) || staffJsonMatchesHeadJudge(docs.staffJson, user)
+    : false;
   return {
     ...progress,
     judgeId: staffIds[0] || user?.username.trim() || '',
+    contestHeadJudge,
     showBar: user
       ? seesJudgeSubmissionBar({
           appRoles: user.appRoles,
           eventHeadJudge: matches.some((person) => personIsHeadJudge(person)),
-          contestHeadJudge:
-            staffIds.some((id) => headIds.includes(id)) || staffJsonMatchesHeadJudge(docs.staffJson, user),
+          contestHeadJudge,
         })
       : false,
   };

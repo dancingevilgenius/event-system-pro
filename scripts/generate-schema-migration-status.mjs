@@ -35,6 +35,7 @@ const detailsOverride = {
   '168_floor_parent_title.sql': 'api.set_floor_parent_title() is missing.',
   '169_hide_timestamp_seconds.sql': 'Readable timestamps still include seconds.',
   '170_audit_timestamp_seconds.sql': 'Audit log timestamps still drop seconds.',
+  '171_open_contest_judge_tabs.sql': 'Open Judge Tabs cannot sign judges in.',
   '139_training_instructions.sql': 'training_instructions table is missing.',
   '140_prelims_alternate_label.sql': 'Prelims coaching copy still says Maybe.',
   '141_training_move_panel_step.sql': 'Training lessons do not start by moving the training box.',
@@ -85,6 +86,8 @@ const probes = {
     "position(':SS' in pg_get_functiondef('api.format_activity_timestamp(timestamptz)'::regprocedure)) = 0",
   '170_audit_timestamp_seconds.sql':
     "position('format_audit_timestamp' in pg_get_functiondef('public.audit_format_timestamptz_text(text)'::regprocedure)) > 0",
+  '171_open_contest_judge_tabs.sql':
+    "to_regprocedure('api.open_contest_judge_tabs(bigint, text)') IS NOT NULL",
   '139_training_instructions.sql': "to_regclass('public.training_instructions') IS NOT NULL",
   '140_prelims_alternate_label.sql':
     "EXISTS (SELECT 1 FROM public.training_instructions WHERE instruction_code = 'PRELIMS_MARKS' AND position('Maybe' in steps_json::text) = 0 AND position('Alternate' in steps_json::text) > 0)",

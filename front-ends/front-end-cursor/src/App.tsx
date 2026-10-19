@@ -5,6 +5,7 @@ import LoginFlashHandler from './components/LoginFlashHandler';
 import ProtectedRoute from './components/ProtectedRoute';
 import JudgeFinalsRoute from './components/JudgeFinalsRoute';
 import JudgingHomeRoute from './components/JudgingHomeRoute';
+import JudgeTabHandoffPage from './pages/JudgeTabHandoffPage';
 import RegistrationHomeRoute from './components/RegistrationHomeRoute';
 import AccountPage from './pages/AccountPage';
 import AdminAuditLogPage from './pages/AdminAuditLogPage';
@@ -468,6 +469,7 @@ export default function App() {
         }
       />
       <Route path="/registrationHome" element={<RegistrationHomeRoute />} />
+      <Route path="/judge-tab" element={<JudgeTabHandoffPage />} />
       <Route path="/judgingHome" element={<JudgingHomeRoute />} />
       <Route
         path="/judge-finals"

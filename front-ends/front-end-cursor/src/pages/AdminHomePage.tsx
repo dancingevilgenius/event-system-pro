@@ -14,6 +14,7 @@ import {
   isWsdcDancerProfile,
 } from '../api/wsdcRegistry';
 import BuildInfoDialog from '../components/BuildInfoDialog';
+import OpenJudgeTabsDialog from '../components/OpenJudgeTabsDialog';
 import PageHeader from '../components/PageHeader';
 import { centeredContentStackSx } from '../constants/layout';
 import { EVENT_HOME_PATH } from '../constants/eventRoutes';
@@ -50,6 +51,7 @@ export default function AdminHomePage() {
   const [startingChurn, setStartingChurn] = useState(false);
   const [refreshingWsdc, setRefreshingWsdc] = useState(false);
   const [buildInfoOpen, setBuildInfoOpen] = useState(false);
+  const [openJudgeTabs, setOpenJudgeTabs] = useState(false);
 
   const handleTestMessages = () => {
     clearMessages();
@@ -193,6 +195,14 @@ export default function AdminHomePage() {
 
         {showXsLayout ? (
           <Stack spacing={2} sx={{ my: 3, ...centeredContentStackSx }}>
+            <Button
+              variant="contained"
+              size="large"
+              fullWidth
+              onClick={() => setOpenJudgeTabs(true)}
+            >
+              Open Judge Tabs
+            </Button>
             {ADMIN_BUTTONS.map((button) => (
               <Button
                 key={button.label}
@@ -247,6 +257,16 @@ export default function AdminHomePage() {
           </Stack>
         ) : (
           <Grid container spacing={2} sx={{ my: 3 }}>
+            <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+              <Button
+                variant="contained"
+                size="large"
+                fullWidth
+                onClick={() => setOpenJudgeTabs(true)}
+              >
+                Open Judge Tabs
+              </Button>
+            </Grid>
             {ADMIN_BUTTONS.map((button) => (
               <Grid key={button.label} size={{ xs: 12, md: 6, lg: 4 }}>
                 <Button
@@ -314,6 +334,7 @@ export default function AdminHomePage() {
       </Paper>
 
       <BuildInfoDialog open={buildInfoOpen} onClose={() => setBuildInfoOpen(false)} />
+      <OpenJudgeTabsDialog open={openJudgeTabs} onClose={() => setOpenJudgeTabs(false)} />
     </Container>
   );
 }

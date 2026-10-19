@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { fetchFloorParentTitle } from '../api/postgrest';
 import AccountSettingsButton from '../components/AccountSettingsButton';
 import { MOBILE_HEADER_ICON_SLOT } from '../components/MobileHeaderIconButton';
+import OpenJudgeTabsDialog from '../components/OpenJudgeTabsDialog';
 import { centeredContentStackSx } from '../constants/layout';
 import { useAuth } from '../hooks/useAuth';
 import { useLayoutTier } from '../hooks/useLayoutTier';
@@ -25,6 +26,8 @@ export default function HomePage() {
   const [floorParentTitle, setFloorParentTitle] = useState<FloorParentTitle>(DEFAULT_FLOOR_PARENT_TITLE);
   const { showXsLayout, containerMaxWidth } = useLayoutTier();
   const registrationByAppRole = hasAnyRole(['REGISTRATION']);
+  const isAdmin = hasAnyRole(['ADMIN']);
+  const [openJudgeTabs, setOpenJudgeTabs] = useState(false);
   const registrationByStaff = useRegistrationHomeAccess(!registrationByAppRole);
   const judgingAccess = useJudgingHomeAccess(true);
   const visibleButtons = HOME_BUTTONS.filter((button) => {
@@ -97,6 +100,16 @@ export default function HomePage() {
 
         {showXsLayout ? (
           <Stack spacing={2} sx={{ my: 3, ...centeredContentStackSx }}>
+            {isAdmin && (
+              <Button
+                variant="contained"
+                size="large"
+                fullWidth
+                onClick={() => setOpenJudgeTabs(true)}
+              >
+                Open Judge Tabs
+              </Button>
+            )}
             {homeButtons.map((button) => (
               <Button
                 key={button.path}
@@ -111,6 +124,18 @@ export default function HomePage() {
           </Stack>
         ) : (
           <Grid container spacing={2} sx={{ my: 3 }}>
+            {isAdmin && (
+              <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  onClick={() => setOpenJudgeTabs(true)}
+                >
+                  Open Judge Tabs
+                </Button>
+              </Grid>
+            )}
             {homeButtons.map((button) => (
               <Grid key={button.path} size={{ xs: 12, md: 6, lg: 4 }}>
                 <Button
@@ -126,6 +151,9 @@ export default function HomePage() {
           </Grid>
         )}
       </Paper>
+      {isAdmin && (
+        <OpenJudgeTabsDialog open={openJudgeTabs} onClose={() => setOpenJudgeTabs(false)} />
+      )}
     </Container>
   );
 }

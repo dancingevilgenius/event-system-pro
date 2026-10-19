@@ -29,6 +29,10 @@ import {
   type PlacementCouple,
   type SavedRelativePlacement,
 } from '../lib/relativePlacementResults';
+import {
+  openJudgeContestChoices,
+  type OpenJudgeContestChoice,
+} from '../lib/openJudgeTabs';
 import { formatReadableDateTime } from '../utils/auditTimestamps';
 import type { JudgeSubmission } from '../services/tabulation/types';
 import { readStoredContestPairs, storedContestPairs, type ContestPair, type StoredContestPair } from '../lib/judgingPairs';
@@ -6949,6 +6953,62 @@ export async function persistEventJudgingPool(
   }
 
   return result;
+}
+
+export type OpenContestJudgeTabsResult = {
+  ok: boolean;
+  message?: string;
+  sessions?: LoginResult[];
+  skipped?: Array<{ name?: string; reason?: string }>;
+};
+
+/** Contests on an event, with the staff ids of judges assigned to each one. */
+export async function fetchOpenJudgeContestChoices(eventId: number): Promise<OpenJudgeContestChoice[]> {
+  const moreJson = await fetchEventMoreJson(eventId);
+  const params = new URLSearchParams({
+    select: 'contest_id,more_json,staff_json',
+    order: 'contest_id.asc',
+  });
+  params.append('event_id', `eq.${eventId}`);
+
+  const rows = await fetchJson<Array<{ contest_id: number; more_json: unknown; staff_json: unknown }>>(
+    `${POSTGREST_URL}/contest?${params.toString()}`,
+    'Unable to load contests',
+  );
+
+  let panels: Array<{ contest_id: number; judges_json: unknown }> = [];
+  try {
+    const panelParams = new URLSearchParams({ select: 'contest_id,judges_json' });
+    panelParams.append('event_id', `eq.${eventId}`);
+    panels = await fetchJson<Array<{ contest_id: number; judges_json: unknown }>>(
+      `${POSTGREST_URL}/judging_panel?${panelParams.toString()}`,
+      'Unable to load judging panels',
+    );
+  } catch {
+    panels = [];
+  }
+
+  return openJudgeContestChoices({
+    moreJson,
+    tableContests: rows.flatMap((row) => (
+      Number.isInteger(row.contest_id)
+        ? [{ contestId: row.contest_id, moreJson: row.more_json, staffJson: row.staff_json }]
+        : []
+    )),
+    panels: panels.flatMap((row) => (
+      Number.isInteger(row.contest_id)
+        ? [{ contestId: row.contest_id, judgesJson: row.judges_json }]
+        : []
+    )),
+  });
+}
+
+/** Admin: sign in each judge assigned to the contest. */
+export function openContestJudgeTabs(eventId: number, contestKey: string) {
+  return callRpc<OpenContestJudgeTabsResult>('open_contest_judge_tabs', {
+    p_event_id: eventId,
+    p_contest_key: contestKey,
+  });
 }
 
 export function judgeSearchUserToPoolMember(user: JudgeSearchUser): EventJudgePoolMember {

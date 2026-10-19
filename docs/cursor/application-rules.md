@@ -2,6 +2,10 @@
 
 Plain-language summary of rules, restrictions, and constraints for the **front-end-cursor** app and related **database / demo-data** conventions.
 
+## Application todo list
+
+- Fix sign-in on the judge tabs. **Open Judge Tabs** creates a session for each assigned judge, but the new browser tabs do not finish signing that judge in and opening Judging Home.
+
 **Primary code locations**
 
 | Area | Path |

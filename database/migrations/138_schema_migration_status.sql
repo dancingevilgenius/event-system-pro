@@ -6738,6 +6738,45 @@ NOTIFY pgrst, 'reload schema';$sqlbody$,
 INSERT INTO maintenance.schema_migration_catalog (
   filename, script_number, details, probe, sql_body, sort_key, created_by
 ) VALUES (
+  $fn$170_audit_timestamp_seconds.sql$fn$,
+  $num$170$num$,
+  $details$Audit log timestamps still drop seconds.$details$,
+  $probe$position('format_audit_timestamp' in pg_get_functiondef('public.audit_format_timestamptz_text(text)'::regprocedure)) > 0$probe$,
+  $sqlbody$-- Audit log string timestamps keep seconds: Jul 11, 2026, 5:42:28 AM CDT.
+-- Other readable timestamps stay at minute precision.
+-- Run: psql -U postgres -d event_system_pro -f database/migrations/170_audit_timestamp_seconds.sql
+
+
+CREATE OR REPLACE FUNCTION api.format_audit_timestamp(p_ts timestamptz)
+RETURNS text
+LANGUAGE sql
+STABLE
+SET search_path = public, api
+AS $$
+  SELECT to_char(
+    date_trunc('second', p_ts),
+    'FMMon FMDD, YYYY, FMHH12:MI:SS AM TZ'
+  );
+$$;
+
+CREATE OR REPLACE FUNCTION public.audit_format_timestamptz_text(p_text text)
+RETURNS text
+LANGUAGE sql
+STABLE
+SET search_path = public, api
+AS $$
+  SELECT api.format_audit_timestamp(date_trunc('second', p_text::timestamptz));
+$$;
+
+COMMENT ON FUNCTION api.format_audit_timestamp(timestamptz) IS
+  'Readable audit timestamp with seconds, for audit_log JSON payloads.';$sqlbody$,
+  $sort$170_audit_timestamp_seconds.sql$sort$,
+  'c-agent'
+);
+
+INSERT INTO maintenance.schema_migration_catalog (
+  filename, script_number, details, probe, sql_body, sort_key, created_by
+) VALUES (
   '138_schema_migration_status.sql',
   '138',
   'Nightly check that compares migration scripts with the database.',

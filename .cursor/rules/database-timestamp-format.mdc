@@ -5,7 +5,7 @@ alwaysApply: true
 
 # Readable datetime strings
 
-When saving or displaying a **datetime as a string** (JSON text fields, `additional_info_json`, activity strings, audit-style payloads, labels, tables), use:
+When saving or displaying a **datetime as a string** (JSON text fields, `additional_info_json`, activity strings, labels, tables), use:
 
 **Example:** `Jul 11, 2026, 5:42 AM CDT`
 
@@ -32,6 +32,14 @@ jsonb_build_object(
 ```
 
 `TIMESTAMPTZ` columns (`created_date`, `modified_date`, …) stay as real timestamps — do not stringify those.
+
+## Audit trail
+
+Audit log timestamps keep seconds: `Jul 11, 2026, 5:42:28 AM CDT`.
+
+- Save JSON timestamps inside `audit_log` with `api.format_audit_timestamp(date_trunc('second', p_ts))`. `public.audit_format_timestamptz_text` does this.
+- Show the Audit Trail with `formatAuditDateTime()` and `formatAuditJsonForDisplay()`. Leave the `:ss` in place.
+- `occurred_at` stays a real `timestamptz` and is shown with seconds.
 
 ## Frontend
 

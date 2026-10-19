@@ -890,7 +890,7 @@ The app is designed to be **usable on phones** as well as desktop — narrow, ce
 
 ## Readable datetime strings
 
-When saving or displaying a **datetime as a string** (JSON text fields, `additional_info_json`, activity strings, audit-style payloads, labels, tables), use:
+When saving or displaying a **datetime as a string** (JSON text fields, `additional_info_json`, activity strings, labels, tables), use:
 
 **Example:** `Jul 11, 2026, 5:42 AM CDT`
 
@@ -904,7 +904,9 @@ Applies to keys such as `last_login_at`, `last_logout_at`, `last-activity`, and 
 | Layer | Helper |
 |-------|--------|
 | PostgreSQL | `api.format_activity_timestamp(date_trunc('minute', p_ts))` / `api.parse_activity_timestamp(text)` |
-| Frontend | `formatReadableDateTime()` / `formatAuditJsonForDisplay()` in `utils/auditTimestamps.ts` |
+| Audit log JSON | `api.format_audit_timestamp(date_trunc('second', p_ts))` — keep seconds |
+| Frontend | `formatReadableDateTime()` in `utils/auditTimestamps.ts` |
+| Audit Trail page | `formatAuditDateTime()` / `formatAuditJsonForDisplay()` — keep seconds |
 
 `TIMESTAMPTZ` columns (`created_date`, `modified_date`, …) stay as real timestamps — do not stringify those.
 

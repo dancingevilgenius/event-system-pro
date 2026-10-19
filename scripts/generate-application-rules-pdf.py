@@ -601,6 +601,7 @@ def build_pdf() -> None:
         "String datetimes use readable form: Jul 11, 2026, 5:42 AM CDT (no seconds, no ms, no ISO).",
         "PostgreSQL: api.format_activity_timestamp / api.parse_activity_timestamp.",
         "Frontend: formatReadableDateTime() in utils/auditTimestamps.ts.",
+        "Audit Trail keeps seconds: api.format_audit_timestamp and formatAuditDateTime().",
         "TIMESTAMPTZ audit columns stay as real timestamps.",
     ]:
         pdf.bullet(item)

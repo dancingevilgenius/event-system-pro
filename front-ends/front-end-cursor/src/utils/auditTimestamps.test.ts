@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { formatAuditJsonForDisplay, formatReadableDateTime, hideDisplayedSeconds } from './auditTimestamps';
+import {
+  formatAuditDateTime,
+  formatAuditJsonForDisplay,
+  formatReadableDateTime,
+  hideDisplayedSeconds,
+} from './auditTimestamps';
 
 describe('hideDisplayedSeconds', () => {
   it('removes seconds from a readable clock', () => {
@@ -20,12 +25,18 @@ describe('formatReadableDateTime', () => {
   });
 });
 
+describe('formatAuditDateTime', () => {
+  it('keeps seconds', () => {
+    const formatted = formatAuditDateTime(new Date('2026-07-11T10:42:28.000Z'));
+    expect(formatted).toMatch(/\d{1,2}:\d{2}:\d{2} [AP]M/);
+  });
+});
+
 describe('formatAuditJsonForDisplay', () => {
-  it('hides seconds already stored on a readable timestamp', () => {
+  it('keeps seconds already stored on a readable timestamp', () => {
     const text = formatAuditJsonForDisplay({
       last_login_at: 'Jul 11, 2026, 5:42:28 AM CDT',
     });
-    expect(text).toContain('5:42 AM');
-    expect(text).not.toContain('5:42:28');
+    expect(text).toContain('5:42:28 AM');
   });
 });

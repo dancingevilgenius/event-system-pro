@@ -16,7 +16,7 @@ import { useRef, type UIEvent } from 'react';
 import type { AuditLogRow } from '../api/postgrest';
 import { formatAuditLogActor } from '../lib/auditLogDisplay';
 import { getHighlightedJsonLines } from '../utils/auditJsonDiff';
-import { formatAuditJsonForDisplay, formatReadableDateTime } from '../utils/auditTimestamps';
+import { formatAuditDateTime, formatAuditJsonForDisplay } from '../utils/auditTimestamps';
 import CloseIcon from './CloseIcon';
 import { useIsMobileDevice } from '../hooks/useIsMobileDevice';
 
@@ -82,7 +82,7 @@ function formatJson(value: Record<string, unknown> | null): string {
 }
 
 function formatOccurredAt(value: string): string {
-  return formatReadableDateTime(value);
+  return formatAuditDateTime(value);
 }
 
 function AuditJsonTextField({

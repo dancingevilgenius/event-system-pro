@@ -6,20 +6,35 @@ export function hideDisplayedSeconds(value: string): string {
   return value.replace(new RegExp(DISPLAYED_SECONDS_PATTERN.source, 'g'), '$1');
 }
 
+const READABLE_DATE_TIME_OPTIONS = {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+  hour: 'numeric',
+  minute: '2-digit',
+  hour12: true,
+  timeZoneName: 'short',
+} as const;
+
 export function formatReadableDateTime(value: string | Date): string {
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) {
     return typeof value === 'string' ? hideDisplayedSeconds(value) : '';
   }
 
+  return date.toLocaleString('en-US', READABLE_DATE_TIME_OPTIONS);
+}
+
+/** Audit Trail timestamps keep seconds so a recorded change can be told apart from the next one. */
+export function formatAuditDateTime(value: string | Date): string {
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return typeof value === 'string' ? value : '';
+  }
+
   return date.toLocaleString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-    timeZoneName: 'short',
+    ...READABLE_DATE_TIME_OPTIONS,
+    second: '2-digit',
   });
 }
 
@@ -27,12 +42,8 @@ function formatAuditJsonValue(value: unknown): unknown {
   if (typeof value === 'string' && ISO_TIMESTAMP_PATTERN.test(value)) {
     const parsed = new Date(value);
     if (!Number.isNaN(parsed.getTime())) {
-      return formatReadableDateTime(parsed);
+      return formatAuditDateTime(parsed);
     }
-  }
-
-  if (typeof value === 'string' && DISPLAYED_SECONDS_PATTERN.test(value)) {
-    return hideDisplayedSeconds(value);
   }
 
   if (Array.isArray(value)) {

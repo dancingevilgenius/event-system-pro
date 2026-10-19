@@ -25,7 +25,7 @@ import PurgeAuditLogDialog from '../components/PurgeAuditLogDialog';
 import { useLayoutTier } from '../hooks/useLayoutTier';
 import { formatAuditLogActor } from '../lib/auditLogDisplay';
 import { isEventsystemFunDeployment } from '../lib/deployment';
-import { formatReadableDateTime } from '../utils/auditTimestamps';
+import { formatAuditDateTime } from '../utils/auditTimestamps';
 
 const DESKTOP_PAGE_SIZE = 25;
 const TABLET_PAGE_SIZE = 15;
@@ -40,7 +40,7 @@ function displayValue(value: string): string {
 }
 
 function formatOccurredAt(value: string): string {
-  return formatReadableDateTime(value);
+  return formatAuditDateTime(value);
 }
 
 function AuditLogMobileCard({

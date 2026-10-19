@@ -3,6 +3,7 @@ import {
   accountsToCreate,
   assignTestCompetitorBibs,
   createTestCompetitorsConfirmText,
+  createTestCompetitorsInstructionText,
   deleteGeneratedCompetitorsConfirmText,
   generatedCompetitorLastNames,
   generatedCompetitorRoster,
@@ -89,6 +90,17 @@ describe('assignTestCompetitorBibs', () => {
     });
     expect(isGeneratedCompetitor({ firstName: 'Leader', lastName: 'aaa1' })).toBe(true);
   });
+
+  it('assigns a different number of leaders and followers', () => {
+    const roster = assignTestCompetitorBibs(new Set(), 2, 4);
+    const leaders = roster.filter((person) => person.role === 'leader');
+    const followers = roster.filter((person) => person.role === 'follower');
+
+    expect(leaders.map((person) => person.lastName)).toEqual(['aaa', 'bbb']);
+    expect(leaders.map((person) => person.bib)).toEqual([1, 2]);
+    expect(followers.map((person) => person.lastName)).toEqual(['aaa', 'bbb', 'ccc', 'ddd']);
+    expect(followers.map((person) => person.bib)).toEqual([3, 4, 5, 6]);
+  });
 });
 
 describe('generatedCompetitorsForPairIds', () => {
@@ -167,6 +179,11 @@ describe('test competitor messages', () => {
       'This will scratch the current competitors, then add 4 leaders and 4 followers to All-Clone Jack and Jill, All-American Jack and Jill.',
     );
     expect(createTestCompetitorsConfirmText(contest, 26)).not.toContain('Generate Competitors');
+    expect(createTestCompetitorsConfirmText(contest, 3, 7)).toBe(
+      'This will scratch the current competitors, then add 3 leaders and 7 followers to All-Clone Jack and Jill, All-American Jack and Jill.',
+    );
+    expect(createTestCompetitorsInstructionText('same')).toContain('same number of leaders and followers');
+    expect(createTestCompetitorsInstructionText('different')).toContain('leader count and follower count');
     expect(deleteGeneratedCompetitorsConfirmText(contest)).not.toContain('Generate Competitors');
   });
 });

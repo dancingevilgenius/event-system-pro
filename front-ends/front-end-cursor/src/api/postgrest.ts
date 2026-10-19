@@ -57,7 +57,6 @@ import {
   COMPETITORS_GENERATED_FLAG,
   accountsToCreate,
   assignTestCompetitorBibs,
-  generatedCompetitorRoster,
   isGeneratedCompetitor,
   rosterHasGeneratedCompetitors,
   usedContestBibNumbers,
@@ -6465,8 +6464,11 @@ async function writeContestCompetitorsGenerated(
   );
 }
 
-async function ensureGeneratedCompetitorAccounts(count: number): Promise<void> {
-  const roster = generatedCompetitorRoster(count);
+async function ensureGeneratedCompetitorAccounts(
+  leaderCount: number,
+  followerCount: number,
+): Promise<void> {
+  const roster = assignTestCompetitorBibs(new Set(), leaderCount, followerCount);
   const matches = await lookupStaffRegistration(
     roster.map((person) => ({
       id: person.id,
@@ -6498,15 +6500,16 @@ export type GenerateContestCompetitorsResult = {
 };
 
 /**
- * Scratches everyone on the contest, then adds `count` leaders and `count` followers.
- * Bibs prefer 1–count and the next count numbers, skipping any number still in use.
+ * Scratches everyone on the contest, then adds the requested leaders and followers.
+ * Bibs prefer 1–leaderCount and the next followerCount numbers, skipping any number still in use.
  * User accounts are Quick Registered only when that name does not already exist.
  */
 export async function generateContestCompetitors(
   contest: UpcomingRegistrationContest,
-  count: number,
+  leaderCount: number,
+  followerCount = leaderCount,
 ): Promise<GenerateContestCompetitorsResult> {
-  await ensureGeneratedCompetitorAccounts(count);
+  await ensureGeneratedCompetitorAccounts(leaderCount, followerCount);
 
   const existing = await fetchContestRoster(contest);
   if (existing.length > 0) {
@@ -6515,7 +6518,7 @@ export async function generateContestCompetitors(
   const remaining = (existing.length > 0 ? await fetchContestRoster(contest) : []).filter(
     (person) => !isGeneratedCompetitor(person),
   );
-  const assigned = assignTestCompetitorBibs(usedContestBibNumbers(remaining), count);
+  const assigned = assignTestCompetitorBibs(usedContestBibNumbers(remaining), leaderCount, followerCount);
 
   if (contest.source === 'json') {
     await saveContestRoster(contest, [

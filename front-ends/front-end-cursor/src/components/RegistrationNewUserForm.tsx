@@ -1,4 +1,15 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   deleteGeneratedContestCompetitors,
@@ -17,8 +28,10 @@ import { autoQuickRegisterAction } from '../utils/autoQuickRegister';
 import { contestSkillDivisionLabel } from '../utils/duplicateContestBib';
 import {
   createTestCompetitorsConfirmText,
+  createTestCompetitorsInstructionText,
   deleteGeneratedCompetitorsConfirmText,
   testCompetitorCount,
+  type TestCompetitorCountMode,
 } from '../utils/generatedCompetitors';
 import {
   quickRegistrationRegisteredMessage,
@@ -36,6 +49,44 @@ const NEW_USER_LOOKUP_ID = 'registration-new-user';
 
 function digitsOnlyBib(value: string): string {
   return value.replace(/\D/g, '').slice(0, 3);
+}
+
+function digitsOnlyCount(value: string): string {
+  return value.replace(/\D/g, '').slice(0, 3);
+}
+
+function TestCompetitorCountField({
+  label,
+  value,
+  onChange,
+  name,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  name: string;
+}) {
+  const invalid = value !== '' && testCompetitorCount(value) === null;
+  return (
+    <AppTextField
+      label={label}
+      value={value}
+      onChange={(event) => onChange(digitsOnlyCount(event.target.value))}
+      fullWidth
+      autoComplete="off"
+      error={invalid}
+      helperText={invalid ? 'Enter a whole number from 1 to 199.' : ' '}
+      name={name}
+      slotProps={{
+        inputLabel: { sx: { fontWeight: 700 } },
+        htmlInput: {
+          'aria-label': label,
+          inputMode: 'numeric',
+          pattern: '[0-9]*',
+        },
+      }}
+    />
+  );
 }
 
 function bibNumber(value: string): number {
@@ -73,7 +124,10 @@ export default function RegistrationNewUserForm() {
   const [generateContest, setGenerateContest] = useState<UpcomingRegistrationContest | null>(null);
   const [contestAction, setContestAction] = useState<'create' | 'delete'>('create');
   const [generating, setGenerating] = useState(false);
+  const [roleCountMode, setRoleCountMode] = useState<TestCompetitorCountMode>('same');
   const [competitorCountText, setCompetitorCountText] = useState('');
+  const [leaderCountText, setLeaderCountText] = useState('');
+  const [followerCountText, setFollowerCountText] = useState('');
   const lookupSeqRef = useRef(0);
   const firstNameRef = useRef(firstName);
   const lastNameRef = useRef(lastName);
@@ -95,6 +149,12 @@ export default function RegistrationNewUserForm() {
   const deleteMode = selectedContest?.hasGeneratedCompetitors === true;
   const canRunContestAction = isAdmin && selectedContest !== null && !generating;
   const competitorCount = testCompetitorCount(competitorCountText);
+  const leaderCount = roleCountMode === 'same' ? competitorCount : testCompetitorCount(leaderCountText);
+  const followerCount = roleCountMode === 'same' ? competitorCount : testCompetitorCount(followerCountText);
+  const countsReady = leaderCount !== null && followerCount !== null;
+  const createInstruction = generateContest && leaderCount !== null && followerCount !== null
+    ? createTestCompetitorsConfirmText(generateContest, leaderCount, followerCount)
+    : createTestCompetitorsInstructionText(roleCountMode);
   const contestActionLabel = deleteMode
     ? 'Delete Generated Competitors'
     : 'Create/Register Test Competitors';
@@ -355,7 +415,10 @@ export default function RegistrationNewUserForm() {
     }
     const contest = picks[0].contest;
     setContestAction(contest.hasGeneratedCompetitors ? 'delete' : 'create');
+    setRoleCountMode('same');
     setCompetitorCountText('');
+    setLeaderCountText('');
+    setFollowerCountText('');
     setGenerateContest(contest);
   };
 
@@ -364,15 +427,17 @@ export default function RegistrationNewUserForm() {
       return;
     }
     setGenerateContest(null);
+    setRoleCountMode('same');
     setCompetitorCountText('');
+    setLeaderCountText('');
+    setFollowerCountText('');
   };
 
   const confirmContestAction = () => {
     if (!generateContest || generating) {
       return;
     }
-    const count = competitorCount;
-    if (contestAction === 'create' && count === null) {
+    if (contestAction === 'create' && (leaderCount === null || followerCount === null)) {
       return;
     }
 
@@ -389,8 +454,8 @@ export default function RegistrationNewUserForm() {
             : `Scratched ${result.scratched} generated test competitors from ${label}.`,
         );
       });
-    } else if (count !== null) {
-      request = generateContestCompetitors(contest, count).then((result) => {
+    } else if (leaderCount !== null && followerCount !== null) {
+      request = generateContestCompetitors(contest, leaderCount, followerCount).then((result) => {
         showSuccess(
           `Added ${result.leadersAdded} leaders and ${result.followersAdded} followers to ${label}.`,
         );
@@ -403,7 +468,10 @@ export default function RegistrationNewUserForm() {
     void request
       .then(() => {
         setGenerateContest(null);
+        setRoleCountMode('same');
         setCompetitorCountText('');
+        setLeaderCountText('');
+        setFollowerCountText('');
         setRosterRevision((current) => current + 1);
       })
       .catch((error: unknown) => {
@@ -596,33 +664,55 @@ export default function RegistrationNewUserForm() {
             </Typography>
           ) : (
             <Stack spacing={2} sx={{ pt: 1 }}>
-              <Typography variant="body1">
-                {generateContest && competitorCount !== null
-                  ? createTestCompetitorsConfirmText(generateContest, competitorCount)
-                  : 'This will scratch the current competitors, then add the leaders and followers you enter.'}
-              </Typography>
-              <AppTextField
-                label="Count of both leaders and followers to create"
-                value={competitorCountText}
-                onChange={(event) => setCompetitorCountText(event.target.value.replace(/\D/g, '').slice(0, 3))}
-                fullWidth
-                autoComplete="off"
-                error={competitorCountText !== '' && competitorCount === null}
-                helperText={
-                  competitorCountText !== '' && competitorCount === null
-                    ? 'Enter a whole number from 1 to 199.'
-                    : ' '
-                }
-                name="registration-test-competitor-count"
-                slotProps={{
-                  inputLabel: { sx: { fontWeight: 700 } },
-                  htmlInput: {
-                    'aria-label': 'Count of both leaders and followers to create',
-                    inputMode: 'numeric',
-                    pattern: '[0-9]*',
-                  },
-                }}
-              />
+              <Typography variant="body1">{createInstruction}</Typography>
+              <Stack spacing={1}>
+                <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                  Role Count
+                </Typography>
+                <ToggleButtonGroup
+                  exclusive
+                  fullWidth
+                  value={roleCountMode}
+                  onChange={(_event, next: TestCompetitorCountMode | null) => {
+                    if (next) {
+                      setRoleCountMode(next);
+                    }
+                  }}
+                  aria-label="Role Count"
+                  sx={{
+                    '& .MuiToggleButton-root': {
+                      flex: 1,
+                      textTransform: 'none',
+                    },
+                  }}
+                >
+                  <ToggleButton value="same">Same Number</ToggleButton>
+                  <ToggleButton value="different">Different Number</ToggleButton>
+                </ToggleButtonGroup>
+              </Stack>
+              {roleCountMode === 'same' ? (
+                <TestCompetitorCountField
+                  label="Count of both leaders and followers to create"
+                  value={competitorCountText}
+                  onChange={setCompetitorCountText}
+                  name="registration-test-competitor-count"
+                />
+              ) : (
+                <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
+                  <TestCompetitorCountField
+                    label="Leader Count"
+                    value={leaderCountText}
+                    onChange={setLeaderCountText}
+                    name="registration-test-leader-count"
+                  />
+                  <TestCompetitorCountField
+                    label="Follower Count"
+                    value={followerCountText}
+                    onChange={setFollowerCountText}
+                    name="registration-test-follower-count"
+                  />
+                </Stack>
+              )}
             </Stack>
           )}
         </DialogContent>
@@ -651,7 +741,7 @@ export default function RegistrationNewUserForm() {
                 type="button"
                 variant="contained"
                 onClick={confirmContestAction}
-                disabled={generating || competitorCount === null}
+                disabled={generating || !countsReady}
                 sx={{ textTransform: 'none' }}
               >
                 Generate

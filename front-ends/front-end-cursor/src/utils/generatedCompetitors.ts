@@ -62,33 +62,34 @@ function takeUnusedBib(used: Set<number>, preferred: number): number {
 }
 
 /**
- * `count` leaders then `count` followers (default 26).
- * Leaders prefer bibs 1–count and followers the next count numbers.
+ * `leaderCount` leaders then `followerCount` followers (each defaults to 26).
+ * Leaders prefer bibs 1–leaderCount. Followers prefer the next followerCount numbers.
  * A number already in `used` is skipped. Each assigned bib is recorded before the next person is chosen.
  */
 export function assignTestCompetitorBibs(
   usedBibs: ReadonlySet<number>,
-  count = 26,
+  leaderCount = 26,
+  followerCount = leaderCount,
 ): GeneratedCompetitor[] {
-  const size = testCompetitorCount(String(count));
-  if (size === null) {
+  const leadersSize = testCompetitorCount(String(leaderCount));
+  const followersSize = testCompetitorCount(String(followerCount));
+  if (leadersSize === null || followersSize === null) {
     throw new Error('Enter a whole number from 1 to 199.');
   }
   const used = new Set(usedBibs);
-  const lastNames = generatedCompetitorLastNames(size);
-  const leaders: GeneratedCompetitor[] = lastNames.map((lastName, index) => ({
+  const leaders: GeneratedCompetitor[] = generatedCompetitorLastNames(leadersSize).map((lastName, index) => ({
     id: `leader-${lastName}`,
     role: 'leader',
     firstName: 'Leader',
     lastName,
     bib: takeUnusedBib(used, index + 1),
   }));
-  const followers: GeneratedCompetitor[] = lastNames.map((lastName, index) => ({
+  const followers: GeneratedCompetitor[] = generatedCompetitorLastNames(followersSize).map((lastName, index) => ({
     id: `follower-${lastName}`,
     role: 'follower',
     firstName: 'Follower',
     lastName,
-    bib: takeUnusedBib(used, size + index + 1),
+    bib: takeUnusedBib(used, leadersSize + index + 1),
   }));
   for (const person of [...leaders, ...followers]) {
     generatedIds.add(person.id);
@@ -224,15 +225,26 @@ function contestActionTarget(contest: {
   return 'this contest';
 }
 
+export type TestCompetitorCountMode = 'same' | 'different';
+
 export function createTestCompetitorsConfirmText(
   contest: {
     eventName?: string;
     skillLevelLabel: string;
     divisionLabel: string;
   },
-  count: number,
+  leaderCount: number,
+  followerCount = leaderCount,
 ): string {
-  return `This will scratch the current competitors, then add ${count} leaders and ${count} followers to ${contestActionTarget(contest)}.`;
+  return `This will scratch the current competitors, then add ${leaderCount} leaders and ${followerCount} followers to ${contestActionTarget(contest)}.`;
+}
+
+/** Instruction shown before both role counts are valid. */
+export function createTestCompetitorsInstructionText(mode: TestCompetitorCountMode): string {
+  if (mode === 'same') {
+    return 'This will scratch the current competitors, then add the same number of leaders and followers you enter.';
+  }
+  return 'This will scratch the current competitors, then add the leader count and follower count you enter.';
 }
 
 export function deleteGeneratedCompetitorsConfirmText(contest: {

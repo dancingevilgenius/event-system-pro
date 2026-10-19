@@ -7,6 +7,7 @@ import {
   judgeHasSubmittedBallot,
   judgeSubmitSuccessNavigation,
   judgeSubmissionProgress,
+  judgingFinalsTitle,
   readJudgingFinalsContest,
   seesJudgeSubmissionBar,
 } from './judgingFinalsEntries';
@@ -251,6 +252,32 @@ describe('judgeSubmitSuccessNavigation', () => {
       path: '/home',
       flashSuccess: 'Scores submitted with 4 placements derived (1st = highest score).',
     });
+  });
+});
+
+describe('judgingFinalsTitle', () => {
+  it('uses contest level and contest type', () => {
+    expect(judgingFinalsTitle({
+      eventId: 1,
+      contestId: 2,
+      contestItemId: 'item',
+      eventName: 'All-Clone',
+      skillLevel: 'All-American',
+      contestType: 'Jack and Jill',
+      pairs: null,
+    })).toBe('All-American · Jack and Jill');
+  });
+
+  it('falls back to Finals when level and type are blank', () => {
+    expect(judgingFinalsTitle({
+      eventId: null,
+      contestId: null,
+      contestItemId: '',
+      eventName: 'All-Clone',
+      skillLevel: '',
+      contestType: '',
+      pairs: null,
+    })).toBe('Finals');
   });
 });
 

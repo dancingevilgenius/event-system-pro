@@ -94,9 +94,12 @@ import {
 } from '../types/judgingScore';
 
 const JUDGING_PAGE_SIZE = 10;
-const NUMBER_COLUMN_WIDTH = '2.75rem';
-const LARGE_SCREEN_NUMBER_COLUMN_WIDTH = '3.25rem';
 const SCORE_DISPLAY_WIDTH = '5ch';
+/** Wide enough for a 3-digit bib so the rule sits on the same x in every row. */
+const ROSTER_BIB_COLUMN_WIDTH = '3.5ch';
+/** Equal space on each side of the bib/name rule. */
+const ROSTER_BIB_NAME_PAD_PX = 10;
+const ROSTER_NAME_RULE_PX = 1;
 const SUMMARY_SWATCH_GAP = 2;
 const SUMMARY_SWATCH_SLOT_COUNT = 2;
 const SUMMARY_SWATCH_COLUMN_WIDTH =
@@ -157,7 +160,7 @@ function formatSummaryFollowerName(
     : formatInitialLast(follower.first, follower.last);
 }
 
-function summaryNameColumnSx(textAlign: 'left' | 'right', fontSize: ContestTitleFontSize) {
+function summaryNameColumnSx(fontSize: ContestTitleFontSize) {
   return {
     minWidth: 0,
     overflow: 'hidden',
@@ -165,7 +168,47 @@ function summaryNameColumnSx(textAlign: 'left' | 'right', fontSize: ContestTitle
     whiteSpace: 'nowrap',
     lineHeight: 1.2,
     flex: 1,
-    textAlign,
+    textAlign: 'left' as const,
+    fontSize,
+  } as const;
+}
+
+function rosterBibSx(fontSize: ContestTitleFontSize | undefined) {
+  return {
+    flex: `0 0 ${ROSTER_BIB_COLUMN_WIDTH}`,
+    width: ROSTER_BIB_COLUMN_WIDTH,
+    boxSizing: 'content-box' as const,
+    pr: `${ROSTER_BIB_NAME_PAD_PX}px`,
+    fontVariantNumeric: 'tabular-nums' as const,
+    fontWeight: 600,
+    textAlign: 'right' as const,
+    fontSize,
+    lineHeight: 1.2,
+    flexShrink: 0,
+  };
+}
+
+function rosterNameRuleSx(fontSize?: ContestTitleFontSize) {
+  return {
+    flex: '0 0 1px',
+    width: `${ROSTER_NAME_RULE_PX}px`,
+    height: '0.9em',
+    fontSize,
+    alignSelf: 'center',
+    bgcolor: 'divider',
+    flexShrink: 0,
+  } as const;
+}
+
+function rosterNameAfterRuleSx(fontSize?: ContestTitleFontSize) {
+  return {
+    pl: `${ROSTER_BIB_NAME_PAD_PX}px`,
+    minWidth: 0,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    lineHeight: 1.2,
+    flex: 1,
     fontSize,
   } as const;
 }
@@ -315,9 +358,6 @@ function rosterBibText(bib: number | null): string {
   return bib === null ? '—' : String(bib);
 }
 
-/** About twice a normal word space, so the bib and name read as separate items. */
-const ROSTER_BIB_NAME_GAP_PX = 8;
-
 type CompetitorNamesTextProps = {
   leader: LegionMember;
   follower: LegionMember;
@@ -355,13 +395,20 @@ function CompetitorNamesText({
         (container.clientWidth - SUMMARY_SWATCH_COLUMN_OUTER_WIDTH) / 2,
       );
 
+      measure.style.width = ROSTER_BIB_COLUMN_WIDTH;
+      measure.textContent = '';
+      const bibColumnWidth = measure.offsetWidth;
+      measure.style.width = '';
+      const followerChrome =
+        bibColumnWidth + ROSTER_BIB_NAME_PAD_PX * 2 + ROSTER_NAME_RULE_PX;
+      const leaderNameWidth = nameColumnWidth - ROSTER_BIB_NAME_PAD_PX;
+      const followerNameWidth = nameColumnWidth - followerChrome;
+
       for (const mode of SUMMARY_NAME_MODES) {
         measure.textContent = formatSummaryLeaderName(leader, mode);
-        const leaderFits = measure.scrollWidth <= nameColumnWidth;
-        measure.textContent = rosterBibText(followerBib);
-        const followerBibWidth = measure.scrollWidth;
+        const leaderFits = measure.scrollWidth <= leaderNameWidth;
         measure.textContent = formatSummaryFollowerName(follower, mode);
-        const followerFits = followerBibWidth + ROSTER_BIB_NAME_GAP_PX + measure.scrollWidth <= nameColumnWidth;
+        const followerFits = measure.scrollWidth <= followerNameWidth;
 
         if (leaderFits && followerFits) {
           setNameMode(mode);
@@ -396,7 +443,7 @@ function CompetitorNamesText({
       <Typography
         component="span"
         variant="body1"
-        sx={summaryNameColumnSx('right', fontSize)}
+        sx={{ ...summaryNameColumnSx(fontSize), pl: `${ROSTER_BIB_NAME_PAD_PX}px` }}
       >
         {formatSummaryLeaderName(leader, nameMode)}
       </Typography>
@@ -436,15 +483,15 @@ function CompetitorNamesText({
       <Typography
         component="span"
         variant="body1"
-        sx={summaryNameColumnSx('left', fontSize)}
+        sx={{ ...summaryNameColumnSx(fontSize), display: 'flex', alignItems: 'center' }}
       >
-        <Box
-          component="span"
-          sx={{ fontVariantNumeric: 'tabular-nums', fontWeight: 600, mr: `${ROSTER_BIB_NAME_GAP_PX}px` }}
-        >
+        <Box component="span" sx={rosterBibSx(fontSize)}>
           {rosterBibText(followerBib)}
         </Box>
-        {formatSummaryFollowerName(follower, nameMode)}
+        <Box component="span" aria-hidden sx={rosterNameRuleSx(fontSize)} />
+        <Box component="span" sx={rosterNameAfterRuleSx(fontSize)}>
+          {formatSummaryFollowerName(follower, nameMode)}
+        </Box>
       </Typography>
 
       <Box
@@ -454,6 +501,7 @@ function CompetitorNamesText({
         sx={{
           position: 'absolute',
           visibility: 'hidden',
+          display: 'inline-block',
           whiteSpace: 'nowrap',
           pointerEvents: 'none',
           fontSize,
@@ -523,18 +571,18 @@ function CompetitorNameDetail({
         sx={{
           flex: 1,
           minWidth: 0,
+          display: 'flex',
+          alignItems: 'center',
           overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
         }}
       >
-        <Box
-          component="span"
-          sx={{ fontVariantNumeric: 'tabular-nums', fontWeight: 600, mr: `${ROSTER_BIB_NAME_GAP_PX}px` }}
-        >
+        <Box component="span" sx={rosterBibSx(undefined)}>
           {rosterBibText(rosterBib)}
         </Box>
-        {fullName}
+        <Box component="span" aria-hidden sx={rosterNameRuleSx()} />
+        <Box component="span" sx={rosterNameAfterRuleSx()}>
+          {fullName}
+        </Box>
       </Typography>
     </Stack>
   );
@@ -556,7 +604,6 @@ type JudgingEntryAccordionProps = {
   onScoreChange: (bibNumber: number, value: number) => void;
   onPaletteClick: (target: PaletteTarget) => void;
   titleFontSize: ContestTitleFontSize;
-  largeScreen: boolean;
 };
 
 function JudgingEntryAccordion({
@@ -570,7 +617,6 @@ function JudgingEntryAccordion({
   onScoreChange,
   onPaletteClick,
   titleFontSize,
-  largeScreen,
 }: JudgingEntryAccordionProps) {
   const entryScore = getEntryScore(entry.number);
   const leaderColors =
@@ -608,24 +654,16 @@ function JudgingEntryAccordion({
             alignItems: 'center',
             width: '100%',
             minWidth: 0,
-            gap: 0.5,
           }}
         >
           <Typography
             component="span"
             variant="body1"
-            sx={{
-              flex: `0 0 ${largeScreen ? LARGE_SCREEN_NUMBER_COLUMN_WIDTH : NUMBER_COLUMN_WIDTH}`,
-              width: largeScreen ? LARGE_SCREEN_NUMBER_COLUMN_WIDTH : NUMBER_COLUMN_WIDTH,
-              fontVariantNumeric: 'tabular-nums',
-              fontWeight: 600,
-              textAlign: 'left',
-              fontSize: titleFontSize,
-              lineHeight: 1.2,
-            }}
+            sx={rosterBibSx(titleFontSize)}
           >
             {entry.number}
           </Typography>
+          <Box component="span" aria-hidden sx={rosterNameRuleSx(titleFontSize)} />
 
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <CompetitorNamesText
@@ -649,6 +687,7 @@ function JudgingEntryAccordion({
               textAlign: 'right',
               fontSize: titleFontSize,
               lineHeight: 1.2,
+              ml: 0.5,
             }}
           >
             {entryScore.touched ? formatScoreDisplay(entryScore.digits) : ''}
@@ -1207,7 +1246,65 @@ export default function JudgingPage() {
             <JudgeHeaderInitials contestHeadJudge={judgeProgress?.contestHeadJudge === true} />
           </Box>
 
-          <PercentCompleteBar percent={percentComplete} onSubmit={handleSubmit} />
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center', width: '100%' }}>
+            <Select
+              value={sortOption}
+              onChange={handleSortChange}
+              aria-label="Judging options"
+              MenuProps={{
+                sx: {
+                  '& .MuiMenuItem-root': {
+                    fontSize: titleFontSize,
+                  },
+                },
+              }}
+              sx={{
+                flex: '1 1 0',
+                minWidth: 0,
+                height: 40,
+                fontSize: titleFontSize,
+                '& .MuiSelect-select': {
+                  display: 'flex',
+                  alignItems: 'center',
+                  height: 40,
+                  minHeight: '40px !important',
+                  boxSizing: 'border-box',
+                  py: 0,
+                  fontSize: titleFontSize,
+                  lineHeight: 1.2,
+                },
+              }}
+            >
+              {JUDGING_DROPDOWN_OPTIONS.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+              <Divider />
+              <MenuItem value="scrollable" selected={listLayout === 'scrollable'}>
+                Scrollable List
+              </MenuItem>
+              <MenuItem value="pagination" selected={listLayout === 'pagination'}>
+                Pagination
+              </MenuItem>
+              <Divider />
+              <MenuItem
+                value="slider"
+                sx={{ fontWeight: scoreInputMode === 'slider' ? 700 : 400 }}
+              >
+                Raw Scores as Slider
+              </MenuItem>
+              <MenuItem
+                value="dropdowns"
+                sx={{ fontWeight: scoreInputMode === 'dropdowns' ? 700 : 400 }}
+              >
+                Raw Scores as Dropdowns
+              </MenuItem>
+            </Select>
+            <Box sx={{ flex: '1 1 0', minWidth: 0 }}>
+              <PercentCompleteBar percent={percentComplete} onSubmit={handleSubmit} />
+            </Box>
+          </Stack>
           {judgeProgress?.showBar ? (
             <Stack spacing={0.5}>
               <Stack
@@ -1253,47 +1350,6 @@ export default function JudgingPage() {
               ) : null}
             </Stack>
           ) : null}
-
-          <Select
-            size="small"
-            value={sortOption}
-            onChange={handleSortChange}
-            aria-label="Judging options"
-            fullWidth
-            sx={{
-              width: '100%',
-              maxWidth: '100%',
-              '& .MuiSelect-select': {
-                py: 0.75,
-              },
-            }}
-          >
-            {JUDGING_DROPDOWN_OPTIONS.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-            <Divider />
-            <MenuItem value="scrollable" selected={listLayout === 'scrollable'}>
-              Scrollable List
-            </MenuItem>
-            <MenuItem value="pagination" selected={listLayout === 'pagination'}>
-              Pagination
-            </MenuItem>
-            <Divider />
-            <MenuItem
-              value="slider"
-              sx={{ fontWeight: scoreInputMode === 'slider' ? 700 : 400 }}
-            >
-              Raw Scores as Slider
-            </MenuItem>
-            <MenuItem
-              value="dropdowns"
-              sx={{ fontWeight: scoreInputMode === 'dropdowns' ? 700 : 400 }}
-            >
-              Raw Scores as Dropdowns
-            </MenuItem>
-          </Select>
 
           {listLayout === 'pagination' && displayEntries.length > 0 && (
             <Stack
@@ -1371,7 +1427,6 @@ export default function JudgingPage() {
                 onScoreChange={handleScoreChange}
                 onPaletteClick={setPaletteTarget}
                 titleFontSize={titleFontSize}
-                largeScreen={largeScreen}
               />
             ))}
           </Stack>

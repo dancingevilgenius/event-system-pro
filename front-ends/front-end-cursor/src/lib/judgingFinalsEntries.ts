@@ -127,8 +127,9 @@ export function canLeaveJudgingFinals(input: {
   return input.percentComplete >= 100 && input.submitted;
 }
 
+/** Contest level and contest type. The event name stays off this title. */
 export function judgingFinalsTitle(contest: JudgingFinalsContestRef): string {
-  const title = [contest.eventName, contest.skillLevel, contest.contestType]
+  const title = [contest.skillLevel, contest.contestType]
     .filter((part) => part !== '')
     .join(' · ');
   return title === '' ? 'Finals' : title;

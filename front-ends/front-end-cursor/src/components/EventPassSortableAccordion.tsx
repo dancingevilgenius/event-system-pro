@@ -3,7 +3,10 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
+  Checkbox,
+  FormControlLabel,
   Stack,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { useSortable } from '@dnd-kit/sortable';
@@ -16,7 +19,9 @@ import {
 } from '../lib/eventEarlyBirdDates';
 import {
   getEventPassDisplayName,
+  PASS_COST_MAX_DIGITS,
   sanitizePassCostInput,
+  SPECTATOR_PASS_TOOLTIP,
   type EventPassFormState,
 } from '../lib/eventPasses';
 import { trimSavedText } from '../utils/trimSavedText';
@@ -37,7 +42,7 @@ const accordionSummarySx = {
 
 const earlyBirdCostRowSx = {
   display: 'grid',
-  gridTemplateColumns: 'minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 1fr) minmax(8.5rem, 1.15fr)',
+  gridTemplateColumns: 'minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 1fr) auto',
   columnGap: 1,
   alignItems: 'center',
   width: '100%',
@@ -59,23 +64,64 @@ type EventPassSortableAccordionProps = {
   onAccordionChange: (event: SyntheticEvent, isExpanded: boolean) => void;
   onChange: (
     id: string,
-    patch: Partial<Pick<EventPassFormState, 'name' | 'cost' | 'description' | 'earlyBirdCosts'>>,
+    patch: Partial<
+      Pick<EventPassFormState, 'name' | 'cost' | 'description' | 'earlyBirdCosts' | 'spectator'>
+    >,
   ) => void;
 };
+
+/** Outlined padding plus four digits, and no wider. */
+const passCostInputSx = {
+  width: 'calc(4ch + 1.75rem)',
+  flex: '0 0 auto',
+} as const;
 
 function passCostFieldProps(ariaLabel: string) {
   return {
     htmlInput: {
       inputMode: 'numeric' as const,
       min: 0,
+      maxLength: PASS_COST_MAX_DIGITS,
       'aria-label': ariaLabel,
     },
   };
 }
 
+function SpectatorPassCheckbox({
+  checked,
+  onChange,
+}: {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) {
+  return (
+    <Tooltip title={SPECTATOR_PASS_TOOLTIP}>
+      <FormControlLabel
+        sx={{ ml: 0.25, mr: 0, flex: '0 0 auto' }}
+        control={
+          <Checkbox
+            size="small"
+            checked={checked}
+            onChange={(event) => onChange(event.target.checked)}
+            slotProps={{
+              input: { 'aria-label': 'Spectator' },
+            }}
+            sx={{ p: 0.5 }}
+          />
+        }
+        label={
+          <Typography variant="body2" sx={{ fontWeight: 700 }}>
+            Spectator
+          </Typography>
+        }
+      />
+    </Tooltip>
+  );
+}
+
 function PassCostAmount({ children }: { children: ReactNode }) {
   return (
-    <Stack direction="row" spacing={0.75} sx={{ alignItems: 'center', minWidth: 0 }}>
+    <Stack direction="row" spacing={0.75} sx={{ alignItems: 'center', width: 'fit-content', maxWidth: '100%' }}>
       <Typography
         variant="body2"
         component="span"
@@ -83,7 +129,7 @@ function PassCostAmount({ children }: { children: ReactNode }) {
       >
         $USD
       </Typography>
-      <Box sx={{ flex: '1 1 auto', minWidth: 0 }}>{children}</Box>
+      {children}
     </Stack>
   );
 }
@@ -110,6 +156,13 @@ export default function EventPassSortableAccordion({
   const displayTitle = getEventPassDisplayName(pass.name);
   const earlyBirdCosts = pass.earlyBirdCosts ?? {};
   const showEarlyBirdCosts = earlyBirdWindows.length > 0;
+  const spectatorChecked = pass.spectator === true;
+  const spectatorCheckbox = (
+    <SpectatorPassCheckbox
+      checked={spectatorChecked}
+      onChange={(spectator) => onChange(pass.id, { spectator })}
+    />
+  );
 
   return (
     <div ref={setNodeRef} style={style}>
@@ -162,6 +215,9 @@ export default function EventPassSortableAccordion({
               onBlur={() => onChange(pass.id, { name: trimSavedText(pass.name) })}
               fullWidth
             />
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+              {spectatorCheckbox}
+            </Box>
             {showEarlyBirdCosts ? (
               <Stack spacing={1}>
                 <Box sx={earlyBirdCostRowSx}>
@@ -222,7 +278,7 @@ export default function EventPassSortableAccordion({
                             })
                           }
                           size="small"
-                          fullWidth
+                          sx={passCostInputSx}
                           slotProps={passCostFieldProps(`${windowName} cost in USD`)}
                         />
                       </PassCostAmount>
@@ -239,7 +295,7 @@ export default function EventPassSortableAccordion({
                     onChange(pass.id, { cost: sanitizePassCostInput(event.target.value) })
                   }
                   onBlur={() => onChange(pass.id, { cost: sanitizePassCostInput(pass.cost) })}
-                  fullWidth
+                  sx={passCostInputSx}
                   slotProps={passCostFieldProps('Cost in USD')}
                 />
               </PassCostAmount>

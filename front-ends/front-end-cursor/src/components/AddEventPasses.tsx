@@ -98,7 +98,9 @@ export default function AddEventPasses({
 
   const updatePass = (
     id: string,
-    patch: Partial<Pick<EventPassFormState, 'name' | 'cost' | 'description' | 'earlyBirdCosts'>>,
+    patch: Partial<
+      Pick<EventPassFormState, 'name' | 'cost' | 'description' | 'earlyBirdCosts' | 'spectator'>
+    >,
   ) => {
     setPasses((current) =>
       current.map((pass) => (pass.id === id ? { ...pass, ...patch } : pass)),

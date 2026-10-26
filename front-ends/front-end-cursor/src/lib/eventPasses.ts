@@ -1,5 +1,11 @@
 export const DEFAULT_EVENT_PASS_NAME = 'Basic Pass';
 
+/** Whole-dollar pass prices stop at four digits. */
+export const PASS_COST_MAX_DIGITS = 4;
+
+export const SPECTATOR_PASS_TOOLTIP =
+  'A Spectator pass does not require registration or taking of any additional information.';
+
 export type EventPassFormState = {
   id: string;
   name: string;
@@ -8,6 +14,8 @@ export type EventPassFormState = {
   description: string;
   /** Whole-dollar price for each early bird window, keyed by that window's id. */
   earlyBirdCosts: Record<string, string>;
+  /** Checked when this pass does not collect registration details. */
+  spectator: boolean;
 };
 
 export function createDefaultEventPass(): EventPassFormState {
@@ -17,6 +25,7 @@ export function createDefaultEventPass(): EventPassFormState {
     cost: '',
     description: '',
     earlyBirdCosts: {},
+    spectator: false,
   };
 }
 
@@ -27,6 +36,7 @@ export function createEmptyEventPass(): EventPassFormState {
     cost: '',
     description: '',
     earlyBirdCosts: {},
+    spectator: false,
   };
 }
 
@@ -56,5 +66,5 @@ export function sanitizePassCostInput(value: string): string {
       result += char;
     }
   }
-  return result;
+  return result.slice(0, PASS_COST_MAX_DIGITS);
 }

@@ -36,6 +36,7 @@ function sourceWithIdentity(): EventFormExportSource {
             cost: '40',
             description: 'Weekend',
             earlyBirdCosts: {},
+            spectator: false,
           },
         ],
       },
@@ -148,6 +149,7 @@ describe('formatEventFormExport', () => {
       name: 'Basic Pass',
       cost: '40',
       description: 'Weekend',
+      spectator: false,
     });
     expect(parsed.staff.members[0]).toEqual({
       firstName: 'Ada',
@@ -233,13 +235,15 @@ describe('formatEventFormExport', () => {
     if (!pass || !windowId) {
       throw new Error('fixture is missing a pass or early bird window');
     }
-    pass.cost = '40.75';
+    pass.cost = '123456.75';
+    pass.spectator = true;
     pass.earlyBirdCosts = { [windowId]: '25.50' };
 
     const exported = JSON.parse(formatEventFormExport(source)) as {
-      passes: { passes: Array<{ cost: string; earlyBirdCosts?: string[] }> };
+      passes: { passes: Array<{ cost: string; spectator?: boolean; earlyBirdCosts?: string[] }> };
     };
-    expect(exported.passes.passes[0]?.cost).toBe('40');
+    expect(exported.passes.passes[0]?.cost).toBe('1234');
+    expect(exported.passes.passes[0]?.spectator).toBe(true);
     expect(exported.passes.passes[0]?.earlyBirdCosts).toEqual(['25']);
 
     const parsed = parseEventFormImport(JSON.stringify(exported));
@@ -248,7 +252,8 @@ describe('formatEventFormExport', () => {
       return;
     }
     const importedWindowId = parsed.document.earlyBird.windows[0]?.id;
-    expect(parsed.document.passes.passes[0]?.cost).toBe('40');
+    expect(parsed.document.passes.passes[0]?.cost).toBe('1234');
+    expect(parsed.document.passes.passes[0]?.spectator).toBe(true);
     expect(parsed.document.passes.passes[0]?.earlyBirdCosts[importedWindowId ?? '']).toBe('25');
   });
 

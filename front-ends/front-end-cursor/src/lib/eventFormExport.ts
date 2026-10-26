@@ -203,6 +203,7 @@ export function formatEventFormExport(source: EventFormExportSource): string {
               name: pass.name,
               cost: sanitizePassCostInput(pass.cost),
               description: pass.description,
+              spectator: pass.spectator === true,
               ...(earlyBirdCosts.some((cost) => cost !== '') ? { earlyBirdCosts } : {}),
             };
           }),
@@ -466,6 +467,7 @@ export function parseEventFormImport(
             name: asString(row?.name),
             cost: sanitizePassCostInput(asString(row?.cost)),
             description: asString(row?.description),
+            spectator: row?.spectator === true,
             earlyBirdCosts,
           };
         }),

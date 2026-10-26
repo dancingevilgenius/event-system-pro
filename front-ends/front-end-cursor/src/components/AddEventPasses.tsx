@@ -23,7 +23,12 @@ import {
 } from '@dnd-kit/sortable';
 import { type MouseEvent, type SyntheticEvent, useEffect, useRef, useState } from 'react';
 import { mobileColumnSx } from '../constants/layout';
-import { useAppliedEventImport, useReportEventFormSection } from '../context/EventFormExportContext';
+import {
+  useAppliedEventImport,
+  useEventFormExportSnapshots,
+  useReportEventFormSection,
+} from '../context/EventFormExportContext';
+import { pricedEarlyBirdWindows } from '../lib/eventEarlyBirdDates';
 import {
   createDefaultEventPass,
   createEmptyEventPass,
@@ -53,8 +58,13 @@ export default function AddEventPasses({
   const [passes, setPasses] = useState<EventPassFormState[]>(() => [createDefaultEventPass()]);
   const [expandedPassId, setExpandedPassId] = useState<string | false>(false);
   const reportExport = useReportEventFormSection();
+  const snapshots = useEventFormExportSnapshots();
   const appliedImport = useAppliedEventImport();
   const appliedTokenRef = useRef(0);
+  const earlyBirdWindows = pricedEarlyBirdWindows(
+    snapshots.earlyBird?.mode,
+    snapshots.earlyBird?.windows,
+  );
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -88,7 +98,7 @@ export default function AddEventPasses({
 
   const updatePass = (
     id: string,
-    patch: Partial<Pick<EventPassFormState, 'name' | 'cost' | 'description'>>,
+    patch: Partial<Pick<EventPassFormState, 'name' | 'cost' | 'description' | 'earlyBirdCosts'>>,
   ) => {
     setPasses((current) =>
       current.map((pass) => (pass.id === id ? { ...pass, ...patch } : pass)),
@@ -177,6 +187,7 @@ export default function AddEventPasses({
                   <EventPassSortableAccordion
                     key={pass.id}
                     pass={pass}
+                    earlyBirdWindows={earlyBirdWindows}
                     expanded={expandedPassId === pass.id}
                     onAccordionChange={handleAccordionChange(pass.id)}
                     onChange={updatePass}

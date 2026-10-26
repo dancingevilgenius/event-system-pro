@@ -3,8 +3,11 @@ export const DEFAULT_EVENT_PASS_NAME = 'Basic Pass';
 export type EventPassFormState = {
   id: string;
   name: string;
+  /** Standard pass price in whole US dollars. Hidden while early bird price rows are showing. */
   cost: string;
   description: string;
+  /** Whole-dollar price for each early bird window, keyed by that window's id. */
+  earlyBirdCosts: Record<string, string>;
 };
 
 export function createDefaultEventPass(): EventPassFormState {
@@ -13,6 +16,7 @@ export function createDefaultEventPass(): EventPassFormState {
     name: DEFAULT_EVENT_PASS_NAME,
     cost: '',
     description: '',
+    earlyBirdCosts: {},
   };
 }
 
@@ -22,6 +26,7 @@ export function createEmptyEventPass(): EventPassFormState {
     name: '',
     cost: '',
     description: '',
+    earlyBirdCosts: {},
   };
 }
 
@@ -42,22 +47,14 @@ export function getEventPassDisplayName(name: string): string {
   return trimmed.length > 0 ? trimmed : 'Untitled Pass';
 }
 
-/** Keeps positive numeric input: digits and at most one decimal point. */
+/** Whole US dollars only. A decimal portion and any other non-digit characters are dropped. */
 export function sanitizePassCostInput(value: string): string {
+  const whole = value.trim().split(/[.,]/, 1)[0] ?? '';
   let result = '';
-  let hasDecimal = false;
-
-  for (const char of value) {
+  for (const char of whole) {
     if (char >= '0' && char <= '9') {
-      result += char;
-      continue;
-    }
-
-    if (char === '.' && !hasDecimal) {
-      hasDecimal = true;
       result += char;
     }
   }
-
   return result;
 }

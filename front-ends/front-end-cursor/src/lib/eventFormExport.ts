@@ -15,7 +15,7 @@ import type { EventDatesFormState, ScheduleTimeBlockDay } from './eventDates';
 import type { EventLocationJson, EventVenueContactJson } from './eventLocation';
 import type { EventDiscountFormState } from './eventDiscounts';
 import { sanitizeIntensiveCostInput, type EventIntensiveFormState } from './eventIntensives';
-import type { EventPassFormState } from './eventPasses';
+import { sanitizePassCostInput, type EventPassFormState } from './eventPasses';
 
 type SectionStatus = 'not_started' | 'in_progress' | 'finalized';
 
@@ -194,11 +194,18 @@ export function formatEventFormExport(source: EventFormExportSource): string {
     passes: source.snapshots.passes
       ? {
           hasPasses: source.snapshots.passes.hasPasses,
-          passes: source.snapshots.passes.passes.map((pass) => ({
-            name: pass.name,
-            cost: pass.cost,
-            description: pass.description,
-          })),
+          passes: source.snapshots.passes.passes.map((pass) => {
+            const windows = source.snapshots.earlyBird?.windows ?? [];
+            const earlyBirdCosts = windows.map((window) =>
+              sanitizePassCostInput(pass.earlyBirdCosts?.[window.id] ?? ''),
+            );
+            return {
+              name: pass.name,
+              cost: sanitizePassCostInput(pass.cost),
+              description: pass.description,
+              ...(earlyBirdCosts.some((cost) => cost !== '') ? { earlyBirdCosts } : {}),
+            };
+          }),
         }
       : null,
     roles: source.snapshots.roles ?? null,
@@ -414,6 +421,18 @@ export function parseEventFormImport(
   const passRows = Array.isArray(passes.passes) ? passes.passes : [];
   const roleRows = Array.isArray(root.roles) ? root.roles : [];
   const windowRows = Array.isArray(earlyBird.windows) ? earlyBird.windows : [];
+  const earlyBirdWindows = windowRows.map((entry, index) => {
+    const row = asRecord(entry);
+    const startDate = asNullableString(row?.startDate);
+    const endDate = asNullableString(row?.endDate);
+    return {
+      id: crypto.randomUUID(),
+      name: savedEarlyBirdName(asString(row?.name), index),
+      enabled: earlyBirdEnabledFromStored(row?.enabled, startDate, endDate),
+      startDate,
+      endDate,
+    };
+  });
   const staffRows = Array.isArray(staff.members) ? staff.members : [];
   const contestRows = Array.isArray(contests.contests) ? contests.contests : [];
 
@@ -434,11 +453,20 @@ export function parseEventFormImport(
         hasPasses: asBoolean(passes.hasPasses),
         passes: passRows.map((entry) => {
           const row = asRecord(entry);
+          const storedCosts = Array.isArray(row?.earlyBirdCosts) ? row.earlyBirdCosts : [];
+          const earlyBirdCosts: Record<string, string> = {};
+          earlyBirdWindows.forEach((window, index) => {
+            const cost = sanitizePassCostInput(asString(storedCosts[index]));
+            if (cost !== '') {
+              earlyBirdCosts[window.id] = cost;
+            }
+          });
           return {
             id: crypto.randomUUID(),
             name: asString(row?.name),
-            cost: asString(row?.cost),
+            cost: sanitizePassCostInput(asString(row?.cost)),
             description: asString(row?.description),
+            earlyBirdCosts,
           };
         }),
       },
@@ -459,18 +487,7 @@ export function parseEventFormImport(
       }),
       earlyBird: {
         mode: asEarlyBirdMode(earlyBird.mode),
-        windows: windowRows.map((entry, index) => {
-          const row = asRecord(entry);
-          const startDate = asNullableString(row?.startDate);
-          const endDate = asNullableString(row?.endDate);
-          return {
-            id: crypto.randomUUID(),
-            name: savedEarlyBirdName(asString(row?.name), index),
-            enabled: earlyBirdEnabledFromStored(row?.enabled, startDate, endDate),
-            startDate,
-            endDate,
-          };
-        }),
+        windows: earlyBirdWindows,
       },
       location: {
         venue: asString(location.venue),

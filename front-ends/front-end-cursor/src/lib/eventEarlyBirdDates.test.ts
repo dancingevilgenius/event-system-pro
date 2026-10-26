@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   EARLY_BIRD_DATE_ORDER_ERROR,
+  createInitialEarlyBirdWindows,
   earlyBirdDateOrderError,
   earlyBirdDatesCanBeFinalized,
   formatEarlyBirdDate,
@@ -8,7 +9,21 @@ import {
   localCalendarDateIso,
   normalizeEarlyBirdDate,
   pricedEarlyBirdWindows,
+  savedEarlyBirdName,
 } from './eventEarlyBirdDates';
+
+describe('createInitialEarlyBirdWindows', () => {
+  it('starts the third row enabled and named Full Price', () => {
+    const windows = createInitialEarlyBirdWindows();
+    expect(windows.map((window) => window.name)).toEqual([
+      'Early Bird 1',
+      'Early Bird 2',
+      'Full Price',
+    ]);
+    expect(windows.map((window) => window.enabled)).toEqual([false, false, true]);
+    expect(savedEarlyBirdName('   ', 2)).toBe('Full Price');
+  });
+});
 
 describe('earlyBirdDateOrderError', () => {
   it('requires an enabled row start date to be strictly earlier than its end date', () => {

@@ -8,7 +8,13 @@ export type EarlyBirdWindow = {
   endDate: string | null;
 };
 
+/** Third row in the fixed early bird list. It starts on, as the regular price. */
+const FULL_PRICE_WINDOW_INDEX = 2;
+
 export function defaultEarlyBirdName(index: number): string {
+  if (index === FULL_PRICE_WINDOW_INDEX) {
+    return 'Full Price';
+  }
   return `Early Bird ${index + 1}`;
 }
 
@@ -16,7 +22,7 @@ export function createEmptyEarlyBirdWindow(index = 0): EarlyBirdWindow {
   return {
     id: crypto.randomUUID(),
     name: defaultEarlyBirdName(index),
-    enabled: false,
+    enabled: index === FULL_PRICE_WINDOW_INDEX,
     startDate: null,
     endDate: null,
   };

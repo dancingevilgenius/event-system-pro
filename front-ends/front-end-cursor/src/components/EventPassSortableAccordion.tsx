@@ -8,7 +8,12 @@ import {
 } from '@mui/material';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { type SyntheticEvent } from 'react';
+import { type ReactNode, type SyntheticEvent } from 'react';
+import {
+  formatEarlyBirdDate,
+  savedEarlyBirdName,
+  type PricedEarlyBirdWindow,
+} from '../lib/eventEarlyBirdDates';
 import {
   getEventPassDisplayName,
   sanitizePassCostInput,
@@ -30,19 +35,62 @@ const accordionSummarySx = {
   },
 } as const;
 
+const earlyBirdCostRowSx = {
+  display: 'grid',
+  gridTemplateColumns: 'minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 1fr) minmax(8.5rem, 1.15fr)',
+  columnGap: 1,
+  alignItems: 'center',
+  width: '100%',
+  minWidth: 0,
+} as const;
+
+const earlyBirdCostTextSx = {
+  minWidth: 0,
+  overflowWrap: 'anywhere',
+  lineHeight: 1.2,
+  fontSize: { xs: '0.75rem', md: '0.875rem' },
+} as const;
+
 type EventPassSortableAccordionProps = {
   pass: EventPassFormState;
+  earlyBirdWindows: PricedEarlyBirdWindow[];
   expanded: boolean;
   disabled?: boolean;
   onAccordionChange: (event: SyntheticEvent, isExpanded: boolean) => void;
   onChange: (
     id: string,
-    patch: Partial<Pick<EventPassFormState, 'name' | 'cost' | 'description'>>,
+    patch: Partial<Pick<EventPassFormState, 'name' | 'cost' | 'description' | 'earlyBirdCosts'>>,
   ) => void;
 };
 
+function passCostFieldProps(ariaLabel: string) {
+  return {
+    htmlInput: {
+      inputMode: 'numeric' as const,
+      min: 0,
+      'aria-label': ariaLabel,
+    },
+  };
+}
+
+function PassCostAmount({ children }: { children: ReactNode }) {
+  return (
+    <Stack direction="row" spacing={0.75} sx={{ alignItems: 'center', minWidth: 0 }}>
+      <Typography
+        variant="body2"
+        component="span"
+        sx={{ flex: '0 0 auto', fontSize: { xs: '0.75rem', md: '0.875rem' } }}
+      >
+        $USD
+      </Typography>
+      <Box sx={{ flex: '1 1 auto', minWidth: 0 }}>{children}</Box>
+    </Stack>
+  );
+}
+
 export default function EventPassSortableAccordion({
   pass,
+  earlyBirdWindows,
   expanded,
   disabled = false,
   onAccordionChange,
@@ -60,6 +108,8 @@ export default function EventPassSortableAccordion({
   };
 
   const displayTitle = getEventPassDisplayName(pass.name);
+  const earlyBirdCosts = pass.earlyBirdCosts ?? {};
+  const showEarlyBirdCosts = earlyBirdWindows.length > 0;
 
   return (
     <div ref={setNodeRef} style={style}>
@@ -112,21 +162,88 @@ export default function EventPassSortableAccordion({
               onBlur={() => onChange(pass.id, { name: trimSavedText(pass.name) })}
               fullWidth
             />
-            <AppTextField
-              label="Cost"
-              value={pass.cost}
-              onChange={(event) =>
-                onChange(pass.id, { cost: sanitizePassCostInput(event.target.value) })
-              }
-              onBlur={() => onChange(pass.id, { cost: trimSavedText(pass.cost) })}
-              fullWidth
-              slotProps={{
-                htmlInput: {
-                  inputMode: 'decimal',
-                  min: 0,
-                },
-              }}
-            />
+            {showEarlyBirdCosts ? (
+              <Stack spacing={1}>
+                <Box sx={earlyBirdCostRowSx}>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
+                    Name
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
+                    Start Date
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
+                    End Date
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
+                    Cost
+                  </Typography>
+                </Box>
+                {earlyBirdWindows.map((window) => {
+                  const windowName = savedEarlyBirdName(window.name, window.index);
+                  const startLabel = formatEarlyBirdDate(window.startDate);
+                  const endLabel = formatEarlyBirdDate(window.endDate);
+                  const cost = sanitizePassCostInput(earlyBirdCosts[window.id] ?? '');
+                  return (
+                    <Box key={window.id} sx={earlyBirdCostRowSx}>
+                      <Typography variant="body2" title={windowName} sx={earlyBirdCostTextSx}>
+                        {windowName}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        title={startLabel || undefined}
+                        sx={earlyBirdCostTextSx}
+                      >
+                        {startLabel || '—'}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        title={endLabel || undefined}
+                        sx={earlyBirdCostTextSx}
+                      >
+                        {endLabel || '—'}
+                      </Typography>
+                      <PassCostAmount>
+                        <AppTextField
+                          value={cost}
+                          onChange={(event) =>
+                            onChange(pass.id, {
+                              earlyBirdCosts: {
+                                ...earlyBirdCosts,
+                                [window.id]: sanitizePassCostInput(event.target.value),
+                              },
+                            })
+                          }
+                          onBlur={(event) =>
+                            onChange(pass.id, {
+                              earlyBirdCosts: {
+                                ...earlyBirdCosts,
+                                [window.id]: sanitizePassCostInput(event.target.value),
+                              },
+                            })
+                          }
+                          size="small"
+                          fullWidth
+                          slotProps={passCostFieldProps(`${windowName} cost in USD`)}
+                        />
+                      </PassCostAmount>
+                    </Box>
+                  );
+                })}
+              </Stack>
+            ) : (
+              <PassCostAmount>
+                <AppTextField
+                  label="Cost"
+                  value={sanitizePassCostInput(pass.cost)}
+                  onChange={(event) =>
+                    onChange(pass.id, { cost: sanitizePassCostInput(event.target.value) })
+                  }
+                  onBlur={() => onChange(pass.id, { cost: sanitizePassCostInput(pass.cost) })}
+                  fullWidth
+                  slotProps={passCostFieldProps('Cost in USD')}
+                />
+              </PassCostAmount>
+            )}
             <AppTextField
               label="Description"
               value={pass.description}

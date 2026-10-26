@@ -46,6 +46,8 @@ function sourceWithIdentity(): EventFormExportSource {
         windows: [
           {
             id: '22222222-2222-4222-8222-222222222222',
+            name: '  Early Bird 1  ',
+            enabled: true,
             startDate: '2026-01-01',
             endDate: '2026-02-01',
           },
@@ -132,6 +134,8 @@ describe('formatEventFormExport', () => {
     expect(parsed.contests.contests[0]?.scoringJudgeIndexes).toEqual([0, null, null]);
     expect(parsed.schedule.days[0]).toEqual({ title: 'Day 1' });
     expect(parsed.earlyBirdDates.windows[0]).toEqual({
+      name: 'Early Bird 1',
+      enabled: true,
       startDate: '2026-01-01',
       endDate: '2026-02-01',
     });
@@ -169,5 +173,73 @@ describe('formatEventFormExport', () => {
 
     expect(again.contests.contests[0]?.headJudgeIndex).toBe(0);
     expect(applied.staff.members[0]?.id).not.toBe('33333333-3333-4333-8333-333333333333');
+    expect(applied.earlyBird.windows[0]).toMatchObject({
+      name: 'Early Bird 1',
+      enabled: true,
+      startDate: '2026-01-01',
+      endDate: '2026-02-01',
+    });
+  });
+
+  it('keeps an unchecked early bird row and fills a missing name from the row index', () => {
+    const source = sourceWithIdentity();
+    source.snapshots.earlyBird = {
+      mode: 'create',
+      windows: [
+        {
+          id: '22222222-2222-4222-8222-222222222222',
+          name: '   ',
+          enabled: false,
+          startDate: '2026-03-01',
+          endDate: '2026-04-01',
+        },
+        {
+          id: '66666666-6666-4666-8666-666666666666',
+          name: 'Opening week',
+          enabled: true,
+          startDate: null,
+          endDate: null,
+        },
+      ],
+    };
+
+    const exported = formatEventFormExport(source);
+    const legacy = JSON.parse(exported) as {
+      earlyBirdDates: { windows: Array<Record<string, unknown>> };
+    };
+    expect(legacy.earlyBirdDates.windows[0]).toEqual({
+      name: 'Early Bird 1',
+      enabled: false,
+      startDate: '2026-03-01',
+      endDate: '2026-04-01',
+    });
+    expect(legacy.earlyBirdDates.windows[1]).toEqual({
+      name: 'Opening week',
+      enabled: true,
+      startDate: null,
+      endDate: null,
+    });
+
+    legacy.earlyBirdDates.windows[1].startDate = '2026-05-01';
+    delete legacy.earlyBirdDates.windows[1].name;
+    delete legacy.earlyBirdDates.windows[1].enabled;
+    const parsed = parseEventFormImport(JSON.stringify(legacy));
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) {
+      return;
+    }
+
+    expect(parsed.document.earlyBird.windows[0]).toMatchObject({
+      name: 'Early Bird 1',
+      enabled: false,
+      startDate: '2026-03-01',
+      endDate: '2026-04-01',
+    });
+    expect(parsed.document.earlyBird.windows[1]).toMatchObject({
+      name: 'Early Bird 2',
+      enabled: true,
+      startDate: '2026-05-01',
+      endDate: null,
+    });
   });
 });

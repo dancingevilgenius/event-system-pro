@@ -6,7 +6,11 @@ import type {
   EventStaffState,
   ScoringJudgeCount,
 } from '../api/postgrest';
-import type { EarlyBirdWindow } from './eventEarlyBirdDates';
+import {
+  earlyBirdEnabledFromStored,
+  savedEarlyBirdName,
+  type EarlyBirdWindow,
+} from './eventEarlyBirdDates';
 import type { EventDatesFormState, ScheduleTimeBlockDay } from './eventDates';
 import type { EventLocationJson, EventVenueContactJson } from './eventLocation';
 import type { EventPassFormState } from './eventPasses';
@@ -188,7 +192,9 @@ export function formatEventFormExport(source: EventFormExportSource): string {
     earlyBirdDates: source.snapshots.earlyBird
       ? {
           mode: source.snapshots.earlyBird.mode,
-          windows: source.snapshots.earlyBird.windows.map((window) => ({
+          windows: source.snapshots.earlyBird.windows.map((window, index) => ({
+            name: savedEarlyBirdName(window.name, index),
+            enabled: window.enabled,
             startDate: window.startDate,
             endDate: window.endDate,
           })),
@@ -377,12 +383,16 @@ export function parseEventFormImport(
       }),
       earlyBird: {
         mode: asEarlyBirdMode(earlyBird.mode),
-        windows: windowRows.map((entry) => {
+        windows: windowRows.map((entry, index) => {
           const row = asRecord(entry);
+          const startDate = asNullableString(row?.startDate);
+          const endDate = asNullableString(row?.endDate);
           return {
             id: crypto.randomUUID(),
-            startDate: asNullableString(row?.startDate),
-            endDate: asNullableString(row?.endDate),
+            name: savedEarlyBirdName(asString(row?.name), index),
+            enabled: earlyBirdEnabledFromStored(row?.enabled, startDate, endDate),
+            startDate,
+            endDate,
           };
         }),
       },

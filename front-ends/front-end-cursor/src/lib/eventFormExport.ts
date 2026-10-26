@@ -14,6 +14,7 @@ import {
 import type { EventDatesFormState, ScheduleTimeBlockDay } from './eventDates';
 import type { EventLocationJson, EventVenueContactJson } from './eventLocation';
 import type { EventDiscountFormState } from './eventDiscounts';
+import { sanitizeIntensiveCostInput, type EventIntensiveFormState } from './eventIntensives';
 import type { EventPassFormState } from './eventPasses';
 
 type SectionStatus = 'not_started' | 'in_progress' | 'finalized';
@@ -44,6 +45,11 @@ export type EventFormDiscountSnapshot = {
   discounts: EventDiscountFormState[];
 };
 
+export type EventFormIntensiveSnapshot = {
+  hasIntensives: boolean;
+  intensives: EventIntensiveFormState[];
+};
+
 export type EventFormEarlyBirdSnapshot = {
   mode: 'none' | 'create';
   windows: EarlyBirdWindow[];
@@ -63,6 +69,7 @@ export type EventFormContestsSnapshot = {
 export type EventFormExportSnapshots = {
   passes?: EventFormPassSnapshot;
   discounts?: EventFormDiscountSnapshot;
+  intensives?: EventFormIntensiveSnapshot;
   roles?: EventRoleAssignment[];
   earlyBird?: EventFormEarlyBirdSnapshot;
   location?: EventLocationJson;
@@ -223,6 +230,17 @@ export function formatEventFormExport(source: EventFormExportSource): string {
           description: discount.description,
         }))
       : null,
+    intensives: source.snapshots.intensives
+      ? {
+          hasIntensives: source.snapshots.intensives.hasIntensives,
+          intensives: source.snapshots.intensives.intensives.map((intensive) => ({
+            name: intensive.name,
+            instructors: intensive.instructors,
+            cost: sanitizeIntensiveCostInput(intensive.cost),
+            dateTime: intensive.dateTime,
+          })),
+        }
+      : null,
     volunteers: null,
   });
 
@@ -256,6 +274,7 @@ export type ParsedEventFormImport = {
     }>;
   };
   discounts: EventDiscountFormState[];
+  intensives: EventFormIntensiveSnapshot;
 };
 
 export type AppliedEventImport = {
@@ -272,6 +291,7 @@ export type AppliedEventImport = {
   staff: EventStaffState;
   contests: EventContestsState;
   discounts: EventDiscountFormState[];
+  intensives: EventFormIntensiveSnapshot;
 };
 
 function asRecord(value: unknown): Record<string, unknown> | null {
@@ -315,6 +335,25 @@ function asIndex(value: unknown): number | null {
 
 function asDiscountValueKind(value: unknown): EventDiscountFormState['valueKind'] {
   return value === 'amount' ? 'amount' : 'percent';
+}
+
+function parseIntensives(value: unknown): EventFormIntensiveSnapshot {
+  const snapshot = asRecord(value);
+  const rows = Array.isArray(snapshot?.intensives) ? snapshot.intensives : [];
+
+  return {
+    hasIntensives: asBoolean(snapshot?.hasIntensives),
+    intensives: rows.map((entry) => {
+      const row = asRecord(entry);
+      return {
+        id: crypto.randomUUID(),
+        name: asString(row?.name),
+        instructors: asString(row?.instructors),
+        cost: sanitizeIntensiveCostInput(asString(row?.cost)),
+        dateTime: asString(row?.dateTime),
+      };
+    }),
+  };
 }
 
 function parseDiscounts(value: unknown): EventDiscountFormState[] {
@@ -477,6 +516,7 @@ export function parseEventFormImport(
         }),
       },
       discounts: parseDiscounts(root.discounts),
+      intensives: parseIntensives(root.intensives),
     },
   };
 }
@@ -523,5 +563,6 @@ export function materializeEventFormImport(
       })),
     },
     discounts: document.discounts,
+    intensives: document.intensives,
   };
 }

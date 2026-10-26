@@ -64,6 +64,7 @@ import AddEventContests, { type EventContestsSummary } from '../components/AddEv
 import AddEventStaff, { type EventStaffSummary } from '../components/AddEventStaff';
 import AddEventVolunteers from '../components/AddEventVolunteers';
 import AddEventDiscounts from '../components/AddEventDiscounts';
+import AddEventIntensives, { type EventIntensivesSummary } from '../components/AddEventIntensives';
 import AddEventExportImport from '../components/AddEventExportImport';
 import AddEventSortableSectionAccordion from '../components/AddEventSortableSectionAccordion';
 import { type AddEventSectionStatus } from '../components/AddEventSectionStatusToggle';
@@ -92,6 +93,7 @@ import {
 } from '../lib/eventLocation';
 import { resolveEventGroupCode } from '../lib/eventGroupSession';
 import { DEFAULT_IMPORTANT_CONTACT } from '../lib/eventFormExport';
+import { intensivesAccordionTitle } from '../lib/eventIntensives';
 import { passesAccordionTitle } from '../lib/eventPasses';
 
 type AddEventLocationState = {
@@ -106,6 +108,7 @@ type AddEventSectionId =
   | 'roles'
   | 'early_bird_dates'
   | 'discounts'
+  | 'intensives'
   | 'location'
   | 'online_links'
   | 'important_contacts'
@@ -133,6 +136,11 @@ const ADD_EVENT_SECTIONS: AddEventSection[] = [
   {
     id: 'discounts',
     title: 'Discounts',
+    description: '',
+  },
+  {
+    id: 'intensives',
+    title: 'Intensive Workshops',
     description: '',
   },
   {
@@ -254,6 +262,7 @@ function createInitialSectionStatuses(): Record<AddEventSectionId, AddEventSecti
     roles: DEFAULT_SECTION_STATUS,
     early_bird_dates: DEFAULT_SECTION_STATUS,
     discounts: DEFAULT_SECTION_STATUS,
+    intensives: DEFAULT_SECTION_STATUS,
     location: DEFAULT_SECTION_STATUS,
     online_links: DEFAULT_SECTION_STATUS,
     important_contacts: DEFAULT_SECTION_STATUS,
@@ -276,6 +285,7 @@ function sectionDisplayTitle(
   hasContests: boolean,
   contestCount: number,
   hasStaff: boolean,
+  intensivesSummary: EventIntensivesSummary,
 ): string {
   if (section.id === 'event_name' && status === 'finalized') {
     return eventName.trim();
@@ -287,6 +297,13 @@ function sectionDisplayTitle(
 
   if (section.id === 'passes' && status !== 'not_started') {
     return passesAccordionTitle(passesSummary.hasPasses, passesSummary.passCount);
+  }
+
+  if (section.id === 'intensives' && status !== 'not_started') {
+    return intensivesAccordionTitle(
+      intensivesSummary.hasIntensives,
+      intensivesSummary.intensiveCount,
+    );
   }
 
   if (section.id === 'early_bird_dates' && status !== 'not_started' && noEarlyBirdDates) {
@@ -329,6 +346,7 @@ function sectionIsFinalizedNotApplicable(
   noEarlyBirdDates: boolean,
   hasContests: boolean,
   hasStaff: boolean,
+  intensivesSummary: EventIntensivesSummary,
 ): boolean {
   if (sectionId === EXPORT_IMPORT_PANEL_ID || status !== 'finalized') {
     return false;
@@ -336,6 +354,10 @@ function sectionIsFinalizedNotApplicable(
 
   if (sectionId === 'passes') {
     return !passesSummary.hasPasses;
+  }
+
+  if (sectionId === 'intensives') {
+    return !intensivesSummary.hasIntensives;
   }
 
   if (sectionId === 'early_bird_dates') {
@@ -360,6 +382,7 @@ function withFinalizedNotApplicableAtEnd(
   noEarlyBirdDates: boolean,
   hasContests: boolean,
   hasStaff: boolean,
+  intensivesSummary: EventIntensivesSummary,
 ): AddEventPanelId[] {
   const remaining: AddEventPanelId[] = [];
   const sunk: AddEventPanelId[] = [];
@@ -374,6 +397,7 @@ function withFinalizedNotApplicableAtEnd(
         noEarlyBirdDates,
         hasContests,
         hasStaff,
+        intensivesSummary,
       )
     ) {
       sunk.push(sectionId);
@@ -484,6 +508,7 @@ function renderSectionContent(
   staffExpanded: boolean,
   onStaffSummaryChange: (summary: EventStaffSummary) => void,
   onSaveStaff: (staff: EventStaffState) => void,
+  onIntensivesSummaryChange: (summary: EventIntensivesSummary) => void,
 ) {
   if (sectionId === 'event_name') {
     return (
@@ -544,6 +569,15 @@ function renderSectionContent(
 
   if (sectionId === 'discounts') {
     return <AddEventDiscounts onFieldEdit={onFieldEdit} />;
+  }
+
+  if (sectionId === 'intensives') {
+    return (
+      <AddEventIntensives
+        onFieldEdit={onFieldEdit}
+        onSummaryChange={onIntensivesSummaryChange}
+      />
+    );
   }
 
   if (sectionId === 'online_links') {
@@ -628,6 +662,10 @@ function AdminAddEventForm() {
   const [passesSummary, setPassesSummary] = useState<EventPassesSummary>({
     hasPasses: false,
     passCount: 1,
+  });
+  const [intensivesSummary, setIntensivesSummary] = useState<EventIntensivesSummary>({
+    hasIntensives: false,
+    intensiveCount: 0,
   });
   const [noEarlyBirdDates, setNoEarlyBirdDates] = useState(true);
   const [hasContests, setHasContests] = useState(false);
@@ -852,10 +890,12 @@ function AdminAddEventForm() {
       noEarlyBirdDates,
       hasContests,
       hasStaff,
+      intensivesSummary,
     );
   }, [
     hasContests,
     hasStaff,
+    intensivesSummary,
     noEarlyBirdDates,
     passesSummary,
     sectionOrder,
@@ -996,6 +1036,15 @@ function AdminAddEventForm() {
     });
   }, [scheduleDatesSelected]);
 
+  const handleIntensivesSummaryChange = useCallback((summary: EventIntensivesSummary) => {
+    setIntensivesSummary((current) =>
+      current.hasIntensives === summary.hasIntensives
+      && current.intensiveCount === summary.intensiveCount
+        ? current
+        : summary,
+    );
+  }, []);
+
   const handlePassesSummaryChange = useCallback((summary: EventPassesSummary) => {
     setPassesSummary((current) =>
       current.hasPasses === summary.hasPasses && current.passCount === summary.passCount
@@ -1122,6 +1171,7 @@ function AdminAddEventForm() {
         noEarlyBirdDates,
         hasContests,
         hasStaff,
+        intensivesSummary,
       );
       const oldIndex = displayed.indexOf(activeId);
       const newIndex = displayed.indexOf(overId);
@@ -1142,6 +1192,7 @@ function AdminAddEventForm() {
             noEarlyBirdDates,
             hasContests,
             hasStaff,
+            intensivesSummary,
           );
         }),
       );
@@ -1316,6 +1367,7 @@ function AdminAddEventForm() {
                     expandedSection === 'staff',
                     handleStaffSummaryChange,
                     handleSaveStaff,
+                    handleIntensivesSummaryChange,
                   );
                   const sectionStatus = sectionStatuses[section.id];
                   const sectionTitle = sectionDisplayTitle(
@@ -1330,6 +1382,7 @@ function AdminAddEventForm() {
                     hasContests,
                     contestCount,
                     hasStaff,
+                    intensivesSummary,
                   );
 
                   return (

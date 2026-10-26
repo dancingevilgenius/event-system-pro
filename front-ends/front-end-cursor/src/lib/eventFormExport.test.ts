@@ -113,6 +113,18 @@ function sourceWithIdentity(): EventFormExportSource {
           },
         ],
       },
+      intensives: {
+        hasIntensives: true,
+        intensives: [
+          {
+            id: '77777777-7777-4777-8777-777777777777',
+            name: 'Musicality',
+            instructors: 'Ada Lovelace',
+            cost: '120.50',
+            dateTime: '2026-09-25T18:00',
+          },
+        ],
+      },
     },
   };
 }
@@ -127,6 +139,7 @@ describe('formatEventFormExport', () => {
       schedule: { days: Array<Record<string, unknown>> };
       earlyBirdDates: { windows: Array<Record<string, unknown>> };
       discounts: Array<Record<string, unknown>>;
+      intensives: { hasIntensives: boolean; intensives: Array<Record<string, unknown>> };
     };
 
     expect(parsed.eventName).toBe('Clone - River City Swing');
@@ -156,6 +169,17 @@ describe('formatEventFormExport', () => {
       valueKind: 'percent',
       value: '15',
       description: 'With student ID',
+    });
+    expect(parsed.intensives).toEqual({
+      hasIntensives: true,
+      intensives: [
+        {
+          name: 'Musicality',
+          instructors: 'Ada Lovelace',
+          cost: '120',
+          dateTime: '2026-09-25T18:00',
+        },
+      ],
     });
     expect(JSON.stringify(parsed)).not.toContain('user_id');
     expect(JSON.stringify(parsed)).not.toContain('33333333-3333-4333-8333-333333333333');
@@ -187,6 +211,7 @@ describe('formatEventFormExport', () => {
         },
         contests: applied.contests,
         discounts: { discounts: applied.discounts },
+        intensives: applied.intensives,
       },
     })) as { contests: { contests: Array<{ headJudgeIndex: number | null }> } };
 

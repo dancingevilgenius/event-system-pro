@@ -4,6 +4,7 @@ import {
   AccordionSummary,
   Box,
   Checkbox,
+  IconButton,
   FormControlLabel,
   Stack,
   Tooltip,
@@ -26,10 +27,12 @@ import {
 } from '../lib/eventPasses';
 import { trimSavedText } from '../utils/trimSavedText';
 import AppTextField from './AppTextField';
+import DeleteIcon from './DeleteIcon';
 import DragHandleIcon from './DragHandleIcon';
 
 const accordionSummarySx = {
-  px: 2,
+  pl: 2,
+  pr: 7,
   minHeight: 48,
   '& .MuiAccordionSummary-content': {
     my: 1,
@@ -68,6 +71,7 @@ type EventPassSortableAccordionProps = {
       Pick<EventPassFormState, 'name' | 'cost' | 'description' | 'earlyBirdCosts' | 'spectator'>
     >,
   ) => void;
+  onDelete: (id: string) => void;
 };
 
 /** Outlined padding plus four digits, and no wider. */
@@ -141,6 +145,7 @@ export default function EventPassSortableAccordion({
   disabled = false,
   onAccordionChange,
   onChange,
+  onDelete,
 }: EventPassSortableAccordionProps) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: pass.id,
@@ -154,6 +159,7 @@ export default function EventPassSortableAccordion({
   };
 
   const displayTitle = getEventPassDisplayName(pass.name);
+  const dragLabel = displayTitle.length > 0 ? displayTitle : 'pass';
   const earlyBirdCosts = pass.earlyBirdCosts ?? {};
   const showEarlyBirdCosts = earlyBirdWindows.length > 0;
   const spectatorChecked = pass.spectator === true;
@@ -166,6 +172,7 @@ export default function EventPassSortableAccordion({
 
   return (
     <div ref={setNodeRef} style={style}>
+      <Box sx={{ position: 'relative' }}>
       <Accordion
         expanded={disabled ? false : expanded}
         onChange={disabled ? undefined : onAccordionChange}
@@ -194,7 +201,7 @@ export default function EventPassSortableAccordion({
               touchAction: 'none',
               pointerEvents: disabled ? 'none' : 'auto',
             }}
-            aria-label={`Drag to reorder ${displayTitle}`}
+            aria-label={`Drag to reorder ${dragLabel}`}
           >
             <DragHandleIcon fontSize="small" />
           </Box>
@@ -313,6 +320,17 @@ export default function EventPassSortableAccordion({
           </Stack>
         </AccordionDetails>
       </Accordion>
+      {disabled ? null : (
+        <IconButton
+          aria-label={`Delete ${dragLabel}`}
+          size="small"
+          onClick={() => onDelete(pass.id)}
+          sx={{ position: 'absolute', top: 6, right: 4, zIndex: 1 }}
+        >
+          <DeleteIcon fontSize="small" />
+        </IconButton>
+      )}
+      </Box>
     </div>
   );
 }

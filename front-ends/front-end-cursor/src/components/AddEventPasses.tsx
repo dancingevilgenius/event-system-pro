@@ -1,11 +1,18 @@
 import {
   Box,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  IconButton,
   Stack,
   ToggleButton,
   ToggleButtonGroup,
   Typography,
 } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import {
   DndContext,
   KeyboardSensor,
@@ -30,8 +37,8 @@ import {
 } from '../context/EventFormExportContext';
 import { pricedEarlyBirdWindows } from '../lib/eventEarlyBirdDates';
 import {
-  createDefaultEventPass,
   createEmptyEventPass,
+  getEventPassDisplayName,
   type EventPassFormState,
 } from '../lib/eventPasses';
 import EventPassSortableAccordion from './EventPassSortableAccordion';
@@ -55,8 +62,10 @@ export default function AddEventPasses({
   onSummaryChange,
 }: AddEventPassesProps) {
   const [hasPasses, setHasPasses] = useState(false);
-  const [passes, setPasses] = useState<EventPassFormState[]>(() => [createDefaultEventPass()]);
+  const [passes, setPasses] = useState<EventPassFormState[]>(() => [createEmptyEventPass()]);
   const [expandedPassId, setExpandedPassId] = useState<string | false>(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const pendingDeleteNameRef = useRef('');
   const reportExport = useReportEventFormSection();
   const snapshots = useEventFormExportSnapshots();
   const appliedImport = useAppliedEventImport();
@@ -140,6 +149,28 @@ export default function AddEventPasses({
       setExpandedPassId(isExpanded ? passId : false);
     };
 
+  const requestDelete = (id: string) => {
+    const pass = passes.find((item) => item.id === id);
+    const name = getEventPassDisplayName(pass?.name ?? '');
+    pendingDeleteNameRef.current = name.length > 0 ? name : 'this pass';
+    setPendingDeleteId(id);
+  };
+
+  const cancelDelete = () => {
+    setPendingDeleteId(null);
+  };
+
+  const confirmDelete = () => {
+    if (pendingDeleteId === null) {
+      return;
+    }
+
+    setPasses((current) => current.filter((pass) => pass.id !== pendingDeleteId));
+    setExpandedPassId((current) => (current === pendingDeleteId ? false : current));
+    setPendingDeleteId(null);
+    onFieldEdit?.();
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) {
@@ -193,6 +224,7 @@ export default function AddEventPasses({
                     expanded={expandedPassId === pass.id}
                     onAccordionChange={handleAccordionChange(pass.id)}
                     onChange={updatePass}
+                    onDelete={requestDelete}
                   />
                 ))}
               </Stack>
@@ -208,6 +240,38 @@ export default function AddEventPasses({
           </Box>
         ) : null}
       </Stack>
+
+      <Dialog
+        open={pendingDeleteId !== null}
+        onClose={cancelDelete}
+        fullWidth
+        maxWidth="xs"
+        aria-labelledby="delete-pass-title"
+      >
+        <DialogTitle sx={{ position: 'relative', minHeight: 40, p: 1 }}>
+          <IconButton
+            aria-label="Close"
+            onClick={cancelDelete}
+            size="small"
+            sx={{ position: 'absolute', right: 8, top: 8 }}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="delete-pass-title">
+            {`Delete ${pendingDeleteNameRef.current}`}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: 'space-between', px: 4, pt: 1, pb: 3 }}>
+          <Button onClick={cancelDelete} sx={{ minWidth: 96 }}>
+            No
+          </Button>
+          <Button variant="contained" onClick={confirmDelete} sx={{ minWidth: 96 }}>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

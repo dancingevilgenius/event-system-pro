@@ -1,5 +1,3 @@
-export const DEFAULT_EVENT_PASS_NAME = 'Basic Pass';
-
 /** Whole-dollar pass prices stop at four digits. */
 export const PASS_COST_MAX_DIGITS = 4;
 
@@ -17,17 +15,6 @@ export type EventPassFormState = {
   /** Checked when this pass does not collect registration details. */
   spectator: boolean;
 };
-
-export function createDefaultEventPass(): EventPassFormState {
-  return {
-    id: crypto.randomUUID(),
-    name: DEFAULT_EVENT_PASS_NAME,
-    cost: '',
-    description: '',
-    earlyBirdCosts: {},
-    spectator: false,
-  };
-}
 
 export function createEmptyEventPass(): EventPassFormState {
   return {
@@ -53,8 +40,7 @@ export function passesAccordionTitle(hasPasses: boolean, passCount: number): str
 }
 
 export function getEventPassDisplayName(name: string): string {
-  const trimmed = name.trim();
-  return trimmed.length > 0 ? trimmed : 'Untitled Pass';
+  return name.trim();
 }
 
 /** Whole US dollars only. A decimal portion and any other non-digit characters are dropped. */

@@ -54,6 +54,7 @@ import PrelimsPage from './pages/PrelimsPage';
 import ScheduleDemoPage from './pages/ScheduleDemoPage';
 import SecretQuestionsPage from './pages/SecretQuestionsPage';
 import StaffPage from './pages/StaffPage';
+import WorkshopHeadCountPage from './pages/WorkshopHeadCountPage';
 import StaticListDetailsPage from './pages/StaticListDetailsPage';
 import StaticListsPage from './pages/StaticListsPage';
 import TournamentBracketDemoPage from './pages/TournamentBracketDemoPage';
@@ -465,6 +466,14 @@ export default function App() {
         element={
           <ProtectedRoute roles={['STAFF']}>
             <StaffPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/workshop-head-count"
+        element={
+          <ProtectedRoute roles={['STAFF']}>
+            <WorkshopHeadCountPage />
           </ProtectedRoute>
         }
       />

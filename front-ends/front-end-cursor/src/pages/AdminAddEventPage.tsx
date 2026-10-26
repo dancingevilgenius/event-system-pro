@@ -413,8 +413,13 @@ function disabledStatusesForSection(
   sectionId: AddEventSectionId,
   eventNameReadyToFinalize: boolean,
   scheduleDatesSelected: boolean,
+  earlyBirdDatesValid: boolean,
 ): AddEventSectionStatus[] | undefined {
   if (sectionId === 'event_name' && !eventNameReadyToFinalize) {
+    return ['finalized'];
+  }
+
+  if (sectionId === 'early_bird_dates' && !earlyBirdDatesValid) {
     return ['finalized'];
   }
 
@@ -496,6 +501,7 @@ function renderSectionContent(
   scheduleDatesSelected: boolean,
   onPassesSummaryChange: (summary: EventPassesSummary) => void,
   onNoEarlyBirdDatesChange: (noEarlyBirdDates: boolean) => void,
+  onEarlyBirdDatesValidChange: (datesValid: boolean) => void,
   onVenueChange: (venue: string) => void,
   locationExpanded: boolean,
   onSaveLocation: (location: EventLocationJson) => void,
@@ -563,6 +569,7 @@ function renderSectionContent(
       <AddEventEarlyBirdDates
         onFieldEdit={onFieldEdit}
         onNoEarlyBirdDatesChange={onNoEarlyBirdDatesChange}
+        onDatesValidChange={onEarlyBirdDatesValidChange}
       />
     );
   }
@@ -668,6 +675,7 @@ function AdminAddEventForm() {
     intensiveCount: 0,
   });
   const [noEarlyBirdDates, setNoEarlyBirdDates] = useState(true);
+  const [earlyBirdDatesValid, setEarlyBirdDatesValid] = useState(true);
   const [hasContests, setHasContests] = useState(false);
   const [contestCount, setContestCount] = useState(0);
   const [hasStaff, setHasStaff] = useState(false);
@@ -1068,6 +1076,30 @@ function AdminAddEventForm() {
     );
   }, []);
 
+  const handleEarlyBirdDatesValidChange = useCallback((valid: boolean) => {
+    setEarlyBirdDatesValid((current) => (current === valid ? current : valid));
+    if (valid || sectionStatusesRef.current.early_bird_dates !== 'finalized') {
+      return;
+    }
+
+    const next = {
+      ...sectionStatusesRef.current,
+      early_bird_dates: 'in_progress' as const,
+    };
+    sectionStatusesRef.current = next;
+    setSectionStatuses(next);
+    enqueueEventSave((currentEventId) =>
+      saveEventSectionStatuses({
+        eventId: currentEventId,
+        eventGroupCode: eventGroupCodeRef.current,
+        eventName: eventNameRef.current,
+        sectionStatuses: {
+          early_bird_dates: STATUS_TO_STORED.in_progress,
+        },
+      }),
+    );
+  }, [enqueueEventSave]);
+
   const handleVenueChange = useCallback((nextVenue: string) => {
     setVenueName((current) => (current === nextVenue ? current : nextVenue));
   }, []);
@@ -1110,6 +1142,14 @@ function AdminAddEventForm() {
         sectionId === 'event_name'
         && status === 'finalized'
         && !eventNameCanBeFinalized(eventName)
+      ) {
+        return;
+      }
+
+      if (
+        sectionId === 'early_bird_dates'
+        && status === 'finalized'
+        && !earlyBirdDatesValid
       ) {
         return;
       }
@@ -1355,6 +1395,7 @@ function AdminAddEventForm() {
                     scheduleDatesSelected,
                     handlePassesSummaryChange,
                     handleNoEarlyBirdDatesChange,
+                    handleEarlyBirdDatesValidChange,
                     handleVenueChange,
                     expandedSection === 'location',
                     handleSaveLocation,
@@ -1401,6 +1442,7 @@ function AdminAddEventForm() {
                         section.id,
                         eventNameReadyToFinalize,
                         scheduleDatesSelected,
+                        earlyBirdDatesValid,
                       )}
                       disabled={section.id !== 'event_name' && !otherSectionsEnabled}
                     />

@@ -2,9 +2,13 @@
 
 Plain-language summary of rules, restrictions, and constraints for the **front-end-cursor** app and related **database / demo-data** conventions.
 
-## Application todo list
+## Open Judge Tabs
 
-- Fix sign-in on the judge tabs. **Open Judge Tabs** creates a session for each assigned judge, but the new browser tabs do not finish signing that judge in and opening Judging Home.
+**Open Judge Tabs** is on signed-in **Home** and **Admin** home (`ADMIN` only). `OpenJudgeTabsDialog` asks for an event group, an event, and a contest, then opens one browser tab per assigned judge at `/judge-tab?pending=<slot>`.
+
+`openContestJudgeTabs` builds a session for each judge. `publishJudgeTabHandoff` stores that session in `localStorage`. `JudgeTabHandoffPage` reads `handoff` or `pending`, takes the session once (`takeJudgeTabHandoff`), calls `saveSession`, and then `window.location.replace('/judgingHome')`.
+
+A handoff key that was already used, a link with no key, or a pending key that never arrives within **20 seconds** stays on `/judge-tab` with an error. Tabs the browser blocked are closed, and skipped judges are reported in the dialog.
 
 **Primary code locations**
 
@@ -57,7 +61,21 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 | Set Event Judges | `front-ends/front-end-cursor/src/pages/AdminSetEventJudgesPage.tsx` |
 | Staff / contest pick | `front-ends/front-end-cursor/src/pages/StaffPage.tsx`, `ContestSelectionPage.tsx` |
 | Competitor placeholder | `front-ends/front-end-cursor/src/pages/CompetitorPage.tsx` |
-| Judging page | `front-ends/front-end-cursor/src/pages/JudgingPage.tsx` |
+| Judging home | `front-ends/front-end-cursor/src/pages/JudgingHomePage.tsx`, `components/JudgingHomeRoute.tsx` |
+| Judge tab handoff | `front-ends/front-end-cursor/src/pages/JudgeTabHandoffPage.tsx`, `components/OpenJudgeTabsDialog.tsx`, `lib/openJudgeTabs.ts` |
+| Registration home | `front-ends/front-end-cursor/src/pages/RegistrationHomePage.tsx`, `components/RegistrationHomeRoute.tsx` |
+| Floor parent home | `front-ends/front-end-cursor/src/pages/FloorParentHomePage.tsx` |
+| Floor parent check-in | `front-ends/front-end-cursor/src/pages/FloorParentCheckinPage.tsx` |
+| Results | `front-ends/front-end-cursor/src/pages/ContestResultsListPage.tsx` |
+| Quick Reg | `front-ends/front-end-cursor/src/pages/AdminQuickRegPage.tsx` |
+| Migrations | `front-ends/front-end-cursor/src/pages/AdminMigrationsPage.tsx` |
+| Cursor rules (admin page) | `front-ends/front-end-cursor/src/pages/AdminCursorRulesPage.tsx` |
+| Event calendar demo | `front-ends/front-end-cursor/src/pages/EventCalendarDemoPage.tsx` |
+| Schedule demo | `front-ends/front-end-cursor/src/pages/ScheduleDemoPage.tsx` |
+| Check-in demos | `front-ends/front-end-cursor/src/pages/CheckinSinglePage.tsx`, `CheckinCouplePage.tsx`, `components/CheckinSheet.tsx` |
+| Judging page (finals) | `front-ends/front-end-cursor/src/pages/JudgingPage.tsx`, `components/JudgeFinalsRoute.tsx` |
+| Layout tier | `front-ends/front-end-cursor/src/hooks/useLayoutTier.ts` |
+| Trim saved text | `front-ends/front-end-cursor/src/utils/trimSavedText.ts` |
 | Competitor names | `front-ends/front-end-cursor/src/data/legionNames.ts` |
 | Raw score types/helpers | `front-ends/front-end-cursor/src/types/judgingScore.ts` |
 | Color palette | `front-ends/front-end-cursor/src/data/judgingColorPalette.ts` |
@@ -100,6 +118,7 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 | Cursor rules (readable timestamps) | `.cursor/rules/database-timestamp-format.mdc` |
 | Cursor rules (bold labels) | `.cursor/rules/bold-text-labels.mdc` |
 | Cursor rules (MUI v9 `sx` + responsive) | `.cursor/rules/mui-v9-sx-styling.mdc` |
+| Cursor rules (trim saved text) | `.cursor/rules/trim-saved-text.mdc` |
 | Activity monitor | `front-ends/front-end-cursor/src/components/ActivityMonitor.tsx` |
 | Contest selection layout | `front-ends/front-end-cursor/src/pages/ContestSelectionPage.tsx` |
 | Admin contests / results | `front-ends/front-end-cursor/src/pages/AdminContestsPage.tsx`, `AdminContestResultsPage.tsx` |
@@ -111,15 +130,15 @@ Plain-language summary of rules, restrictions, and constraints for the **front-e
 
 ## General layout and navigation
 
-- Main content blocks (messages, buttons, fields, dropdowns) are capped at **360px** wide and centered (`CONTENT_MAX_WIDTH`).
+- **Phone (xs):** narrow forms, button stacks, and the message stack use a **360px** centered column (`CONTENT_MAX_WIDTH`, `centeredContentStackSx`). The message stack stays 360px at every width.
+- **md and up:** many pages call `useLayoutTier()` and switch that stack to a **Grid** (`md` 6, `lg` 4). `Container` max width follows the tier: `sm` on xs, `md`, `lg`, then `xl`. See **Mobile-friendly layout**.
 - Default route is **Public Home** (`/`). Alias: `/home-page`. Unknown URLs redirect to **`/`**.
-- **Public routes:** `/`, `/home-page`, `/login`, `/register`, `/forgot-password`, `/demo`, `/tournament-bracket-demo`.
-- **Protected routes** require a signed-in session (see **Authentication** and **Roles and route guards**).
-- Demo opens **3rd Party Library Demos** (`/third-party-library-demos`), **Judge Demos** (`/judge-demos`), and **Floor Parent Demos** (`/floor-coordinator-demos`).
-- **3rd Party Library Demos** opens **Tournament Bracket Demo** (`/tournament-bracket-demo`), **Event Calendar** (`/demo-event-calendar`), and **Schedule Demo** (`/demo-schedule`). Those pages' **Back** returns to `/third-party-library-demos`.
-- **Judge Demos** opens **Prelims** (`/judge-prelims`) and **Contest 1–3** (`/judge-finals`).
-- **Floor Coordinator Demos** opens **Couples Checkin** (`/checkin-couple`), **Leaders Checkin** (`/checkin-single?role=leader`), and **Followers Checkin** (`/checkin-single?role=follower`). Check-in **Back** returns to `/floor-coordinator-demos`.
-- Those judge pages' **Submit** and **Back** return to `/judge-demos`.
+- **Public routes:** `/`, `/home-page`, `/login`, `/register`, `/forgot-password`.
+- **Protected routes** require a signed-in session (see **Authentication** and **Roles and route guards**). Demo, library-demo, and check-in routes require **`ADMIN`**.
+- Admin home **Demos** opens **Floor Parent Demos** (`/floor-coordinator-demos`), **Judge Demos** (`/judge-demos`), **Merchandise Demo** (`/event-merchandise-pos-demo`), and **3rd Party Library Demos** (`/third-party-library-demos`). Demo **Back** returns to `/adminhome`.
+- **3rd Party Library Demos** opens **Tournament Bracket Demo** (`/tournament-bracket-demo`), **Event Calendar** (`/demo-event-calendar`), and **Schedule Demo** (`/demo-schedule`). Those pages' **Back** returns to `/third-party-library-demos`. The hub **Back** returns to `/demo`.
+- **Judge Demos** opens **Prelims** (`/judge-prelims`) and **Contest 1–3** (`/judge-finals`). Hub **Back** returns to `/demo`. Prelims **Submit** and **Back** return to `/judge-demos`. Finals **Back** goes to `/judgingHome`; a successful **Submit** goes to `/home`.
+- **Floor Coordinator Demos** opens **Couples Checkin** (`/checkin-couple`), **Leaders Checkin** (`/checkin-single?role=leader`), and **Followers Checkin** (`/checkin-single?role=follower`). Check-in **Back** returns to `/floor-coordinator-demos`. Hub **Back** returns to `/demo`.
 - `/judging` redirects to `/judge-finals`. `/prelims` redirects to `/judge-prelims` and keeps the query string.
 
 ---
@@ -131,7 +150,7 @@ Unauthenticated landing page (`PublicHomePage`):
 - Brand title: **Event System Pro**.
 - Short tagline plus “More features coming soon.”
 - Shows current **hostname**.
-- Buttons: **Login** (`/login`), **Register** (`/register`), **Demo** (`/demo`).
+- Buttons: **Login** (`/login`), **Register** (`/register`).
 
 ---
 
@@ -143,7 +162,7 @@ Unauthenticated landing page (`PublicHomePage`):
 - On success the app stores a **session** in `sessionStorage` (`esp_session`): `user_id`, `username`, `email`, `roles`, and JWT **`token`**.
 - Authenticated API calls send **`Authorization: Bearer <token>`** (see `postgrest.ts`).
 - **Public** RPCs and lookups (login, register, forgot-password, country/state lists) call PostgREST with **`auth: 'omit'`** so a stale session JWT is not sent on unauthenticated flows.
-- **Log Off** (signed-in Home) calls the logout RPC, clears the session, and returns to **`/`** (public home).
+- **Log Off** is on **Account**, not Home. It flushes pending event-form saves, calls the logout RPC, clears the session, and returns to **`/`** (public home).
 - Sign in again after database auth or role changes so the JWT includes current roles and username.
 
 ---
@@ -152,7 +171,7 @@ Unauthenticated landing page (`PublicHomePage`):
 
 ### App roles
 
-Ten role codes live in **`public.app_role`**. Assignments are rows in **`user_app_role`** and are included in the login JWT `app_roles`. `user_app_role.role_code` references `app_role`.
+Thirteen role codes live in **`public.app_role`** (migration `146_app_role.sql` and `session.ts`). Assignments are rows in **`user_app_role`** and are included in the login JWT `app_roles`. `user_app_role.role_code` references `app_role`.
 
 `app_role.more_json.Labels` is an array of display strings. The first label is the role code in title case, with underscores replaced by spaces (`FLOOR_PARENT` → `Floor Parent`).
 
@@ -167,6 +186,9 @@ Ten role codes live in **`public.app_role`**. Assignments are rows in **`user_ap
 | `EVENT_MANAGER` | Event Manager |
 | `DJ` | Dj |
 | `EVENT_DIRECTOR` | Event Director |
+| `INSTRUCTOR` | Instructor |
+| `SETUP` | Setup |
+| `TEARDOWN` | Teardown |
 | `COMPETITOR` | Competitor |
 
 Legacy codes **`EVENT_COORDINATOR`** and **`BALLROOM_COORDINATOR`** were renamed to **`EVENT_DIRECTOR`** and **`EVENT_MANAGER`**.
@@ -175,31 +197,72 @@ Legacy codes **`EVENT_COORDINATOR`** and **`BALLROOM_COORDINATOR`** were renamed
 
 - No session → redirect to **`/`** (public home).
 - Session present but missing required role → redirect to **`/home`**.
-- Users with the **`ADMIN`** role pass **any** role check (admin can open staff, competitor, and admin routes).
+- Users with the **`ADMIN`** role pass **any** `ProtectedRoute` role list (`sessionHasAnyRole` returns true when the session includes `ADMIN`). Routes that use their own guard (`JudgingHomeRoute`, `JudgeFinalsRoute`, `RegistrationHomeRoute`) follow the rules in the table below. `ADMIN` is enough for Registration Home and for `/judge-finals`. It is not enough by itself for `/judgingHome`.
 
 ### Route access
 
+`ProtectedRoute` with a `roles` list uses `sessionHasAnyRole` (**`ADMIN` passes**). A route with no `roles` only needs a session. No session redirects to **`/`**. A failed role check redirects to **`/home`**.
+
 | Route | Required role(s) |
 |-------|------------------|
-| `/home`, `/account`, `/changepassword`, `/secret-questions`, `/static-lists`, `/static-list-details/:listCode`, `/roles` | Any signed-in user |
+| `/`, `/home-page`, `/login`, `/register`, `/forgot-password` | Public |
+| `/home`, `/account`, `/changepassword`, `/secret-questions`, `/static-lists`, `/static-list-details/:listCode`, `/roles`, `/floor-parent-home`, `/floor-parent-checkin-single`, `/results`, `/results/:contestId` | Any signed-in user. `/results/item` is the same results page (`eventId` and `contestItemId` query) |
 | `/staff` | `STAFF` (or `ADMIN`) |
-| `/judge-finals`, `/judge-prelims` | `ADMIN` or `STAFF` |
-| `/judge-demos`, `/floor-coordinator-demos`, `/third-party-library-demos` | `ADMIN` |
 | `/competitor-home`, `/competitor-wsdc` | `COMPETITOR` (or `ADMIN`) |
-| `/adminhome`, `/event-home`, `/event-groups`, `/event-groups/:code`, `/event-groups/:code/:eventId` (+ `/attendees`, `/competitors`, `/contests`), `/create-event`, `/admin/contests`, `/admin/contests/contest`, `/admin/competitors`, `/admin/search-users`, `/admin/competition-entries`, `/admin/audit-log`, `/admin/scheduled-tasks`, `/admin/set-event-judges`, `/governing-body`, `/wsdc-find-dancer`, `/event-merchandise-pos-demo` | `ADMIN` |
+| `/judge-prelims` | `ADMIN` or `STAFF` |
+| `/judge-finals` | `JudgeFinalsRoute` (not a role list). No session → `/`. Allowed for `ADMIN`, `STAFF`, `JUDGE`, or `HEAD_JUDGE`, or when Judging Home access is already allowed. Otherwise → `/home` |
+| `/judgingHome` | `JudgingHomeRoute`. No session → `/`. Allowed for app role `JUDGE` or `HEAD_JUDGE`, or when the user has at least one contest in the 6-hour judging window. `ADMIN` does not skip this check. Otherwise → `/home` |
+| `/registrationHome` | `RegistrationHomeRoute`. No session → `/`. Allowed for `REGISTRATION` (or `ADMIN`, via `hasAnyRole`) or when `api.registration_home_access` is true (event staff role `REGISTRATION` on an event in the registration window). Otherwise → `/home` |
+| `/judge-tab` | `JudgeTabHandoffPage` (no `ProtectedRoute`). See **Open Judge Tabs** |
+| `/demo`, `/judge-demos`, `/floor-coordinator-demos`, `/third-party-library-demos`, `/tournament-bracket-demo`, `/demo-schedule`, `/demo-event-calendar`, `/event-merchandise-pos-demo`, `/checkin-single`, `/checkin-couple` | `ADMIN` |
+| `/adminhome`, `/migrations`, `/admin/cursor-rules`, `/quickreg`, `/governing-body`, `/admin/audit-log`, `/admin/scheduled-tasks`, `/wsdc-find-dancer`, `/admin/set-event-judges`, `/event-home`, `/events`, `/event-groups` and nested event routes, `/create-event`, `/admin/contests`, `/admin/contests/contest`, `/admin/competitors`, `/admin/search-users`, `/admin/competition-entries` | `ADMIN` |
 | `/admin/event-details` | Redirects to `/event-groups` |
 | `/add-event` | Redirects to `/create-event` |
 | `/admin/tournament-bracket-demo` | Redirects to `/tournament-bracket-demo` |
+| `/judging` | Redirects to `/judge-finals` and keeps the query string |
+| `/prelims` | Redirects to `/judge-prelims` and keeps the query string |
+| `/competitor` | Redirects to `/competitor-wsdc` and keeps the query string |
+| Any other path | Redirects to `/` |
 
 ---
 
 ## Home page (`/home`)
 
-- After login, the user lands on **Home** (role hub).
-- Buttons (top to bottom): **Staff** (`/staff`), **Competitor** (`/competitor-home`), **Admin** (`/adminhome`) — **only when the user has the `ADMIN` role** — then **Account** (`/account`).
-- **Skin** lives on **Account**, not Home.
-- **Log Off** calls logout, clears session, and returns to **`/`** (public home).
+- After login, the user lands on **Home**.
+- **Account** is `AccountSettingsButton` in the header. It is not a button in the stack. **Skin** and **Log Off** live on Account.
+- **Open Judge Tabs** (contained) shows only for `ADMIN`.
+- Stack buttons, in order:
+  - **Staff** (`/staff`) and **Competitor** (`/competitor-home`) show for every signed-in user. The routes still require `STAFF` or `COMPETITOR` (`ADMIN` passes).
+  - **Registration** (`/registrationHome`) when the user has `REGISTRATION` (`ADMIN` passes) or event-staff registration access.
+  - **Judging** (`/judgingHome`) when Judging Home access allows it, inserted immediately before **Admin**.
+  - **Admin** (`/adminhome`) only for `ADMIN`.
+  - A floor-parent title button (`/floor-parent-home`). The label is the user’s saved title (`Floor Parent`, `Floor Mom`, or `Floor Dad`; default **Floor Parent**).
+  - **Results** (`/results`).
+- On **xs** the buttons are a 360px stack. From **md** they are a grid.
 - **Test Message Boxes** is on **Admin** home, not Home (see **Admin section**).
+
+## Registration, judging, floor parent, and results
+
+### Registration (`/registrationHome`)
+
+- Title **Registration**. Tabs: **New User** and **Registered User**.
+- **Back to Home** → `/home`.
+
+### Judging home (`/judgingHome`)
+
+- Title **Judging**. Lists contests in the 6-hour window the user may open (see `selectJudgingHomeContests`). Opening a contest goes to finals (`/judge-finals`) with contest identity in route state, and in the query string so a refresh can reload it.
+- **Back to Home** → `/home`.
+
+### Floor parent (`/floor-parent-home`)
+
+- Any signed-in user. Title is the saved floor-parent title. A dropdown sets **Floor Parent**, **Floor Mom**, or **Floor Dad** (that label is the Home button).
+- Contest buttons for events starting from now through the next 6 hours open `/floor-parent-checkin-single`.
+- **Back to Home** → `/home`. Check-in **Back** returns to `/floor-parent-home`.
+
+### Results (`/results`)
+
+- Any signed-in user. Lists contests that have resolved results and opens `/results/:contestId` or `/results/item?eventId=&contestItemId=`.
+- **Back to Home** → `/home`. The detail page **Back to Results** returns here. See **Admin contest results**.
 
 ---
 
@@ -237,14 +300,21 @@ Legacy codes **`EVENT_COORDINATOR`** and **`BALLROOM_COORDINATOR`** were renamed
 
 ### Forgot password (`/forgot-password`)
 
-Four-step stepper (public, no login required):
+Public four-step stepper. Step 1 has a toggle:
 
-1. **Find your account** — enter email or username; mailer sends a verification code (dev: Mailpit).
-2. **Verify code** — enter the 6-digit code (`api.forgot_password_verify`).
-3. **New password** — set new password (≥ 8 characters, must match confirm); `api.forgot_password_complete`.
-4. **Done** — return to login.
+| Method | Step 2 |
+|--------|--------|
+| **Verification Code** (default) | Mailer sends a code (dev: Mailpit at `http://localhost:8025`). Enter the 6-digit code (`api.forgot_password_verify`). |
+| **Secret Questions** | Answer the saved questions shown for that account. **At least two** answers are required (`api.forgot_password_secret_questions_verify`). This step does not use `SecretQuestionsSelector`. |
 
-Login page links: **Forgot password?**, **Register**, and **Back to Home** (`/home-page`).
+Shared steps:
+
+1. **Find your account** — email or username. Verification code sends the mail; secret questions continues without a mail.
+2. **Verify code** or **Secret questions** (label depends on the toggle).
+3. **New password** — new password ≥ 8 characters and must match confirm. Verification code calls `api.forgot_password_complete`. Secret questions calls `api.forgot_password_secret_questions_complete`.
+4. **Done** — “Your password has been updated.” **Back to Login** navigates to **`/`** (public home), not `/login`.
+
+The page header **Back to Login** also goes to **`/`**. Login page links: **Forgot password?**, **Register**, and **Back to Home** (`/home-page`).
 
 ---
 
@@ -308,7 +378,7 @@ Typical slot markup:
 | `get_password_recovery_setup` | `/secret-questions` load | bearer |
 | `update_password_recovery` | `/secret-questions` save | bearer |
 
-Forgot-password flow uses a separate stepper on **`/forgot-password`** (user answers two of their saved questions); it does **not** reuse these picker components.
+Forgot password does **not** reuse these picker components. On **`/forgot-password`** the user chooses **Verification Code** or **Secret Questions**. The secret-questions step asks for answers to the saved questions and requires **at least two**. See **Forgot password**.
 
 ---
 
@@ -326,23 +396,34 @@ Forgot-password flow uses a separate stepper on **`/forgot-password`** (user ans
 | Contests | `/admin/contests` |
 | Competitors | `/admin/competitors` |
 | Users | `/admin/search-users` |
+| Quick Reg | `/quickreg` |
 | Competition Entries | `/admin/competition-entries` (placeholder) |
+| Demos | `/demo` |
 | WSDC Find Dancer | `/wsdc-find-dancer` |
 | Set Event Judges | `/admin/set-event-judges` |
 | Governing Bodies | `/governing-body` |
 | Audit Log | `/admin/audit-log` |
 | Scheduled Tasks | `/admin/scheduled-tasks` |
+| Migrations | `/migrations` |
+| Cursor Rules | `/admin/cursor-rules` |
 | Static Lists | `/static-lists` |
 | Roles | `/roles` |
 | Staff | `/staff` |
 
-- Outlined actions below the nav stack:
+- **Open Judge Tabs** is a contained button above that list (same dialog as Home).
+- **Back to Home** is the page header (`PageHeader`), not a button in the action stack. It goes to `/home`.
+- Outlined actions (labels while idle):
   - **Generate Attendees** — calls PostgREST RPC **`api.generate_demo_attendees`** (admin JWT). Regenerates demo attendee rows in the reserved `attendee_id` range (see **Attendee demo data**). Success includes selected event-group names. Label becomes **Generating Attendees…** while in flight.
-  - **Rotate Robot Riot Attendees (10 min)** — starts a short-lived attendee churn job for the Robot Riot demo event (`startRobotRiotAttendeeChurn(10)`).
-  - **Refresh WSDC Attendee Info** — prepares targets, fetches WSDC profiles, and saves them onto matching users.
+  - **Rotate Robot Riot Attendees (10 min)** — starts a short-lived attendee churn job for the Robot Riot demo event (`startRobotRiotAttendeeChurn(10)`). Label becomes **Starting Robot Riot Rotation…** while in flight.
+  - **Refresh WSDC Attendee Info** — prepares targets, fetches WSDC profiles, and saves them onto matching users. Label becomes **Refreshing WSDC Info…** while in flight.
   - **Test Message Boxes** — clears the stack, then shows one success, warning, problem, and **info** alert (`You look marvelous!`).
   - **Build Info** — opens `BuildInfoDialog`.
-  - **Back to Home** → `/home`.
+
+### Quick Reg, migrations, and Cursor rules
+
+- **Quick Reg** (`/quickreg`): search quick-registration accounts by first name and/or last name. A question-mark button shows that account’s password and who created it. **Back to Admin**.
+- **Migrations** (`/migrations`): schema migration list with **Apply**, plus a scheduler heartbeat indicator. **Back to Admin**.
+- **Cursor Rules** (`/admin/cursor-rules`): reads project rules from `.cursor/rules` (synced by the front-end prebuild). Star a rule to pin it. **Back to Admin**.
 - Removed: **Refresh Hollowfen & Jitterbug Active Window** (no longer on Admin home).
 - Legacy path `/admin/event-details` redirects to **`/event-groups`**.
 
@@ -352,20 +433,22 @@ Paths from `eventRoutes.ts`: `EVENT_HOME_PATH=/event-home`, `EVENT_GROUPS_PATH=/
 
 | Route | Page | Behavior |
 |-------|------|----------|
-| `/event-home` | `EventHomePage` | **Event Groups** → `/event-groups`; **Events** → `/events` (placeholder); Back to Admin |
-| `/event-groups` | `AdminEventsPage` | Title **Event Groups**; filter by name; **Add Event Group**; table columns Code / Full Name / **Event Type** (inline dropdown from static list `EVENT_TYPES`, saves immediately) / **Edit** → group detail. No Directors column. |
+| `/event-home` | `EventHomePage` | **Event Groups** → `/event-groups`; **Events** → `/events` (`AdminPlaceholderPage`, title **Events**); Back to Admin |
+| `/event-groups` | `AdminEventsPage` | Title **Event Groups**; filters **Demo**, **Event Type**, and **Filter by name**; **Add Event Group**; columns **Event Group Code** / **Full Name** / **Event Type** (inline dropdown from static list `EVENT_TYPES`, saves immediately) / **Edit** → group detail. No Directors column. |
 | `/event-groups/:code` | `AdminEventGroupPage` | Buttons per event (month/year labels); **Add Event**; Back to Event Groups |
-| `/event-groups/:code/:eventId` | `AdminEventPage` | **Attendees**, **Competitors** (placeholder), **Contests**; **Edit Event** (`AddEventButton` with `eventId`); Back to group |
+| `/event-groups/:code/:eventId` | `AdminEventPage` | **Attendees**, **Competitors** (placeholder via `AdminEventSectionPlaceholderPage`), **Contests**; **Edit Event** (`AddEventButton` with `eventId`); Back to group |
 | `.../attendees` | `AdminEventAttendeesPage` | Real attendees list for that event |
 | `.../contests` | `AdminEventContestsPage` | Event contest management |
-| `/create-event` | `AdminAddEventPage` | **Add Event** or **Edit Event** (when navigated with `{ eventGroupCode, eventId }`). Edit preloads event dates/fields; title **Edit Event for {code}**; Back returns to the event detail when editing. |
+| `.../contests/:contestId` | `AdminEventContestPage` | One contest |
+| `.../contests/:contestId/stages/:stage` | `AdminEventContestStagePage` | Title **Stage**; Back to Contest |
+| `/create-event` | `AdminAddEventPage` | **Add Event** or **Edit Event** (when navigated with `{ eventGroupCode, eventId }`). Edit preloads event dates/fields; title **Edit Event for {code}**. Header **Back** returns to the event group (`/event-groups/:code`), including while editing. |
 
 See **Multi-section admin form pages (Add Event pattern)** for accordion / status / DnD construction rules.
 
 ### Admin competitors (`/admin/competitors`)
 
 - Paginated **user** table (not contest entries): first name, last name, city, state, primary role.
-- Page size: **25** desktop, **10** mobile (`useIsMobileDevice`).
+- Page size: **10** on phone (xs), **15** on tablet (md), **25** from lg up.
 - **Filter / Sort** dialog: filter by first name, last name, city, state, primary role (not username); sort by last name, first name, or city (asc/desc).
 - Data comes from **`GET /user`** with PostgREST `ilike` / `eq` filters on JSON columns (`postgrest.ts`).
 - Empty filter values shown as **—** in the table.
@@ -374,7 +457,7 @@ See **Multi-section admin form pages (Add Event pattern)** for accordion / statu
 ### Search Users (`/admin/search-users`)
 
 - Paginated **user** table columns: first name, last name, username, **Edit**.
-- Page size: **25** desktop, **10** mobile (`useIsMobileDevice`).
+- Page size: **10** on phone (xs), **15** on tablet (md), **25** from lg up (`useLayoutTier`).
 - **Search-as-you-type** text field (`fetchUsersPage` `quickSearch`, max 30 characters):
   - Contains `@` → **email** only.
   - Digits + special characters only (no letters) → **phone number** only (`phone_numbers_json->0->>number`).
@@ -396,11 +479,10 @@ See **Multi-section admin form pages (Add Event pattern)** for accordion / statu
 ## Competitor page (`/competitor-wsdc`)
 
 - Route: **`/competitor-wsdc`**, opened from the **My WSDC #** button on Competitor Home (requires `COMPETITOR` or `ADMIN` role). **`/competitor`** redirects here.
-- Page title: **`<First name> <Last name> WSDC`** from the signed-in user's `name_json` (falls back to **WSDC** when the name is empty). The same title is used on the contest list.
-- Shows three full-width contest buttons: **Contest 1**, **Contest 2**, **Contest 3**.
-- Contest buttons are **placeholders** — they do **not** navigate anywhere (`contestRoute` is not set).
-- **Back to Home** button navigates to `/home`.
-- Same layout shell as Staff (centered paper, 360px-wide button stack) but without a working contest destination yet.
+- Page title: **`<First name> <Last name> WSDC`** from the signed-in user's name (falls back to **WSDC** when the name is empty).
+- Shows the saved WSDC number when one exists, and **Look up WSDC points** (`WsdcFindDancerSection`). **Save WSDC # to my account** stores the id on the signed-in user. A direct link `?wsdc=12345` is supported.
+- **Continue to Contests** opens `ContestSelectionPage` with the same title. **Contest 1–3** are still placeholders (`contestRoute` is not set). That list's **Back to Home** goes to `/home`.
+- **Back to Home** on the WSDC page navigates to `/home`.
 
 ---
 
@@ -408,13 +490,13 @@ See **Multi-section admin form pages (Add Event pattern)** for accordion / statu
 
 ### Demo hub (`/demo`)
 
-- Public page opened from Public Home **Demo**.
+- **ADMIN** only. Opened from Admin home **Demos**, not from Public Home.
 - Links to **Floor Parent Demos**, **Judge Demos**, **Merchandise Demo** (`/event-merchandise-pos-demo`), and **3rd Party Library Demos**.
-- **Back** returns to `/adminhome`.
+- **Back to Admin** returns to `/adminhome`.
 
 ### Tournament bracket demo (`/tournament-bracket-demo`)
 
-- Public interactive bracket demo (loads users from the API; picks winners).
+- **ADMIN** only. Interactive bracket demo (loads users from the API; picks winners).
 - Legacy `/admin/tournament-bracket-demo` redirects here.
 - Back to 3rd Party Library Demos → `/third-party-library-demos`.
 
@@ -430,7 +512,7 @@ See **Multi-section admin form pages (Add Event pattern)** for accordion / statu
 
 - **ADMIN** only.
 - Paginated grid: **When**, **Action**, **Actor**, **Table**, **Record**, and a **View** button as the last cell (also on mobile cards via `AuditTrailCard` with `actionsInGrid`).
-- Page size: **25** desktop, **10** mobile.
+- Page size: **10** on phone (xs), **15** on tablet (md), **25** from lg up.
 - **When** uses `formatReadableDateTime` (see **Readable datetime strings**).
 - **View** opens `AuditLogDetailDialog` for the row.
 - Filter dialog for narrowing results.
@@ -502,7 +584,7 @@ App-wide stacked alerts at the top of the screen (not Judging-specific). Wrapped
 
 - Four message types: **success**, **warning**, **problem**, and **info**.
 - Each type uses a distinct outlined **MUI Alert** color scheme (green, amber, red, blue).
-- The stack is **fixed** at the top center (`top: 16px`), capped at **360px** wide (`CONTENT_MAX_WIDTH`), same as other main content blocks.
+- The stack is **fixed** at the top center (`top: 16px`), capped at **360px** wide (`CONTENT_MAX_WIDTH`) at every breakpoint. Phone form stacks use that same width; wider pages do not.
 - Container uses `aria-live="polite"` for screen readers.
 
 ### Stacking and dismissal
@@ -547,7 +629,7 @@ App-wide MUI theming via **skins**. `AppThemeProvider` wraps the app in `main.ts
 
 - The **Account** page (`/account`) exposes the skin control via `ThemeSwitcher` (near the top of the account stack).
 - Home does **not** show the skin dropdown.
-- The dropdown uses the same **360px** centered width as other main controls (`centeredContentStackSx` / `fullWidth`).
+- The dropdown is `fullWidth` inside the Account stack: **360px** on phone, up to **480px** from md.
 
 ### Dropdown behavior
 
@@ -571,17 +653,16 @@ App-wide MUI theming via **skins**. `AppThemeProvider` wraps the app in `main.ts
 
 ## Judging page — competitor data
 
-- Each session shows **7 couples** (accordion rows).
-- Each couple has:
-  - A **bib number** (1–999, unique within the set, sorted ascending)
-  - A **Leader** and **Follower** (first + last name)
-- Names come from two pools:
-  - **Legion of Super-Heroes** (DC)
-  - **Shi'ar Imperial Guard** (Marvel-inspired)
-- Each character has a **sex** value (`male` or `female`) based on common comic portrayals.
-- Judging entries are generated **once per page load** (random bib numbers and names are fixed for that visit).
+`/judge-finals` (`JudgingPage`) loads the contest from route state, or from the query string after a refresh (`eventId`, `contestId`, `contestItemId`). Entries come from saved pairs and the contest roster (`fetchJudgingContestPairs`, `fetchJudgingContestRoster`, `buildJudgingFinalsEntries`). Each row is a leader and follower with a display bib. An empty pair list shows no couples. Names are the roster’s names, not a random comic pool.
 
-### Name selection rules
+**Back to Judging** (`/judgingHome`) stays disabled until every couple has a non-zero score and **Submit** has succeeded. An empty list can go back immediately.
+
+Random Legion / Shi'ar names are still used for **mock** entries (`createMockContestEntries` in `mockContestEntries.ts`):
+
+- **Prelims** (`/judge-prelims`) builds **12** couples once per visit.
+- Mock admin contest results (no saved contest id) use the default count of **20**.
+
+### Name selection rules (mock entries)
 
 - **Leader:** pick a **male** character **90%** of the time.
 - **Follower:** pick a **female** character **90%** of the time.
@@ -658,7 +739,7 @@ Dropdown options:
 - Top of page shows **Percent Complete** bar (replaces the old "Judging" header).
 - Progress = couples with **non-zero raw score** ÷ couple count × 100.
 - Display text: `Percent Complete: X%`.
-- At **100%**, the bar becomes a **Submit** button (navigates to `/staff`).
+- At **100%**, the bar becomes a **Submit** button. A successful save goes to **`/home`** and flashes `Scores submitted with N placements derived (1st = highest score).`
 
 ---
 
@@ -845,25 +926,33 @@ Each competitor's selected colors are shown in a **square** swatch cell (`Compet
 
 ## Mobile-friendly layout
 
-The app is designed to be **usable on phones** as well as desktop — narrow, centered content rather than wide multi-column layouts. For **new pages**, use the responsive breakpoint tiers in `.cursor/rules/mui-v9-sx-styling.mdc` (xs Galaxy S24, md iPad, lg iPad Pro, xl laptop/desktop).
+The app is usable on phones and on wider screens. **New pages** follow `.cursor/rules/mui-v9-sx-styling.mdc`:
+
+| Tier | Width | Reference |
+|------|-------|-----------|
+| **xs** | `0px` | **360 × 780** — Galaxy S24. Narrow column (`CONTENT_MAX_WIDTH` 360). |
+| **md** | `768px` | **820 × 1180** — iPad. Grids and row toolbars. |
+| **lg** | `1024px` | **1024 × 1366** — iPad Pro. |
+| **xl** | `1280px` | **1366 × 768** — older 15″ laptop (`DESKTOP_REFERENCE_VIEWPORT_*`). Container cap `DESKTOP_CONTAINER_MAX_WIDTH` (1000). |
+
+`useLayoutTier()` maps those widths to `showXsLayout` and `containerMaxWidth` (`sm` / `md` / `lg` / `xl`). MUI **`sm` (600px)** is not a tier for new pages.
 
 ### Viewport and page shell
 
 - `index.html` sets a responsive viewport: `width=device-width`, `initial-scale=1.0`, and `interactive-widget=resizes-content` (layout adjusts when the on-screen keyboard opens).
 - `body` uses `min-height: 100vh` with no default margin.
 
-### Narrow centered column
+### Narrow centered column (phone)
 
-- Primary interactive content is capped at **360px** wide (`CONTENT_MAX_WIDTH`) and **centered** horizontally.
-- Applies to messages, buttons, fields, dropdowns, and main page stacks (`centeredContentStackSx`).
-- MUI theme defaults also cap **buttons** and **form controls** at 360px (`muiButtonTheme`, `muiFormTheme`).
-- Pages wrap content in MUI **`Container`** (`maxWidth="sm"` on Login/Register, `maxWidth="md"` on Home, Staff, Competitor, Judging) with vertical padding (`py: 6`).
-- Buttons inside stacks use **`fullWidth`** so they fill the centered column on any screen width.
+- On **xs**, primary stacks use **360px** (`CONTENT_MAX_WIDTH`, `centeredContentStackSx`) and are centered.
+- The message stack stays 360px at every width. **`muiButtonTheme`** caps buttons at 360px even inside a grid cell. Form controls in `theme/muiFormTheme.ts` cap at 360px on xs and **100%** from md.
+- From **md**, hub pages (Home, Admin, Demo, and others that use `useLayoutTier`) drop the 360px stack and use a **Grid**. `Container` `maxWidth` follows the tier. Padding is `py: { xs: 4, md: 6 }` and paper padding `{ xs: 2, md: 3, lg: 4 }` on those pages.
+- Buttons inside stacks use **`fullWidth`**.
 
 ### Touch and small screens
 
 - **`useIsMobileDevice`** treats the device as mobile when it has a coarse pointer, or when the screen is ≤768px **and** touch-capable.
-- Used for mobile-specific form behavior (see below); layout itself relies on the narrow column rather than separate desktop/mobile layouts.
+- Used for mobile-specific **behavior** (keyboard scroll, field focus). Layout uses the breakpoint tiers above, not this hook.
 
 ### Dialogs and overlays
 
@@ -955,7 +1044,7 @@ Demo vs production data is flagged with a **`more_json`** column (`jsonb`) on **
 
 | Table | How `demo` is set |
 |-------|-------------------|
-| **`event_group`** | Seeded directly (`true` for fictional groups in seeds 008–010; `false` for TSL groups). |
+| **`event_group`** | Seeded directly (`true` for fictional groups in seeds 008–010 and for **TSL Fictional Fracas** in seed 018; other TSL groups stay non-demo). |
 | **`event`** | Copied from the parent `event_group.more_json.demo` when fictional events are inserted (seed `011`). |
 | **`attendee`** | Copied from the parent `event.more_json` on demo attendee inserts. |
 
@@ -1037,8 +1126,11 @@ Authenticated RPCs (including **Generate Attendees**) send `Authorization: Beare
 1. **`AppThemeProvider`** — MUI theme / skin
 2. **`MessageProvider`** — global message stack
 3. **`AuthProvider`** — session in `sessionStorage`
-4. **`BrowserRouter`** — routes
-5. **`App`** — includes **`ActivityMonitor`** and **`LoginFlashHandler`** above `<Routes>`
+4. **`ApiHealthMonitor`** — sticky message when PostgREST is unreachable (sibling of `AuthProvider`, under `MessageProvider`)
+5. **`AuthProvider`** — session in `sessionStorage`
+6. **`BrowserRouter`** — routes
+7. **`PageTrainingProvider`**
+8. **`App`** — includes **`ActivityMonitor`** and **`LoginFlashHandler`** above `<Routes>`
 
 ### Activity and inactivity
 
@@ -1055,13 +1147,13 @@ Authenticated RPCs (including **Generate Attendees**) send `Authorization: Beare
 
 ## Page layout shell
 
-Most pages use the same centered card pattern:
+Most pages use a centered card, with width that changes by tier (`useLayoutTier`):
 
-- MUI **`Container`** (`maxWidth="md"`, `py: 6`) — except Login/Register use `maxWidth="sm"`.
-- MUI **`Paper`** (`elevation={3}`, `p: 4`, `textAlign: 'center'`).
-- Primary actions in a vertical **`Stack`** with `spacing={2}` and **`centeredContentStackSx`** (360px max width).
-- Navigation buttons use **`fullWidth`** inside the stack.
-- **Back** actions use **`variant="outlined"`**; primary navigation uses **`variant="contained"`**.
+- MUI **`Container`** `maxWidth={containerMaxWidth}` (`sm` on xs, then `md`, `lg`, `xl`) and `py: { xs: 4, md: 6 }`.
+- MUI **`Paper`** (`elevation={3}`, padding `{ xs: 2, md: 3, lg: 4 }`).
+- On **xs**, primary actions are a vertical **`Stack`** with `spacing={2}` and **`centeredContentStackSx`** (360px). From **md**, the same actions are often a **Grid**.
+- Navigation buttons use **`fullWidth`** inside the stack or grid cell.
+- **Back** is usually the header icon (`PageHeader` / `MobileBackIconButton`), not a stack button. Primary navigation uses **`variant="contained"`**. Outlined buttons are secondary actions (Generate Attendees, Log Off, and similar).
 
 ---
 
@@ -1071,10 +1163,10 @@ Reference implementation: **`/create-event`** (`AdminAddEventPage.tsx`). Use thi
 
 ### Page shell
 
-- Same centered card as other admin pages: **`Container maxWidth="md"`**, **`Paper elevation={3}`**, `py: 6`, responsive paper padding `{ xs: 2, sm: 4 }`.
-- Page title: centered **`Typography variant="h4"`** (e.g. **Add Event for {event_group_code}** when a group is known).
+- Same tiered card as other admin pages: **`Container maxWidth={containerMaxWidth}`**, **`Paper elevation={3}`**, `py: { xs: 4, md: 6 }`, paper padding `{ xs: 2, md: 3, lg: 4 }`.
+- Page title is `PageHeader` (e.g. **Add Event for {event_group_code}** or **Edit Event for {code}** when a group is known).
 - Optional subtitle line under the title (e.g. event group **full name** from PostgREST).
-- Bottom navigation: one **Back** outlined button in **`centeredContentStackSx`** (360px column).
+- **Back** is that header. With a group code it returns to `/event-groups/:code` (**Back to Event Group**), including edit mode. With no group it returns to `/event-groups`.
 
 ### Accordion sections
 
@@ -1108,7 +1200,7 @@ Every top-level accordion panel includes a **3-way toggle** at the bottom (**`Ad
 
 ### Form fields and layout
 
-- Text, select, and date/time inputs: **`AppTextField`** (inherits **360px** max width from **`muiFormTheme`**).
+- Text, select, and date/time inputs: **`AppTextField`**. Theme max width is **360px** on xs and **100%** from md (`muiFormTheme.ts`).
 - **`datetime-local`** for event start/end; **Single Day** vs **Multi-Day** toggle controls whether the end picker is shown.
 - Multi-day day count is **inclusive calendar days** (any time on a day counts that day); helpers live in **`lib/eventDates.ts`** / **`lib/eventDuration.ts`**.
 - Static-list dropdowns (e.g. US states, countries): load in the section with loading spinner and inline error text.
@@ -1128,7 +1220,7 @@ Every top-level accordion panel includes a **3-way toggle** at the bottom (**`Ad
 | Group code | From navigation `state.eventGroupCode`, else **`sessionStorage`** (`lib/eventGroupSession.ts`) |
 | Edit mode | Navigation `state.eventId` loads that event and titles the page **Edit Event for {code}**; preloads dates and other fields |
 | **Add Event** / **Edit Event** button | Shared **`AddEventButton`** on event group and event detail pages; remembers group code (and optional `eventId`) on navigate |
-| Back button | Edit mode → event detail `/event-groups/:code/:eventId`; create mode → `/event-groups/:code` when a group is known, else `/event-groups` |
+| Back button | Header **Back**. With a group code → `/event-groups/:code` (create and edit). With no group → `/event-groups` |
 
 ### Dark skin: date/time picker icons
 
@@ -1156,11 +1248,11 @@ From `front-ends/front-end-cursor/.env.example`:
 
 | Variable | Default (local) | Purpose |
 |----------|-----------------|--------|
-| `VITE_POSTGREST_URL` | `http://localhost:3000` | PostgREST API base URL |
+| `VITE_POSTGREST_URL` | Unset in `.env.example` | Optional override. Dev falls back to **`/api`**, which Vite proxies to `http://localhost:3000`. Production fallback is `http://localhost:3000`. |
 | `VITE_MAILER_URL` | `http://localhost:3001` | Password-reset mailer service |
 | `VITE_REALTIME_WS_URL` | `ws://localhost:5173/realtime/ws` | WebSocket POC (dev proxy) |
 
-PostgREST Docker: see `back-ends/postgrest/.env.example` (`PGRST_DB_URI`, `PGRST_JWT_SECRET`, CORS origins for Vite `5173` and Swagger `8080`).
+PostgREST Docker: see `back-ends/postgrest/.env.example` (`PGRST_DB_URI`, `PGRST_JWT_SECRET`, CORS for Swagger `8080` and Vite `5173` / `5174`, including `127.0.0.1`).
 
 ---
 
@@ -1240,13 +1332,16 @@ Applied by **`rebuild-local-database.ps1`** locally and by **`deploy/scripts/see
 | `005` + `005a` | **1000** superhero/supervillain users (see below) |
 | `003` | Dummy users |
 | `004` | Owner account (`dancingevilgenius`) |
-| `007` | App roles for `dancingevilgenius` (all ten roles) |
-| `021` | App roles for `superman` (same ten roles as `dancingevilgenius`) |
+| `007` | App roles for `dancingevilgenius` (all thirteen roles) |
+| `021` | App roles for `superman` (same thirteen roles as `dancingevilgenius`) |
 | `008`–`011` | Fictional demo event groups and instances |
 | `016` | Merchandise POS demo |
 | `012` | Demo attendees (`api.generate_demo_attendees_core` — all demo groups in recent years) |
 | `017` | Re-run attendee generation for deploys that applied `012` before robot/kart were included |
 | `013`–`014` | Governing body and static list |
+| `018` | **TSL Fictional Fracas** demo group (July 2026), attendees, and division contests with a pools stage and an empty primary-elim bracket. Safe to re-run; needs migrations 136 and 137 |
+| `019` | Re-applies the Fracas seed so databases that already recorded `018` in `schema_seeds` still pick up later Fracas content |
+| `020` | Sets `event_type_code` where it still differs: baseline TSL groups and plasma groups to `SWORD_LIGHT_SABER` (includes Fracas), swing circuits to `COUPLES_SWING`, HEMA groups to `SWORD_HEMA`, kart groups to `MOTORSPORTS_KART`, robot groups to `ROBOTICS_GENERAL` |
 | `015` | Local deployment info |
 
 Legacy **`006_user_superhero_followers.sql`** and seeds `005b`/`005c`/`002*` are **not** in the manifest (superseded or folded into baseline).
@@ -1315,17 +1410,21 @@ Prefer **`jsonb`** for new columns that will be queried or merged.
 - Shows three contest buttons (**Contest 1–3**).
 - Each button navigates to **`/admin/contests/contest`** (same destination for all three for now).
 
-### Admin contest results (`/admin/contests/contest`)
+### Admin contest results (`/admin/contests/contest` and `/results/:contestId`)
 
-- **`AdminContestResultsPage`** — admin view of contest results (see that file for current behavior).
-- **Back** returns toward admin contests / admin home per page wiring.
+`AdminContestResultsPage` has two modes:
+
+- **Mock** — `/admin/contests/contest` (no contest id). Data from **`buildMockContestResults()`** (fixed per page load via `useMemo`). Title **Relative Placement**. **Back to Contests** → `/admin/contests`.
+- **Saved** — `/results/:contestId`, or `/results/item` with `eventId` and `contestItemId`. Loads the saved relative placement. Title is the contest label (or **Results** while loading). **Back to Results** → `/results`. If nothing is saved, the page says relative placement has not been saved for this contest.
+
+Both modes use the same wide results layout (`Container` max width follows xs/md/lg/xl). Columns: Place, Bib, Couple, and one column per judge sheet. A head-judge sheet is marked with a divider before its column.
 
 ---
 
 ## Staff and contest selection
 
 - **`StaffPage`** shows the Staff title. Judge demo buttons live on **Judge Demos** (`/judge-demos`): **Prelims** (`/judge-prelims`) and **Contest 1–3** (`/judge-finals`).
-- **`CompetitorPage`** opens at **`/competitor-wsdc`**. Its contest list uses `ContestSelectionPage` with the user's **`<First name> <Last name> WSDC`** title and **no** `contestRoute` (buttons inert).
+- **`CompetitorPage`** opens at **`/competitor-wsdc`** (WSDC lookup, then **Continue to Contests**). That contest list uses `ContestSelectionPage` with the user's **`<First name> <Last name> WSDC`** title and **no** `contestRoute` (buttons inert).
 - **Back to Home** → `/home`.
 
 ---
@@ -1361,7 +1460,7 @@ Countries and US states are stored in **`static_list`** (`COUNTRIES`, `US_STATES
 
 ## Owner dev account
 
-Seed **`004_user_carlos.sql`** creates **`dancingevilgenius`** (project owner). Default password: **`ChangeMeFool!`** (reset via `scripts/reset_dancingevilgenius_password.sql`). Seed **`007`** grants **all ten app roles** to that user.
+Seed **`004_user_carlos.sql`** creates **`dancingevilgenius`** (project owner). Default password: **`ChangeMeFool!`** (reset via `scripts/reset_dancingevilgenius_password.sql`). Seed **`007`** grants **all thirteen app roles** to that user.
 
 ---
 
@@ -1385,7 +1484,7 @@ Regenerate after roster changes:
 python scripts/generate-superhero-user-seed.py
 ```
 
-Example logins: **`superman`** / **`superman`**, **`batman`** / **`batman`**. Seed **`021`** grants **`superman`** the same **ten app roles** as **`dancingevilgenius`**.
+Example logins: **`superman`** / **`superman`**, **`batman`** / **`batman`**. Seed **`021`** grants **`superman`** the same **thirteen app roles** as **`dancingevilgenius`**.
 
 ---
 
@@ -1407,20 +1506,15 @@ When the agent updates rows in migrations (non-seed):
 
 ---
 
-## Admin contest results (mock)
+## Admin contest results
 
-**`/admin/contests/contest`** (`AdminContestResultsPage`) currently shows **mock** relative-placement results:
-
-- Data from **`buildMockContestResults()`** (fixed per page load via `useMemo`).
-- Wide table layout: `Container maxWidth="lg"` (exception to the usual `md` card).
-- Columns: Place, Bib, Couple, one column per mock judge sheet.
-- **Back to Contests** → `/admin/contests`.
+See **Admin contests and results**. Mock mode is `/admin/contests/contest`. Saved mode is `/results/:contestId` and `/results/item`.
 
 ---
 
 ## Attendee `contests_json`
 
-Optional **`contests_json`** on **`attendee`** (`json`, default `NULL`) holds per-attendee contest enrollment data. Exposed on **`api.attendee`** view. Demo attendee seed does not populate it yet.
+Optional **`contests_json`** on **`attendee`** (`json`, default `NULL`) holds per-attendee contest enrollment data. Exposed on **`api.attendee`**. Demo attendee seed **`012`** does not fill it. Seeds **`018`** and **`019`** set it for TSL Fictional Fracas attendees: one object per contest that includes that user (`contest_id`, `division_key`, `division_label`).
 
 ---
 
@@ -1432,12 +1526,16 @@ Field labels (form captions, read-only field names like **Schedule**, **Last run
 
 ### MUI v9 styling (`sx` prop)
 
-This project uses **@mui/material v9**. Put layout/typography CSS-like values in **`sx`**, not as legacy system props (`fontWeight`, `alignItems`, `width`, etc. on `Typography` / `Stack` / `Box`). Still OK as direct props: `variant`, `color`, `direction`, `spacing`, `component`, `onClick`, etc. New pages must be responsive at **xs** (Galaxy S24), **md** (iPad), **lg** (iPad Pro), and **xl** (laptop/desktop) — see `.cursor/rules/mui-v9-sx-styling.mdc`. Run `npm run build` in the front-end package when touching MUI components.
+This project uses **@mui/material v9**. Put layout/typography CSS-like values in **`sx`**, not as legacy system props (`fontWeight`, `alignItems`, `width`, etc. on `Typography` / `Stack` / `Box`). Still OK as direct props: `variant`, `color`, `direction`, `spacing`, `component`, `onClick`, etc. New pages must be responsive at **xs** (Galaxy S24, 360), **md** (iPad), **lg** (iPad Pro), and **xl** (laptop) — see `.cursor/rules/mui-v9-sx-styling.mdc`. Run `npm run build` in the front-end package when touching MUI components.
+
+### Trim saved text
+
+Trim text at **save** time with `trimSavedText()` from `utils/trimSavedText.ts`. Leave the in-progress keystrokes alone so the user can type a space between words. Create-event already does this. Cursor rule: `.cursor/rules/trim-saved-text.mdc`.
 
 ---
 
 ## Technical constraints
 
 - **Icons:** Prefer local SVG components (`CloseIcon`, `PaletteOutlinedIcon`, `DragHandleIcon`, etc.). **`@mui/icons-material`** is allowed for small status/decorative icons (e.g. Add Event section status).
-- Judging entries are generated once per page load; random data does not change until the page is reloaded.
+- Finals entries come from the contest roster and stay until the page reloads. Mock entries (Prelims and mock contest results) are generated once per page load; random names and bibs do not change until reload.
 - Score digit dropdown interactions must not propagate to the accordion header.

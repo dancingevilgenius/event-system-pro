@@ -102,6 +102,17 @@ function sourceWithIdentity(): EventFormExportSource {
           },
         ],
       },
+      discounts: {
+        discounts: [
+          {
+            id: '55555555-5555-4555-8555-555555555555',
+            name: 'Student',
+            valueKind: 'percent',
+            value: '15',
+            description: 'With student ID',
+          },
+        ],
+      },
     },
   };
 }
@@ -115,6 +126,7 @@ describe('formatEventFormExport', () => {
       contests: { contests: Array<Record<string, unknown>> };
       schedule: { days: Array<Record<string, unknown>> };
       earlyBirdDates: { windows: Array<Record<string, unknown>> };
+      discounts: Array<Record<string, unknown>>;
     };
 
     expect(parsed.eventName).toBe('Clone - River City Swing');
@@ -138,6 +150,12 @@ describe('formatEventFormExport', () => {
       enabled: true,
       startDate: '2026-01-01',
       endDate: '2026-02-01',
+    });
+    expect(parsed.discounts[0]).toEqual({
+      name: 'Student',
+      valueKind: 'percent',
+      value: '15',
+      description: 'With student ID',
     });
     expect(JSON.stringify(parsed)).not.toContain('user_id');
     expect(JSON.stringify(parsed)).not.toContain('33333333-3333-4333-8333-333333333333');
@@ -168,6 +186,7 @@ describe('formatEventFormExport', () => {
           },
         },
         contests: applied.contests,
+        discounts: { discounts: applied.discounts },
       },
     })) as { contests: { contests: Array<{ headJudgeIndex: number | null }> } };
 

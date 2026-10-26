@@ -63,6 +63,7 @@ import AddEventImportantContacts from '../components/AddEventImportantContacts';
 import AddEventContests, { type EventContestsSummary } from '../components/AddEventContests';
 import AddEventStaff, { type EventStaffSummary } from '../components/AddEventStaff';
 import AddEventVolunteers from '../components/AddEventVolunteers';
+import AddEventDiscounts from '../components/AddEventDiscounts';
 import AddEventExportImport from '../components/AddEventExportImport';
 import AddEventSortableSectionAccordion from '../components/AddEventSortableSectionAccordion';
 import { type AddEventSectionStatus } from '../components/AddEventSectionStatusToggle';
@@ -104,6 +105,7 @@ type AddEventSectionId =
   | 'passes'
   | 'roles'
   | 'early_bird_dates'
+  | 'discounts'
   | 'location'
   | 'online_links'
   | 'important_contacts'
@@ -128,6 +130,11 @@ const ADD_EVENT_SECTIONS: AddEventSection[] = [
   { id: 'passes', title: 'Passes', description: '' },
   { id: 'roles', title: 'Roles', description: '' },
   { id: 'early_bird_dates', title: 'Early Bird Dates', description: '' },
+  {
+    id: 'discounts',
+    title: 'Discounts',
+    description: '',
+  },
   {
     id: 'location',
     title: 'Location/Venue',
@@ -166,6 +173,46 @@ const ADD_EVENT_SECTIONS: AddEventSection[] = [
 ];
 
 const DEFAULT_SECTION_ORDER = ADD_EVENT_SECTIONS.map((section) => section.id);
+
+/** Keep a saved order, and place any new sections beside their default neighbors. */
+function mergeSectionOrder(importedIds: readonly string[]): AddEventSectionId[] {
+  const allowed = new Set<string>(DEFAULT_SECTION_ORDER);
+  const imported = importedIds.filter(
+    (sectionId): sectionId is AddEventSectionId => allowed.has(sectionId),
+  );
+  const present = new Set(imported);
+  const merged = [...imported];
+
+  for (const sectionId of DEFAULT_SECTION_ORDER) {
+    if (present.has(sectionId)) {
+      continue;
+    }
+
+    const defaultIndex = DEFAULT_SECTION_ORDER.indexOf(sectionId);
+    let insertAt = merged.length;
+    for (let index = defaultIndex - 1; index >= 0; index -= 1) {
+      const neighbor = merged.indexOf(DEFAULT_SECTION_ORDER[index]);
+      if (neighbor >= 0) {
+        insertAt = neighbor + 1;
+        break;
+      }
+    }
+    if (insertAt === merged.length) {
+      for (let index = defaultIndex + 1; index < DEFAULT_SECTION_ORDER.length; index += 1) {
+        const neighbor = merged.indexOf(DEFAULT_SECTION_ORDER[index]);
+        if (neighbor >= 0) {
+          insertAt = neighbor;
+          break;
+        }
+      }
+    }
+
+    merged.splice(insertAt, 0, sectionId);
+    present.add(sectionId);
+  }
+
+  return merged;
+}
 
 const ADD_EVENT_SECTIONS_BY_ID = Object.fromEntries(
   ADD_EVENT_SECTIONS.map((section) => [section.id, section]),
@@ -206,6 +253,7 @@ function createInitialSectionStatuses(): Record<AddEventSectionId, AddEventSecti
     passes: DEFAULT_SECTION_STATUS,
     roles: DEFAULT_SECTION_STATUS,
     early_bird_dates: DEFAULT_SECTION_STATUS,
+    discounts: DEFAULT_SECTION_STATUS,
     location: DEFAULT_SECTION_STATUS,
     online_links: DEFAULT_SECTION_STATUS,
     important_contacts: DEFAULT_SECTION_STATUS,
@@ -492,6 +540,10 @@ function renderSectionContent(
         onNoEarlyBirdDatesChange={onNoEarlyBirdDatesChange}
       />
     );
+  }
+
+  if (sectionId === 'discounts') {
+    return <AddEventDiscounts onFieldEdit={onFieldEdit} />;
   }
 
   if (sectionId === 'online_links') {
@@ -1123,12 +1175,8 @@ function AdminAddEventForm() {
     eventDatesRef.current = appliedImport.dates;
     setEventDates(appliedImport.dates);
 
-    const allowed = new Set<string>(DEFAULT_SECTION_ORDER);
-    const nextOrder = appliedImport.sectionOrder.filter(
-      (sectionId): sectionId is AddEventSectionId => allowed.has(sectionId),
-    );
-    if (nextOrder.length === DEFAULT_SECTION_ORDER.length) {
-      setSectionOrder([...nextOrder, EXPORT_IMPORT_PANEL_ID]);
+    if (appliedImport.sectionOrder.length > 0) {
+      setSectionOrder([...mergeSectionOrder(appliedImport.sectionOrder), EXPORT_IMPORT_PANEL_ID]);
     }
 
     setSectionStatuses((current) => {

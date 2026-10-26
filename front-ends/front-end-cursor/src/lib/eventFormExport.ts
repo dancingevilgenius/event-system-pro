@@ -13,6 +13,7 @@ import {
 } from './eventEarlyBirdDates';
 import type { EventDatesFormState, ScheduleTimeBlockDay } from './eventDates';
 import type { EventLocationJson, EventVenueContactJson } from './eventLocation';
+import type { EventDiscountFormState } from './eventDiscounts';
 import type { EventPassFormState } from './eventPasses';
 
 type SectionStatus = 'not_started' | 'in_progress' | 'finalized';
@@ -39,6 +40,10 @@ export type EventFormPassSnapshot = {
   passes: EventPassFormState[];
 };
 
+export type EventFormDiscountSnapshot = {
+  discounts: EventDiscountFormState[];
+};
+
 export type EventFormEarlyBirdSnapshot = {
   mode: 'none' | 'create';
   windows: EarlyBirdWindow[];
@@ -57,6 +62,7 @@ export type EventFormContestsSnapshot = {
 
 export type EventFormExportSnapshots = {
   passes?: EventFormPassSnapshot;
+  discounts?: EventFormDiscountSnapshot;
   roles?: EventRoleAssignment[];
   earlyBird?: EventFormEarlyBirdSnapshot;
   location?: EventLocationJson;
@@ -209,6 +215,14 @@ export function formatEventFormExport(source: EventFormExportSource): string {
       days: source.scheduleDays.map((day) => ({ title: day.title })),
     },
     staff: exportStaff(source.snapshots.staff),
+    discounts: source.snapshots.discounts
+      ? source.snapshots.discounts.discounts.map((discount) => ({
+          name: discount.name,
+          valueKind: discount.valueKind,
+          value: discount.value,
+          description: discount.description,
+        }))
+      : null,
     volunteers: null,
   });
 
@@ -241,6 +255,7 @@ export type ParsedEventFormImport = {
       scoringJudgeIndexes: Array<number | null>;
     }>;
   };
+  discounts: EventDiscountFormState[];
 };
 
 export type AppliedEventImport = {
@@ -256,6 +271,7 @@ export type AppliedEventImport = {
   contactVenue: EventVenueContactJson;
   staff: EventStaffState;
   contests: EventContestsState;
+  discounts: EventDiscountFormState[];
 };
 
 function asRecord(value: unknown): Record<string, unknown> | null {
@@ -295,6 +311,27 @@ function asJudgeCount(value: unknown): ScoringJudgeCount | null {
 
 function asIndex(value: unknown): number | null {
   return typeof value === 'number' && Number.isInteger(value) && value >= 0 ? value : null;
+}
+
+function asDiscountValueKind(value: unknown): EventDiscountFormState['valueKind'] {
+  return value === 'amount' ? 'amount' : 'percent';
+}
+
+function parseDiscounts(value: unknown): EventDiscountFormState[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.map((entry) => {
+    const row = asRecord(entry);
+    return {
+      id: crypto.randomUUID(),
+      name: asString(row?.name),
+      valueKind: asDiscountValueKind(row?.valueKind),
+      value: asString(row?.value),
+      description: asString(row?.description),
+    };
+  });
 }
 
 export function parseEventFormImport(
@@ -439,6 +476,7 @@ export function parseEventFormImport(
           };
         }),
       },
+      discounts: parseDiscounts(root.discounts),
     },
   };
 }
@@ -484,5 +522,6 @@ export function materializeEventFormImport(
         scoringJudgeStaffIds: contest.scoringJudgeIndexes.map((index) => staffIdAt(index)),
       })),
     },
+    discounts: document.discounts,
   };
 }
